@@ -1,7 +1,7 @@
 version: 2
 jobs:
   test:
-    working_directory: ~/koocook
+    working_directory: ~/koocook-dj
     docker:
       - image: circleci/python:3.7.5-stretch
     steps:
