@@ -2,7 +2,10 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/python:3.7.5-stretch
+      - image: koocook/koocook-dj
+        auth:
+          username: $KC_DK_USER
+          password: $KC_DK_PSWD
 
     working_directory: ~/koocook-dj
 
