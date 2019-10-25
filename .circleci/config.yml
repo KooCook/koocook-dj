@@ -28,6 +28,7 @@ jobs:
       - run:
           name: Django test pass
           command: |
+            python3 -m venv --system-site-packages venv/
             . venv/bin/activate
             python manage.py test
 
