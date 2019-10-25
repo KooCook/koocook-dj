@@ -20,16 +20,14 @@ jobs:
 #          command: |
 #            . venv/bin/activate
 
-#      - save_cache:
-#          paths:
-#            - ./venv
-#          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}vv
+      - save_cache:
+          paths:
+            - ./venv
+          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}vv
 
       - run:
-          name: Running Django unit tests
+          name: "Running Django unit tests"
           command: |
-#            python3 -m venv --system-site-packages venv/
-#            . venv/bin/activate
             python manage.py test
 
       - store_test_results:
