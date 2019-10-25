@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class KoocookConfig(AppConfig):
+class KooCookConfig(AppConfig):
     name = 'koocook_core'
