@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: koocook/koocook-dj
+      - image: koocook/koocook-dj:dev
         auth:
           username: $KC_DK_USER
           password: $KC_DK_PSWD
@@ -16,11 +16,9 @@ jobs:
           key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
 
       - run:
-          name: install dependencies
+          name: Activating venv
           command: |
-            python3 -m venv --system-site-packages venv/
             . venv/bin/activate
-            pip install -r requirements.txt
 
       - save_cache:
           paths:
@@ -28,7 +26,7 @@ jobs:
           key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}vv
 
       - run:
-          name: run tests
+          name: Django test pass
           command: |
             . venv/bin/activate
             python manage.py test
