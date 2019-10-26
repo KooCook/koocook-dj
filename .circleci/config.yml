@@ -56,9 +56,11 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Copy configuration file
+          name: Copy configuration file and the database
           command: |
             cp /usr/src/app/gae.standard.yaml .
+            cp /usr/src/app/db.sqlite3 .
+
       - run:
           name: Deploy to Google App Engine on GCP
           command: |
