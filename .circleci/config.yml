@@ -50,12 +50,17 @@ jobs:
         auth:
           username: $KC_DK_USER
           password: $KC_DK_PSWD
+
     working_directory: ~/koocook-dj
 
     steps:
       - checkout
       - run:
-          name: Deploying to Google App Engine on GCP
+          name: Copy configuration file
+          command: |
+            cp /usr/src/app/config/ ./config -r
+      - run:
+          name: Deploy to Google App Engine on GCP
           command: |
             gcloud app deploy config/gcp/gae_std.yaml
 
