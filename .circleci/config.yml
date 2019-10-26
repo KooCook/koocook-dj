@@ -18,9 +18,9 @@ jobs:
       - run:
           name: Ensuring installed dependencies
           command: |
+            pip install -r requirements.txt
             python3 -m venv --system-site-packages venv/
             . venv/bin/activate
-            pip install -r requirements.txt
 
       - run:
           name: Migrating models to the database
