@@ -7,4 +7,5 @@ def index(request):
 
 
 def search_view(request):
+    keyword = request.GET.get("kw")
     return render(request, 'search.html')

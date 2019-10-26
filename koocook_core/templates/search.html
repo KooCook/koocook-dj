@@ -41,6 +41,7 @@
                 </b-dropdown-item>
             </b-dropdown>
           </h3>
+
         <transition name="fade" mode="in-out">
            <div v-if="!getRecipesByName.length">
                 No results matching with your search.
@@ -68,7 +69,7 @@
         el: '#app',
         data: {
           togglePopSearch: false,
-          searchName: '',
+          searchName: '{{ request.GET.kw }}',
           recipes: [
             { author: 'Jessie Damuck', url: '../recipes/detail-ex1.html', title: "BA's Best Buttermilk Pancakes", datePosted: 'Oct 13, 2019', readyTime: '20 min', hot: true, view_count: 1925, up: 80, down: 3 },
             { author: 'Thakky', title: 'Pumpkin Waffles with Apple Cider Syrup', datePosted: 'Sep 18, 2019', readyTime: '45 min', hot: true, view_count: 125, up: 80, down: 3 },
