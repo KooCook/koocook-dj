@@ -21,7 +21,7 @@ jobs:
             python3 manage.py migrate
 
       - run:
-          name: Installing dependencies
+          name: Ensuring installed dependencies
           command: |
             python3 -m venv --system-site-packages venv/
             . venv/bin/activate
@@ -44,3 +44,29 @@ jobs:
       - store_artifacts:
           path: test-reports
           destination: test-reports
+  deploy:
+    docker:
+      - image: koocook/koocook-dj:dev
+        auth:
+          username: $KC_DK_USER
+          password: $KC_DK_PSWD
+    working_directory: ~/koocook-dj
+
+    steps:
+      - checkout
+      - run:
+          name: Deploying to Google App Engine on GCP
+          command: |
+            gcloud app deploy config/gcp/gae_std.yaml
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+  build_and_deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
