@@ -5,3 +5,6 @@ from django.shortcuts import render
 def index(request):
     return render(request, 'index.html')
 
+
+def search_view(request):
+    return render(request, 'search.html')

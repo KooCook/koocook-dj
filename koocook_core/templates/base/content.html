@@ -1,0 +1,152 @@
+{% extends 'base/index.html' %}
+{% load static %}
+{% block page_deps %}
+<link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.0"></script>
+    <script src="https://unpkg.com/buefy/dist/buefy.min.js"></script>
+{% endblock %}
+{% block page_body %}
+    <div id="app">
+    <nav class="navbar" role="navigation" aria-label="main navigation"
+     style="padding: 1rem 2rem; box-shadow: 0 2px 0 0 #f5f5f5">
+      <div class="container">
+        <div class="navbar-brand" style="flex-basis: 100%; flex-shrink: 1">
+          <a class="navbar-item" href="{% url "koocook_core:index" %}">
+{#            <figure class="image is-48x48">#}
+{#              <img alt="KooCook!" src="../assets/img/emoji/discord/chicken.svg" style="max-height: unset">#}
+{#            </figure>#}
+            <span class="title">KooCook!</span>
+          </a>
+
+          <div class="navbar-item" style="flex-basis: 100%; flex-shrink: 1">
+            <div class="control has-icons-left" style="flex-basis: 100%; flex-shrink: 1">
+              <input v-model="searchName" class=" input search-bar" type="text"
+                     placeholder="Search our recipes!" value="">
+              <span class="icon is-small is-left">
+                       <i class="fas fa-search"></i>
+                     </span>
+            </div>
+          </div>
+
+          <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
+             data-target="navbarMain">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+          </a>
+        </div>
+
+        <div id="navbarMain" class="navbar-menu">
+          <div class="navbar-start">
+            <a class="navbar-item" href="{% url "koocook_core:index" %}">
+              Home
+            </a>
+
+            <a class="navbar-item is-disabled">
+              Stream
+            </a>
+
+            <div class="navbar-item has-dropdown is-hoverable is-disabled">
+              <a class="navbar-link">
+                Browse
+              </a>
+
+              <div class="navbar-dropdown is-boxed">
+                <a class="navbar-item" title="Look at our suggested recipe">
+                  Featured recipes
+                </a>
+                <a class="navbar-item" title="Look at what other people are making">
+                  Popular recipes
+                </a>
+                <a class="navbar-item" title="Get personalised recipe recommendations">
+                  Suggested recipes
+                </a>
+                <a class="navbar-item" title="Get a random recipe">
+                  I'm feeling hungry!
+                </a>
+                <hr class="navbar-divider">
+                <a class="navbar-item" title="Can't find an ingredient? Look no further">
+                  Ingredients
+                </a>
+                <a class="navbar-item" title="Looking to get some new cookwares? We've got you covered">
+                  Cookware
+                </a>
+              </div>
+            </div>
+
+            <div class="navbar-item has-dropdown is-hoverable is-disabled">
+              <a class="navbar-link">
+                More
+              </a>
+
+              <div class="navbar-dropdown is-boxed">
+                <a class="navbar-item">
+                  About
+                </a>
+                <a class="navbar-item">
+                  Contact
+                </a>
+                <a class="navbar-item">
+                  Privacy Policy
+                </a>
+                <hr class="navbar-divider">
+                <a class="navbar-item">
+                  Report an issue
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div class="navbar-end">
+              {% if not user.is_authenticated %}
+            <div class="navbar-item">
+              <div class="buttons">
+                <a href="{% url "social:begin" "google-oauth2" %}" class="button is-secondary">
+                  <strong>Sign in with <i class="fab fa-google"></i>oogle</strong>
+                </a>
+              </div>
+
+            </div>
+            {% else %}
+            <div class="navbar-item has-dropdown is-hoverable">
+                 <a class="navbar-link is-arrowless">
+                   <div class="profile-pic-48">
+                       <div class="has-text-grey-dark profile-initial-48">{{ user.username|title|slice:"0:1" }}</div>
+                   </div>
+                 </a>
+
+                 <div class="navbar-dropdown is-right is-boxed">
+                     <div class="navbar-item">
+                        <strong>{{ user.username }}</strong>
+                     </div>
+                   <a class="navbar-item is-disabled">
+                     Your profile
+                   </a>
+                   <a class="navbar-item is-disabled">
+                     Your subscriptions
+                   </a>
+                   <a class="navbar-item is-disabled">
+                     Your recipes
+                   </a>
+                   <hr class="navbar-divider">
+                   <a class="navbar-item is-disabled">
+                     Help
+                   </a>
+                   <a class="navbar-item is-disabled">
+                     Settings
+                   </a>
+                   <a href="{% url "koocook_auth:logout" %}" class="navbar-item">
+                     Sign out
+                   </a>
+                 </div>
+               </div>
+            {% endif %}
+          </div>
+        </div>
+        </div>
+    </nav>{% block section_after_nav %}{% endblock %}
+    <section class="section">{% block page_content %}{% endblock %}
+    </section>
+    <script src="{% static "js/navbar.js" %}"></script>
+    </div>
+{% endblock %}
