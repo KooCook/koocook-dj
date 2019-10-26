@@ -58,11 +58,11 @@ jobs:
       - run:
           name: Copy configuration file
           command: |
-            cp /usr/src/app/config/ ./config -r
+            cp /usr/src/app/gae.standard.yaml .
       - run:
           name: Deploy to Google App Engine on GCP
           command: |
-            gcloud app deploy config/gcp/gae_std.yaml
+            gcloud app deploy gae.standard.yaml
 
 workflows:
   version: 2
