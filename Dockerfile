@@ -10,7 +10,7 @@ ENV DEBUG=True
 #RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
 RUN apt-get update -y
 
-RUN apt-get install -y curl libpq-dev gcc
+RUN apt-get install -y openssh-client git curl libpq-dev gcc
 RUN pip install psycopg2~=2.6
 # Remove after configuring Psycopg2
 RUN apt-get autoremove -y gcc
