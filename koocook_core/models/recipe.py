@@ -2,14 +2,14 @@ from django.core.validators import MinValueValidator
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
-from koocook_core.models.nutrition import NutritionInfo, Ingredient
+from .nutrition import NutritionInfo, Ingredient
+from .user import RecipeAuthor
 
 
 class Recipe(models.Model):
     name = models.CharField(max_length=100)
     image = models.URLField()
-
-    author = models.ManyToManyField(User)
+    author = models.ManyToManyField(RecipeAuthor)
     date_published = models.DateTimeField()
     description = models.CharField(max_length=255)
     prep_time = models.DurationField()
