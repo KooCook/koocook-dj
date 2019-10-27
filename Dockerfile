@@ -23,7 +23,7 @@ RUN pip install -r requirements.txt
 #RUN gcloud auth activate-service-account --key-file config/$GCP_SKEYFILE
 # Configure the target project for deployment
 #RUN gcloud config set project koocook-deploy
-
+RUN python manage.py migrate
 EXPOSE 8000
 ENTRYPOINT ["python", "manage.py"]
 CMD ["runserver", "0.0.0.0:8000"]
