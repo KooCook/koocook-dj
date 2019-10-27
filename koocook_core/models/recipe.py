@@ -1,8 +1,10 @@
 from django.core.validators import MinValueValidator
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
+
 from .nutrition import NutritionInfo, Ingredient
 from .user import RecipeAuthor
+from .tag import Tag
 
 
 class Recipe(models.Model):
@@ -18,7 +20,7 @@ class Recipe(models.Model):
     def total_time(self):
         return self.prep_time + self.cook_time
 
-    # keywords
+    tags = models.ManyToManyField(Tag)
 
     recipe_yield = models.CharField(max_length=100)
     recipe_category = models.CharField(max_length=100)
