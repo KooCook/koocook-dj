@@ -8,3 +8,6 @@ def index(request):
 
 def search_view(request):
     return render(request, 'search.html')
+
+def detail_view(request):
+    return render(request, 'detail.html')
