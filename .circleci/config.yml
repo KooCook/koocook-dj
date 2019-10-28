@@ -57,13 +57,13 @@ jobs:
       - checkout
 
       - run:
-          name: Trigger the Build Job on the main repo
+          name: Triggering the Build Job on the main repo
           command: |
             if [ -n "${DEPLOY_GCE+x}" ]; then
                printf "Triggering an %s build on the %s branch\n\n" "$MAIN_PROJECT" "$CIRCLE_BRANCH"
                BUILD_INFO=$(curl -X POST -H -d \
                "{}" \
-               "https://circleci.com/api/v1/project/$ORGANIZATION/$MAIN_PROJECT/tree/$CIRCLE_BRANCH?circle-token=$CIRCLE_TOKEN")
+               "https://circleci.com/api/v1.1/project/github/$ORGANIZATION/$MAIN_PROJECT/tree/$CIRCLE_BRANCH?circle-token=$CIRCLE_TOKEN")
                printf "\n\nBuild triggered\n\n"
                printf "Follow the progress of the build on \nhttps://circleci.com/gh/%s/%s/tree/%s" "$ORGANIZATION" "$MAIN_PROJECT" "$CIRCLE_BRANCH"
             fi
