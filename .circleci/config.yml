@@ -55,16 +55,16 @@ jobs:
 
     steps:
       - checkout
-      - run:
-          name: Copy configuration file and the database
-          command: |
-            cp /usr/src/app/gae.standard.yaml .
-            cp /usr/src/app/db.sqlite3 .
 
       - run:
-          name: Deploy to Google App Engine on GCP
+          name: Trigger the Build Job on the main repo
           command: |
-            gcloud app deploy gae.standard.yaml
+            printf "Triggering an $MAIN_PROJECT build on the $CIRCLE_BRANCH branch\n\n"
+            BUILD_INFO=$(curl -X POST -H -d \
+                "{}" \
+                "https://circleci.com/api/v1/project/$ORGANIZATION/$MAIN_PROJECT/tree/$CIRCLE_BRANCH?circle-token=$CIRCLE_TOKEN")
+            printf "\n\nBuild triggered\n\n"
+            printf "Follow the progress of the build on \nhttps://circleci.com/gh/$ORGANIZATION/$MAIN_PROJECT/tree/$CIRCLE_BRANCH"
 
 workflows:
   version: 2
