@@ -74,7 +74,7 @@ workflows:
               ignore:
                 - master
                 - dev/common
-  build-test-deploy:
+  build_and_deploy:
     jobs:
       - build:
           filters:
