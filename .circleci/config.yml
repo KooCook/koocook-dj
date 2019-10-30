@@ -70,17 +70,17 @@ workflows:
       - build
   deploy:
     jobs:
-      - build
-        filters:
-          branches:
-            only:
-              - master
-              - dev/commonq
+      - build:
+          filters:
+            branches:
+              only:
+                - master
+                - dev/common
       - deploy:
           filters:
             branches:
               only:
                - master
-               - dev/commonq
+               - dev/common
           requires:
             - build
