@@ -6,7 +6,7 @@ from .dirs import BASE_DIR
 DATABASES = {
     'default': {
         'ENGINE': config('DATABASE_ENGINE', 'django.db.backends.sqlite3'),
-        'NAME': config('DATABASE_NAME', BASE_DIR.child('db.sqlite3')),
+        'NAME': config('DATABASE_NAME', (BASE_DIR / 'db.sqlite3').as_posix()),
         'USER': config('DATABASE_USERNAME', 'username'),
         'PASSWORD': config('DATABASE_PASSWORD', 'password'),
         'HOST': config('DATABASE_HOST', '127.0.0.1'),
