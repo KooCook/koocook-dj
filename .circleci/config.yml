@@ -65,10 +65,15 @@ jobs:
             fi
 workflows:
   version: 2
-  test:
+  build-test:
     jobs:
-      - build
-  deploy:
+      - build:
+          filters:
+            branches:
+              ignore:
+                - master
+                - dev/common
+  build-test-deploy:
     jobs:
       - build:
           filters:
