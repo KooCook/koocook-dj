@@ -14,30 +14,26 @@ jobs:
 
       - restore_cache:
           key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
-
+      - run:
+          name: Ensuring installed dependencies
+          command: |
+            pip install -r requirements.txt
+            python3 -m venv --system-site-packages venv/
+            . venv/bin/activate
       - run:
           name: Migrating models to the database
           command: |
             python3 manage.py migrate
-
-      - run:
-          name: Ensuring installed dependencies
-          command: |
-            python3 -m venv --system-site-packages venv/
-            . venv/bin/activate
-            pip install -r requirements.txt
-
       - save_cache:
           paths:
             - ./venv
-          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}vv
+          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
 
       - run:
           name: Running tests
           command: |
             . venv/bin/activate
             python manage.py test
-
       - store_test_results:
           path: test-reports
 
@@ -70,12 +66,27 @@ jobs:
 
 workflows:
   version: 2
-  build_and_test:
+  build-test:
     jobs:
-      - build
-  build_and_deploy:
+      - build:
+          filters:
+            branches:
+              ignore:
+                - master
+                - dev/common
+  build-test-deploy:
     jobs:
-      - build
+      - build:
+          filters:
+            branches:
+              only:
+                - master
+                - dev/common
       - deploy:
+          filters:
+            branches:
+              only:
+               - master
+               - dev/common
           requires:
             - build
