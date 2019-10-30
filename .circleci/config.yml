@@ -63,6 +63,7 @@ jobs:
                  printf "\n\nBuild triggered\n\n"
                  printf "Follow the progress of the build on \nhttps://circleci.com/gh/%s/%s/tree/%s" "$ORGANIZATION" "$MAIN_PROJECT" "$CIRCLE_BRANCH"
             fi
+
 workflows:
   version: 2
   build-test:
