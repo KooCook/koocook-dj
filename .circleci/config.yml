@@ -71,6 +71,11 @@ workflows:
   deploy:
     jobs:
       - build
+        filters:
+          branches:
+            only:
+              - master
+              - dev/commonq
       - deploy:
           filters:
             branches:
