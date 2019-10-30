@@ -95,7 +95,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
-LANGUAGE_CODE = config('LANGUAGE_CODE', 'en-uk')
+LANGUAGE_CODE = config('LANGUAGE_CODE', 'en-gb')
 
 TIME_ZONE = config('TIME_ZONE', 'Asia/Bangkok')
 
