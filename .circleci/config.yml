@@ -69,13 +69,13 @@ workflows:
     jobs:
       - build
   deploy:
+    filters:
+      branches:
+        only:
+          - master
+          - dev/common
     jobs:
       - build
       - deploy:
-          filters:
-            branches:
-              only:
-               - master
-               - dev/commonq
           requires:
             - build
