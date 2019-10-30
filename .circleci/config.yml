@@ -27,7 +27,7 @@ jobs:
       - save_cache:
           paths:
             - ./venv
-          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}vv
+          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
 
       - run:
           name: Running tests
