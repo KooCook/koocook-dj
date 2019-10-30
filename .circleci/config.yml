@@ -41,6 +41,10 @@ jobs:
           path: test-reports
           destination: test-reports
   deploy:
+    branches:
+      only:
+        - master
+        - dev/common
     docker:
       - image: koocook/koocook-dj:dev
         auth:
