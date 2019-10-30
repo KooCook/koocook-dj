@@ -28,7 +28,8 @@ jobs:
           paths:
             - ./venv
           key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
-
+  test:
+    steps:
       - run:
           name: Running tests
           command: |
@@ -68,6 +69,9 @@ workflows:
   build_and_test:
     jobs:
       - build
+      - test:
+          requires:
+            - build
   build_and_deploy:
     jobs:
       - build
