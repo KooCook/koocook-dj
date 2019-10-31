@@ -1,0 +1,16 @@
+.ingredient-text:not(:hover) {
+  color: #4A4A4A;
+  border-bottom: 1px dashed #7A7A7A;
+}
+
+.ingredient-help {
+  padding-inline-end: 1rem;
+}
+
+.ingredient-help:hover {
+  cursor: help;
+}
+
+sup {
+  vertical-align: top;
+}
