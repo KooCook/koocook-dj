@@ -6,7 +6,7 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-LOGIN_REDIRECT_URL = config('LOGIN_REDIRECT_URL', '/core/')
+LOGIN_REDIRECT_URL = config('LOGIN_REDIRECT_URL', '/')
 
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
 SOCIAL_AUTH_POSTGRES_JSONFIELD = True
