@@ -14,25 +14,79 @@ jobs:
 
       - restore_cache:
           key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
-
-#      - run:
-#          name: Activating venv
-#          command: |
-#            . venv/bin/activate
-
+      - run:
+          name: Ensuring installed dependencies
+          command: |
+            pip install -r requirements.txt
+            python3 -m venv --system-site-packages venv/
+            . venv/bin/activate
+      - run:
+          name: Migrating models to the database
+          command: |
+            python3 manage.py migrate
       - save_cache:
           paths:
             - ./venv
-          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}vv
+          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
 
       - run:
-          name: "Running Django unit tests"
+          name: Running tests
           command: |
+            . venv/bin/activate
             python manage.py test
-
       - store_test_results:
           path: test-reports
 
       - store_artifacts:
           path: test-reports
           destination: test-reports
+  deploy:
+    docker:
+      - image: koocook/koocook-dj:dev
+        auth:
+          username: $KC_DK_USER
+          password: $KC_DK_PSWD
+
+    working_directory: ~/koocook-dj
+
+    steps:
+      - checkout
+
+      - run:
+          name: Triggering the Build Job on the main repo
+          command: |
+            if [ -n "${DEPLOY_GCE+x}" ]; then
+                 printf "Triggering an %s build on the %s branch\n\n" "$MAIN_PROJECT" "$CIRCLE_BRANCH"
+                 BUILD_INFO=$(curl -X POST -u "$CIRCLE_TOKEN:" \
+                 -d {} \
+                 "https://circleci.com/api/v1.1/project/github/$ORGANIZATION/$MAIN_PROJECT/tree/$CIRCLE_BRANCH")
+                 printf "\n\nBuild triggered\n\n"
+                 printf "Follow the progress of the build on \nhttps://circleci.com/gh/%s/%s/tree/%s" "$ORGANIZATION" "$MAIN_PROJECT" "$CIRCLE_BRANCH"
+            fi
+
+workflows:
+  version: 2
+  build-test:
+    jobs:
+      - build:
+          filters:
+            branches:
+              ignore:
+                - master
+                - dev/common
+  build-test-deploy:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only:
+                - master
+                - dev/common
+      - deploy:
+          filters:
+            branches:
+              only:
+               - master
+               - dev/common
+          requires:
+            - build

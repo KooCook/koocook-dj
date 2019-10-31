@@ -12,21 +12,19 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 from .auth import *
-
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+from .db import *
+from decouple import config
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '@&25xoh35br9aqb_(p$ar$q7tz4ooxx!*b40*7n@56qtc-eluw'
+SECRET_KEY = config("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config("DEBUG", True, cast=bool)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = config("DJANGO_ALLOWED_HOSTS", ['*'], cast=list)
 
 
 # Application definition
@@ -54,7 +52,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'koocook.urls'
+ROOT_URLCONF = config('ROOT_URLCONF', 'koocook.urls')
 
 TEMPLATES = [
     {
@@ -74,18 +72,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'koocook.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/2.2/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, '../../db.sqlite3'),
-    }
-}
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -109,9 +95,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = config('LANGUAGE_CODE', 'en-gb')
 
-TIME_ZONE = 'Asia/Bangkok'
+TIME_ZONE = config('TIME_ZONE', 'Asia/Bangkok')
 
 USE_I18N = True
 
