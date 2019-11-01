@@ -1,4 +1,5 @@
 from decouple import config
+
 from .dirs import BASE_DIR
 
 # Database
