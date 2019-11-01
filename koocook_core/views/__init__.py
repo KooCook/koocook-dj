@@ -1,22 +1,11 @@
-from django.shortcuts import render, reverse
+from django.shortcuts import render, reverse, redirect
 from django.views.decorators.http import require_http_methods
-from .models import Recipe
-from django import forms
+from .forms import RecipeForm
+from ..models import RecipeAuthor
+
 from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
-
-
-class RecipeForm(forms.ModelForm):
-    customised_field = ['name']
-
-    class Meta:
-        model = Recipe
-        fields = '__all__'
-
-    @property
-    def vanilla_fields(self):
-        return [field for field in self if not (field.name in self.customised_field or field.is_hidden)]
 
 
 @require_http_methods(["GET"])
@@ -35,6 +24,12 @@ class RecipeCreateView(CreateView):
     form_class = RecipeForm  # model = Recipe
     # fields = '__all__'
     template_name = 'recipes/form.html'
+
+    @property
+    def initial(self):
+        initial = super().initial
+        initial.update({'author': RecipeAuthor.objects.filter(user=self.request.user)[0]})
+        return initial.copy()
 
     def get_success_url(self):
         return reverse('koocook_core:recipe-create')
