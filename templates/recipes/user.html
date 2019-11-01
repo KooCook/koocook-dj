@@ -1,0 +1,28 @@
+{% extends 'base/content.html' %}
+{% block section_after_nav %}<section class="hero is-light">
+  <div class="hero-body">
+    <div class="container">
+      <h1 class="title">
+        Your recipes
+      </h1>
+        <h2 class="subtitle">
+            <a href="{% url 'koocook_core:recipe-create' %}"> <span class="buttons">
+                <button class="button is-primary is-outlined is-small">New</button>
+            </span>
+                </a>
+        </h2>
+
+    </div>
+  </div>
+</section>{% endblock %}
+{% block page_content %}
+<div class="container">
+{% for recipe in user_recipes %}
+    <div class="box">
+        <h4 class="subtitle">{{ recipe.name }}</h4>
+    </div>
+{% empty %}
+    <li>You have not contributed with any recipe</li>
+{% endfor %}
+</div>
+{% endblock %}

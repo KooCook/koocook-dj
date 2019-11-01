@@ -9,7 +9,7 @@ class RecipeForm(forms.ModelForm):
         if 'user' in kwargs:
             self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
-        self.fields['author'].disabled = True
+        # self.fields['author'].disabled = True
 
     class Meta:
         model = Recipe
