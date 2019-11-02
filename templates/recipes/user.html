@@ -43,7 +43,7 @@
     <div class="card">
     <header class="card-header">
         <p class="card-header-title">{{ recipe.name }}</p> <span class="card-header-icon"><span class="buttons is-inline-flex has-addons  is-small">
-      <button class="button is-primary is-outlined is-small"><i class="fas fa-pencil-alt"></i> </button>
+      <a href="{% url 'koocook_core:recipe-edit' recipe.id %}"><button class="button is-primary is-outlined is-small"><i class="fas fa-pencil-alt"></i> </button></a>
      <button class="button is-danger is-outlined is-small is-light" @click="showConfirmDeletion({{ recipe.id }})"><i class="fas fa-times"></i> </button>
         </span></span>
     </header>

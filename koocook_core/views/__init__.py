@@ -1,13 +1,15 @@
 from django.shortcuts import render, reverse, redirect, get_list_or_404
 from django.http import JsonResponse, HttpResponseForbidden
 from django.views.decorators.http import require_http_methods
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
 from .forms import RecipeForm
 from ..models import Recipe, RecipeAuthor
 
 from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
-
+from django.views.generic.edit import UpdateView
 
 @require_http_methods(["GET"])
 # Create your views here.
@@ -59,6 +61,15 @@ class RecipeCreateView(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
+
+    def get_success_url(self):
+        return reverse('koocook_core:recipe-user')
+
+
+class RecipeUpdateView(UpdateView):
+    model = Recipe
+    fields = ['name']
+    template_name = 'recipes/update.html'
 
     def get_success_url(self):
         return reverse('koocook_core:recipe-user')

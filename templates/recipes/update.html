@@ -1,0 +1,17 @@
+{% extends 'base/content.html' %}
+{% block page_title %}Edit a recipe{% endblock %}
+{% block section_after_nav %}<section class="hero is-light">
+      <div class="hero-body">
+        <div class="container">
+          <h1 class="title">
+            Edit a recipe
+          </h1>
+        </div>
+      </div>
+    </section>{% endblock %}
+{% block page_content %}
+<form method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Update">
+</form>
+{% endblock %}
