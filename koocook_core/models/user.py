@@ -6,8 +6,8 @@ from django.db import models
 class KooCookUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     # author from Author's OneToOneField
-    preferences = fields.JSONField
-    user_settings = fields.JSONField
+    preferences = fields.JSONField()
+    user_settings = fields.JSONField()
     following = models.ManyToManyField('self')
     followers = models.ManyToManyField('self')
 
