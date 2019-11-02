@@ -7,7 +7,7 @@ class Comment(models.Model):
         on_delete=models.PROTECT,
     )
     date_published = models.DateTimeField()
-    comment_body = models.TextField()
+    body = models.TextField()
     aggregate_rating = models.OneToOneField(
         'koocook_core.AggregateRating',
         on_delete=models.PROTECT,

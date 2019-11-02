@@ -37,12 +37,8 @@ class NutrientType(enum.Enum):
 
 class MetaIngredient(models.Model):
     name = models.CharField(max_length=63)
-    nutrient_data = fields.JSONField()
-
-    @property
-    def nutrients(self):
-        pass
-        return
+    nutrient = fields.JSONField()
+    # ingredient_set from Ingredient's ForeignKey
 
 
 class Ingredient(models.Model):
@@ -51,7 +47,7 @@ class Ingredient(models.Model):
         'koocook_core.MetaIngredient',
         on_delete=models.PROTECT,
     )
-    substitutes = models.ManyToManyField('self')
+    substitute_set = models.ManyToManyField('self')
     recipe = models.ForeignKey(
         'koocook_core.Recipe',
         on_delete=models.CASCADE,
