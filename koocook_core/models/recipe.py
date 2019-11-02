@@ -11,7 +11,7 @@ class Recipe(models.Model):
     )
     date_published = models.DateTimeField()
     description = models.CharField(max_length=255)
-    prep_time = models.DurationField()
+    prep_time = models.DurationField(null=True, blank=True)
     cook_time = models.DurationField()
     # ingredient_set from Ingredient's ForeignKey
     recipe_instructions = fields.ArrayField(models.TextField())
