@@ -31,3 +31,8 @@ class Recipe(models.Model):
     def nutrition(self):
         pass
         return
+
+    @property
+    def recipe_ingredient(self):
+        """ Proxy property for consistency with Schema.org's standard """
+        return self.ingredient_set
