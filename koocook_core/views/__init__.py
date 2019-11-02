@@ -1,5 +1,5 @@
 from django.shortcuts import render, reverse, redirect, get_list_or_404
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseForbidden
 from django.views.decorators.http import require_http_methods
 from .forms import RecipeForm
 from ..models import Recipe, RecipeAuthor
@@ -23,8 +23,14 @@ def search_view(request):
 @require_http_methods(["GET", "DELETE"])
 def handle_recipe(request, recipe_id):
     if request.method == 'DELETE':
-        Recipe.objects.get(pk=recipe_id).delete()
-    return JsonResponse({'status': 'deleted'})
+        recipe = Recipe.objects.get(pk=recipe_id)
+        if recipe.author.user == request.user:
+            recipe.delete()
+            return JsonResponse({'status': 'deleted'})
+        else:
+            return HttpResponseForbidden()
+    else:
+        return HttpResponseForbidden()
 
 
 class UserRecipeListView(ListView):
@@ -35,7 +41,7 @@ class UserRecipeListView(ListView):
     def get_queryset(self):
         queryset = super().get_queryset()
         author = RecipeAuthor.objects.get(user=self.request.user)
-        return get_list_or_404(Recipe, author=author)
+        return Recipe.objects.filter(author=author)
 
 
 class RecipeCreateView(CreateView):
@@ -55,7 +61,7 @@ class RecipeCreateView(CreateView):
         return context
 
     def get_success_url(self):
-        return reverse('koocook_core:recipe-create')
+        return reverse('koocook_core:recipe-user')
 
 
 def detail_view(request):

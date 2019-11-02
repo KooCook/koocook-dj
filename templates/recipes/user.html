@@ -16,13 +16,88 @@
   </div>
 </section>{% endblock %}
 {% block page_content %}
-<div class="container">
+<div id="app" class="container">
+  <b-modal :active.sync="showModal" has-modal-card trap-focus
+                 aria-role="dialog"
+                 aria-modal>
+      <div class="modal-card">
+          <header class="modal-card-head">
+      <p class="modal-card-title">Delete {% templatetag openvariable %} currentRecipe.name {% templatetag closevariable %}</p>
+    </header>
+       <section class="modal-card-body">
+            <p class="card-header-title">
+                Do you really want to delete {% templatetag openvariable %} currentRecipe.name {% templatetag closevariable %}?
+            </p>
+        </section>
+        <footer class="modal-card-foot">
+            <div class="buttons">
+                <button class="button is-danger" @click="confirmAction">Proceed</button>
+                <button class="button" @click="showModal = false">Cancel</button>
+            </div>
+        </footer>
+    </div>
+  </b-modal>
+<div class="columns is-2 is-multiline">
 {% for recipe in user_recipes %}
-    <div class="box">
-        <h4 class="subtitle">{{ recipe.name }}</h4>
+    <div class="column">
+    <div class="card">
+    <header class="card-header">
+        <p class="card-header-title">{{ recipe.name }}</p> <span class="card-header-icon"><span class="buttons is-inline-flex has-addons  is-small">
+      <button class="button is-primary is-outlined is-small"><i class="fas fa-pencil-alt"></i> </button>
+     <button class="button is-danger is-outlined is-small is-light" @click="showConfirmDeletion({{ recipe.id }})"><i class="fas fa-times"></i> </button>
+        </span></span>
+    </header>
+    <div class="card-content">
+    </div>
+    </div>
     </div>
 {% empty %}
     <li>You have not contributed with any recipe</li>
 {% endfor %}
 </div>
+</div>
+     <script>
+     function getCookie(name)
+  {
+    const re = new RegExp(name + "=([^;]+)");
+    const value = re.exec(document.cookie);
+    return (value != null) ? unescape(value[1]) : null;
+  }
+      new Vue({
+        el: '#app',
+        data: {
+            showModal: false,
+            currentRecipe: {
+                name: ''
+            },
+          togglePopSearch: false,
+          searchName: '',
+          recipes: [
+              {% for recipe in user_recipes %}
+                  { id: {{ recipe.id }}, name: '{{ recipe.name }}' },
+              {% endfor %}
+          ]
+        },
+          methods: {
+            showConfirmDeletion(id) {
+                const obj = this.recipes.find(x => x.id === id);
+                this.currentRecipe.name = obj.name;
+                this.currentRecipe.id = obj.id;
+                this.showModal = true;
+            },
+          async confirmAction() {
+            const resp = await fetch(`/recipes/${this.currentRecipe.id}`, {method:"DELETE", credentials: 'include', headers: {'X-CSRFToken': getCookie('csrftoken')}});
+            if (resp.ok) { this.showModal = false; location.reload(); }
+          }
+          },
+        computed: {
+          getRecipesByName() {
+            return this.recipes.filter((item)=>{
+              if (this.togglePopSearch) return item.hot;
+              else return item.title.toLowerCase().includes(this.searchName.toLowerCase());
+            })
+          }
+        }
+      })
+  </script>
 {% endblock %}
