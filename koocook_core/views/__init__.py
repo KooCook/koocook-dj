@@ -50,7 +50,7 @@ class RecipeCreateView(CreateView):
     http_method_names = ['post', 'get']
     form_class = RecipeForm  # model = Recipe
     # fields = '__all__'
-    template_name = 'recipes/form.html'
+    template_name = 'recipes/create.html'
 
     @property
     def initial(self):
