@@ -13,10 +13,4 @@ def search_view(request):
 
 def detail_view(request, id):
     recipe = get_object_or_404(Recipe, pk=id)
-    author = recipe.author
-    context = {
-        'recipe': recipe,
-        'author': author,
-    }
-
-    return render(request, 'detail.html', context)
+    return render(request, 'detail.html', recipe)
