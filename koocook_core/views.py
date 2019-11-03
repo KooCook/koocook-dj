@@ -11,6 +11,6 @@ def search_view(request):
     return render(request, 'search.html')
 
 
-def detail_view(request, id):
-    recipe = get_object_or_404(Recipe, pk=id)
-    return render(request, 'detail.html', recipe)
+def detail_view(request, recipe_id):
+    recipe = get_object_or_404(Recipe, pk=recipe_id)
+    return render(request, 'detail.html', {'recipe': recipe})
