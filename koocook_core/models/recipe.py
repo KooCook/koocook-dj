@@ -1,7 +1,7 @@
 from django.contrib.postgres import fields
 from django.db import models
 
-from koocook_core import fields
+from koocook_core import fields as koocookfields
 
 
 class Recipe(models.Model):
@@ -18,7 +18,7 @@ class Recipe(models.Model):
     # ingredient_set from Ingredient's ForeignKey
     recipe_instructions = fields.ArrayField(models.TextField())
     tag_set = models.ManyToManyField('koocook_core.Tag')
-    recipe_yield = fields.QuantityField(max_length=50)
+    recipe_yield = koocookfields.QuantityField(max_length=50)
     # comment_set from Comment's ForeignKey
     aggregate_rating = models.OneToOneField(
         'koocook_core.AggregateRating',

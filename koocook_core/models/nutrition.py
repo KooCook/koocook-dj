@@ -4,7 +4,7 @@ import json
 from django.contrib.postgres import fields
 from django.db import models
 
-from koocook_core import fields
+from koocook_core import fields as koocookfields
 
 
 @enum.unique
@@ -44,7 +44,7 @@ class MetaIngredient(models.Model):
 
 
 class Ingredient(models.Model):
-    quantity = fields.QuantityField(max_length=50)
+    quantity = koocookfields.QuantityField(max_length=50)
     meta = models.ForeignKey(
         'koocook_core.MetaIngredient',
         on_delete=models.PROTECT,
