@@ -9,10 +9,11 @@
     <header class="section" style="padding-bottom: 1.5rem; margin-bottom: 1.5rem">
       <div class="container">
         <h1 class="title is-1">
-          BA's Best Buttermilk Pancakes
+          {{ recipe.name }}
         </h1>
         <p class="subtitle is-4">
-          Recipe by <a href="">Jessie Damuck</a>
+          <!-- send to index view for now -->
+          Recipe by <a href="{% url 'koocook_core:index'%}">{{ recipe.author.name }}</a>
         </p>
         <div class="field is-grouped is-grouped-multiline">
           <div class="control">
@@ -46,9 +47,10 @@
     <section class="section" style="padding-top: 0">
       <div class="container">
         <figure class="image is-4928x3264" style="margin-bottom: 1.5rem">
-          <img src="../assets/img/detail/baking-bread-close-up-730922.jpg" alt="pancake close up">
+          <img src="{{ recipe.image }}" alt="pancake close up">
         </figure>
         <p class="subtitle is-6">
+          <!-- Have no image credit models -->
           <strong>Image Credit:</strong> <a href="">Skitterphoto</a>
         </p>
       </div>
@@ -62,11 +64,12 @@
               <div class="level-item has-text-centered">
                 <div>
                   <p class="heading">Time</p>
-                  <p class="title">20 min</p>
+                  <p class="title">{{ recipe.total_time }}</p>
                 </div>
               </div>
               <div class="level-item has-text-centered">
                 <div>
+                  <!-- Have no Measure cooking skill -->
                   <p class="heading">Difficulty</p>
                   <p class="title">Simple</p>
                 </div>
@@ -94,7 +97,7 @@
               <div class="level-item has-text-centered">
                 <div>
                   <p class="heading">Ratings</p>
-                  <p class="title">4.4/5</p>
+                  <p class="title">{{ recipe.aggregate_rating }}/5</p>
                 </div>
               </div>
   
@@ -140,7 +143,8 @@
                   </h3>
                   <div class="content">
                     <ul style="list-style-type: none">
-                      <li>1⅓
+                      
+                      <!-- <li>1⅓
                         <div class="dropdown">
                           <div class="dropdown-trigger">
                             <a aria-haspopup="true" aria-controls="dropdown-menu">
@@ -282,7 +286,7 @@
                       <li>1¼ cups buttermilk</li>
                       <li>2 tablespoons unsalted butter, melted</li>
                       <li>Vegetable oil (for griddle)</li>
-                      <li>Pure maple syrup (for serving)</li>
+                      <li>Pure maple syrup (for serving)</li> -->
                     </ul>
                   </div>
                 </div>
@@ -294,12 +298,12 @@
                   </h3>
                   <div class="content">
                     <ul style="list-style-type: none">
-                      <li>Whisk</li>
+                      <!-- <li>Whisk</li>
                       <li>Large bowl</li>
                       <li>Medium bowl</li>
                       <li>Griddle or large skillet</li>
                       <li>Spatula</li>
-                      <li>Measuring cup</li>
+                      <li>Measuring cup</li> -->
                     </ul>
                   </div>
                 </div>
@@ -311,7 +315,8 @@
                   Instruction
                 </h3>
                 <div class="content" style="">
-                  <p>
+                  <p>{{ recipe.recipe_instructions }}</p>
+                  <!-- <p>
                     Whisk flour, sugar, baking powder, baking soda, and salt in a large bowl. Whisk eggs, buttermilk, and
                     butter in a medium bowl; stir into dry ingredients until just combined (some lumps are okay).
                   </p>
@@ -320,7 +325,7 @@
                     batter onto griddle. Cook pancakes until bottoms are golden brown and bubbles form on top, about 3
                     minutes. Flip and cook until cooked through and other side of pancakes are golden brown, about 2
                     minutes longer. Serve pancakes with maple syrup.
-                  </p>
+                  </p> -->
                 </div>
               </div>
             </div>
