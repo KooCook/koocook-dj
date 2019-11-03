@@ -11,8 +11,8 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import UpdateView
 
+
 @require_http_methods(["GET"])
-# Create your views here.
 def index(request):
     return render(request, 'index.html')
 
