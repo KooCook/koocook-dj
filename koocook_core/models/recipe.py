@@ -7,6 +7,7 @@ from koocook_core import fields as koocookfields
 class Recipe(models.Model):
     name = models.CharField(max_length=63)
     image = fields.ArrayField(models.URLField())
+    video = models.URLField(null=True, blank=True)
     author = models.ForeignKey(
         'koocook_core.Author',
         on_delete=models.PROTECT,
