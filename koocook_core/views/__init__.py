@@ -4,7 +4,7 @@ from django.views.decorators.http import require_http_methods
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from .forms import RecipeForm
-from ..models import Recipe, RecipeAuthor
+from ..models import Recipe, Author
 
 from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
@@ -42,7 +42,7 @@ class UserRecipeListView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        author = RecipeAuthor.objects.get(user=self.request.user)
+        author = Author.objects.get(user=self.request.user)
         return Recipe.objects.filter(author=author)
 
 
@@ -55,7 +55,7 @@ class RecipeCreateView(CreateView):
     @property
     def initial(self):
         initial = super().initial
-        initial.update({'author': RecipeAuthor.objects.filter(user=self.request.user)[0]})
+        initial.update({'author': Author.objects.filter(user=self.request.user)[0]})
         return initial.copy()
 
     def get_context_data(self, **kwargs):
