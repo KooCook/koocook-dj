@@ -3,6 +3,7 @@ from typing import Union
 from django.db import models, connection
 from django.core import checks
 from django.utils.translation import gettext_lazy as _
+from django.core.exceptions import ValidationError
 
 from koocook_core.support.unit import *
 
@@ -31,17 +32,22 @@ class Quantity:
                 raise ValueError('\'{}\' is not a valid Unit'.format(unit))
 
     def __str__(self):
-        return '{} {}'.format(self.amount, self.unit)
+        if self.amount == 1:
+            return '{} {}'.format(self.amount, self.unit.singular)
+        return '{} {}'.format(self.amount, self.unit.plural)
 
 
 def parse_quantity(quantity_string: str) -> Quantity:
+    if isinstance(quantity_string, Quantity):
+        return quantity_string
     amount, *unit = quantity_string.split(' ')
     amount = float(amount)
     unit = ' '.join(unit)
     try:
         return Quantity(amount, unit)
     except ValueError as e:
-        raise ValueError(_("Invalid input for a Quantity instance"))
+        raise ValidationError(_("Invalid input for a Quantity instance")
+                              ) from e.__context__
 
 
 class QuantityField(models.Field):
