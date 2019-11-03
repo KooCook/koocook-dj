@@ -1,6 +1,7 @@
 from django.shortcuts import render, reverse, redirect, get_list_or_404
 from django.http import JsonResponse, HttpResponseForbidden
 from django.views.decorators.http import require_http_methods
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from .forms import RecipeForm
@@ -42,7 +43,11 @@ class UserRecipeListView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        author = Author.objects.get(user=self.request.user)
+        try:
+            author = Author.objects.get(user=self.request.user)
+        except ObjectDoesNotExist:
+            author = Author(name=self.request.user.username, user=self.request.user)
+            author.save()
         return Recipe.objects.filter(author=author)
 
 
@@ -68,7 +73,7 @@ class RecipeCreateView(CreateView):
 
 class RecipeUpdateView(UpdateView):
     model = Recipe
-    fields = ['name']
+    fields = '__all__'  # ['name']
     template_name = 'recipes/update.html'
 
     def get_success_url(self):
