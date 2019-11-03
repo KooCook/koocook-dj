@@ -2,7 +2,7 @@ from typing import Union, Optional
 
 import enum
 
-__all__ = ['Unit', 'LengthUnit', 'AreaUnit', 'VolumeUnit', 'MassUnit',
+__all__ = ['Unit', 'Units', 'LengthUnit', 'AreaUnit', 'VolumeUnit', 'MassUnit',
            'TemperatureUnit']
 
 
@@ -128,3 +128,6 @@ def _from_celsius(value: float, quote: Union[TemperatureUnit, str]) -> float:
     if quote is TemperatureUnit.RANKINE:
         return (value + 273.15) * 9 / 5
     raise TypeError('invalid quote \'{}\''.format(quote.__class__.__name__))
+
+
+Units = (LengthUnit, AreaUnit, VolumeUnit, MassUnit, TemperatureUnit)

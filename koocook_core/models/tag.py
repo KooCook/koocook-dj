@@ -1,15 +1,7 @@
-import enum
-
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-
-@enum.unique
-class Label(enum.Enum):
-    WARNING = enum.auto()
-    CLEARANCE = enum.auto()
-    CUISINE = enum.auto()
-    CATEGORY = enum.auto()
+from koocook_core.support.label import Label
 
 
 class Tag(models.Model):
