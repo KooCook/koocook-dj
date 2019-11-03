@@ -17,7 +17,7 @@ class Recipe(models.Model):
     cook_time = models.DurationField()
     # ingredient_set from Ingredient's ForeignKey
     recipe_instructions = fields.ArrayField(models.TextField())
-    recipe_yield = koocookfields.QuantityField(max_length=50)
+    recipe_yield = koocookfields.QuantityField(max_length=50, nau=True)
     tag_set = models.ManyToManyField('koocook_core.Tag', blank=True)
     # comment_set from Comment's ForeignKey
     aggregate_rating = models.OneToOneField(
