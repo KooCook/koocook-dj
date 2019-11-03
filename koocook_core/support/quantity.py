@@ -12,13 +12,24 @@ __all__ = ['Quantity', 'QuantityField']
 
 
 class Quantity:
-    __slots__ = ('amount', 'unit')
+    __slots__ = ('amount', 'unit', 'nau')
 
-    def __init__(self, amount: float, unit: Union[Unit, str]):
+    def __init__(self,
+                 amount: float,
+                 unit: Union[Unit, str],
+                 nau: bool = False):
+        self.nau = nau
         if isinstance(amount, float):
             self.amount = amount
         else:
             self.amount = float(amount)
+        if nau:
+            self.unit = type('NonUnit', (), {})
+            if amount == 1:
+                self.unit.singular = unit
+            else:
+                self.unit.plural = unit
+            return
         if isinstance(unit, Unit):
             self.unit = unit
         else:
@@ -33,18 +44,30 @@ class Quantity:
 
     def __str__(self):
         if self.amount == 1:
-            return '{} {}'.format(self.amount, self.unit.singular)
+            return '{:.0f} {}'.format(self.amount, self.unit.singular)
+        if self.amount.is_integer():
+            return '{:.0f} {}'.format(self.amount, self.unit.plural)
         return '{} {}'.format(self.amount, self.unit.plural)
+
+    def get_db_str(self):
+        return self.__str__() + ' /nau' if self.nau else ''
+
+    @property
+    def not_a_unit(self):
+        return self.nau
 
 
 def parse_quantity(quantity_string: str) -> Quantity:
-    if isinstance(quantity_string, Quantity):
-        return quantity_string
-    amount, *unit = quantity_string.split(' ')
+    amount, *unit, nau = quantity_string.split(' ')
+    if nau != '/nau':
+        unit = unit + [nau]
+        nau = False
     amount = float(amount)
     unit = ' '.join(unit)
+    if nau:
+        nau = True
     try:
-        return Quantity(amount, unit)
+        return Quantity(amount, unit, nau)
     except ValueError as e:
         raise ValidationError(_("Invalid input for a Quantity instance")
                               ) from e.__context__
@@ -53,8 +76,16 @@ def parse_quantity(quantity_string: str) -> Quantity:
 class QuantityField(models.Field):
     description = _("<number><space><unit> (up to %(max_length)s)")
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, nau: bool = False, *args, **kwargs):
+        self.nau = nau
         super().__init__(*args, **kwargs)
+
+    def deconstruct(self):
+        name, path, args, kwargs = super().deconstruct()
+        # Only include kwarg if it's not the default
+        if self.nau:
+            kwargs['nau'] = self.nau
+        return name, path, args, kwargs
 
     def check(self, **kwargs):
         return [
@@ -107,14 +138,16 @@ class QuantityField(models.Field):
 
     def get_prep_value(self, value):
         if isinstance(value, Quantity):
-            return str(value)
+            return value.get_db_str()
 
         if value is None:
             return value
 
         if isinstance(value, str):
-            return value
-        return str(parse_quantity(value))
+            if ' /nau' in value:
+                return value
+            return value + ' /nau' if self.nau else ''
+        return parse_quantity(value).get_db_str()
 
     def value_to_string(self, obj):
         value = self.value_from_object(obj)
