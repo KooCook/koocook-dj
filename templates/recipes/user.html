@@ -41,13 +41,21 @@
 {% for recipe in user_recipes %}
     <div class="column is-half">
     <div class="card">
-    <header class="card-header">
-        <p class="card-header-title">{{ recipe.name }}</p> <span class="card-header-icon"><span class="buttons is-inline-flex has-addons  is-small">
+         <div class="card-image">
+    <figure class="image is-2by1 is-bg-cover-centered" style="background-image: url({{ recipe.image }});">
+{#      <img src="{{ recipe.image }}" alt="Recipe image">#}
+    </figure>
+  </div>
+    <div class="card-content">
+        <div class="media">
+      <div class="media-content">
+        <p class="title is-4">{{ recipe.name }} <span class="buttons is-inline-flex has-addons  is-small">
       <a href="{% url 'koocook_core:recipe-edit' recipe.id %}"><button class="button is-primary is-outlined is-small"><i class="fas fa-pencil-alt"></i> </button></a>
      <button class="button is-danger is-outlined is-small is-light" @click="showConfirmDeletion({{ recipe.id }})"><i class="fas fa-times"></i> </button>
-        </span></span>
-    </header>
-    <div class="card-content">
+        </span></p>
+
+      </div>
+    </div>
     </div>
     </div>
     </div>

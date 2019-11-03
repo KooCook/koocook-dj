@@ -93,3 +93,8 @@
     pointer-events: none;
     opacity: .5;
 }
+
+.is-bg-cover-centered {
+    background-size: cover;
+    background-position: center;
+}
