@@ -1,6 +1,8 @@
 from django.contrib.postgres import fields
 from django.db import models
 
+from koocook_core import fields
+
 
 class Recipe(models.Model):
     name = models.CharField(max_length=63)
@@ -15,8 +17,8 @@ class Recipe(models.Model):
     cook_time = models.DurationField()
     # ingredient_set from Ingredient's ForeignKey
     recipe_instructions = fields.ArrayField(models.TextField())
-    recipe_yield = models.CharField(max_length=63)
     tag_set = models.ManyToManyField('koocook_core.Tag')
+    recipe_yield = fields.QuantityField(max_length=50)
     # comment_set from Comment's ForeignKey
     aggregate_rating = models.OneToOneField(
         'koocook_core.AggregateRating',
