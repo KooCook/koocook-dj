@@ -143,7 +143,12 @@
                   </h3>
                   <div class="content">
                     <ul style="list-style-type: none">
-                      
+
+                      {% for ingredient in recipe.recipe_ingredient.all %}
+                       <li>{{ ingredient }}</li>
+                      {% endfor %}
+
+
                       <!-- <li>1⅓
                         <div class="dropdown">
                           <div class="dropdown-trigger">
