@@ -3,12 +3,12 @@ from django.db import models
 
 from koocook_core import fields as koocookfields
 
-__all__ = ['Recipe', '']
+__all__ = ['Recipe']
 
 
 def _default_image():
     return ('{"https://example.com/photos/1x1/photo.jpg",'
-            ' "https: //example.com/photos/4x3/photo.jpg",'
+            ' "https://example.com/photos/4x3/photo.jpg",'
             ' "https://example.com/photos/16x9/photo.jpg"}')
 
 

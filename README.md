@@ -2,7 +2,7 @@
 
 ##### Build status
 `master`:[![CircleCI](https://circleci.com/gh/KooCook/koocook-dj/tree/master.svg?style=svg&circle-token=fd2434f2ab70aacb8216f2242e272abeae57859c)](https://circleci.com/gh/KooCook/koocook-dj/tree/master)  
-`dev-common`: [![CircleCI](https://circleci.com/gh/KooCook/koocook-dj/tree/dev%2Fcommon.svg?style=svg&circle-token=fd2434f2ab70aacb8216f2242e272abeae57859c)](https://circleci.com/gh/KooCook/koocook-dj/tree/dev%2Fcommon)
+`dev`: [![CircleCI](https://circleci.com/gh/KooCook/koocook-dj/tree/dev.svg?style=svg&circle-token=fd2434f2ab70aacb8216f2242e272abeae57859c)](https://circleci.com/gh/KooCook/koocook-dj/tree/dev)
 
 ## Team Members
 

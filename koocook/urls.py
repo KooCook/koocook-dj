@@ -15,10 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
+    path('', include('koocook_core.urls')),
     path('admin/', admin.site.urls),
     path('auth/', include('koocook_auth.urls')),
-    path('auth/social', include('social_django.urls', namespace='social')),
-    path('core/', include('koocook_core.urls'))
-]
+    path('auth/social', include('social_django.urls', namespace='social'))
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

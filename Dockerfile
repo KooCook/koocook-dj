@@ -2,8 +2,19 @@ FROM python:3.7.5-slim-stretch
 WORKDIR /usr/src/app
 COPY . .
 
+ARG SOCIAL_AUTH_GOOGLE_OAUTH2_KEY
+ARG SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET
+ARG DJANGO_SECRET_KEY
+ARG DJANGO_ALLOWED_HOSTS
+ARG DEBUG
+
 #ENV GCP_SKEYFILE=gcp/skey_deploy.json
-ENV DEBUG=True
+ENV DEBUG=$DEBUG
+ENV SOCIAL_AUTH_GOOGLE_OAUTH2_KEY=$SOCIAL_AUTH_GOOGLE_OAUTH2_KEY
+ENV SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET=$SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET
+ENV DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY
+ENV DJANGO_ALLOWED_HOSTS=$DJANGO_ALLOWED_HOSTS
+
 
 # Register gcloud to Debian package registry
 #RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list

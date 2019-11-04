@@ -21,7 +21,7 @@ class KooCookUser(models.Model):
 
 
 class Author(models.Model):
-    name = models.CharField(max_length=63)
+    name = models.CharField(max_length=100)
     user = models.OneToOneField(
         'koocook_core.KooCookUser',
         on_delete=models.SET_NULL,
@@ -32,3 +32,6 @@ class Author(models.Model):
     # comment_set from Comment
     # recipe_set from Recipe
     # post_set from Post
+
+    def __str__(self):
+        return self.name
