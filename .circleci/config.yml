@@ -73,7 +73,7 @@ workflows:
             branches:
               ignore:
                 - master
-                - dev/common
+                - dev
   build-test-deploy:
     jobs:
       - build:
@@ -81,12 +81,12 @@ workflows:
             branches:
               only:
                 - master
-                - dev/common
+                - dev
       - deploy:
           filters:
             branches:
               only:
                - master
-               - dev/common
+               - dev
           requires:
             - build
