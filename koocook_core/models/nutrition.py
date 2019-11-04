@@ -17,12 +17,14 @@ class NutrientType(enum.Enum):
 
 class MetaIngredient(models.Model):
     name = models.CharField(max_length=63)
-    nutrient = fields.JSONField(default=dict)
+    nutrient = fields.JSONField()
     # ingredient_set from Ingredient's ForeignKey
 
 
 class Ingredient(models.Model):
-    quantity = koocookfields.QuantityField(max_length=50)
+    quantity = koocookfields.QuantityField(
+        max_length=50,
+    )
     meta = models.ForeignKey(
         'koocook_core.MetaIngredient',
         on_delete=models.PROTECT,

@@ -65,8 +65,8 @@ class Rating(models.Model):
         on_delete=models.PROTECT,
     )
     rating_value = models.IntegerField()
-    best_rating = models.IntegerField()
-    worst_rating = models.IntegerField()
+    best_rating = models.IntegerField(default=5)
+    worst_rating = models.IntegerField(default=1)
     # item_reviewed = models.URLField()
     reviewed_recipe = models.ForeignKey(
         'koocook_core.Recipe',
