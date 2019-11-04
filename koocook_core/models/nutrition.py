@@ -7,29 +7,6 @@ from django.db import models
 from koocook_core import fields as koocookfields
 
 
-@enum.unique
-class Unit(enum.Enum):
-    GRAM = 'g'
-    KILOGRAM = 'kg'
-    MILLIGRAM = 'mg'
-    LITER = 'L'
-    MILLILITER = 'mL'
-    CUP = 'cup'
-    TABLESPOON = 'tbsp'
-    TEASPOON = 'tsp'
-    PINCH = 'pinch'
-
-
-class Quantity:
-    def __init__(self, quantity: str):
-        parts = quantity.split(' ')
-        assert len(parts) == 2
-        self.amount = parts[0]
-        self.unit = parts[1]
-
-    def __str__(self):
-        return '{} {}'.format(self.amount, self.unit)
-
 
 @enum.unique
 class NutrientType(enum.Enum):
