@@ -8,8 +8,8 @@ __all__ = ['KooCookUser', 'Author']
 class KooCookUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     # author from Author's OneToOneField
-    preferences = fields.JSONField()
-    user_settings = fields.JSONField()
+    preferences = fields.JSONField(default=dict)
+    user_settings = fields.JSONField(default=dict)
     following = models.ManyToManyField('self')
     followers = models.ManyToManyField('self')
 

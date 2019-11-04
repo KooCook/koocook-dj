@@ -11,5 +11,5 @@ class Tag(models.Model):
     label = models.IntegerField(validators=[
         MinValueValidator(1),
         MaxValueValidator(len(Label)),
-    ])
+    ], null=True, blank=True)
     # recipe_set from Recipe's ManyToMany

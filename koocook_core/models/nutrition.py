@@ -17,7 +17,7 @@ class NutrientType(enum.Enum):
 
 class MetaIngredient(models.Model):
     name = models.CharField(max_length=63)
-    nutrient = fields.JSONField()
+    nutrient = fields.JSONField(default=dict)
     # ingredient_set from Ingredient's ForeignKey
 
 
