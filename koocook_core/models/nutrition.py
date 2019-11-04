@@ -6,6 +6,7 @@ from django.db import models
 
 from koocook_core import fields as koocookfields
 
+__all__ = ['MetaIngredient', 'Ingredient']
 
 
 @enum.unique

@@ -1,5 +1,7 @@
 from django.db import models
 
+__all__ = ['Post']
+
 
 class Post(models.Model):
     author = models.ForeignKey(

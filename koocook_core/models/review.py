@@ -1,5 +1,7 @@
 from django.db import models
 
+__all__ = ['Comment', 'Rating', 'AggregateRating']
+
 
 class Comment(models.Model):
     author = models.ForeignKey(

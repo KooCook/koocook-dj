@@ -3,6 +3,8 @@ from django.db import models
 
 from koocook_core import fields as koocookfields
 
+__all__ = ['Recipe', '']
+
 
 class Recipe(models.Model):
     name = models.CharField(max_length=63)

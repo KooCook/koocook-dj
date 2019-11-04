@@ -2,6 +2,8 @@ from django.contrib.auth.models import User
 from django.contrib.postgres import fields
 from django.db import models
 
+__all__ = ['KooCookUser', 'Author']
+
 
 class KooCookUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

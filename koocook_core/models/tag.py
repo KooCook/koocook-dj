@@ -3,6 +3,8 @@ from django.db import models
 
 from koocook_core.support.label import Label
 
+__all__ = ['Tag', 'Label']
+
 
 class Tag(models.Model):
     name = models.CharField(max_length=63)
