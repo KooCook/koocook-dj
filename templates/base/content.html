@@ -1,7 +1,7 @@
 {% extends 'base/index.html' %}
 {% load static %}
 {% block page_deps %}
-<link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css">
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.0"></script>
     <script src="https://unpkg.com/buefy/dist/buefy.min.js"></script>
 {% endblock %}
@@ -119,13 +119,13 @@
                      <div class="navbar-item">
                         <strong>{{ user.username }}</strong>
                      </div>
-                   <a class="navbar-item is-disabled">
+                   <a class="navbar-item is-disabled" >
                      Your profile
                    </a>
                    <a class="navbar-item is-disabled">
                      Your subscriptions
                    </a>
-                   <a class="navbar-item is-disabled">
+                   <a class="navbar-item" href="{% url 'koocook_core:recipe-user' %}">
                      Your recipes
                    </a>
                    <hr class="navbar-divider">
@@ -145,8 +145,10 @@
         </div>
         </div>
     </nav>{% block section_after_nav %}{% endblock %}
+     <div class="container">
     <section class="section">{% block page_content %}{% endblock %}
     </section>
+      </div>
     <script src="{% static "js/navbar.js" %}"></script>
     </div>
 {% endblock %}

@@ -1,0 +1,48 @@
+{% extends 'base/content.html' %}
+{% load widget_tweaks %}
+{% block page_title %}Edit a recipe{% endblock %}
+{% block section_after_nav %}<section class="hero is-light">
+      <div class="hero-body">
+        <div class="container">
+          <h1 class="title">
+            Edit a recipe
+          </h1>
+        </div>
+      </div>
+    </section>{% endblock %}
+{% block page_content %}
+<form method="post">{% csrf_token %}
+    {% for field in form.visible_fields %}
+       <div class="form-group field is-horizontal">
+       <div class="field-label is-normal">
+        <label class="label">{{ field.label_tag }}</label>
+       </div>
+       <div class="field-body">
+           <div class="field control"> {{ field|add_class:"input is-normal" }}
+           </div>
+         {% if field.errors %}
+            {% for error in field.errors %}
+              <div class="invalid-feedback">
+                {{ error }}
+              </div>
+            {% endfor %}
+          {% endif %}
+       </div>
+      </div>
+        {% endfor %}
+<div class="field is-horizontal">
+      <div class="field-label">
+        <!-- Left empty for spacing -->
+      </div>
+      <div class="field-body">
+        <div class="field">
+          <div class="control">
+            <button type="submit" class="button is-primary">
+                Confirm edits
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+</form>
+{% endblock %}

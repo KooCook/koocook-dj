@@ -30,7 +30,8 @@ ALLOWED_HOSTS = config("DJANGO_ALLOWED_HOSTS", ['*'], cast=list)
 # Application definition
 
 INSTALLED_APPS = [
-    'social_django',  # default Django ORM
+    'social_django',
+    'widget_tweaks',
     'koocook_core.apps.KooCookConfig',
     'koocook_auth.apps.KooCookAuthConfig',
     'django.contrib.admin',
