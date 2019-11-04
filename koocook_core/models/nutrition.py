@@ -1,11 +1,39 @@
-from django.core.validators import MinValueValidator
-from django.contrib.postgres.fields import ArrayField
+import enum
+import json
+
+from django.contrib.postgres import fields
 from django.db import models
 
+from koocook_core import fields as koocookfields
 
-class Nutrition(models.Model):
-    calories = models.IntegerField(validators=[MinValueValidator(0)])
+__all__ = ['MetaIngredient', 'Ingredient']
+
+
+@enum.unique
+class NutrientType(enum.Enum):
+    CARBOHYDRATE = 'carbohydrates'
+    ...
+
+
+class MetaIngredient(models.Model):
+    name = models.CharField(max_length=63)
+    nutrient = fields.JSONField(default=dict)
+    # ingredient_set from Ingredient's ForeignKey
 
 
 class Ingredient(models.Model):
-    nutrition = models.OneToOneField(Nutrition, on_delete=models.CASCADE)
+    quantity = koocookfields.QuantityField(max_length=50)
+    meta = models.ForeignKey(
+        'koocook_core.MetaIngredient',
+        on_delete=models.PROTECT,
+    )
+    substitute_set = models.ManyToManyField('self')
+    recipe = models.ForeignKey(
+        'koocook_core.Recipe',
+        on_delete=models.CASCADE,
+    )
+
+    @property
+    def nutrition(self):
+        pass
+        return
