@@ -12,6 +12,7 @@ import datatrans.utils.structured_data
 from koocook.settings.dirs import BASE_DIR
 import koocook_core.models as models
 import koocook_core.support as support
+from koocook_core.management.commands._loadrecipe import utils
 
 DATA_DIR = BASE_DIR / 'data'
 
@@ -138,9 +139,152 @@ def read_data(data_set: DataSet, limit: int = 0) -> List[structured_data.Recipe]
     return recipes
 
 
+def parse_cooking_method(cooking_method: str) -> models.Tag:
+    """ Returns a ``Tag`` for the cooking method. Creates a new one if DNE. """
+    try:
+        label = models.TagLabel.objects.filter(name__iexact='cooking method').get()
+    except ObjectDoesNotExist:
+        label = models.TagLabel.objects.create(name='cooking method')
+    # don't catch MultipleObjectsReturned
+
+    try:
+        tag = models.Tag.objects.filter(name__iexact=cooking_method, label=label).get()
+    except ObjectDoesNotExist:
+        tag = models.Tag.objects.create(name=cooking_method, label=label)
+    # don't catch MultipleObjectsReturned
+
+    return tag
+
+
+def parse_ingredients(ingredients: structured_data.Property) -> List[models.RecipeIngredient]:
+    recipeingredients = []
+    for ingredient in ingredients:
+        number, unit, meta_str = utils.split_ingredient_str(ingredient)
+        if unit != '':
+            unit = support.get_unit(unit)
+        else:
+            unit = support.SpecialUnit.NONE
+        quantity = support.Quantity(number, unit)
+        try:
+            # try exact match
+            meta = models.MetaIngredient.objects.filter(name__iexact=meta_str).get()
+        except ObjectDoesNotExist:
+            # try contains
+            names = {meta.name: meta for meta in models.MetaIngredient.objects.all()}
+            match = datatrans.utils.get_closest_match(meta_str, names.keys())
+            if match is not None:
+                meta = models.MetaIngredient.objects.filter(name__exact=match).get()
+            else:
+                warnings.warn('Found no matching meta ingredient')
+                parts = meta_str.split(' ')
+                if len(parts) == 1:
+                    meta = models.MetaIngredient.objects.create(name=meta_str, nutrient={})
+                elif len(parts) < 3:
+                    warnings.warn('Found no matching meta ingredient. '
+                                  'Creating new meta ingredient \'{}\''
+                                  .format(meta_str))
+                    meta = models.MetaIngredient.objects.create(name=meta_str, nutrient={})
+                else:
+                    warnings.warn('Found no matching meta ingredient. '
+                                  'Creating new meta ingredient \'{}\''
+                                  .format(meta_str))
+                    meta = models.MetaIngredient.objects.create(name=meta_str, nutrient={})
+                    # raise ValueError('Found no matching meta ingredient.'
+                    #                  'Please defer ingredient creation.')
+        # don't catch MultipleObjectsReturned
+        recipeingredients.append(models.RecipeIngredient.objects.create(quantity=quantity, meta=meta))
+    return recipeingredients
+
+
+def parse_instructions(instructions: structured_data.Property) -> List[str]:
+    return list(instructions)
+
+
+def parse_author(author: structured_data.Person) -> models.Author:
+    try:
+        author = models.Author.objects.filter(name__iexact=author._name).get()
+    except ObjectDoesNotExist:
+        author = models.Author.objects.create(name=author._name)
+    # Don't catch MultipleObjectsReturned
+    return author
+
+
+def parse_aggregate_rating(aggregate_rating: structured_data.AggregateRating) -> models.AggregateRating:
+    kwargs = {
+        'rating_value': aggregate_rating._rating_value,
+        'rating_count': aggregate_rating._rating_count,
+    }
+    if aggregate_rating._best_rating is not None:
+        kwargs['best_rating'] = aggregate_rating._best_rating
+    if aggregate_rating._worst_rating is not None:
+        kwargs['best_rating'] = aggregate_rating._worst_rating
+    return models.AggregateRating.objects.create(**kwargs)
+
+
+def parse_recipe(recipe: structured_data.Recipe) -> models.Recipe:
+    skip = False
+    data = {}
+    for k, v, f in (
+        ('_name', 'name', None),
+        ('_image', 'video', None),
+        ('_video', 'name', None),
+        ('_author', 'author', parse_author),
+        ('_date_published', 'date_published', None),
+        ('_description', 'description', None),
+        ('_prep_time', 'prep_time', None),
+        ('_cook_time', 'cook_time', None),
+        ('_recipe_instructions', 'recipe_instructions', parse_instructions),
+        ('_recipe_yield', 'recipe_yield', None),
+        # ('_total_time', '', None),
+        ('_aggregate_rating', 'aggregate_rating', parse_aggregate_rating),
+    ):
+        try:
+            if getattr(recipe, k) is not None:
+                if f is not None:
+                    data[v] = f(getattr(recipe, k))
+                else:
+                    data[v] = getattr(recipe, k)
+        except ResourceWarning:
+            skip = True
+    later = {}
+    for k, v, f in (
+        ('_recipe_ingredient', 'recipeingredient_set', parse_ingredients),
+        ('_cooking_method', 'tag_set', parse_cooking_method),
+        # ('', 'tag_set', None),
+        # ('', 'comment_set', None),
+    ):
+        try:
+            if getattr(recipe, k) is not None:
+                if f is not None:
+                    later[v] = f(getattr(recipe, k))
+                else:
+                    later[v] = getattr(recipe, k)
+        except ResourceWarning:
+            skip = True
+    if not hasattr(data, 'aggregate_rating'):
+        data['aggregate_rating'] = models.AggregateRating.objects.create(
+            rating_value=0, rating_count=0
+        )
+
+    if not skip:
+        r = models.Recipe(**data)
+        r.save()
+
+        for ingr in later['recipeingredient_set']:
+            r.recipeingredient_set.add(ingr)
+        try:
+            r.tag_set.add(later['tag_set'])
+        except KeyError:
+            pass
+
+        return r
+    return
+
+
 def main():
     recipes = read_data(DataSet.COOKSTR, 10)
-
+    for recipe in recipes:
+        parse_recipe(recipe)
     print(json.dumps(recipes, default=datatrans.utils.structured_data.default))
 
 
