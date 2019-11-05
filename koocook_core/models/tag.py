@@ -1,15 +1,15 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-from koocook_core.support.label import Label
-
-__all__ = ['Tag', 'Label']
+__all__ = ['Tag', 'TagLabel']
 
 
 class Tag(models.Model):
-    name = models.CharField(max_length=63)
-    label = models.IntegerField(validators=[
-        MinValueValidator(1),
-        MaxValueValidator(len(Label)),
-    ], null=True, blank=True)
+    name = models.CharField(max_length=50)
+    label = models.ForeignKey('koocook_core.TagLabel', null=True, blank=True, on_delete=models.SET_NULL)
     # recipe_set from Recipe's ManyToMany
+
+
+class TagLabel(models.Model):
+    name = models.CharField(max_length=50)
+    # tag_set from Tag's ForeignKey
