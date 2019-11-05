@@ -8,7 +8,7 @@ from django.core.exceptions import ValidationError
 from koocook_core.support.unit import *
 
 
-__all__ = ['Quantity', 'QuantityField']
+__all__ = ['Quantity', 'QuantityField', 'parse_quantity']
 
 
 class Quantity:
