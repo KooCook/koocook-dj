@@ -18,6 +18,10 @@ def split_ingredient_str(string: str) -> List[str]:
         [2, '', 'garlic cloves, finely minced']
         >>> split_ingredient_str('One plus 3 tablespoons extra virgin olive oil')
         [4, 'tablespoons', 'extra virgin olive oil']
+        >>> split_ingredient_str('8-9 ounces fresh spinach')
+        ['8-9', 'ounces', 'fresh spinach']
+        >>> split_ingredient_str('to 2 canned chipotle chiles en adobo, stemmed and seeded')
+        ['1 to 2', '', 'canned chipotle chiles en adobo, stemmed and seeded']
     """
     number_part = []
     unit_part = None
