@@ -30,17 +30,7 @@ class Quantity:
             else:
                 self.unit.plural = unit
             return
-        if isinstance(unit, Unit):
-            self.unit = unit
-        else:
-            for _unit_ in Units:
-                try:
-                    self.unit = _unit_(unit)
-                    break
-                except ValueError:
-                    pass
-            else:
-                raise ValueError('\'{}\' is not a valid Unit'.format(unit))
+        self.unit = get_unit(unit)
 
     def __str__(self):
         if self.amount == 1:
