@@ -15,32 +15,40 @@
           <!-- send to index view for now -->
           Recipe by <a href="{% url 'koocook_core:index'%}">{{ recipe.author.name }}</a>
         </p>
+
         <div class="field is-grouped is-grouped-multiline">
           <div class="control">
-            <div class="tags has-addons">
-              <span class="tag is-medium">Allergen</span>
-              <span class="tag is-danger is-medium">
-                  Gluten
-                  <button class="delete is-small"></button>
-                </span>
-            </div>
-          </div>
-          <div class="control">
-            <div class="tags has-addons">
-              <span class="tag is-medium">Allergen</span>
-              <span class="tag is-danger is-medium">
-                  Dairy
-                  <button class="delete is-small"></button>
-                </span>
-            </div>
-          </div>
-          <div class="control">
-              <span class="tag is-medium is-warning">
-                Non-vegan
-                <button class="delete is-small"></button>
-              </span>
+            {% for tag in recipe.tags.all %}
+              <span class="tag  is-medium">{{ tag.name }}</span>
+            {% endfor %}
           </div>
         </div>
+<!--        <div class="field is-grouped is-grouped-multiline">-->
+<!--          <div class="control">-->
+<!--            <div class="tags has-addons">-->
+<!--              <span class="tag is-medium">Allergen</span>-->
+<!--              <span class="tag is-danger is-medium">-->
+<!--                  Gluten-->
+<!--                  <button class="delete is-small"></button>-->
+<!--                </span>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          <div class="control">-->
+<!--            <div class="tags has-addons">-->
+<!--              <span class="tag is-medium">Allergen</span>-->
+<!--              <span class="tag is-danger is-medium">-->
+<!--                  Dairy-->
+<!--                  <button class="delete is-small"></button>-->
+<!--                </span>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          <div class="control">-->
+<!--              <span class="tag is-medium is-warning">-->
+<!--                Non-vegan-->
+<!--                <button class="delete is-small"></button>-->
+<!--              </span>-->
+<!--          </div>-->
+<!--        </div>-->
       </div>
     </header>
   
