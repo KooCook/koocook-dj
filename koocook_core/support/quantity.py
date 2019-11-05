@@ -70,7 +70,7 @@ def parse_quantity(quantity_string: str) -> Quantity:
         return Quantity(amount, unit, nau)
     except ValueError as e:
         raise ValidationError(_("Invalid input for a Quantity instance")
-                              ) from e.__context__
+                              ) from e
 
 
 class QuantityField(models.Field):
