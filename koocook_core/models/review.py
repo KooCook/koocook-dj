@@ -123,6 +123,9 @@ class AggregateRating(models.Model):
     rating_count = models.IntegerField()
     best_rating = models.IntegerField(default=5)
     worst_rating = models.IntegerField(default=1)
+    # recipe from Recipe's OneToOneField
+    # post from Post's OneToOneField
+    # comment from Comment's OneToOneField
 
     def check_rating(self, rating: Rating) -> None:
         """Checks if rating is of the same type and origin or not.
