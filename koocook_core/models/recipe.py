@@ -18,7 +18,7 @@ class Recipe(models.Model):
     description = models.CharField(max_length=255)
     prep_time = models.DurationField(null=True, blank=True)
     cook_time = models.DurationField()
-    # ingredient_set from Ingredient's ForeignKey
+    # recipeingredient_set from Ingredient's ForeignKey
     recipe_instructions = fields.ArrayField(models.TextField())
     recipe_yield = koocookfields.QuantityField(max_length=50, nau=True)
     tag_set = models.ManyToManyField('koocook_core.Tag', blank=True)
@@ -36,8 +36,3 @@ class Recipe(models.Model):
     def nutrition(self):
         pass
         return
-
-    @property
-    def recipe_ingredient(self):
-        """ Proxy property for consistency with Schema.org's standard """
-        return self.ingredient_set

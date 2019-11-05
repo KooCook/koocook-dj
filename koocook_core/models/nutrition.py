@@ -6,7 +6,7 @@ from django.db import models
 
 from koocook_core import fields as koocookfields
 
-__all__ = ['MetaIngredient', 'Ingredient']
+__all__ = ['MetaIngredient', 'RecipeIngredient']
 
 
 @enum.unique
@@ -21,7 +21,7 @@ class MetaIngredient(models.Model):
     # ingredient_set from Ingredient's ForeignKey
 
 
-class Ingredient(models.Model):
+class RecipeIngredient(models.Model):
     quantity = koocookfields.QuantityField(
         max_length=50,
     )
