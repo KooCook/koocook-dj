@@ -2,23 +2,23 @@ from django.contrib.postgres import fields
 from django.db import models
 
 from koocook_core import fields as koocookfields
-
+from .review import AggregateRating
 __all__ = ['Recipe']
 
 
 def _default_image():
-    return ('{"https://example.com/photos/1x1/photo.jpg",'
+    return ('["https://example.com/photos/1x1/photo.jpg",'
             ' "https://example.com/photos/4x3/photo.jpg",'
-            ' "https://example.com/photos/16x9/photo.jpg"}')
+            ' "https://example.com/photos/16x9/photo.jpg"]')
 
 
 def _default_recipe_instructions():
-    return '{""}'
+    return '[""]'
 
 
 class Recipe(models.Model):
     name = models.CharField(max_length=63)
-    image = fields.ArrayField(models.URLField(), default=_default_image)
+    image = fields.ArrayField(models.CharField(max_length=200), default=_default_image)
     video = models.URLField(null=True, blank=True)
     author = models.ForeignKey(
         'koocook_core.Author',
@@ -30,12 +30,12 @@ class Recipe(models.Model):
     cook_time = models.DurationField()
     # ingredient_set from Ingredient's ForeignKey
     recipe_instructions = fields.ArrayField(models.TextField(), default=_default_recipe_instructions)
-    recipe_yield = koocookfields.QuantityField(max_length=50, nau=True)
+    # recipe_yield = koocookfields.QuantityField(max_length=50, nau=True)
     tag_set = models.ManyToManyField('koocook_core.Tag', blank=True)
     # comment_set from Comment's ForeignKey
     aggregate_rating = models.OneToOneField(
         'koocook_core.AggregateRating',
-        on_delete=models.PROTECT,
+        on_delete=models.PROTECT, blank=True, null=True, default=None
     )
 
     @property

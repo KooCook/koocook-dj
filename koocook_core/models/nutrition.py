@@ -27,7 +27,7 @@ class Ingredient(models.Model):
         'koocook_core.MetaIngredient',
         on_delete=models.PROTECT,
     )
-    substitute_set = models.ManyToManyField('self')
+    substitute_set = models.ManyToManyField('self', blank=True)
     recipe = models.ForeignKey(
         'koocook_core.Recipe',
         on_delete=models.CASCADE,
