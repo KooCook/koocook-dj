@@ -19,5 +19,5 @@
 - [project folder (Drive)](https://drive.google.com/open?id=1GpXj0oaM3n29aJF2YNDhjJwkCqqHa-04)
 - [main app (GitHub)](https://github.com/KooCook/koocook/tree/dev)
 - [django backend (GitHub)](https://github.com/KooCook/koocook-dj/tree/dev)
-- [static mockup (GitHub)](https://github.com/th-bunratta/KooCook-static-mockup)
+- [static mockup (GitHub)](https://github.com/KooCook/koocook-static-mockup/commits/dev/common)
 - [datatrans (GitHub)](https://github.com/KooCook/datatrans) -- supporting package for data transformation
