@@ -119,8 +119,8 @@ class AggregateRating(models.Model):
         # every vote counts until 10 B
     )
     rating_count = models.IntegerField()
-    best_rating = models.IntegerField()
-    worst_rating = models.IntegerField()
+    best_rating = models.IntegerField(default=5)
+    worst_rating = models.IntegerField(default=1)
 
     def add_rating(self, rating: Rating):
         pass
