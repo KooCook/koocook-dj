@@ -131,3 +131,4 @@ def _from_celsius(value: float, quote: Union[TemperatureUnit, str]) -> float:
 
 
 Units = (LengthUnit, AreaUnit, VolumeUnit, MassUnit, TemperatureUnit)
+

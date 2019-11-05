@@ -63,21 +63,21 @@ def parse_quantity(quantity_string: str) -> Quantity:
         unit = unit + [nau]
         nau = False
     amount = float(amount)
-    unit = ' '.join(unit)
     if nau:
         nau = True
     try:
         return Quantity(amount, unit, nau)
     except ValueError as e:
         raise ValidationError(_("Invalid input for a Quantity instance")
-                              ) from e.__context__
+         ) from e.__context__
 
 
-class QuantityField(models.Field):
+class QuantityField(models.CharField):
     description = _("<number><space><unit> (up to %(max_length)s)")
 
     def __init__(self, nau: bool = False, *args, **kwargs):
         self.nau = nau
+        self.max_length = 50
         super().__init__(*args, **kwargs)
 
     def deconstruct(self):
@@ -114,16 +114,8 @@ class QuantityField(models.Field):
         else:
             return []
 
-    def cast_db_type(self, connection):
-        if self.max_length is None:
-            return connection.ops.cast_char_field_without_max_length
-        return super().cast_db_type(connection)
-
-    def get_internal_type(self):
-        return 'CharField'
-
     def from_db_value(self, value, expression, connection):
-        if value is None:
+        if value is None or value is '':
             return value
         return parse_quantity(value)
 
@@ -138,6 +130,7 @@ class QuantityField(models.Field):
 
     def get_prep_value(self, value):
         if isinstance(value, Quantity):
+            print('d')
             return value.get_db_str()
 
         if value is None:
@@ -146,7 +139,7 @@ class QuantityField(models.Field):
         if isinstance(value, str):
             if ' /nau' in value:
                 return value
-            return value + ' /nau' if self.nau else ''
+            return value + ' /nau' if self.nau else value
         return parse_quantity(value).get_db_str()
 
     def value_to_string(self, obj):
