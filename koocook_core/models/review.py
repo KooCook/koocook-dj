@@ -153,6 +153,7 @@ class AggregateRating(models.Model):
         total_value = self.rating_value * self.rating_count
         total_value += rating.rating_value
         self.rating_count += 1
+        self.rating_value = total_value / self.rating_count
         self.save()
 
     def remove_rating(self, rating: Rating):
@@ -165,6 +166,7 @@ class AggregateRating(models.Model):
         total_value = self.rating_value * self.rating_count
         total_value -= rating.rating_value
         self.rating_count -= 1
+        self.rating_value = total_value / self.rating_count
         self.save()
 
     @property
