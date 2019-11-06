@@ -2,9 +2,10 @@
 {% load static %}
 {% block page_deps %}
     <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://unpkg.com/buefy/dist/buefy.min.js"></script>
     <script src="{% static 'js/utils.js' %}"></script>
+    {% block content_deps %}{% endblock %}
 {% endblock %}
 {% block page_body %}
     <div id="app">

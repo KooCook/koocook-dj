@@ -1,6 +1,8 @@
 {% extends 'base/content.html' %}
 {% load widget_tweaks %}
+{% load static %}
 {% block page_title %}Create a recipe{% endblock %}
+{% block content_deps %}<script src="{% static 'js/components/ingredients.js' %}"></script>{% endblock %}
 {% block section_after_nav %}<section class="hero is-light">
       <div class="hero-body">
         <div class="container">
@@ -11,16 +13,7 @@
       </div>
     </section>{% endblock %}
 {% block page_content %}
-
-    <div class="is-centered" v-for="ingredient in liveIngredients" :key="ingredient.name">
-        <input type="text" v-model="ingredient.name">
-        <input autofocus v-model.trim="ingredient.quantity.number"> <b-select class="is-inline" v-model="ingredient.quantity.unit"
-                    size="is-small">
-                    <option value="tbsp">US Tablespoon</option>
-                    <option value="mL">Milliliter</option>
-        </b-select>
-    </div>
-    <button @click="addIngredient">Add an ingredient</button>
+    <ingredient-chooser :ingredients="ingredients"></ingredient-chooser>
     <form method="post" novalidate action="{{ request.path }}">
     <input name="ingredients" type="hidden" :value="JSON.stringify(liveIngredients)">
     <div class="form-group field is-horizontal">
@@ -91,34 +84,12 @@
     </form>
 
      <script>
-
       new Vue({
         el: '#app',
         data: {
             searchName: '',
             ingredients: [],
             unitConversionFactor: CONVERSION_FACTORS
-        },
-          methods: {
-            convertToFactor(quantity, dest_unit, type='volumetric') {
-                const { unit, value } = quantity;
-                const base = this.unitConversionFactor[type].filter(x => x.unit === unit)[0].value;
-                let conversionFactor = this.unitConversionFactor[type].filter(x => x.unit === dest_unit)[0].value/base;
-                return value*conversionFactor;
-            },
-              addIngredient() {
-                this.ingredients.push({ name: '', type: 'volumetric', quantity: {'unit': 'tbsp', 'number': 0, 'prevUnit': 'tbsp'}})
-              }
-          },
-        computed: {
-            liveIngredients() {
-              for (const ingredient of this.ingredients) {
-                 ingredient.quantity.number = this.convertToFactor({unit: ingredient.quantity.prevUnit, value: ingredient.quantity.number}, ingredient.quantity.unit, 'volumetric');
-                 ingredient.quantity.prevUnit = ingredient.quantity.unit;
-              }
-              return this.ingredients;
-            }
-
         }
       })
   </script>
