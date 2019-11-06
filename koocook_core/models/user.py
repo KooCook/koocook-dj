@@ -17,15 +17,29 @@ class KoocookUser(models.Model):
     following = models.ManyToManyField('self')
     followers = models.ManyToManyField('self')
 
+    class Meta:
+        db_table = "koocook_user"
+
     def follow(self, user: 'KoocookUser'):
         pass
 
     def unfollow(self, user: 'KoocookUser'):
         pass
 
+    @property
+    def name(self):
+        if self.user.get_full_name():
+            return self.user.get_full_name()
+        else:
+            return self.user.username
+
+    @property
+    def full_name(self):
+        return self.user.get_full_name()
+
 
 class Author(models.Model):
-    name = models.CharField(max_length=63)
+    name = models.CharField(max_length=100)
     user = models.OneToOneField(
         'koocook_core.KoocookUser',
         on_delete=models.SET_NULL,
@@ -37,5 +51,12 @@ class Author(models.Model):
     # recipe_set from Recipe
     # post_set from Post
 
+    @property
+    def qualified_name(self):
+        if self.user and self.user.full_name:
+            return self.user.full_name
+        else:
+            return self.name
+
     def __str__(self):
-        return self.name
+        return self.qualified_name

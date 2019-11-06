@@ -8,7 +8,7 @@ __all__ = ['Recipe']
 
 class Recipe(models.Model):
     name = models.CharField(max_length=63)
-    image = fields.ArrayField(models.URLField(), null=True)
+    image = fields.ArrayField(models.CharField(max_length=200), null=True)
     video = models.URLField(null=True, blank=True)
     author = models.ForeignKey(
         'koocook_core.Author',
@@ -27,7 +27,7 @@ class Recipe(models.Model):
     # comment_set from Comment's ForeignKey
     aggregate_rating = models.OneToOneField(
         'koocook_core.AggregateRating',
-        on_delete=models.PROTECT,
+        on_delete=models.PROTECT, blank=True, null=True, default=None
     )
 
     @property
