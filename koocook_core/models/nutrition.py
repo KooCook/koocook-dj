@@ -34,6 +34,14 @@ class Ingredient(models.Model):
     )
 
     @property
+    def to_dict(self):
+        return {'name': self.meta.name, 'type': self.quantity.unit.type,
+                'quantity': {'unit': self.quantity.unit.symbol, 'number': self.quantity.amount}}
+
+    @property
+    def to_json(self):
+        return json.dumps(self.to_dict)
+
+    @property
     def nutrition(self):
-        pass
         return

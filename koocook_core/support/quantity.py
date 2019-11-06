@@ -66,10 +66,10 @@ def parse_quantity(quantity_string: str) -> Quantity:
     if nau:
         nau = True
     try:
-        return Quantity(amount, unit, nau)
+        return Quantity(amount, " ".join(unit), nau)
     except ValueError as e:
-        raise ValidationError(_("Invalid input for a Quantity instance")
-         ) from e.__context__
+        raise ValidationError(_(f"Invalid input for a Quantity instance {e}")
+         ) from e
 
 
 class QuantityField(models.CharField):
@@ -130,7 +130,6 @@ class QuantityField(models.CharField):
 
     def get_prep_value(self, value):
         if isinstance(value, Quantity):
-            print('d')
             return value.get_db_str()
 
         if value is None:

@@ -18,7 +18,7 @@ def _default_recipe_instructions():
 
 class Recipe(models.Model):
     name = models.CharField(max_length=63)
-    image = fields.ArrayField(models.CharField(max_length=200), default=_default_image)
+    image = fields.ArrayField(models.URLField(), default=_default_image)
     video = models.URLField(null=True, blank=True)
     author = models.ForeignKey(
         'koocook_core.Author',
@@ -48,6 +48,6 @@ class Recipe(models.Model):
         return
 
     @property
-    def recipe_ingredient(self):
+    def recipe_ingredients(self):
         """ Proxy property for consistency with Schema.org's standard """
-        return self.ingredient_set
+        return self.ingredient_set.all()

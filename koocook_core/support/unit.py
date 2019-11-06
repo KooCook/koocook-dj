@@ -8,6 +8,7 @@ __all__ = ['Unit', 'Units', 'LengthUnit', 'AreaUnit', 'VolumeUnit', 'MassUnit',
 
 @enum.unique
 class Unit(enum.Enum):
+
     def __new__(cls, symbol: Optional[str], *args):
         obj = object.__new__(cls)
         # ``symbol`` is canonical value
@@ -39,6 +40,11 @@ class Unit(enum.Enum):
     @property
     def plural(self) -> str:
         return self._plural
+
+    @property
+    def type(self) -> str:
+        name = self.__class__.__name__
+        return name[0].lower() + name[1:]
 
     @property
     def conversion_factor(self) -> float:
