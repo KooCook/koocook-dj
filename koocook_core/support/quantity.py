@@ -40,7 +40,7 @@ class Quantity:
         return '{} {}'.format(self.amount, self.unit.plural)
 
     def get_db_str(self):
-        return self.__str__() + ' /nau' if self.nau else ''
+        return self.__str__() + (' /nau' if self.nau else '')
 
     @property
     def not_a_unit(self):
