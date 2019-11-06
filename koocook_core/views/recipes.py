@@ -1,4 +1,5 @@
 import json
+from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import reverse
 from django.views.generic.edit import CreateView, ProcessFormView
@@ -68,3 +69,9 @@ class RecipeUpdateView(UpdateView):
 
     def get_success_url(self):
         return reverse('koocook_core:recipe-user')
+
+    def get_context_data(self, **kwargs):
+        import json
+        context = super().get_context_data(**kwargs)
+        context['ingredients'] = json.dumps([ing.to_dict for ing in list(self.get_object().recipe_ingredients.all())])
+        return context
