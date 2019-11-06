@@ -1,163 +1,174 @@
-{% extends 'base/content.html' %}
-
-{% block section_after_nav %}
-
-{% endblock %}
-
+{% extends 'base/content.html' %} {% block section_after_nav %} {% endblock %}
 {% block page_content %}
 <div style="padding: 0 3rem">
-    <header class="section" style="padding-bottom: 1.5rem; margin-bottom: 1.5rem">
-      <div class="container">
-        <h1 class="title is-1">
-          {{ recipe.name }}
-        </h1>
-        <p class="subtitle is-4">
-          <!-- send to index view for now -->
-          Recipe by <a href="{% url 'koocook_core:index'%}">{{ recipe.author.name }}</a>
-        </p>
+  <header class="section" style="padding-bottom: 1.5rem; margin-bottom: 1.5rem">
+    <div class="container">
+      <h1 class="title is-1">
+        {{ recipe.name }}
+      </h1>
+      <p class="subtitle is-4">
+        <!-- send to index view for now -->
+        Recipe by
+        <a href="{% url 'koocook_core:index'%}">{{ recipe.author.name }}</a>
+      </p>
 
-        <div class="field is-grouped is-grouped-multiline">
-          <div class="control">
-            {% for tag in recipe.tags.all %}
-              <span class="tag  is-medium">{{ tag.name }}</span>
-            {% endfor %}
-          </div>
-        </div>
-<!--        <div class="field is-grouped is-grouped-multiline">-->
-<!--          <div class="control">-->
-<!--            <div class="tags has-addons">-->
-<!--              <span class="tag is-medium">Allergen</span>-->
-<!--              <span class="tag is-danger is-medium">-->
-<!--                  Gluten-->
-<!--                  <button class="delete is-small"></button>-->
-<!--                </span>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--          <div class="control">-->
-<!--            <div class="tags has-addons">-->
-<!--              <span class="tag is-medium">Allergen</span>-->
-<!--              <span class="tag is-danger is-medium">-->
-<!--                  Dairy-->
-<!--                  <button class="delete is-small"></button>-->
-<!--                </span>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--          <div class="control">-->
-<!--              <span class="tag is-medium is-warning">-->
-<!--                Non-vegan-->
-<!--                <button class="delete is-small"></button>-->
-<!--              </span>-->
-<!--          </div>-->
-<!--        </div>-->
-      </div>
-    </header>
-  
-    <section class="section" style="padding-top: 0">
-      <div class="container">
-        <figure class="image is-4928x3264" style="margin-bottom: 1.5rem">
-          <img src="{{ recipe.image }}" alt="pancake close up">
-        </figure>
-        <p class="subtitle is-6">
-          <!-- Have no image credit models -->
-          <strong>Image Credit:</strong> <a href="">Skitterphoto</a>
-        </p>
-      </div>
-    </section>
-  
-    <section class="section" style="padding-top: 0">
-      <div class="container">
-        <div class="columns is-multiline">
-          <div class="column is-half">
-            <nav class="level is-mobile">
-              <div class="level-item has-text-centered">
-                <div>
-                  <p class="heading">Time</p>
-                  <p class="title">{{ recipe.total_time }}</p>
-                </div>
-              </div>
-              <div class="level-item has-text-centered">
-                <div>
-                  <!-- Have no Measure cooking skill -->
-                  <p class="heading">Difficulty</p>
-                  <p class="title">Simple</p>
-                </div>
-              </div>
-            </nav>
-            <nav class="level is-mobile">
-              <div class="level-item">
-                <progress class="level-item progress is-success" value="1" max="4"
-                          style="border-radius: 0; height: 0.2rem"></progress>
-              </div>
-              <div class="level-item">
-                <progress class="level-item progress is-success" value="1" max="3"
-                          style="border-radius: 0; height: 0.2rem"></progress>
-              </div>
-            </nav>
-          </div>
-          <div class="column is-half">
-            <nav class="level is-mobile">
-              <div class="level-item has-text-centered">
-                <div>
-                  <p class="heading">Views</p>
-                  <p class="title">456K</p>
-                </div>
-              </div>
-              <div class="level-item has-text-centered">
-                <div>
-                  <p class="heading">Ratings</p>
-                  <p class="title">{{ recipe.aggregate_rating }}/5</p>
-                </div>
-              </div>
-  
-              <!--            <div class="level-item">-->
-              <!--              <div class="level-item has-text-centered">-->
-              <!--                <div>-->
-              <!--                  <p class="heading">Likes</p>-->
-              <!--                  <p class="title">7K</p>-->
-              <!--                </div>-->
-              <!--              </div>-->
-              <!--              <div class="level-item has-text-centered">-->
-              <!--                <div>-->
-              <!--                  <p class="heading">Dislikes</p>-->
-              <!--                  <p class="title">891</p>-->
-              <!--                </div>-->
-              <!--              </div>-->
-              <!--            </div>-->
-            </nav>
-            <nav class="level is-mobile">
-              <div class="level-item">
-                <progress class="progress is-hidden" value="0" max="100"
-                          style="border-radius: 0; height: 0.2rem"></progress>
-              </div>
-              <div class="level-item">
-                <progress class="progress is-info" value="34" max="40"
-                          style="border-radius: 0; height: 0.2rem"></progress>
-              </div>
-            </nav>
-          </div>
+      <div class="field is-grouped is-grouped-multiline">
+        <div class="control">
+          {% for tag in recipe.tags.all %}
+          <span class="tag  is-medium">{{ tag.name }}</span>
+          {% endfor %}
         </div>
       </div>
-    </section>
-  
-    <section class="section" style="padding-top: 0">
-      <div class="container" style="padding: 0 5%">
-        <div class="tile is-ancestor">
-          <div class="tile is-vertical">
-            <div class="tile">
-              <div class="tile is-parent">
-                <div class="tile is-child">
-                  <h3 class="title is-4">
-                    Ingredients
-                  </h3>
-                  <div class="content">
-                    <ul style="list-style-type: none">
+      <!--        <div class="field is-grouped is-grouped-multiline">-->
+      <!--          <div class="control">-->
+      <!--            <div class="tags has-addons">-->
+      <!--              <span class="tag is-medium">Allergen</span>-->
+      <!--              <span class="tag is-danger is-medium">-->
+      <!--                  Gluten-->
+      <!--                  <button class="delete is-small"></button>-->
+      <!--                </span>-->
+      <!--            </div>-->
+      <!--          </div>-->
+      <!--          <div class="control">-->
+      <!--            <div class="tags has-addons">-->
+      <!--              <span class="tag is-medium">Allergen</span>-->
+      <!--              <span class="tag is-danger is-medium">-->
+      <!--                  Dairy-->
+      <!--                  <button class="delete is-small"></button>-->
+      <!--                </span>-->
+      <!--            </div>-->
+      <!--          </div>-->
+      <!--          <div class="control">-->
+      <!--              <span class="tag is-medium is-warning">-->
+      <!--                Non-vegan-->
+      <!--                <button class="delete is-small"></button>-->
+      <!--              </span>-->
+      <!--          </div>-->
+      <!--        </div>-->
+    </div>
+  </header>
 
-                      {% for ingredient in recipe.recipe_ingredient.all %}
-                       <li>{{ ingredient }}</li>
-                      {% endfor %}
+  <section class="section" style="padding-top: 0">
+    <div class="container">
+      <figure class="image is-4928x3264" style="margin-bottom: 1.5rem">
+        <img src="{{ recipe.image }}" alt="pancake close up" />
+      </figure>
+      <p class="subtitle is-6">
+        <!-- Have no image credit models -->
+        <strong>Image Credit:</strong> <a href="">Skitterphoto</a>
+      </p>
+    </div>
+  </section>
 
+  <section class="section" style="padding-top: 0">
+    <div class="container">
+      <div class="columns is-multiline">
+        <div class="column is-half">
+          <nav class="level is-mobile">
+            <div class="level-item has-text-centered">
+              <div>
+                <p class="heading">Time</p>
+                <!--                  Need to deal with time formatting-->
+                <p class="title">{{ recipe.total_time }}</p>
+              </div>
+            </div>
+            <div class="level-item has-text-centered">
+              <div>
+                <!-- Have no Measure cooking skill -->
+                <p class="heading">Difficulty</p>
+                <p class="title">Simple</p>
+              </div>
+            </div>
+          </nav>
+          <nav class="level is-mobile">
+            <div class="level-item">
+              <progress
+                class="level-item progress is-success"
+                value="1"
+                max="4"
+                style="border-radius: 0; height: 0.2rem"
+              ></progress>
+            </div>
+            <div class="level-item">
+              <progress
+                class="level-item progress is-success"
+                value="1"
+                max="3"
+                style="border-radius: 0; height: 0.2rem"
+              ></progress>
+            </div>
+          </nav>
+        </div>
+        <div class="column is-half">
+          <nav class="level is-mobile">
+            <div class="level-item has-text-centered">
+              <div>
+                <p class="heading">Views</p>
+                <p class="title">456K</p>
+              </div>
+            </div>
+            <div class="level-item has-text-centered">
+              <div>
+                <p class="heading">Ratings</p>
+                <p class="title">{{ recipe.aggregate_rating }}/5</p>
+              </div>
+            </div>
 
-                      <!-- <li>1⅓
+            <!--            <div class="level-item">-->
+            <!--              <div class="level-item has-text-centered">-->
+            <!--                <div>-->
+            <!--                  <p class="heading">Likes</p>-->
+            <!--                  <p class="title">7K</p>-->
+            <!--                </div>-->
+            <!--              </div>-->
+            <!--              <div class="level-item has-text-centered">-->
+            <!--                <div>-->
+            <!--                  <p class="heading">Dislikes</p>-->
+            <!--                  <p class="title">891</p>-->
+            <!--                </div>-->
+            <!--              </div>-->
+            <!--            </div>-->
+          </nav>
+          <nav class="level is-mobile">
+            <div class="level-item">
+              <progress
+                class="progress is-hidden"
+                value="0"
+                max="100"
+                style="border-radius: 0; height: 0.2rem"
+              ></progress>
+            </div>
+            <div class="level-item">
+              <progress
+                class="progress is-info"
+                value="34"
+                max="40"
+                style="border-radius: 0; height: 0.2rem"
+              ></progress>
+            </div>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top: 0">
+    <div class="container" style="padding: 0 5%">
+      <div class="tile is-ancestor">
+        <div class="tile is-vertical">
+          <div class="tile">
+            <div class="tile is-parent">
+              <div class="tile is-child">
+                <h3 class="title is-4">
+                  Ingredients
+                </h3>
+                <div class="content">
+                  <ul style="list-style-type: none">
+                    {% for ingredient in recipe.recipe_ingredient.all %}
+                    <li>{{ ingredient }}</li>
+                    {% endfor %}
+
+                    <!-- <li>1⅓
                         <div class="dropdown">
                           <div class="dropdown-trigger">
                             <a aria-haspopup="true" aria-controls="dropdown-menu">
@@ -300,36 +311,36 @@
                       <li>2 tablespoons unsalted butter, melted</li>
                       <li>Vegetable oil (for griddle)</li>
                       <li>Pure maple syrup (for serving)</li> -->
-                    </ul>
-                  </div>
-                </div>
-              </div>
-              <div class="tile is-parent">
-                <div class="tile is-child">
-                  <h3 class="title is-4">
-                    Equipment
-                  </h3>
-                  <div class="content">
-                    <ul style="list-style-type: none">
-                      <!-- <li>Whisk</li>
-                      <li>Large bowl</li>
-                      <li>Medium bowl</li>
-                      <li>Griddle or large skillet</li>
-                      <li>Spatula</li>
-                      <li>Measuring cup</li> -->
-                    </ul>
-                  </div>
+                  </ul>
                 </div>
               </div>
             </div>
             <div class="tile is-parent">
               <div class="tile is-child">
                 <h3 class="title is-4">
-                  Instruction
+                  Equipment
                 </h3>
-                <div class="content" style="">
-                  <p>{{ recipe.recipe_instructions }}</p>
-                  <!-- <p>
+                <div class="content">
+                  <ul style="list-style-type: none">
+                    <!-- <li>Whisk</li>
+                      <li>Large bowl</li>
+                      <li>Medium bowl</li>
+                      <li>Griddle or large skillet</li>
+                      <li>Spatula</li>
+                      <li>Measuring cup</li> -->
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="tile is-parent">
+            <div class="tile is-child">
+              <h3 class="title is-4">
+                Instruction
+              </h3>
+              <div class="content" style="">
+                <p>{{ recipe.recipe_instructions }}</p>
+                <!-- <p>
                     Whisk flour, sugar, baking powder, baking soda, and salt in a large bowl. Whisk eggs, buttermilk, and
                     butter in a medium bowl; stir into dry ingredients until just combined (some lumps are okay).
                   </p>
@@ -339,130 +350,138 @@
                     minutes. Flip and cook until cooked through and other side of pancakes are golden brown, about 2
                     minutes longer. Serve pancakes with maple syrup.
                   </p> -->
-                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </section>
-  
-    <section class="section" style="padding-top: 0">
-      <div class="container">
-  
-        <hr style="margin-top: 0">
-        <h2 class="title">
-          Comments
-        </h2>
-  
-        <article class="media">
-          <figure class="media-left">
-            <p class="image is-64x64">
-              <img src="../assets/img/placeholders/128x128.png">
+    </div>
+  </section>
+
+  <section class="section" style="padding-top: 0">
+    <div class="container">
+      <hr style="margin-top: 0" />
+      <h2 class="title">
+        Comments
+      </h2>
+
+      <article class="media">
+        <figure class="media-left">
+          <p class="image is-64x64">
+            <img src="../assets/img/placeholders/128x128.png" />
+          </p>
+        </figure>
+        <div class="media-content">
+          <div class="content">
+            <p>
+              <strong>Barbara Middleton</strong>
+              <br />
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis
+              porta eros lacus, nec ultricies elit blandit non. Suspendisse
+              pellentesque mauris sit amet dolor blandit rutrum.
+              <s>Nunc in tempus turpis.</s>
+              <br />
+              <small><a>Like</a> · <a>Reply</a> · 3 hrs</small>
             </p>
-          </figure>
-          <div class="media-content">
-            <div class="content">
-              <p>
-                <strong>Barbara Middleton</strong>
-                <br>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis porta eros lacus, nec ultricies elit blandit
-                non. Suspendisse pellentesque mauris sit amet dolor blandit rutrum. <s>Nunc in tempus turpis.</s>
-                <br>
-                <small><a>Like</a> · <a>Reply</a> · 3 hrs</small>
+          </div>
+
+          <article class="media">
+            <figure class="media-left">
+              <p class="image is-48x48">
+                <img src="../assets/img/placeholders/96x96.png" />
               </p>
-            </div>
-  
-            <article class="media">
-              <figure class="media-left">
-                <p class="image is-48x48">
-                  <img src="../assets/img/placeholders/96x96.png">
+            </figure>
+            <div class="media-content">
+              <div class="content">
+                <p>
+                  <strong>Sean Brown</strong>
+                  <br />
+                  Donec sollicitudin urna eget eros malesuada sagittis.
+                  Pellentesque habitant morbi tristique senectus et netus et
+                  malesuada fames ac turpis egestas. Aliquam blandit nisl a
+                  nulla sagittis, a lobortis leo feugiat.
                 </p>
-              </figure>
-              <div class="media-content">
-                <div class="content">
-                  <p>
-                    <strong>Sean Brown</strong>
-                    <br>
-                    Donec sollicitudin urna eget eros malesuada sagittis. Pellentesque habitant morbi tristique senectus
-                    et
-                    netus et malesuada fames ac turpis egestas. Aliquam blandit nisl a nulla sagittis, a lobortis leo
-                    feugiat.
-                  </p>
-                  <blockquote>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis porta eros lacus, nec ultricies elit
-                    blandit non.
-                  </blockquote>
-                  <p>
-                    Morbi vitae diam et purus tincidunt porttitor vel vitae augue. Praesent malesuada metus sed pharetra
-                    euismod. Cras tellus odio, tincidunt iaculis diam non, porta aliquet tortor.
-                    <br>
-                    <small>5 <a>Like</a> · <a>Reply</a> · 2 hrs</small>
-                  </p>
-                </div>
-              </div>
-            </article>
-  
-            <article class="media">
-              <figure class="media-left">
-                <p class="image is-48x48">
-                  <img src="../assets/img/placeholders/96x96.png">
+                <blockquote>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis
+                  porta eros lacus, nec ultricies elit blandit non.
+                </blockquote>
+                <p>
+                  Morbi vitae diam et purus tincidunt porttitor vel vitae augue.
+                  Praesent malesuada metus sed pharetra euismod. Cras tellus
+                  odio, tincidunt iaculis diam non, porta aliquet tortor.
+                  <br />
+                  <small>5 <a>Like</a> · <a>Reply</a> · 2 hrs</small>
                 </p>
-              </figure>
-              <div class="media-content">
-                <div class="content">
-                  <p>
-                    <strong>Kayli Eunice </strong>
-                    <br>
-                    Sed convallis scelerisque mauris, non pulvinar nunc mattis vel. Maecenas varius felis sit amet magna
-                    vestibulum euismod malesuada cursus libero. Vestibulum ante ipsum primis in faucibus orci luctus et
-                    ultrices posuere cubilia Curae; Phasellus lacinia non nisl id feugiat.
-                    <br>
-                    <small>12 <a>Like</a> · <a>Reply</a> · 2 hrs</small>
-                  </p>
-                </div>
               </div>
-            </article>
-          </div>
-        </article>
-        <article class="media">
-          <figure class="media-left">
-            <p class="image is-64x64">
-              <img src="../assets/img/placeholders/128x128.png">
+            </div>
+          </article>
+
+          <article class="media">
+            <figure class="media-left">
+              <p class="image is-48x48">
+                <img src="../assets/img/placeholders/96x96.png" />
+              </p>
+            </figure>
+            <div class="media-content">
+              <div class="content">
+                <p>
+                  <strong>Kayli Eunice </strong>
+                  <br />
+                  Sed convallis scelerisque mauris, non pulvinar nunc mattis
+                  vel. Maecenas varius felis sit amet magna vestibulum euismod
+                  malesuada cursus libero. Vestibulum ante ipsum primis in
+                  faucibus orci luctus et ultrices posuere cubilia Curae;
+                  Phasellus lacinia non nisl id feugiat.
+                  <br />
+                  <small>12 <a>Like</a> · <a>Reply</a> · 2 hrs</small>
+                </p>
+              </div>
+            </div>
+          </article>
+        </div>
+      </article>
+      <article class="media">
+        <figure class="media-left">
+          <p class="image is-64x64">
+            <img src="../assets/img/placeholders/128x128.png" />
+          </p>
+        </figure>
+        <div class="media-content">
+          <div class="content">
+            <p>
+              <strong>John Smith</strong>
+              <br />
+              <strong>The pancakes were so <em>perfectly</em> fluffy!</strong> I
+              put some <em>fresh</em> figs and blueberries on top.
+              <br />
+              <small><a>Like</a> · <a>Reply</a> · 31 mins</small>
             </p>
-          </figure>
-          <div class="media-content">
-            <div class="content">
-              <p>
-                <strong>John Smith</strong>
-                <br>
-                <strong>The pancakes were so <em>perfectly</em> fluffy!</strong> I put some <em>fresh</em> figs and
-                blueberries on top.
-                <br>
-                <small><a>Like</a> · <a>Reply</a> · 31 mins</small>
-              </p>
-            </div>
           </div>
-        </article>
-        <article class="media">
-          <figure class="media-left">
-            <p class="image is-64x64">
-              <img src="../assets/img/placeholders/128x128.png">
+        </div>
+      </article>
+      <article class="media">
+        <figure class="media-left">
+          <p class="image is-64x64">
+            <img src="../assets/img/placeholders/128x128.png" />
+          </p>
+        </figure>
+        <div class="media-content">
+          <div class="field">
+            <p class="control">
+              <textarea
+                class="textarea"
+                placeholder="Add a comment..."
+              ></textarea>
             </p>
-          </figure>
-          <div class="media-content">
-            <div class="field">
-              <p class="control">
-                <textarea class="textarea" placeholder="Add a comment..."></textarea>
-              </p>
-            </div>
-            <div class="field">
-              <p class="control">
-                <button class="button is-primary">Post comment</button>
-              </p>
-            </div>
           </div>
-        </article>
-      </div>
-    </section>  
-{% endblock %}
+          <div class="field">
+            <p class="control">
+              <button class="button is-primary">Post comment</button>
+            </p>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+  {% endblock %}
+</div>
