@@ -139,7 +139,7 @@ class ServingUnit(Unit):
 
 
 class SpecialUnit(Unit):
-    NONE = '', None
+    NONE = '', None, 'units', 'unit'
 
 
 def get_unit(unit: Union[str, Unit]) -> Unit:
