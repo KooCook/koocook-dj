@@ -14,7 +14,9 @@
 
 ## Links
 
-- **Deployed app:** https://koocook-deploy.appspot.com/
+- **Deployed app:** 
+    - (Production) https://koocook.appspot.com/ (*Inactive*)
+    - (**Development**) https://koocook-deploy.appspot.com/ (**Active**, based on **dev** branch)
 - [task board (Trello)](https://trello.com/b/32svKah9/isp19-koocook)
 - [project folder (Drive)](https://drive.google.com/open?id=1GpXj0oaM3n29aJF2YNDhjJwkCqqHa-04)
 - [main app (GitHub)](https://github.com/KooCook/koocook/tree/dev)
