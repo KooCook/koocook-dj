@@ -27,11 +27,17 @@ class RecipeViewMixin:
                 ingredient_field_values = {'meta': meta, 'recipe': form.save(commit=False),
                                            'quantity': f"{ingredient['quantity']['number']} "
                                                        f"{ingredient['quantity']['unit']}"}
-                ingredient_queryset = Ingredient.objects.filter(**ingredient_field_values)
-                if not ingredient_queryset.exists():
+                if 'id' not in ingredient:
                     Ingredient(**ingredient_field_values).save()
                 else:
-                    ingredient_queryset.update(**ingredient_field_values)
+                    found_ingredient = Ingredient.objects.filter(pk=ingredient['id'])
+                    if not found_ingredient:
+                        Ingredient(**ingredient_field_values).save()
+                    else:
+                        if 'removed' in ingredient and bool(ingredient['removed']):
+                            found_ingredient.delete()
+                        else:
+                            found_ingredient.update(**ingredient_field_values)
             return response
         else:
             return response

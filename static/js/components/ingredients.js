@@ -3,11 +3,11 @@ Vue.component("ingredient-chooser", {
     liveIngredients() {
       for (let ingredient of this.ingredients) {
         const { number, type } = this.convertToFactor(ingredient.quantity);
-        ingredient.quantity.type = type;
+        ingredient.type = type;
         ingredient.quantity.number = number;
         ingredient.quantity.prevUnit = ingredient.quantity.unit;
       }
-      return this.ingredients;
+      return this.ingredients.filter(item => !item.removed);
     }
   },
   methods: {
@@ -15,8 +15,16 @@ Vue.component("ingredient-chooser", {
       this.ingredients.push({
         name: "",
         type: "volumeUnit",
-        quantity: { unit: "tbsp", number: 0, prevUnit: "tbsp" }
+        quantity: { unit: "tbsp", number: 0, prevUnit: "tbsp" },
+        added: true
       });
+    },
+    removeIngredient(ingredient) {
+      ingredient.removed = true;
+      const index = this.ingredients.findIndex(x => x === ingredient);
+      if (ingredient.added) this.ingredients.splice(index,1);
+      this.ingredients.push({});
+      this.ingredients.pop();
     },
     getTypeByUnit(value, table) {
       for (const prop in table) {
@@ -34,7 +42,7 @@ Vue.component("ingredient-chooser", {
           conversion_table[type].filter(x => x.unit === unit)[0].value / base;
         return { number: number * conversionFactor, type };
       } catch (e) {
-        return { number: 0, type };
+        return { number: number, type };
       }
     }
   },
@@ -51,7 +59,7 @@ Vue.component("ingredient-chooser", {
     '                    size="is-small">\n' +
     '                    <option v-for="(name, unit) in selectableUnits" :value="unit">{{ name }}</option>\n' +
     "        </b-select>\n" +
-    "    " +
+    "    <button @click='removeIngredient(ingredient)'>-</button>" +
     "    </div>" +
     '<button @click="addIngredient">Add an ingredient</button>' +
     "</div>"

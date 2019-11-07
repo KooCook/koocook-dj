@@ -35,7 +35,7 @@ class Ingredient(models.Model):
 
     @property
     def to_dict(self):
-        return {'name': self.meta.name, 'type': self.quantity.unit.type,
+        return {'id': self.id, 'name': self.meta.name, 'type': self.quantity. unit.type,
                 'quantity': {'unit': self.quantity.unit.symbol, 'number': self.quantity.amount}}
 
     @property
