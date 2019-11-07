@@ -18,10 +18,20 @@ class RecipeViewMixin:
         ingredients = json.loads(self.request.POST.get('ingredients'))
         if ingredients:
             for ingredient in ingredients:
-                meta = MetaIngredient(name=ingredient['name'])
-                meta.save()
-                Ingredient(meta=meta, recipe=form.save(commit=False),
-                           quantity=f"{ingredient['quantity']['number']} {ingredient['quantity']['unit']}").save()
+                meta_queryset = MetaIngredient.objects.filter(name=ingredient['name'])
+                if not meta_queryset.exists():
+                    meta = MetaIngredient(name=ingredient['name'])
+                    meta.save()
+                else:
+                    meta = meta_queryset[0]
+                ingredient_field_values = {'meta': meta, 'recipe': form.save(commit=False),
+                                           'quantity': f"{ingredient['quantity']['number']} "
+                                                       f"{ingredient['quantity']['unit']}"}
+                ingredient_queryset = Ingredient.objects.filter(**ingredient_field_values)
+                if not ingredient_queryset.exists():
+                    Ingredient(**ingredient_field_values).save()
+                else:
+                    ingredient_queryset.update(**ingredient_field_values)
             return response
         else:
             return response
@@ -62,7 +72,7 @@ class RecipeCreateView(RecipeViewMixin, CreateView):
         return reverse('koocook_core:recipe-user')
 
 
-class RecipeUpdateView(UpdateView):
+class RecipeUpdateView(RecipeViewMixin, UpdateView):
     model = Recipe
     fields = '__all__'  # ['name']
     template_name = 'recipes/update.html'
