@@ -14,3 +14,11 @@ const CONVERSION_FACTORS = {
 };
 
 const CONVERSION_FUNCTIONS = { };
+
+const CONVERSION_UNITS = {
+    'tbsp': "US tablespoon",
+    'mL': "millilitre",
+    "g": "gram",
+    "kg": "kilogram",
+    "mg": "milligram"
+};
