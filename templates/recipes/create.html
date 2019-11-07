@@ -1,15 +1,7 @@
-{% extends 'base/content.html' %}
+{% extends 'base/recipes.html' %}
 {% load widget_tweaks %}
 {% block page_title %}Create a recipe{% endblock %}
-{% block section_after_nav %}<section class="hero is-light">
-      <div class="hero-body">
-        <div class="container">
-          <h1 class="title">
-            Create a recipe
-          </h1>
-        </div>
-      </div>
-    </section>{% endblock %}
+{% block content_page_name %}Create a recipe{% endblock %}
 {% block page_content %}
 
     <form method="post" novalidate action="{% url 'koocook_core:recipe-create' %}">

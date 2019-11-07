@@ -1,18 +1,15 @@
-{% extends 'base/content.html' %}
-
-{% block section_after_nav %}
-
-{% endblock %}
-
+{% extends 'base/recipes.html' %}
+{% block no_hero %}{% endblock %}
+{% block content_page_name %}{{ object.name }}{% endblock %}
 {% block page_content %}
 <div style="padding: 0 3rem">
     <header class="section" style="padding-bottom: 1.5rem; margin-bottom: 1.5rem">
       <div class="container">
         <h1 class="title is-1">
-          BA's Best Buttermilk Pancakes
+          {{ object.name }}
         </h1>
         <p class="subtitle is-4">
-          Recipe by <a href="">Jessie Damuck</a>
+          Recipe by <a href="">{{ object.author.name }}</a>
         </p>
         <div class="field is-grouped is-grouped-multiline">
           <div class="control">

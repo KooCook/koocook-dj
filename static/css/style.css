@@ -98,3 +98,9 @@
     background-size: cover;
     background-position: center;
 }
+
+.breadcrumb-nav {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
