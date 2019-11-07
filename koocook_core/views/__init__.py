@@ -1,4 +1,4 @@
-from django.shortcuts import render, reverse, redirect, get_list_or_404
+from django.shortcuts import render, reverse, redirect, get_list_or_404, get_object_or_404
 from django.http import JsonResponse, HttpResponseForbidden
 from django.views.decorators.http import require_http_methods
 from django.core.exceptions import ObjectDoesNotExist
@@ -23,6 +23,15 @@ def search_view(request):
     return render(request, 'search.html')
 
 
+class RecipeDetailView(DetailView):
+    model = Recipe
+    template_name = 'recipes/detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+
 @require_http_methods(["GET", "DELETE"])
 def handle_recipe(request, recipe_id):
     if request.method == 'DELETE':
@@ -32,6 +41,10 @@ def handle_recipe(request, recipe_id):
             return JsonResponse({'status': 'deleted'})
         else:
             return HttpResponseForbidden()
+    elif request.method == 'GET':
+        recipe = get_object_or_404(Recipe, pk=recipe_id)
+        response = RecipeDetailView.as_view()
+        return response(request, pk=recipe_id)  # render(request, '', {'recipe': recipe})
     else:
         return HttpResponseForbidden()
 
