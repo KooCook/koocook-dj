@@ -2,7 +2,9 @@ Vue.component('ingredient-chooser', {
     computed: {
         liveIngredients() {
              for (let ingredient of this.ingredients) {
-                 ingredient.quantity.number = this.convertToFactor(ingredient.quantity);
+                 const { number, type }= this.convertToFactor(ingredient.quantity);
+                 ingredient.quantity.type = type;
+                 ingredient.quantity.number = number;
                  ingredient.quantity.prevUnit = ingredient.quantity.unit;
              }
              return this.ingredients;
@@ -24,9 +26,9 @@ Vue.component('ingredient-chooser', {
                 try {
                     const base = conversion_table[type].filter(x => x.unit === prevUnit)[0].value;
                     let conversionFactor = conversion_table[type].filter(x => x.unit === unit)[0].value / base;
-                    return number * conversionFactor;
+                    return { number: number * conversionFactor, type };
                 } catch (e) {
-                    return 0;
+                    return  { number: 0, type };
                 }
             }
     },
