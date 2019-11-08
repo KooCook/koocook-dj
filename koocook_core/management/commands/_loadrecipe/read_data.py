@@ -248,11 +248,8 @@ def parse_recipe(recipe: structured_data.Recipe) -> models.Recipe:
         ('_author', 'author', parse_author),
         ('_date_published', 'date_published', parse_datetime),
         ('_description', 'description', None),
-        ('_prep_time', 'prep_time', None),
-        ('_cook_time', 'cook_time', None),
         ('_recipe_instructions', 'recipe_instructions', parse_instructions),
         ('_recipe_yield', 'recipe_yield', None),
-        # ('_total_time', '', None),
         ('_aggregate_rating', 'aggregate_rating', parse_aggregate_rating),
     ):
         try:
@@ -263,6 +260,13 @@ def parse_recipe(recipe: structured_data.Recipe) -> models.Recipe:
                     data[v] = getattr(recipe, k)
         except ResourceWarning:
             skip = True
+
+    data['prep_time'], data['cook_time'] = utils.get_prep_cook_times(
+        prep_time=data.get('prep_time', None),
+        cook_time=data.get('cook_time', None),
+        total_time=data.get('total_time', None)
+    )
+
     later = {}
     for k, v, f in (
         ('_recipe_ingredient', 'recipeingredient_set', parse_ingredients),
