@@ -106,4 +106,5 @@ class RecipeDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['ingredients'] = [ing.to_dict for ing in list(self.get_object().recipe_ingredients.all())]
         return context

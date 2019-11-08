@@ -12,6 +12,7 @@ admin.site.register(Post)
 admin.site.register(Rating)
 admin.site.register(AggregateRating)
 admin.site.register(Tag)
+admin.site.register(TagLabel)
 admin.site.register(Comment)
 
 
