@@ -6,13 +6,16 @@ import json
 import warnings
 from pathlib import Path
 
-import datatrans.utils.structured_data
 import koocook_core.models as models
 import koocook_core.support as support
-from datatrans import structured_data
 from django.core.exceptions import ObjectDoesNotExist  # for .get()
 from koocook.settings.dirs import BASE_DIR
 from koocook_core.support import utils
+try:
+    import datatrans.utils.structured_data
+    from datatrans import structured_data
+except ModuleNotFoundError:
+    pass
 
 DATA_DIR = BASE_DIR / 'data'
 

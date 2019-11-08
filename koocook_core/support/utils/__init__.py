@@ -3,7 +3,10 @@ from typing import List, Union
 from django.db import models
 
 from koocook_core.support import unit
-import datatrans.utils
+try:
+    import datatrans.utils
+except ModuleNotFoundError:
+    pass
 
 import datetime
 
