@@ -16,9 +16,12 @@ class NutrientType(enum.Enum):
 
 
 class MetaIngredient(models.Model):
+    """
+        Note: ingredient_set from Ingredient's ForeignKey
+    """
     name = models.CharField(max_length=255)
-    nutrient = fields.JSONField()
-    # ingredient_set from Ingredient's ForeignKey
+    # Monkey patched
+    nutrient = fields.JSONField(default=dict)
     description = models.CharField(
         max_length=255,
         null=True,

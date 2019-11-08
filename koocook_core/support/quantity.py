@@ -34,6 +34,10 @@ class Quantity:
     def not_a_unit(self):
         return self.unit is unit_.SpecialUnit.NONE
 
+    # Monkey patched
+    def __len__(self):
+        return len(str(self))
+
 
 def parse_quantity(quantity_string: str) -> Quantity:
     amount, *unit = quantity_string.split(' ')
@@ -50,6 +54,7 @@ class QuantityField(models.CharField):
 
     def __init__(self, *args, **kwargs):
         kwargs['max_length'] = 50
+        self.max_length = 50
         super().__init__(*args, **kwargs)
 
     # def deconstruct(self):
