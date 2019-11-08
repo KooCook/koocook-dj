@@ -12,24 +12,15 @@ __all__ = ['Quantity', 'QuantityField', 'parse_quantity']
 
 
 class Quantity:
-    __slots__ = ('amount', 'unit', 'nau')
+    __slots__ = ('amount', 'unit')
 
     def __init__(self,
                  amount: float,
                  unit: Union[Unit, str],
-                 nau: bool = False):
-        self.nau = nau
         if isinstance(amount, float):
             self.amount = amount
         else:
             self.amount = float(amount)
-        if nau:
-            self.unit = type('NonUnit', (), {})
-            if amount == 1:
-                self.unit.singular = unit
-            else:
-                self.unit.plural = unit
-            return
         self.unit = get_unit(unit)
 
     def __str__(self):
@@ -40,23 +31,18 @@ class Quantity:
         return '{} {}'.format(self.amount, self.unit.plural)
 
     def get_db_str(self):
-        return self.__str__() + (' /nau' if self.nau else '')
+        return self.__str__()
 
     @property
     def not_a_unit(self):
-        return self.nau
+        return self.unit is unit_.SpecialUnit.NONE
 
 
 def parse_quantity(quantity_string: str) -> Quantity:
-    amount, *unit, nau = quantity_string.split(' ')
-    if nau != '/nau':
-        unit = unit + [nau]
-        nau = False
+    amount, *unit = quantity_string.split(' ')
     amount = float(amount)
-    if nau:
-        nau = True
     try:
-        return Quantity(amount, ' '.join(unit), nau)
+        return Quantity(amount, ' '.join(unit))
     except ValueError as e:
         raise ValidationError(_("Invalid input for a Quantity instance")
                               ) from e
@@ -65,9 +51,8 @@ def parse_quantity(quantity_string: str) -> Quantity:
 class QuantityField(models.CharField):
     description = _("<number><space><unit> (up to %(max_length)s)")
 
-    def __init__(self, nau: bool = False, *args, **kwargs):
-        self.nau = nau
-        self.max_length = 50
+    def __init__(self, *args, **kwargs):
+        kwargs['max_length'] = 50
         super().__init__(*args, **kwargs)
 
     def deconstruct(self):
