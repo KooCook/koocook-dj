@@ -1,12 +1,11 @@
 from typing import Union
 
-from django.db import models, connection
-from django.core import checks
-from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 
 from koocook_core.support.unit import *
 
+from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 __all__ = ['Quantity', 'QuantityField', 'parse_quantity']
 
@@ -55,39 +54,12 @@ class QuantityField(models.CharField):
         kwargs['max_length'] = 50
         super().__init__(*args, **kwargs)
 
-    def deconstruct(self):
-        name, path, args, kwargs = super().deconstruct()
-        # Only include kwarg if it's not the default
-        if self.nau:
-            kwargs['nau'] = self.nau
-        return name, path, args, kwargs
-
-    def check(self, **kwargs):
-        return [
-            *super().check(**kwargs),
-            *self._check_max_length_attribute(**kwargs),
-        ]
-
-    def _check_max_length_attribute(self, **kwargs):
-        if self.max_length is None:
-            return [
-                checks.Error(
-                    "CharFields must define a 'max_length' attribute.",
-                    obj=self,
-                    id='fields.E120',
-                )
-            ]
-        elif (not isinstance(self.max_length, int) or isinstance(self.max_length, bool) or
-                self.max_length <= 0):
-            return [
-                checks.Error(
-                    "'max_length' must be a positive integer.",
-                    obj=self,
-                    id='fields.E121',
-                )
-            ]
-        else:
-            return []
+    # def deconstruct(self):
+    #     name, path, args, kwargs = super().deconstruct()
+    #     # Only include kwarg if it's not the default
+    #     if self.nau:
+    #         kwargs['nau'] = self.nau
+    #     return name, path, args, kwargs
 
     def from_db_value(self, value, expression, connection):
         if value is None or value is '':
@@ -110,23 +82,8 @@ class QuantityField(models.CharField):
         if value is None:
             return value
 
-        if isinstance(value, str):
-            if ' /nau' in value:
-                return value
-            return value + ' /nau' if self.nau else value
         return parse_quantity(value).get_db_str()
 
     def value_to_string(self, obj):
         value = self.value_from_object(obj)
         return self.get_prep_value(value)
-
-    def formfield(self, **kwargs):
-        # Passing max_length to forms.CharField means that the value's length
-        # will be validated twice. This is considered acceptable since we want
-        # the value in the form field (to pass into widget for example).
-        defaults = {'max_length': self.max_length}
-        # TODO: Handle multiple backends with different feature flags.
-        if self.null and not connection.features.interprets_empty_strings_as_nulls:
-            defaults['empty_value'] = None
-        defaults.update(kwargs)
-        return super().formfield(**defaults)
