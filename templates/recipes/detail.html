@@ -11,32 +11,21 @@
         <p class="subtitle is-4">
           Recipe by <a href="">{{ object.author.name }}</a>
         </p>
-        <div class="field is-grouped is-grouped-multiline">
-          <div class="control">
+          <div class="field is-grouped is-grouped-multiline">
+          {% for tag in object.tag_set.all %}
+            <div class="control">
             <div class="tags has-addons">
-              <span class="tag is-medium">Allergen</span>
-              <span class="tag is-danger is-medium">
-                  Gluten
-                  <button class="delete is-small"></button>
-                </span>
-            </div>
+                    <span class="tag is-medium">{{ tag.name }}</span>
+                          {% if tag.label %}<span class="tag is-danger is-medium">
+                                {{ tag.label.name }}
+                              <button class="delete is-small"></button>
+                            </span>{% else %}
+                              <button class="delete is-small"></button>
+                              {% endif %}
+                        </div>
+             </div>
+          {% endfor %}
           </div>
-          <div class="control">
-            <div class="tags has-addons">
-              <span class="tag is-medium">Allergen</span>
-              <span class="tag is-danger is-medium">
-                  Dairy
-                  <button class="delete is-small"></button>
-                </span>
-            </div>
-          </div>
-          <div class="control">
-              <span class="tag is-medium is-warning">
-                Non-vegan
-                <button class="delete is-small"></button>
-              </span>
-          </div>
-        </div>
       </div>
     </header>
   

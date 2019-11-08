@@ -1,8 +1,9 @@
 {% extends 'base/recipes.html' %}
 {% load static %}
 {% load widget_tweaks %}
-{% block content_page_name %}Edit a recipe{% endblock %}
 {% block page_title %}Edit a recipe{% endblock %}
+{% block content_page_name %}Edit a recipe{% endblock %}
+{% block hero_title %}Edit a recipe{% endblock %}
 {% block content_deps %}<script src="{% static 'js/components/ingredients.js' %}"></script>{% endblock %}
 {% block page_content %}
     <ingredient-chooser :ingredients="ingredients" :selectable-units="selectableUnits"></ingredient-chooser>
