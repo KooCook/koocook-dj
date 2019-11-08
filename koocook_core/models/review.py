@@ -10,11 +10,11 @@ class Comment(models.Model):
         'koocook_core.Author',
         on_delete=models.PROTECT,
     )
-    date_published = models.DateTimeField()
+    date_published = models.DateTimeField(auto_now_add=True)
     body = models.TextField()
     aggregate_rating = models.OneToOneField(
         'koocook_core.AggregateRating',
-        on_delete=models.PROTECT,
+        on_delete=models.PROTECT, blank=True, null=True
     )
     # item_reviewed = models.URLField()
     reviewed_recipe = models.ForeignKey(
@@ -59,6 +59,10 @@ class Comment(models.Model):
                             '\'{}\' not \'\''.format(
                              type(self.reviewed_recipe or self.reviewed_post or self.reviewed_comment),
                              type(obj))) from e.__context__
+
+    @classmethod
+    def field_names(cls):
+        return [f.name for f in cls._meta.fields]
 
 
 class Rating(models.Model):
