@@ -56,7 +56,7 @@ def parse_quantity(quantity_string: str) -> Quantity:
     if nau:
         nau = True
     try:
-        return Quantity(amount, unit, nau)
+        return Quantity(amount, ' '.join(unit), nau)
     except ValueError as e:
         raise ValidationError(_("Invalid input for a Quantity instance")
                               ) from e
