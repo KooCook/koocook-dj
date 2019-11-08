@@ -1,4 +1,4 @@
-{% extends 'base/content.html' %}
+{% extends 'base/recipes.html' %}
 {% block section_after_nav %}<section class="hero is-light">
   <div class="hero-body">
     <div class="container">
@@ -49,7 +49,7 @@
     <div class="card-content">
         <div class="media">
       <div class="media-content">
-        <p class="title is-4">{{ recipe.name }} <span class="buttons is-inline-flex has-addons  is-small">
+          <p class="title is-4"><a href="{% url 'koocook_core:recipe' recipe.id %}">{{ recipe.name }}</a> <span class="buttons is-inline-flex has-addons  is-small">
       <a href="{% url 'koocook_core:recipe-edit' recipe.id %}"><button class="button is-primary is-outlined is-small"><i class="fas fa-pencil-alt"></i> </button></a>
      <button class="button is-danger is-outlined is-small is-light" @click="showConfirmDeletion({{ recipe.id }})"><i class="fas fa-times"></i> </button>
         </span></p>
