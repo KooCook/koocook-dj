@@ -32,15 +32,6 @@ def search_view(request):
     return render(request, 'search.html')
 
 
-class RecipeDetailView(DetailView):
-    model = Recipe
-    template_name = 'recipes/detail.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
-
-
 @require_http_methods(["GET", "DELETE"])
 def handle_recipe(request, recipe_id):
     if request.method == 'DELETE':
@@ -56,7 +47,3 @@ def handle_recipe(request, recipe_id):
         return response(request, pk=recipe_id)
     else:
         return HttpResponseForbidden()
-
-
-def detail_view(request):
-    return render(request, 'detail.html')
