@@ -1,4 +1,6 @@
 from django.db import models
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
 __all__ = ['Comment', 'Rating', 'AggregateRating']
 
@@ -65,8 +67,8 @@ class Rating(models.Model):
         on_delete=models.PROTECT,
     )
     rating_value = models.IntegerField()
-    best_rating = models.IntegerField()
-    worst_rating = models.IntegerField()
+    best_rating = models.IntegerField(default=5)
+    worst_rating = models.IntegerField(default=1)
     # item_reviewed = models.URLField()
     reviewed_recipe = models.ForeignKey(
         'koocook_core.Recipe',
@@ -119,14 +121,53 @@ class AggregateRating(models.Model):
         # every vote counts until 10 B
     )
     rating_count = models.IntegerField()
-    best_rating = models.IntegerField()
-    worst_rating = models.IntegerField()
+    best_rating = models.IntegerField(default=5)
+    worst_rating = models.IntegerField(default=1)
+    # recipe from Recipe's OneToOneField
+    # post from Post's OneToOneField
+    # comment from Comment's OneToOneField
+
+    def check_rating(self, rating: Rating) -> None:
+        """Checks if rating is of the same type and origin or not.
+
+        Raises:
+            ValidationError: When `rating` is not valid
+        """
+        if rating.best_rating != self.best_rating:
+            raise ValidationError(_('Incompatible bestRating: \'{}\' != \'\''
+                                    .format(rating.best_rating, self.best_rating)))
+        if rating.worst_rating != self.worst_rating:
+            raise ValidationError(_('Incompatible worstRating: \'{}\' != \'\''
+                                    .format(rating.worst_rating, self.worst_rating)))
+        if rating.item_reviewed != self.item_reviewed:
+            raise ValidationError(_('Incompatible itemReviewed: \'{}\' != \'\''
+                                    .format(rating.item_reviewed, self.item_reviewed)))
 
     def add_rating(self, rating: Rating):
-        pass
+        """Adds a rating from an aggregate rating.
+
+        Raises:
+            ValidationError: When `rating` is not valid
+        """
+        self.check_rating(rating)
+        total_value = self.rating_value * self.rating_count
+        total_value += rating.rating_value
+        self.rating_count += 1
+        self.rating_value = total_value / self.rating_count
+        self.save()
 
     def remove_rating(self, rating: Rating):
-        pass
+        """Removes a rating from an aggregate rating.
+
+        Raises:
+            ValidationError: When `rating` is not valid
+        """
+        self.check_rating(rating)
+        total_value = self.rating_value * self.rating_count
+        total_value -= rating.rating_value
+        self.rating_count -= 1
+        self.rating_value = total_value / self.rating_count
+        self.save()
 
     @property
     def item_reviewed(self):

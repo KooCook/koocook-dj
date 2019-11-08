@@ -8,7 +8,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import UpdateView
 
 from .forms import RecipeForm
-from ..models import Recipe, Author, KooCookUser, Ingredient, MetaIngredient
+from ..models import Recipe, Author, KoocookUser, RecipeIngredient, MetaIngredient
 from ..support import Quantity
 
 
@@ -28,11 +28,11 @@ class RecipeViewMixin:
                                            'quantity': f"{ingredient['quantity']['number']} "
                                                        f"{ingredient['quantity']['unit']}"}
                 if 'id' not in ingredient:
-                    Ingredient(**ingredient_field_values).save()
+                    RecipeIngredient(**ingredient_field_values).save()
                 else:
-                    found_ingredient = Ingredient.objects.filter(pk=ingredient['id'])
+                    found_ingredient = RecipeIngredient.objects.filter(pk=ingredient['id'])
                     if not found_ingredient:
-                        Ingredient(**ingredient_field_values).save()
+                        RecipeIngredient(**ingredient_field_values).save()
                     else:
                         if 'removed' in ingredient and bool(ingredient['removed']):
                             found_ingredient.delete()
@@ -53,7 +53,7 @@ class UserRecipeListView(ListView):
         try:
             author = Author.objects.get(user__user=self.request.user)
         except ObjectDoesNotExist:
-            author = Author(user=KooCookUser.objects.get(user=self.request.user))
+            author = Author(user=KoocookUser.objects.get(user=self.request.user))
             author.save()
         return Recipe.objects.filter(author=author)
 

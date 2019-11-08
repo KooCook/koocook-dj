@@ -10,13 +10,13 @@ from django.dispatch import receiver
 from .recipes import *
 from .forms import RecipeForm
 from ..models import Recipe, Author
-from ..models.user import KooCookUser
+from ..models.user import KoocookUser
 
 
 @receiver(post_save, sender=User)
 def dispatch(sender, instance: User, created, **kwargs):
     if created:
-        kc_user = KooCookUser(user=instance)
+        kc_user = KoocookUser(user=instance)
         kc_user.save()
         author = Author(name=kc_user.name, user=kc_user)
         author.save()
@@ -36,7 +36,7 @@ def search_view(request):
 def handle_recipe(request, recipe_id):
     if request.method == 'DELETE':
         recipe = Recipe.objects.get(pk=recipe_id)
-        if recipe.author.user == KooCookUser.objects.get(user=request.user):
+        if recipe.author.user == KoocookUser.objects.get(user=request.user):
             recipe.delete()
             return JsonResponse({'status': 'deleted'})
         else:

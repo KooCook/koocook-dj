@@ -6,31 +6,23 @@ from .review import AggregateRating
 __all__ = ['Recipe']
 
 
-def _default_image():
-    return ('["https://example.com/photos/1x1/photo.jpg",'
-            ' "https://example.com/photos/4x3/photo.jpg",'
-            ' "https://example.com/photos/16x9/photo.jpg"]')
-
-
-def _default_recipe_instructions():
-    return '[""]'
-
-
 class Recipe(models.Model):
-    name = models.CharField(max_length=63)
-    image = fields.ArrayField(models.CharField(max_length=255), default=_default_image)
+    name = models.CharField(max_length=255)
+    image = fields.ArrayField(models.CharField(max_length=200), null=True)
     video = models.URLField(null=True, blank=True)
     author = models.ForeignKey(
         'koocook_core.Author',
         on_delete=models.PROTECT,
+        null=True,
     )
-    date_published = models.DateTimeField()
-    description = models.CharField(max_length=255)
+    date_published = models.DateTimeField(null=True)
+    # description = models.CharField(max_length=255)
+    description = models.TextField()
     prep_time = models.DurationField(null=True, blank=True)
-    cook_time = models.DurationField()
-    # ingredient_set from Ingredient's ForeignKey
-    recipe_instructions = fields.ArrayField(models.TextField(), default=_default_recipe_instructions)
-    # recipe_yield = koocookfields.QuantityField(max_length=50, nau=True)
+    cook_time = models.DurationField(null=True)
+    # recipeingredient_set from Ingredient's ForeignKey
+    recipe_instructions = fields.ArrayField(models.TextField())
+    recipe_yield = koocookfields.QuantityField(null=True)
     tag_set = models.ManyToManyField('koocook_core.Tag', blank=True)
     # comment_set from Comment's ForeignKey
     aggregate_rating = models.OneToOneField(
@@ -44,10 +36,9 @@ class Recipe(models.Model):
 
     @property
     def nutrition(self):
-        pass
         return
 
     @property
     def recipe_ingredients(self):
         """ Proxy property for consistency with Schema.org's standard """
-        return self.ingredient_set.all()
+        return self.recipeingredient_set.all()
