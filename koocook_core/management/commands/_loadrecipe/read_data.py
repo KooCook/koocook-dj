@@ -202,9 +202,15 @@ def parse_instructions(instructions: structured_data.Property) -> List[str]:
 
 def parse_author(author: structured_data.Person) -> models.Author:
     try:
-        author = models.Author.objects.filter(name__iexact=author._name).get()
+        try:
+            author = models.Author.objects.filter(name__iexact=author._name).get()
+        except AttributeError:
+            author = models.Author.objects.filter(name__iexact=author[0]._name).get()
     except ObjectDoesNotExist:
-        author = models.Author.objects.create(name=author._name)
+        try:
+            author = models.Author.objects.create(name=author._name)
+        except AttributeError:
+            author = models.Author.objects.filter(name__iexact=author[0]._name).get()
     # Don't catch MultipleObjectsReturned
     return author
 
