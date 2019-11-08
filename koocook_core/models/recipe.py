@@ -7,7 +7,7 @@ __all__ = ['Recipe']
 
 
 class Recipe(models.Model):
-    name = models.CharField(max_length=63)
+    name = models.CharField(max_length=255)
     image = fields.ArrayField(models.CharField(max_length=200), null=True)
     video = models.URLField(null=True, blank=True)
     author = models.ForeignKey(
@@ -15,7 +15,7 @@ class Recipe(models.Model):
         on_delete=models.PROTECT,
         null=True,
     )
-    date_published = models.DateTimeField()
+    date_published = models.DateTimeField(null=True)
     # description = models.CharField(max_length=255)
     description = models.TextField()
     prep_time = models.DurationField(null=True, blank=True)
