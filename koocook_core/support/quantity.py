@@ -1,11 +1,9 @@
 from typing import Union
 
 from django.core.exceptions import ValidationError
-
-from koocook_core.support.unit import *
-
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from koocook_core.support import unit as unit_
 
 __all__ = ['Quantity', 'QuantityField', 'parse_quantity']
 
@@ -15,12 +13,12 @@ class Quantity:
 
     def __init__(self,
                  amount: float,
-                 unit: Union[Unit, str],
+                 unit: Union[unit_.Unit, str]):
         if isinstance(amount, float):
             self.amount = amount
         else:
             self.amount = float(amount)
-        self.unit = get_unit(unit)
+        self.unit = unit_.get_unit(unit)
 
     def __str__(self):
         if self.amount == 1:
