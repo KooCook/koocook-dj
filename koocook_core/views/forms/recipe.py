@@ -5,8 +5,6 @@ from ...models import Recipe
 class RecipeForm(forms.ModelForm):
     customised_field = ['name', 'author']
 
-
-
     def __init__(self, *args, **kwargs):
         if 'user' in kwargs:
             self.user = kwargs.pop('user', None)
@@ -16,6 +14,7 @@ class RecipeForm(forms.ModelForm):
     class Meta:
         model = Recipe
         fields = '__all__'
+        exclude = ['author']
 
     @property
     def vanilla_fields(self):
