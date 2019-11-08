@@ -220,6 +220,11 @@ def parse_aggregate_rating(aggregate_rating: structured_data.AggregateRating) ->
         'rating_value': aggregate_rating._rating_value,
         'rating_count': aggregate_rating._rating_count,
     }
+    if kwargs['rating_count'] is None:
+        kwargs['rating_count'] = 1
+    if kwargs['rating_value'] is None:
+        kwargs['rating_value'] = 0
+
     if aggregate_rating._best_rating is not None:
         kwargs['best_rating'] = aggregate_rating._best_rating
     if aggregate_rating._worst_rating is not None:
