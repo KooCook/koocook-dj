@@ -1,5 +1,6 @@
 from typing import List
 
+import datetime
 import enum
 import json
 from pathlib import Path
@@ -232,6 +233,11 @@ def parse_aggregate_rating(aggregate_rating: structured_data.AggregateRating) ->
     return models.AggregateRating.objects.create(**kwargs)
 
 
+def parse_datetime(datetime_str: str):
+    d = datetime.datetime.fromisoformat(datetime_str)
+    return d
+
+
 def parse_recipe(recipe: structured_data.Recipe) -> models.Recipe:
     skip = False
     data = {}
@@ -240,7 +246,7 @@ def parse_recipe(recipe: structured_data.Recipe) -> models.Recipe:
         ('_image', 'video', None),
         ('_video', 'name', None),
         ('_author', 'author', parse_author),
-        ('_date_published', 'date_published', None),
+        ('_date_published', 'date_published', parse_datetime),
         ('_description', 'description', None),
         ('_prep_time', 'prep_time', None),
         ('_cook_time', 'cook_time', None),
