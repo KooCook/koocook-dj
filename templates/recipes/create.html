@@ -1,10 +1,13 @@
 {% extends 'base/recipes.html' %}
 {% load widget_tweaks %}
+{% load static %}
 {% block page_title %}Create a recipe{% endblock %}
 {% block content_page_name %}Create a recipe{% endblock %}
+{% block content_deps %}<script src="{% static 'js/components/ingredients.js' %}"></script>{% endblock %}
 {% block page_content %}
-
-    <form method="post" novalidate action="{% url 'koocook_core:recipe-create' %}">
+    <ingredient-chooser :ingredients="ingredients" :selectable-units="selectableUnits"></ingredient-chooser>
+    <form method="post" novalidate action="{{ request.path }}">
+    <input name="ingredients" type="hidden" :value="JSON.stringify(ingredients)">
     <div class="form-group field is-horizontal">
         <div class="field-label is-medium">
             <label class="label">{{ form.name.label_tag }}</label>
@@ -71,4 +74,16 @@
       </div>
     </div>
     </form>
+
+     <script>
+      new Vue({
+        el: '#app',
+        data: {
+            searchName: '',
+            ingredients: [],
+            unitConversionFactor: CONVERSION_FACTORS,
+            selectableUnits: CONVERSION_UNITS
+        }
+      })
+  </script>
 {% endblock %}
