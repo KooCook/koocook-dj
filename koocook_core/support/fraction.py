@@ -78,6 +78,58 @@ def to_ratio(x: Union[float, int]) -> Tuple[int, int]:
     return to_proper(num, 10 ** i)
 
 
+def parse_numeral(string: str) -> int:
+    """Converts string containing numeral under 13 to `int`.
+
+    Args:
+        string (str): positional only. string to parse
+
+    Examples:
+        >>> parse_numeral('One')
+        1
+        >>> parse_numeral('two')
+        2
+        >>> parse_numeral('three')
+        3
+        >>> parse_numeral('four')
+        4
+        >>> parse_numeral('five')
+        5
+        >>> parse_numeral('six')
+        6
+        >>> parse_numeral('seven ')
+        7
+        >>> parse_numeral('eight')
+        8
+        >>> parse_numeral('nine')
+        9
+        >>> parse_numeral('  ten ')
+        10
+        >>> parse_numeral('ELEVEN')
+        11
+        >>> parse_numeral('twelve')
+        12
+    """
+    try:
+        return {
+            'one': 1,
+            'two': 2,
+            'three': 3,
+            'four': 4,
+            'five': 5,
+            'six': 6,
+            'seven': 7,
+            'eight': 8,
+            'nine': 9,
+            'ten': 10,
+            'eleven': 11,
+            'twelve': 12,
+        }[''.join(string.lower().split(' '))]
+    except KeyError as e:
+        raise ValueError('cannot parse \'{}\' as numerals'
+                         .format(string)) from e.__context__
+
+
 class Fraction:
     """A fraction with a numerator and denominator and arithmetic operations.
 
