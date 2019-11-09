@@ -213,7 +213,7 @@ def parse_author(author: structured_data.Person) -> models.Author:
         try:
             author = models.Author.objects.create(name=author._name)
         except AttributeError:
-            author = models.Author.objects.filter(name__iexact=author[0]._name).get()
+            author = models.Author.objects.create(name=author[0]._name)
     # Don't catch MultipleObjectsReturned
     return author
 
