@@ -4,14 +4,16 @@ from typing import Tuple, Union
 import math
 
 
-def type_error_msg_1(operand: str, other) -> str:
+def type_error_msg_1(self, operand: str, other) -> str:
     """Return a python built-in like error message"""
-    return f"unsupported operand type(s) for {operand}: 'Fraction' and '{str(other.__class__)[7:-1]}'"
+    return "unsupported operand type(s) for {0}: '{1}' and '{2}'".format(
+        operand, self.__class__.__name__, other.__class__.__name__)
 
 
-def type_error_msg_2(operand: str, other) -> str:
+def type_error_msg_2(self, operand: str, other) -> str:
     """Return a python built-in like error message"""
-    return f"'{operand}' not supported between instances of 'Fraction' and '{str(other.__class__)[7:-1]}'"
+    return "'{0}' not supported between instances of '{1}' and '{2}'".format(
+        operand, self.__class__.__name__, other.__class__.__name__)
 
 
 def to_proper(numerator: int, denominator: int) -> Tuple[int, int]:
@@ -123,7 +125,7 @@ class Fraction:
         """
         if not isinstance(other, Fraction):
             if not isinstance(other, (int, float)):
-                raise TypeError(type_error_msg_1('+', other))
+                raise TypeError(type_error_msg_1(self, '+', other))
             other = Fraction(other)
 
         if self.is_infinite() and other.is_infinite():
@@ -142,7 +144,7 @@ class Fraction:
     def __sub__(self, other: Union[int, float, Fraction]) -> Union[Fraction, math.nan]:
         if not isinstance(other, Fraction):
             if not isinstance(other, (int, float)):
-                raise TypeError(type_error_msg_1('-', other))
+                raise TypeError(type_error_msg_1(self, '-', other))
             other = Fraction(other)
 
         return self + (-other)
@@ -150,7 +152,7 @@ class Fraction:
     def __mul__(self, other: Union[int, float, Fraction]) -> Union[Fraction, math.nan]:
         if not isinstance(other, Fraction):
             if not isinstance(other, (int, float)):
-                raise TypeError(type_error_msg_1('*', other))
+                raise TypeError(type_error_msg_1(self, '*', other))
             other = Fraction(other)
 
         return Fraction(self.numerator * other.numerator, self.denominator * other.denominator)
@@ -158,7 +160,7 @@ class Fraction:
     def __truediv__(self, other: Union[int, float, Fraction]) -> Union[Fraction, math.nan]:
         if not isinstance(other, Fraction):
             if not isinstance(other, (int, float)):
-                raise TypeError(type_error_msg_1('/', other))
+                raise TypeError(type_error_msg_1(self, '/', other))
             other = Fraction(other)
 
         if self.denominator * other.numerator == 0:
@@ -173,7 +175,7 @@ class Fraction:
     def __gt__(self, other: Fraction):
         if not isinstance(other, Fraction):
             if not isinstance(other, (int, float)):
-                raise TypeError(type_error_msg_2('>', other))
+                raise TypeError(type_error_msg_2(self, '>', other))
             other = Fraction(other)
 
         if self.isnan() or other.isnan():
@@ -185,7 +187,7 @@ class Fraction:
     def __lt__(self, other: Fraction):
         if not isinstance(other, Fraction):
             if not isinstance(other, (int, float)):
-                raise TypeError(type_error_msg_2('<', other))
+                raise TypeError(type_error_msg_2(self, '<', other))
             other = Fraction(other)
 
         if self.isnan() or other.isnan():
