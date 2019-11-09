@@ -25,6 +25,20 @@ VULGAR_UNICODE = {
     '↉': '0/3',
 }
 VULGAR_UNICODE_PATTERN = re.compile(r'([0-9])?([{}])(-)?'.format(''.join(p for p in VULGAR_UNICODE)))
+NUMERAL = {
+    'one': 1,
+    'two': 2,
+    'three': 3,
+    'four': 4,
+    'five': 5,
+    'six': 6,
+    'seven': 7,
+    'eight': 8,
+    'nine': 9,
+    'ten': 10,
+    'eleven': 11,
+    'twelve': 12,
+}
 
 
 def type_error_msg_1(self, operand: str, other) -> str:
@@ -99,6 +113,28 @@ def to_ratio(x: Union[float, int]) -> Tuple[int, int]:
     num = int(num)
     assert x == num / 10 ** i
     return to_proper(num, 10 ** i)
+
+
+def parse_numeral(s: str) -> str:
+    """Converts numeral under 13 in string to number.
+
+    Args:
+        s (str): positional only. string to parse
+
+    Examples:
+        >>> parse_numeral('one to two cups parmesan')
+        '1 to 2 cups parmesan'
+        >>> parse_numeral('TEN BUCKS!')
+        '10 BUCKS!'
+        >>> parse_numeral('1234')
+        '1234'
+        >>> parse_numeral('something else ')
+        'something else '
+    """
+    def repl(m: Match):
+        return str(NUMERAL[m.group(0).lower()])
+    pattern = re.compile('|'.join(k for k in NUMERAL), re.IGNORECASE)
+    return pattern.sub(repl, s)
 
 
 def parse_vulgar_unicode(s: str) -> str:
