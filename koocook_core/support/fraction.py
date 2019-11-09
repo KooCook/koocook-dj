@@ -43,6 +43,12 @@ NUMERAL = {
 }
 
 
+_parse_numeral_pattern = re.compile(r'(?P<m>{})\b'.format(
+    '|'.join(
+        '|'.join([k.lower(), k.upper(), k.title()])
+        for k in NUMERAL), re.IGNORECASE))
+
+
 def parse_numeral(s: str) -> str:
     """Converts numeral under 13 in string to number.
 
@@ -50,7 +56,7 @@ def parse_numeral(s: str) -> str:
         s (str): positional only. string to parse
 
     Examples:
-        >>> parse_numeral('one to two cups parmesan')
+        >>> parse_numeral('One to two cups parmesan')
         '1 to 2 cups parmesan'
         >>> parse_numeral('TEN BUCKS!')
         '10 BUCKS!'
@@ -58,11 +64,12 @@ def parse_numeral(s: str) -> str:
         '1234'
         >>> parse_numeral('something else ')
         'something else '
+        >>> parse_numeral('tenderloin')
+        'tenderloin'
     """
     def repl(m: Match):
-        return str(NUMERAL[m.group(0).lower()])
-    pattern = re.compile('|'.join(k for k in NUMERAL), re.IGNORECASE)
-    return pattern.sub(repl, s)
+        return str(NUMERAL[m.group('m').lower()])
+    return _parse_numeral_pattern.sub(repl, s)
 
 
 def parse_vulgar_unicode(s: str) -> str:
