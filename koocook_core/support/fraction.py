@@ -99,6 +99,47 @@ def parse_vulgar_unicode(s: str) -> str:
     return s
 
 
+def parse_fraction(s: str) -> Fraction:
+    """Converts a fraction string to Fraction.
+
+    Args:
+        s (str): positional only. string to parse
+
+    Examples:
+        >>> parse_fraction('1/2') == Fraction(1, 2)
+        True
+        >>> parse_fraction('5/4') == Fraction(5, 4)
+        True
+        >>> parse_fraction('8/17.5') == Fraction(16, 35)
+        True
+        >>> parse_fraction('¼') == Fraction(1, 4)
+        True
+        >>> parse_fraction('⅟20') == Fraction(1, 20)
+        True
+        >>> parse_fraction('5') == Fraction(5)
+        True
+    """
+    if '/' in s:
+        try:
+            numerator, denominator = map(float, s.split('/'))
+            return Fraction(numerator, denominator)
+        except ValueError:
+            raise
+    try:
+        s = parse_vulgar_unicode(s)
+        try:
+            numerator, denominator = map(float, s.split('/'))
+            return Fraction(numerator, denominator)
+        except ValueError as e:
+            try:
+                numerator = float(s)
+                return Fraction(numerator)
+            except ValueError as ee:
+                raise ee from e.__context__
+    except ValueError:
+        raise
+
+
 def type_error_msg_1(self, operand: str, other) -> str:
     """Return a python built-in like error message"""
     return "unsupported operand type(s) for {0}: '{1}' and '{2}'".format(
