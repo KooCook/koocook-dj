@@ -167,18 +167,21 @@ def parse_vulgar_unicode(s: str) -> str:
         >>> parse_vulgar_unicode('1¼')
         '1 1/4'
     """
-    if not isinstance(s, str):
-        raise TypeError('\'parse_vulgar_unicode\' takes exactly 1 \'str\'')
+    for k, v in VULGAR_UNICODE.items():
+        x = s.find(k)
+        a = ''
+        if x != -1:
+            if x > 0:
+                if s[x - 1] in '0123456789':
+                    a = ' '
+            try:
+                if s[x + 1] == '-':
+                    continue
+            except IndexError:
+                pass
+        s = s.replace(k, a + v)
+    return s
 
-    def repl(m: Match):
-        before, frac, after = m.group(1), m.group(2), m.group(3)
-        if after:
-            return m.group(0)
-        if before:
-            return before + ' ' + VULGAR_UNICODE[frac]
-        return VULGAR_UNICODE[frac]
-
-    return re.sub(VULGAR_UNICODE_PATTERN, repl, s)
 
 
 class Fraction:
