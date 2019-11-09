@@ -74,8 +74,8 @@ def to_ratio(x: Union[float, int]) -> Tuple[int, int]:
         num *= 10
         i += 1
     num = int(num)
-    assert x == num / 10**i
-    return to_proper(num, 10**i)
+    assert x == num / 10 ** i
+    return to_proper(num, 10 ** i)
 
 
 class Fraction:
@@ -140,7 +140,7 @@ class Fraction:
                 return Fraction(-1, 0)
             # -inf + inf -> indefinite
             return Fraction(0, 0)
-        return Fraction(self.numerator*other.denominator + other.numerator*self.denominator,
+        return Fraction(self.numerator * other.denominator + other.numerator * self.denominator,
                         self.denominator * other.denominator)
 
     def __sub__(self, other: Union[int, float, Fraction]) -> Union[Fraction, math.nan]:
