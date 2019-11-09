@@ -24,7 +24,7 @@ VULGAR_UNICODE = {
     '⅟': '1/',
     '↉': '0/3',
 }
-VULGAR_UNICODE_PATTERN = re.compile(r'([0-9])?([{}])(-)?'.format(''.join(p for p in VULGAR_UNICODE)))
+# VULGAR_UNICODE_PATTERN = re.compile(r'([0-9])?([{}])(-)?'.format(''.join(p for p in VULGAR_UNICODE)))
 NUMERAL = {
     'one': 1,
     'two': 2,
