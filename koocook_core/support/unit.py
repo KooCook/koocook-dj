@@ -3,11 +3,12 @@ from typing import Union, Optional
 import enum
 
 __all__ = ['Unit', 'Units', 'LengthUnit', 'AreaUnit', 'VolumeUnit', 'MassUnit',
-           'TemperatureUnit']
+           'TemperatureUnit', 'ServingUnit', 'SpecialUnit', 'get_unit']
 
 
 @enum.unique
 class Unit(enum.Enum):
+
     def __new__(cls, symbol: Optional[str], *args):
         obj = object.__new__(cls)
         # ``symbol`` is canonical value
@@ -39,6 +40,11 @@ class Unit(enum.Enum):
     @property
     def plural(self) -> str:
         return self._plural
+
+    @property
+    def type(self) -> str:
+        name = self.__class__.__name__
+        return name[0].lower() + name[1:]
 
     @property
     def conversion_factor(self) -> float:
@@ -74,6 +80,9 @@ class MassUnit(Unit):
     KILOGRAM = 'kg', 1.
     GRAM = 'g', 0.001
     MILLIGRAM = 'mg', 0.000_001
+
+    OUNCE = 'oz', 0.028  # US Food nutrition labeling
+    POUND = 'lb', 0.453592  # Google
 
 
 class TemperatureUnit(Unit):
@@ -130,4 +139,31 @@ def _from_celsius(value: float, quote: Union[TemperatureUnit, str]) -> float:
     raise TypeError('invalid quote \'{}\''.format(quote.__class__.__name__))
 
 
-Units = (LengthUnit, AreaUnit, VolumeUnit, MassUnit, TemperatureUnit)
+class ServingUnit(Unit):
+    SERVING = None, None,
+    PERSON = None, None, 'people'
+
+
+class SpecialUnit(Unit):
+    NONE = '', None, 'units', 'unit'
+
+
+def get_unit(unit: Union[str, Unit]) -> Unit:
+    """Get Unit of Error from string
+
+    Raises:
+        ValueError: When `unit` is not a valid ``Unit``
+    """
+    if isinstance(unit, Unit):
+        return unit
+    else:
+        for _unit_ in Units:
+            try:
+                return _unit_(unit)
+            except ValueError:
+                pass
+        else:
+            raise ValueError('\'{}\' is not a valid Unit'.format(unit))
+
+
+Units = (LengthUnit, AreaUnit, VolumeUnit, MassUnit, TemperatureUnit, ServingUnit, SpecialUnit)
