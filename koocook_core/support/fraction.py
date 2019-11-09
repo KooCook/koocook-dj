@@ -41,6 +41,64 @@ NUMERAL = {
 }
 
 
+def parse_numeral(s: str) -> str:
+    """Converts numeral under 13 in string to number.
+
+    Args:
+        s (str): positional only. string to parse
+
+    Examples:
+        >>> parse_numeral('one to two cups parmesan')
+        '1 to 2 cups parmesan'
+        >>> parse_numeral('TEN BUCKS!')
+        '10 BUCKS!'
+        >>> parse_numeral('1234')
+        '1234'
+        >>> parse_numeral('something else ')
+        'something else '
+    """
+    def repl(m: Match):
+        return str(NUMERAL[m.group(0).lower()])
+    pattern = re.compile('|'.join(k for k in NUMERAL), re.IGNORECASE)
+    return pattern.sub(repl, s)
+
+
+def parse_vulgar_unicode(s: str) -> str:
+    """Converts string containing vulgar fractions in unicode to literal.
+
+    Args:
+        s (str): positional only. string to parse
+
+    Examples:
+        >>> parse_vulgar_unicode('¾ cup (1½ sticks) cold unsalted butter, cut into ¼-inch pieces')
+        '3/4 cup (1 1/2 sticks) cold unsalted butter, cut into ¼-inch pieces'
+        >>> parse_vulgar_unicode('1¼-inch strips')
+        '1¼-inch strips'
+        >>> parse_vulgar_unicode('1½')
+        '1 1/2'
+        >>> parse_vulgar_unicode('¾')
+        '3/4'
+        >>> parse_vulgar_unicode('¼')
+        '1/4'
+        >>> parse_vulgar_unicode('3⅟100')
+        '3 1/100'
+    """
+    for k, v in VULGAR_UNICODE.items():
+        x = s.find(k)
+        a = ''
+        if x != -1:
+            if x > 0:
+                if s[x - 1] in '0123456789':
+                    a = ' '
+            try:
+                if s[x + 1] == '-':
+                    continue
+            except IndexError:
+                pass
+        s = s.replace(k, a + v)
+    return s
+
+
 def type_error_msg_1(self, operand: str, other) -> str:
     """Return a python built-in like error message"""
     return "unsupported operand type(s) for {0}: '{1}' and '{2}'".format(
@@ -113,59 +171,6 @@ def to_ratio(x: Union[float, int]) -> Tuple[int, int]:
     num = int(num)
     assert x == num / 10 ** i
     return to_proper(num, 10 ** i)
-
-
-def parse_numeral(s: str) -> str:
-    """Converts numeral under 13 in string to number.
-
-    Args:
-        s (str): positional only. string to parse
-
-    Examples:
-        >>> parse_numeral('one to two cups parmesan')
-        '1 to 2 cups parmesan'
-        >>> parse_numeral('TEN BUCKS!')
-        '10 BUCKS!'
-        >>> parse_numeral('1234')
-        '1234'
-        >>> parse_numeral('something else ')
-        'something else '
-    """
-    def repl(m: Match):
-        return str(NUMERAL[m.group(0).lower()])
-    pattern = re.compile('|'.join(k for k in NUMERAL), re.IGNORECASE)
-    return pattern.sub(repl, s)
-
-
-def parse_vulgar_unicode(s: str) -> str:
-    """Converts string containing vulgar fractions in unicode to literal.
-
-    Args:
-        string (str): positional only. string to parse
-
-    Examples:
-        >>> parse_vulgar_unicode('¾ cup (1½ sticks) cold unsalted butter, cut into ¼-inch pieces')
-        '3/4 cup (1 1/2 sticks) cold unsalted butter, cut into ¼-inch pieces'
-        >>> parse_vulgar_unicode('1¼-inch strips')
-        '1¼-inch strips'
-        >>> parse_vulgar_unicode('1¼')
-        '1 1/4'
-    """
-    for k, v in VULGAR_UNICODE.items():
-        x = s.find(k)
-        a = ''
-        if x != -1:
-            if x > 0:
-                if s[x - 1] in '0123456789':
-                    a = ' '
-            try:
-                if s[x + 1] == '-':
-                    continue
-            except IndexError:
-                pass
-        s = s.replace(k, a + v)
-    return s
-
 
 
 class Fraction:
