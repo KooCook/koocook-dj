@@ -138,6 +138,74 @@ def parse_fraction(s: str) -> Fraction:
             raise ee from e
 
 
+def parse_str(s: str) -> Fraction:
+    """Converts a number string to Fraction.
+
+    Also functions as an all-purpose converter to Fraction.
+
+    Args:
+        s (str): positional only. string to parse
+
+    Examples;
+        >>> parse_str('1/2') == Fraction(1, 2)
+        True
+        >>> parse_str('2 2/3') == Fraction(8, 3)
+        True
+        >>> parse_str('¼') == 0.25  # bad, call parse_vulgar_unicode first
+        True
+        >>> parse_str('¾') == 0.75  # bad, call parse_vulgar_unicode first
+        True
+        >>> parse_str('1½') == 1.5  # bad, call parse_vulgar_unicode first
+        True
+        >>> parse_str('3⅟100') == 3.01  # bad, call parse_vulgar_unicode first
+        True
+        >>> parse_str('1/8 1/8')
+        Traceback (most recent call last):
+          ...
+        ValueError: Invalid fraction string '1/8 1/8'
+        >>> parse_str('one eight')
+        Traceback (most recent call last):
+          ...
+        ValueError: Invalid fraction string 'one eight'
+    """
+    if not isinstance(s, str):
+        if isinstance(s, Fraction):
+            return s
+        if isinstance(s, int):
+            return Fraction(s)
+        if isinstance(s, float):
+            return Fraction(s)
+        raise TypeError('Invalid type for fraction string \'{}\''
+                        .format(s.__class__))
+    try:
+        if '/' in s:
+            if ' ' in s:
+                # ugly fraction
+                parts = s.split(' ')
+                n = len(parts)
+                if n > 2:
+                    raise NotImplementedError
+                if n == 2:
+                    number, fraction = parts
+                    number = int(number)
+                    fraction = parse_fraction(fraction)
+                    return fraction + number
+                raise AssertionError
+            else:
+                return parse_fraction(s)
+        else:
+            # maybe it's vulgar fraction
+            new_s = parse_vulgar_unicode(s)
+            if new_s != s:
+                return parse_str(new_s)
+            # not even fraction
+            n = ''.join(s.split(' '))
+            return Fraction(float(n))
+    except ValueError as e:
+        raise ValueError('Invalid fraction string \'{}\''
+                         .format(s)) from e.__context__
+
+
 def type_error_msg_1(self, operand: str, other) -> str:
     """Return a python built-in like error message"""
     return "unsupported operand type(s) for {0}: '{1}' and '{2}'".format(
@@ -229,11 +297,18 @@ class Fraction:
     def __init__(self, numerator, denominator=1):
         """Initialize a new fraction with the given numerator
            and denominator (default 1).
+
+        Args:
+            - numerator[, denominator=1] Union[int, float]
+            - fraction_str (str)
         """
         if isinstance(numerator, int) and isinstance(denominator, int):
             self.numerator, self.denominator = to_proper(numerator, denominator)
         elif isinstance(numerator, float) or isinstance(denominator, float):
             frac = Fraction(*to_ratio(numerator)) / Fraction(*to_ratio(denominator))
+            self.numerator, self.denominator = frac.numerator, frac.denominator
+        elif isinstance(numerator, str) and denominator == 1:
+            frac = parse_str(numerator)
             self.numerator, self.denominator = frac.numerator, frac.denominator
         else:
             raise TypeError("numerator must be 'int' or 'float'")
