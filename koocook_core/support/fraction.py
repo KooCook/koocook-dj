@@ -252,6 +252,9 @@ def to_proper(numerator: int, denominator: int) -> Tuple[int, int]:
 def to_ratio(x: Union[float, int]) -> Tuple[int, int]:
     """Converts number to a pair of integer ratio with positive denominator.
 
+    Notes:
+        Doesn't support recurring decimals yet
+
     Examples:
         >>> to_ratio(5.6)
         (28, 5)
