@@ -35,6 +35,6 @@ class Post(SerialisableModel, models.Model):
     @property
     def as_dict(self):
         base_dict_repr = super().as_dict
-        base_dict_repr.update({'body': self.processed_body})
+        base_dict_repr.update({'renderedBody': self.processed_body})
         return base_dict_repr
 

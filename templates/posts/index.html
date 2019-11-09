@@ -76,7 +76,7 @@
                 </b-field>
               </form>
             </div>
-            <span v-else>{% templatetag openvariable %} userPost.body {% templatetag closevariable %}</span>
+            <span v-else v-html="userPost.renderedBody"></span>
           </p>
         </div>
         <nav class="level is-mobile">
@@ -156,7 +156,7 @@
       });
       if (resp.ok) {
       this.posts[post_index].editing = false;
-        this.posts[post_index].body = JSON.parse((await resp.json()).post).body;
+        this.posts[post_index].renderedBody = JSON.parse((await resp.json()).post).renderedBody;
 
         this.$buefy.toast.open({
           message: 'Successfully edited the post!',
