@@ -236,7 +236,7 @@ def parse_aggregate_rating(aggregate_rating: structured_data.AggregateRating) ->
 
 
 def parse_datetime(datetime_str: str):
-    d = datetime.datetime.fromisoformat(datetime_str)
+    d = datetime.datetime.fromisoformat(str(datetime_str))
     return d
 
 
