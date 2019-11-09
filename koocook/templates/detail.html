@@ -69,7 +69,19 @@
               <div>
                 <p class="heading">Time</p>
                 <!--                  Need to deal with time formatting-->
-                <p class="title">{{ recipe.total_time }}</p>
+                {% if recipe.total_time.hours > 0 %}
+                  {% if recipe.total_time.minutes > 0 %}
+                    <p class="title">{{ recipe.total_time.hours }} hour {{ recipe.total_time.minutes }} minute</p>
+                  {% else %}
+                    <p class="title">{{ recipe.total_time.hours }} hour</p>
+                  {% endif %}
+                {% else %}
+                  {% if recipe.total_time.minutes > 0 %}
+                    <p class="title">{{ recipe.total_time.minutes }} minute</p>
+                  {% else %}
+                    <p class="title">{{ recipe.total_time.minutes }} minutes</p>
+                  {% endif %}
+                {% endif %}
               </div>
             </div>
             <div class="level-item has-text-centered">
