@@ -118,26 +118,24 @@ def parse_fraction(s: str) -> Fraction:
         True
         >>> parse_fraction('5') == Fraction(5)
         True
+        >>> parse_fraction('3.5') == Fraction(7, 2)
+        True
     """
-    if '/' in s:
-        try:
-            numerator, denominator = map(float, s.split('/'))
-            return Fraction(numerator, denominator)
-        except ValueError:
-            raise
     try:
-        s = parse_vulgar_unicode(s)
-        try:
-            numerator, denominator = map(float, s.split('/'))
-            return Fraction(numerator, denominator)
-        except ValueError as e:
-            try:
-                numerator = float(s)
-                return Fraction(numerator)
-            except ValueError as ee:
-                raise ee from e.__context__
+        numerator, denominator = map(float, s.split('/'))
+        return Fraction(numerator, denominator)
     except ValueError:
-        raise
+        pass
+    s = parse_vulgar_unicode(s)
+    try:
+        numerator, denominator = map(float, s.split('/'))
+        return Fraction(numerator, denominator)
+    except ValueError as e:
+        try:
+            numerator = float(s)
+            return Fraction(numerator)
+        except ValueError as ee:
+            raise ee from e
 
 
 def type_error_msg_1(self, operand: str, other) -> str:
