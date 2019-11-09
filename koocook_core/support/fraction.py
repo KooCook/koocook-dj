@@ -1,7 +1,30 @@
 from __future__ import annotations
 
-from typing import Tuple, Union
 import math
+import re
+from typing import Tuple, Union, Match
+
+VULGAR_UNICODE = {
+    '¼': '1/4',
+    '½': '1/2',
+    '¾': '3/4',
+    '⅐': '1/7',
+    '⅑': '1/9',
+    '⅓': '1/3',
+    '⅔': '2/3',
+    '⅕': '1/5',
+    '⅖': '2/5',
+    '⅗': '3/5',
+    '⅘': '4/5',
+    '⅙': '1/6',
+    '⅛': '1/8',
+    '⅜': '3/8',
+    '⅝': '5/8',
+    '⅞': '7/8',
+    '⅟': '1/',
+    '↉': '0/3',
+}
+VULGAR_UNICODE_PATTERN = re.compile(r'([0-9])?([{}])(-)?'.format(''.join(p for p in VULGAR_UNICODE)))
 
 
 def type_error_msg_1(self, operand: str, other) -> str:
@@ -128,6 +151,34 @@ def parse_numeral(string: str) -> int:
     except KeyError as e:
         raise ValueError('cannot parse \'{}\' as numerals'
                          .format(string)) from e.__context__
+
+
+def parse_vulgar_unicode(s: str) -> str:
+    """Converts string containing vulgar fractions in unicode to literal.
+
+    Args:
+        string (str): positional only. string to parse
+
+    Examples:
+        >>> parse_vulgar_unicode('¾ cup (1½ sticks) cold unsalted butter, cut into ¼-inch pieces')
+        '3/4 cup (1 1/2 sticks) cold unsalted butter, cut into ¼-inch pieces'
+        >>> parse_vulgar_unicode('1¼-inch strips')
+        '1¼-inch strips'
+        >>> parse_vulgar_unicode('1¼')
+        '1 1/4'
+    """
+    if not isinstance(s, str):
+        raise TypeError('\'parse_vulgar_unicode\' takes exactly 1 \'str\'')
+
+    def repl(m: Match):
+        before, frac, after = m.group(1), m.group(2), m.group(3)
+        if after:
+            return m.group(0)
+        if before:
+            return before + ' ' + VULGAR_UNICODE[frac]
+        return VULGAR_UNICODE[frac]
+
+    return re.sub(VULGAR_UNICODE_PATTERN, repl, s)
 
 
 class Fraction:
