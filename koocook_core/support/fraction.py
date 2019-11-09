@@ -323,6 +323,12 @@ class Fraction:
     def __repr__(self):
         return f"{self.numerator}{f'/{self.denominator}' if self.denominator != 1 else ''}"
 
+    def __int__(self):
+        """Return the int representation of the fraction if possible."""
+        if self.denominator == 1:
+            return self.numerator
+        raise ValueError('cannot convert \'{}\' to int'.format(self))
+
     def __float__(self):
         """Return the float representation of the fraction. 1/0 is considered as inf."""
         if self.is_infinite():
