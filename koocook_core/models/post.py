@@ -20,10 +20,9 @@ class Post(SerialisableModel, models.Model):
         on_delete=models.PROTECT,
     )
 
-    # TODO: Process a Markdown body here
     @property
     def processed_body(self):
-        return mark_safe(self.body)
+        return self.process_text_format(self.body)
 
     @property
     def as_dict(self):

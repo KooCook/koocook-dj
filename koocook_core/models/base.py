@@ -10,7 +10,9 @@ class SerialisableModel:
 
     # TODO: Process a Markdown text here
     @staticmethod
-    def process_text_format(self, text: str) -> str:
+    def process_text_format(text: str, text_format: str = "md") -> str:
+        if text_format == 'md':
+            pass
         return mark_safe(text)
 
     @property
