@@ -457,6 +457,9 @@ class Fraction:
         """
         return self.numerator == self.denominator == 0
 
+    def is_integer(self):
+        return self.denominator == 1
+
 
 if __name__ == '__main__':
     """Run the doctests in all methods."""
