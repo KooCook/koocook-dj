@@ -4,6 +4,9 @@ import math
 import re
 from typing import Tuple, Union, Match
 
+__all__ = ['NUMBER_PATTERN', 'Fraction', 'parse_str', 'parse_match',
+           'parse_fraction', 'parse_vulgar_unicode', 'parse_numeral']
+
 VULGAR_UNICODE = {
     '¼': '1/4',
     '½': '1/2',
