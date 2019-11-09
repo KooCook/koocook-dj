@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from koocook_core.support import unit as unit_
+from koocook_core.support.fraction import Fraction
 
 __all__ = ['Quantity', 'QuantityField', 'parse_quantity']
 
@@ -12,19 +13,17 @@ class Quantity:
     __slots__ = ('amount', 'unit')
 
     def __init__(self,
-                 amount: float,
+                 amount: Fraction,
                  unit: Union[unit_.Unit, str]):
-        if isinstance(amount, float):
+        if isinstance(amount, Fraction):
             self.amount = amount
         else:
-            self.amount = float(amount)
+            self.amount = Fraction(amount)
         self.unit = unit_.get_unit(unit)
 
     def __str__(self):
         if self.amount == 1:
-            return '{:.0f} {}'.format(self.amount, self.unit.singular)
-        if self.amount.is_integer():
-            return '{:.0f} {}'.format(self.amount, self.unit.plural)
+            return '{} {}'.format(self.amount, self.unit.singular)
         return '{} {}'.format(self.amount, self.unit.plural)
 
     def get_db_str(self):
@@ -37,7 +36,7 @@ class Quantity:
 
 def parse_quantity(quantity_string: str) -> Quantity:
     amount, *unit = quantity_string.split(' ')
-    amount = float(amount)
+    amount = Fraction(amount)
     try:
         return Quantity(amount, ' '.join(unit))
     except ValueError as e:
