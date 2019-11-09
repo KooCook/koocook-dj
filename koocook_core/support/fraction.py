@@ -45,7 +45,7 @@ def to_proper(numerator: int, denominator: int) -> Tuple[int, int]:
     return int(sign * abs(numerator) / gcd), int(abs(denominator) / gcd)
 
 
-def to_ratio(x: float) -> Tuple[int, int]:
+def to_ratio(x: Union[float, int]) -> Tuple[int, int]:
     """Converts number to a pair of integer ratio with positive denominator.
 
     Examples:
@@ -59,6 +59,8 @@ def to_ratio(x: float) -> Tuple[int, int]:
         (1, 0)
         >>> to_ratio(math.nan)
         (0, 0)
+        >>> to_ratio(1)
+        (1, 1)
     """
     if math.isnan(x):
         return 0, 0
