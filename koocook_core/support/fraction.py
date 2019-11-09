@@ -147,6 +147,19 @@ def parse_fraction(s: str) -> Fraction:
             raise ee from e
 
 
+def parse_match(m: Match) -> Fraction:
+    number = 0
+    if m.group('number'):
+        number = int(m.group('number'))
+    if m.group('decimal'):
+        assert not m.group('fraction')
+        return Fraction(number + float(m.group('decimal')))
+    if m.group('fraction'):
+        assert not m.group('decimal')
+        return parse_fraction(m.group('fraction')) + number
+    return Fraction(number)
+
+
 def parse_str(s: str) -> Fraction:
     """Converts a number string to Fraction.
 
@@ -184,6 +197,8 @@ def parse_str(s: str) -> Fraction:
             return Fraction(s)
         if isinstance(s, float):
             return Fraction(s)
+        if s.__class__.__name__ == 'Match':
+            return parse_match(s)
         raise TypeError('Invalid type for fraction string \'{}\''
                         .format(s.__class__))
     try:
