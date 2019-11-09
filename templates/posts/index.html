@@ -150,7 +150,8 @@
       const resp = await fetch(`/posts/${this.posts[post_index].id}`, {
         body: "body=" + this.posts[post_index].body,
         method: "PATCH", credentials: 'include', headers: {
-          'X-CSRFToken': getCookie('csrftoken')
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'X-CSRFToken': getCookie('csrftoken')
         }
       });
       if (resp.ok) {
