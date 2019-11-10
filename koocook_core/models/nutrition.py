@@ -12,11 +12,6 @@ class MetaIngredient(models.Model):
     name = models.CharField(max_length=255)
     nutrient = fields.JSONField()
     # ingredient_set from Ingredient's ForeignKey
-    description = models.CharField(
-        max_length=255,
-        null=True,
-        blank=True,
-    )
 
 
 class RecipeIngredient(models.Model):
@@ -26,6 +21,11 @@ class RecipeIngredient(models.Model):
     meta = models.ForeignKey(
         'koocook_core.MetaIngredient',
         on_delete=models.PROTECT,
+    )
+    description = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
     )
     substitute_set = models.ManyToManyField('self', blank=True)
     recipe = models.ForeignKey(
