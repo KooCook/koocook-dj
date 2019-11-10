@@ -80,5 +80,6 @@ class RecipeUpdateView(UpdateView):
         return reverse('koocook_core:recipe-user')
 
 
-def detail_view(request):
-    return render(request, 'detail.html')
+def detail_view(request, recipe_id):
+    recipe = Recipe.objects.get(pk=recipe_id)
+    return render(request, 'detail.html', {'recipe': recipe})
