@@ -1,5 +1,6 @@
 {% extends 'base/content.html' %} {% block section_after_nav %} {% endblock %}
 {% block page_content %}
+{% load times_displayed %}
 <div style="padding: 0 3rem">
   <header class="section" style="padding-bottom: 1.5rem; margin-bottom: 1.5rem">
     <div class="container">
@@ -14,37 +15,11 @@
 
       <div class="field is-grouped is-grouped-multiline">
         <div class="control">
-          {% for tag in recipe.tags.all %}
+          {% for tag in recipe.tag.all %}
           <span class="tag  is-medium">{{ tag.name }}</span>
           {% endfor %}
         </div>
       </div>
-      <!--        <div class="field is-grouped is-grouped-multiline">-->
-      <!--          <div class="control">-->
-      <!--            <div class="tags has-addons">-->
-      <!--              <span class="tag is-medium">Allergen</span>-->
-      <!--              <span class="tag is-danger is-medium">-->
-      <!--                  Gluten-->
-      <!--                  <button class="delete is-small"></button>-->
-      <!--                </span>-->
-      <!--            </div>-->
-      <!--          </div>-->
-      <!--          <div class="control">-->
-      <!--            <div class="tags has-addons">-->
-      <!--              <span class="tag is-medium">Allergen</span>-->
-      <!--              <span class="tag is-danger is-medium">-->
-      <!--                  Dairy-->
-      <!--                  <button class="delete is-small"></button>-->
-      <!--                </span>-->
-      <!--            </div>-->
-      <!--          </div>-->
-      <!--          <div class="control">-->
-      <!--              <span class="tag is-medium is-warning">-->
-      <!--                Non-vegan-->
-      <!--                <button class="delete is-small"></button>-->
-      <!--              </span>-->
-      <!--          </div>-->
-      <!--        </div>-->
     </div>
   </header>
 
@@ -68,19 +43,23 @@
             <div class="level-item has-text-centered">
               <div>
                 <p class="heading">Time</p>
-                <!--                  Need to deal with time formatting-->
-                {% if recipe.total_time.hours > 0 %}
-                  {% if recipe.total_time.minutes > 0 %}
-                    <p class="title">{{ recipe.total_time.hours }} hour {{ recipe.total_time.minutes }} minute</p>
-                  {% else %}
-                    <p class="title">{{ recipe.total_time.hours }} hour</p>
-                  {% endif %}
+                {% if recipe.total_time.seconds > 0 %}
+                    {% if recipe.total_time.seconds > 60 %}
+                        {% if recipe.total_time.seconds > 3600 %}
+                            <p class="title">
+                                {% hours recipe.total_time.seconds %} hour
+                                {% minutes recipe.total_time.seconds %} minute
+                            </p>
+                        {% else %}
+                            <p class="title">
+                                {% minutes recipe.total_time.seconds %} minute
+                            </p>
+                        {% endif %}
+                    {% else %}
+                      <p class="title">1 minute</p>
+                    {% endif %}
                 {% else %}
-                  {% if recipe.total_time.minutes > 0 %}
-                    <p class="title">{{ recipe.total_time.minutes }} minute</p>
-                  {% else %}
-                    <p class="title">{{ recipe.total_time.minutes }} minutes</p>
-                  {% endif %}
+                    <p class="title">-</p>
                 {% endif %}
               </div>
             </div>
