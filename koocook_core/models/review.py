@@ -2,10 +2,12 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
+from .base import SerialisableModel
+
 __all__ = ['Comment', 'Rating', 'AggregateRating']
 
 
-class Comment(models.Model):
+class Comment(SerialisableModel, models.Model):
     author = models.ForeignKey(
         'koocook_core.Author',
         on_delete=models.PROTECT,
@@ -59,6 +61,12 @@ class Comment(models.Model):
                             '\'{}\' not \'\''.format(
                              type(self.reviewed_recipe or self.reviewed_post or self.reviewed_comment),
                              type(obj))) from e.__context__
+
+    @property
+    def as_dict(self):
+        base_dict_repr = super().as_dict
+        base_dict_repr.update({'rendered': self.process_text_format(self.body)})
+        return base_dict_repr
 
 
 class Rating(models.Model):
