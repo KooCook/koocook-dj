@@ -330,6 +330,8 @@ class Fraction:
         denominator (int): the denominator of the fraction
     """
 
+    __slots__ = ('numerator', 'denominator')
+
     def __init__(self, numerator, denominator=1):
         """Initialize a new fraction with the given numerator
            and denominator (default 1).
