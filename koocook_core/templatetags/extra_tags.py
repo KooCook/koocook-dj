@@ -2,11 +2,27 @@ from django import template
 
 register = template.Library()
 
-register.simple_tag(lambda x: x // 3600, name='hours')
+# register.filter(lambda x: x // 3600, name='hours')
+@register.filter()
+def hours(seconds):
+    hour = seconds // 3600
+    if hour > 1:
+        return f'{hour} hrs'
+    else:
+        return '1 hr'
 
 
-@register.simple_tag()
+@register.filter()
 def minutes(seconds):
     if seconds >= 3600:
         seconds /= 60
-    return seconds // 60
+    minute = seconds // 60
+    if minute > 1:
+        return f'{minute} mins'
+    else:
+        return '1 min'
+
+
+@register.filter
+def to_int(value):
+    return int(value)

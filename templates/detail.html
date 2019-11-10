@@ -47,19 +47,16 @@
                     {% if recipe.total_time.seconds > 60 %}
                         {% if recipe.total_time.seconds > 3600 %}
                             <p class="title">
-                                {# {% hours recipe.total_time.seconds %} hour #}
-                                {# {% minutes recipe.total_time.seconds %} minute #}
                                 {{ recipe.total_time.seconds|hours }}
                                 {{ recipe.total_time.seconds|minutes }}
                             </p>
                         {% else %}
                             <p class="title">
-                                {# {% minutes recipe.total_time.seconds %} minute #}
                                 {{ recipe.total_time.seconds|minutes }}
                             </p>
                         {% endif %}
                     {% else %}
-                      <p class="title">1 minute</p>
+                        <p class="title">1 min</p>
                     {% endif %}
                 {% else %}
                     <p class="title">-</p>
