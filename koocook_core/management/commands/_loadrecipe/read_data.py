@@ -309,7 +309,7 @@ def main():
     recipes = read_data(DataSet.COOKSTR, 10)
     for recipe in recipes:
         parse_recipe(recipe)
-    print(json.dumps(recipes, default=datatrans.utils.structured_data.default))
+    print(json.dumps(recipes, default=datatrans.utils.json_encoder))
 
 
 if __name__ == '__main__':
