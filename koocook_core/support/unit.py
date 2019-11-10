@@ -79,6 +79,14 @@ class MassUnit(Unit):
     POUND = 'lb', 0.453592  # Google
 
 
+class EnergyUnit(Unit):
+    JOULE = 'J', 1.
+    KILOJOULE = 'kJ', 1000.
+    KILOCALORIE = 'kcal', 4184.
+    CALORIE = 'cal', 4.184
+    FOOD_CALORIE = 'Cal', 4184., 'Calories', 'Calorie'
+
+
 class TemperatureUnit(Unit):
     CELSIUS = '°C',
     FAHRENHEIT = '°F',
