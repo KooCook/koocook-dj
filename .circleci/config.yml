@@ -81,20 +81,12 @@ workflows:
             branches:
               only:
                 - master
-<<<<<<< HEAD
-                - dev/common
-=======
                 - dev
->>>>>>> task/models
       - deploy:
           filters:
             branches:
               only:
                - master
-<<<<<<< HEAD
-               - dev/common
-=======
                - dev
->>>>>>> task/models
           requires:
             - build
