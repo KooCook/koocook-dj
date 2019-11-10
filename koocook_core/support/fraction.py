@@ -293,6 +293,10 @@ def to_ratio(x: Union[float, int]) -> Tuple[int, int]:
         (0, 0)
         >>> to_ratio(1)
         (1, 1)
+        >>> to_ratio(0.57)
+        (57, 100)
+        >>> to_ratio(2)
+        (2, 1)
     """
     if math.isnan(x):
         return 0, 0
@@ -300,14 +304,16 @@ def to_ratio(x: Union[float, int]) -> Tuple[int, int]:
         return 1, 0
     if x == -math.inf:
         return -1, 0
-    i = 0
-    num = float(x)
-    while not num.is_integer():
-        num *= 10
-        i += 1
-    num = int(num)
-    assert x == num / 10 ** i
-    return to_proper(num, 10 ** i)
+    if isinstance(x, float):
+        number, decimal = str(x).split('.')
+        i = len(decimal)
+        num = int(number) * 10 ** i + int(decimal)
+        if x < 0:
+            num = -num
+        assert x == round(num / 10 ** i, 17), f'{x} != {round(num / 10 ** i, 17)}'
+        return to_proper(num, 10 ** i)
+    if isinstance(x, int):
+        return x, 1
 
 
 class Fraction:
