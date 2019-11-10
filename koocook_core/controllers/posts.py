@@ -3,7 +3,7 @@ from django.db.models import Model
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse, HttpResponseForbidden, JsonResponse, QueryDict
 
-
+from .base import BaseController
 from ..models import Post, Author
 from ..views import GuestPostStreamView, UserPostStreamView
 
@@ -22,20 +22,13 @@ def apply_author_from_session(func):
     return wrapper
 
 
-class PostController:
+class PostController(BaseController):
 
     def __init__(self):
-        self.model = Post
-
-    @property
-    def model_field_names(self) -> list:
-        return [field.name for field in self.model._meta.get_fields()]
+        super().__init__(Post, {})
 
     def get_model_request_fields(self, request: HttpRequest) -> dict:
         return {field_name: request.POST.get(field_name) for field_name in self.model_field_names}
-
-    def find_by_id(self, post_id: int) -> Post:
-        return self.model.objects.get(pk=post_id)
 
     @apply_author_from_session
     def create_post(self, request: HttpRequest) -> JsonResponse:
@@ -85,12 +78,19 @@ class PostController:
 
 
 class BaseHandler:
+    def __init__(self):
+        self.plain_map = {}
+
     @staticmethod
     def _get_handler_for_method(handler_map: dict, method):
         if method.upper() in handler_map:
             return handler_map[method]
         else:
             raise NotImplementedError
+
+    def handle(self, request: HttpRequest, pk=None):
+        func, arg_pk = self._get_handler_for_method(self.plain_map, request.method)
+        return func(request, pk) if arg_pk else func(request)
 
 
 class PostHandler(BaseHandler):
