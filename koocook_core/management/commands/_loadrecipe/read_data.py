@@ -182,17 +182,17 @@ def parse_ingredients(ingredients: structured_data.Property) -> List[models.Reci
                 warnings.warn('Found no matching meta ingredient')
                 parts = meta_str.split(' ')
                 if len(parts) == 1:
-                    meta = models.MetaIngredient.objects.create(name=meta_str, nutrient={})
+                    meta = models.MetaIngredient.objects.create(name=meta_str, nutrients={})
                 elif len(parts) < 3:
                     warnings.warn('Found no matching meta ingredient. '
                                   'Creating new meta ingredient \'{}\''
                                   .format(meta_str))
-                    meta = models.MetaIngredient.objects.create(name=meta_str, nutrient={})
+                    meta = models.MetaIngredient.objects.create(name=meta_str, nutrients={})
                 else:
                     warnings.warn('Found no matching meta ingredient. '
                                   'Creating new meta ingredient \'{}\''
                                   .format(meta_str))
-                    meta = models.MetaIngredient.objects.create(name=meta_str, nutrient={})
+                    meta = models.MetaIngredient.objects.create(name=meta_str, nutrients={})
                     # raise ValueError('Found no matching meta ingredient.'
                     #                  'Please defer ingredient creation.')
         # don't catch MultipleObjectsReturned
