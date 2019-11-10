@@ -1,12 +1,13 @@
 from django.contrib.auth.models import User
 from django.db.models import Model
+from django.http import JsonResponse, HttpRequest
 from typing import Type
 
 from ..models.base import ModelEncoder
 
 
 class ControllerResponse:
-    def __init__(self, status_text: str, obj: object):
+    def __init__(self, status_text: str, obj: object = None):
         self.status_text = status_text
         self.obj = obj
 
@@ -23,7 +24,7 @@ class ControllerResponse:
 
 class ControllerResponseUnauthorised(ControllerResponse):
     def __init__(self):
-        super().__init__('Unauthorised', None)
+        super().__init__('Unauthorised')
 
 
 def user_only(func):
@@ -41,6 +42,10 @@ class BaseController:
     def __init__(self, model: Type[Model], request_fields: dict):
         self.model = model
         self.request_fields = request_fields
+
+    @classmethod
+    def default(cls):
+        return cls(Model, {})
 
     @property
     def model_field_names(self) -> list:
@@ -60,30 +65,68 @@ class BaseController:
         return ControllerResponse(status_text='Created', obj=creation)
 
     @user_only
-    def update(self):
+    def update(self) -> ControllerResponse:
         pass
 
-    def retrieve_one(self):
+    def retrieve_one(self) -> ControllerResponse:
         pass
 
-    def retrieve_all(self):
+    def retrieve_all(self) -> ControllerResponse:
         pass
 
-    def delete(self):
+    @user_only
+    def delete(self) -> ControllerResponse:
         pass
 
 
-class JsonRequestHandler:
+class BaseHandler:
+
+    def __init__(self, controller_type: BaseController):
+        self.controller = controller_type
+        self.handler_map = {}
+
+    @classmethod
+    def instance(cls):
+        return cls(BaseController.default())
+
+    def get_handler_for(self, request: HttpRequest, alias):
+        if not alias:
+            return self._get_handler_for_method(request.method)
+        sub_handler = self.handler_map[alias]
+        if callable(sub_handler):
+            return sub_handler
+        else:
+            return self._get_handler_for_method(request.method)
+
+    def _get_handler_for_method(self, method):
+        if method.upper() in self.handler_map:
+            return self.handler_map[method]
+        raise NotImplementedError
+
+    def restore_controller_fields(self, request: HttpRequest):
+        self.controller = self.controller.default()
+        self.controller.request_fields.update(request.POST.dict())
+        self.controller.request_fields['user'] = request.user
+
+    def handle(self, request: HttpRequest, alias: str = None) -> ControllerResponse:
+        self.restore_controller_fields(request)
+        handler = self.get_handler_for(request, alias)
+        if type(handler) is tuple:
+            func, args = handler
+        else:
+            func = handler
+        return func(request)
+
+
+class JsonRequestHandler(BaseHandler):
     STATUS_CODE_MAP = {
         ControllerResponse: 200,
         ControllerResponseUnauthorised: 401,
     }
 
-    def get_status_code(self, response: ControllerResponse):
+    def get_status_code(self, response: ControllerResponse) -> int:
         return self.STATUS_CODE_MAP[type(response)]
 
-    def handle(self):
-        from django.http import JsonResponse
-        res = ControllerResponse()
-
+    def handle(self, request: HttpRequest, alias: str = None) -> JsonResponse:
+        res = super().handle(request, alias)
         return JsonResponse(res.as_json(), status=self.get_status_code(res))

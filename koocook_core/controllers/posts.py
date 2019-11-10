@@ -3,7 +3,7 @@ from django.db.models import Model
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse, HttpResponseForbidden, JsonResponse, QueryDict
 
-from .base import BaseController
+from .base import BaseController, BaseHandler
 from ..models import Post, Author
 from ..views import GuestPostStreamView, UserPostStreamView
 
@@ -77,25 +77,9 @@ class PostController(BaseController):
             return JsonResponse({'status': 'Post created'})
 
 
-class BaseHandler:
-    def __init__(self):
-        self.plain_map = {}
-
-    @staticmethod
-    def _get_handler_for_method(handler_map: dict, method):
-        if method.upper() in handler_map:
-            return handler_map[method]
-        else:
-            raise NotImplementedError
-
-    def handle(self, request: HttpRequest, pk=None):
-        func, arg_pk = self._get_handler_for_method(self.plain_map, request.method)
-        return func(request, pk) if arg_pk else func(request)
-
-
 class PostHandler(BaseHandler):
     def __init__(self):
-        self.controller = PostController()
+        super().__init__(PostController())
         self.plain_map = {
             'GET': (self.controller.render_stream_view, False),
             'POST': (self.controller.create_post, True),
@@ -108,6 +92,6 @@ class PostHandler(BaseHandler):
         return cls()
 
     def handle(self, request: HttpRequest, pk=None):
-        func, arg_pk = self._get_handler_for_method(self.plain_map, request.method)
+        func, arg_pk = self._get_handler_for_method(request.method)
         return func(request, pk) if arg_pk else func(request)
 
