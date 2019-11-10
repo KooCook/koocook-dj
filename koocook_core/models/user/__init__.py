@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.contrib.postgres import fields
 from django.db import models
 
-from .base import SerialisableModel
+from ..base import SerialisableModel
 
 __all__ = ('KoocookUser', 'Author')
 
@@ -23,10 +23,12 @@ class KoocookUser(SerialisableModel, models.Model):
         db_table = "koocook_user"
 
     def follow(self, user: 'KoocookUser'):
-        pass
+        self.followers.add(user)
+        self.save()
 
     def unfollow(self, user: 'KoocookUser'):
-        pass
+        self.followers.remove(user)
+        self.save()
 
     @property
     def name(self):
