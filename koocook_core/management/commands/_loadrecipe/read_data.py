@@ -1,16 +1,17 @@
-from typing import List
-
 import datetime
 import enum
 import json
 import warnings
 from pathlib import Path
+from typing import List
 
-import koocook_core.models as models
-import koocook_core.support as support
 from django.core.exceptions import ObjectDoesNotExist  # for .get()
+
 from koocook.settings.dirs import BASE_DIR
+from koocook_core import models
+from koocook_core import support
 from koocook_core.support import utils
+
 try:
     import datatrans.utils.structured_data
     from datatrans import structured_data
@@ -244,15 +245,15 @@ def parse_recipe(recipe: structured_data.Recipe) -> models.Recipe:
     skip = False
     data = {}
     for k, v, f in (
-        ('_name', 'name', None),
-        ('_image', 'video', None),
-        ('_video', 'name', None),
-        ('_author', 'author', parse_author),
-        ('_date_published', 'date_published', parse_datetime),
-        ('_description', 'description', None),
-        ('_recipe_instructions', 'recipe_instructions', parse_instructions),
-        ('_recipe_yield', 'recipe_yield', None),
-        ('_aggregate_rating', 'aggregate_rating', parse_aggregate_rating),
+            ('_name', 'name', None),
+            ('_image', 'video', None),
+            ('_video', 'name', None),
+            ('_author', 'author', parse_author),
+            ('_date_published', 'date_published', parse_datetime),
+            ('_description', 'description', None),
+            ('_recipe_instructions', 'recipe_instructions', parse_instructions),
+            ('_recipe_yield', 'recipe_yield', None),
+            ('_aggregate_rating', 'aggregate_rating', parse_aggregate_rating),
     ):
         try:
             if getattr(recipe, k) is not None:
@@ -271,10 +272,10 @@ def parse_recipe(recipe: structured_data.Recipe) -> models.Recipe:
 
     later = {}
     for k, v, f in (
-        ('_recipe_ingredient', 'recipeingredient_set', parse_ingredients),
-        ('_cooking_method', 'tag_set', parse_cooking_method),
-        # ('', 'tag_set', None),
-        # ('', 'comment_set', None),
+            ('_recipe_ingredient', 'recipeingredient_set', parse_ingredients),
+            ('_cooking_method', 'tag_set', parse_cooking_method),
+            # ('', 'tag_set', None),
+            # ('', 'comment_set', None),
     ):
         try:
             if getattr(recipe, k) is not None:
