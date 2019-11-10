@@ -27,7 +27,7 @@ class Quantity:
         return '{} {}'.format(self.amount, self.unit.plural)
 
     def get_db_str(self):
-        return self.__str__()
+        return '{} {}'.format(self.amount, self.unit.symbol)
 
     @property
     def not_a_unit(self):
