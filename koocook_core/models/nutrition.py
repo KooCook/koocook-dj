@@ -10,7 +10,7 @@ __all__ = ['MetaIngredient', 'RecipeIngredient']
 
 class MetaIngredient(models.Model):
     name = models.CharField(max_length=255)
-    nutrient = fields.JSONField()
+    nutrients = fields.JSONField()
     # ingredient_set from Ingredient's ForeignKey
 
 
