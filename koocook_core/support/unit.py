@@ -168,4 +168,4 @@ def get_unit(unit: Union[str, Unit]) -> Unit:
             raise ValueError('\'{}\' is not a valid Unit'.format(unit))
 
 
-Units = (LengthUnit, AreaUnit, VolumeUnit, MassUnit, TemperatureUnit, ServingUnit, SpecialUnit)
+Units = (LengthUnit, AreaUnit, VolumeUnit, MassUnit, EnergyUnit, TemperatureUnit, ServingUnit, SpecialUnit)
