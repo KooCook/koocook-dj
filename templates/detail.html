@@ -173,9 +173,11 @@
                 Instruction
               </h3>
               <div class="content" style="">
-                {% for instruction in recipe.recipe_instructions %}
-                    <div>{{ instruction }}</div>
-                {% endfor %}
+                    <ol>
+                        {% for instruction in recipe.recipe_instructions %}
+                            <li>{{ instruction }}</li>
+                        {% endfor %}
+                    </ol>
               </div>
             </div>
           </div>
