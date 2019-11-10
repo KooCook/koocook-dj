@@ -3,30 +3,30 @@
 {% load times_displayed %}
 <div style="padding: 0 3rem">
   <header class="section" style="padding-bottom: 1.5rem; margin-bottom: 1.5rem">
-    <div class="container">
-      <h1 class="title is-1">
-        {{ recipe.name }}
-      </h1>
-      <p class="subtitle is-4">
-        <!-- send to index view for now -->
-        Recipe by
-        <a href="{% url 'koocook_core:index'%}">{{ recipe.author.name }}</a>
-      </p>
+      <div class="container">
+          <h1 class="title is-1">
+            {{ recipe.name }}
+          </h1>
+          <p class="subtitle is-4">
+              <!-- send to index view for now -->
+              Recipe by
+              <a href="{% url 'koocook_core:index'%}">{{ recipe.author.name }}</a>
+          </p>
 
-      <div class="field is-grouped is-grouped-multiline">
-        <div class="control">
-          {% for tag in recipe.tag.all %}
-          <span class="tag  is-medium">{{ tag.name }}</span>
-          {% endfor %}
-        </div>
+          <div class="field is-grouped is-grouped-multiline">
+              <div class="control">
+                  {% for tag in recipe.tag.all %}
+                      <span class="tag  is-medium">{{ tag.name }}</span>
+                  {% endfor %}
+              </div>
+          </div>
       </div>
-    </div>
   </header>
 
   <section class="section" style="padding-top: 0">
     <div class="container">
       <figure class="image is-4928x3264" style="margin-bottom: 1.5rem">
-        <img src="{{ recipe.image }}" alt="pancake close up" />
+        <img src="{{ recipe.image|first }}" alt="pancake close up" />
       </figure>
       <p class="subtitle is-6">
         <!-- Have no image credit models -->
@@ -104,21 +104,6 @@
                 <p class="title">{{ recipe.aggregate_rating }}/5</p>
               </div>
             </div>
-
-            <!--            <div class="level-item">-->
-            <!--              <div class="level-item has-text-centered">-->
-            <!--                <div>-->
-            <!--                  <p class="heading">Likes</p>-->
-            <!--                  <p class="title">7K</p>-->
-            <!--                </div>-->
-            <!--              </div>-->
-            <!--              <div class="level-item has-text-centered">-->
-            <!--                <div>-->
-            <!--                  <p class="heading">Dislikes</p>-->
-            <!--                  <p class="title">891</p>-->
-            <!--                </div>-->
-            <!--              </div>-->
-            <!--            </div>-->
           </nav>
           <nav class="level is-mobile">
             <div class="level-item">
