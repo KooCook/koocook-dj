@@ -74,6 +74,7 @@ class MassUnit(Unit):
     KILOGRAM = 'kg', 1.
     GRAM = 'g', 0.001
     MILLIGRAM = 'mg', 0.000_001
+    MICROGRAM = 'µg', 0.000_000_001
 
     OUNCE = 'oz', 0.028  # US Food nutrition labeling
     POUND = 'lb', 0.453592  # Google
@@ -148,6 +149,7 @@ class ServingUnit(Unit):
 
 class SpecialUnit(Unit):
     NONE = '', None, 'units', 'unit'
+    IU = 'IU', None, 'International Units', 'International Unit'
 
 
 def get_unit(unit: Union[str, Unit]) -> Unit:
