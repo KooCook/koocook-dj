@@ -13,6 +13,7 @@ class UserPostStreamView(FormMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['posts'] = self.object_list.all()
         context['user_posts'] = self.object_list.filter(author__user__user=self.request.user)
         return context
 

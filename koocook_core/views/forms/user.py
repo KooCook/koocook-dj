@@ -12,7 +12,6 @@ class BasicProfileForm(forms.ModelForm):
         if 'user' in kwargs:
             self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
-        # self.fields['author'].disabled = True
 
     @property
     def vanilla_fields(self):
@@ -30,7 +29,6 @@ class ExtendedProfileForm(forms.ModelForm):
         if 'user' in kwargs:
             self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
-        # self.fields['author'].disabled = True
 
     @property
     def vanilla_fields(self):
