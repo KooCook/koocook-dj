@@ -103,7 +103,7 @@
             <div class="level-item has-text-centered">
               <div>
                 <p class="heading">Ratings</p>
-                <p class="title">{{ recipe.aggregate_rating.rating_value|to_int }}/5</p>
+                <p class="title">{{ recipe.aggregate_rating.rating_value|rating }}/5.0</p>
               </div>
             </div>
           </nav>
@@ -119,7 +119,7 @@
             <div class="level-item">
               <progress
                 class="progress is-info"
-                value="{{ recipe.aggregate_rating.rating_value|to_int }}"
+                value="{{ recipe.aggregate_rating.rating_value|rating }}"
                 max="5"
                 style="border-radius: 0; height: 0.2rem"
               ></progress>

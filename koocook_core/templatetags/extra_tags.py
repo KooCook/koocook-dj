@@ -26,3 +26,8 @@ def minutes(seconds):
 @register.filter
 def to_int(value):
     return int(value)
+
+
+@register.filter
+def rating(value):
+    return f'{value:.1f}'
