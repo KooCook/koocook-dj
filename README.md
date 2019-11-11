@@ -23,3 +23,9 @@
 - [django backend (GitHub)](https://github.com/KooCook/koocook-dj/tree/dev)
 - [static mockup (GitHub)](https://github.com/KooCook/koocook-static-mockup/commits/dev/common)
 - [datatrans (GitHub)](https://github.com/KooCook/datatrans) -- supporting package for data transformation
+
+## Notes
+
+### About branches
+
+Our team decided to change from using GitHub Flow to Git Flow, so our main branch is `dev` and not `master`
