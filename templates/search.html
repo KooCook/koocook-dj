@@ -5,86 +5,134 @@
 {% endblock %}
 
 {% block page_content %}
-    <div class="container">
-          <h3 class="title is-3">
-              Search Results <b-dropdown v-model="togglePopSearch" aria-role="list">
-                <button class="button" type="button" slot="trigger">
-                    <template v-if="togglePopSearch">
-                        <b-icon class="fas fa-fire"></b-icon>&nbsp;
-                        <span>by Popularity</span>
-                    </template>
-                    <template v-else>
-                        <b-icon class="fas fa-book"></b-icon>&nbsp;
-                        <span>by Recipe Name</span>
-                    </template>
-                    <b-icon icon="menu-down"></b-icon>
-                </button>
+<div class="container">
+    <h3 class="title is-3">
+        Search Results
+        <b-dropdown v-model="togglePopSearch" aria-role="list">
+            <button class="button" type="button" slot="trigger">
+                <template v-if="togglePopSearch">
+                    <b-icon class="fas fa-fire"></b-icon>&nbsp;
+                    <span>by Popularity</span>
+                </template>
+                <template v-else>
+                    <b-icon class="fas fa-book"></b-icon>&nbsp;
+                    <span>by Recipe Name</span>
+                </template>
+                <b-icon icon="menu-down"></b-icon>
+            </button>
 
-                <b-dropdown-item :value="true" aria-role="listitem">
-                    <div class="media">
-                      <b-icon class="media-left fas fa-fire"></b-icon>
-                        <div class="media-content">
-                            <h3>Popularity</h3>
-                            <small>Popular recipes with high view count are shown</small>
-                        </div>
+            <b-dropdown-item :value="true" aria-role="listitem">
+                <div class="media">
+                    <b-icon class="media-left fas fa-fire"></b-icon>
+                    <div class="media-content">
+                        <h3>Popularity</h3>
+                        <small>Popular recipes with high view count are shown</small>
                     </div>
-                </b-dropdown-item>
+                </div>
+            </b-dropdown-item>
 
-                <b-dropdown-item :value="false" aria-role="listitem">
-                    <div class="media">
-                        <b-icon class="media-left fas fa-book"></b-icon>
-                        <div class="media-content">
-                            <h3>Recipe name</h3>
-                            <small>Only show recipes with a similar name to search query</small>
-                        </div>
+            <b-dropdown-item :value="false" aria-role="listitem">
+                <div class="media">
+                    <b-icon class="media-left fas fa-book"></b-icon>
+                    <div class="media-content">
+                        <h3>Recipe name</h3>
+                        <small>Only show recipes with a similar name to search query</small>
                     </div>
-                </b-dropdown-item>
-            </b-dropdown>
-          </h3>
-        <transition name="fade" mode="in-out">
-           <div v-if="!getRecipesByName.length">
-                No results matching with your search.
-            </div>
-        </transition>
-        <transition-group name="fade" mode="in-out">
+                </div>
+            </b-dropdown-item>
+        </b-dropdown>
+    </h3>
+    <transition name="fade" mode="in-out">
+        <div v-if="!getRecipesByName.length">
+            No results matching with your search.
+        </div>
+    </transition>
+    <transition-group name="fade" mode="in-out">
 
-          <div v-for="recipe in getRecipesByName" :key="recipe.title" class="box">
+        <div v-for="recipe in getRecipesByName" :key="recipe.title" class="box">
             <p class="is-6 has-text-danger" v-if="recipe.hot"><i class="fas fa-fire"></i> Trending</p>
             <a :href="recipe.url"><h4 class="title is-4">
                 {% templatetag openvariable %} recipe.title {% templatetag closevariable %}
             </h4></a>
             <p class="subtitle">
-                by {% templatetag openvariable %} recipe.author {% templatetag closevariable %} <span class="date-posted subtitle is-6 has-text-grey"><i class="fas fa-calendar-alt"></i> {% templatetag openvariable %}recipe.datePosted{% templatetag closevariable %} </span> <span class="date-posted subtitle is-6 has-text-grey"><i class="fas fa-clock"></i> Ready in: {% templatetag openvariable %}recipe.readyTime{% templatetag closevariable %}</span>
+                by {% templatetag openvariable %} recipe.author {% templatetag closevariable %} <span
+                    class="date-posted subtitle is-6 has-text-grey"><i class="fas fa-calendar-alt"></i> {% templatetag openvariable %}recipe.datePosted{% templatetag closevariable %} </span>
+                <span class="date-posted subtitle is-6 has-text-grey"><i class="fas fa-clock"></i> Ready in: {% templatetag openvariable %}recipe.readyTime{% templatetag closevariable %}</span>
                 <span class="date-posted subtitle is-6 has-text-grey"><i class="fas fa-eye"></i> {% templatetag openvariable %}recipe.view_count{% templatetag closevariable %} Views</span></span>
             </p>
 
-          </div>
+        </div>
 
-        </transition-group>
+    </transition-group>
 
-      </div>
-        <script>
-      new Vue({
+</div>
+<script>
+    new Vue({
         el: '#app',
         data: {
-          togglePopSearch: false,
-          searchName: '',
-          recipes: [
-            { author: 'Jessie Damuck', url: '../recipes/detail-ex1.html', title: "BA's Best Buttermilk Pancakes", datePosted: 'Oct 13, 2019', readyTime: '20 min', hot: true, view_count: 1925, up: 80, down: 3 },
-            { author: 'Thakky', title: 'Pumpkin Waffles with Apple Cider Syrup', datePosted: 'Sep 18, 2019', readyTime: '45 min', hot: true, view_count: 125, up: 80, down: 3 },
-            { author: 'foo', title: 'Kare Kare Chicken Wings', datePosted: 'Sep 17, 2019', readyTime: '20 min', hot: true, view_count: 89, up: 50, down: 4 },
-            { author: 'bar', title: 'Guacamole', datePosted: 'Jun 15, 2019', readyTime: '10 min', hot: false, view_count: 23, up: 10, down: 2 },
-            { author: 'bar', title: 'Double Tomato Bruschetta', datePosted: 'Jun 13, 2019', readyTime: '35 min', hot: false, view_count: 23, up: 112}
-          ]
+            togglePopSearch: false,
+            searchName: '',
+            recipes: [
+                {
+                    author: 'Jessie Damuck',
+                    url: '../recipes/detail-ex1.html',
+                    title: "BA's Best Buttermilk Pancakes",
+                    datePosted: 'Oct 13, 2019',
+                    readyTime: '20 min',
+                    hot: true,
+                    view_count: 1925,
+                    up: 80,
+                    down: 3
+                },
+                {
+                    author: 'Thakky',
+                    title: 'Pumpkin Waffles with Apple Cider Syrup',
+                    datePosted: 'Sep 18, 2019',
+                    readyTime: '45 min',
+                    hot: true,
+                    view_count: 125,
+                    up: 80,
+                    down: 3
+                },
+                {
+                    author: 'foo',
+                    title: 'Kare Kare Chicken Wings',
+                    datePosted: 'Sep 17, 2019',
+                    readyTime: '20 min',
+                    hot: true,
+                    view_count: 89,
+                    up: 50,
+                    down: 4
+                },
+                {
+                    author: 'bar',
+                    title: 'Guacamole',
+                    datePosted: 'Jun 15, 2019',
+                    readyTime: '10 min',
+                    hot: false,
+                    view_count: 23,
+                    up: 10,
+                    down: 2
+                },
+                {
+                    author: 'bar',
+                    title: 'Double Tomato Bruschetta',
+                    datePosted: 'Jun 13, 2019',
+                    readyTime: '35 min',
+                    hot: false,
+                    view_count: 23,
+                    up: 112
+                }
+            ]
         },
         computed: {
-          getRecipesByName() {
-            return this.recipes.filter((item)=>{
-              if (this.togglePopSearch) return item.hot;
-              else return item.title.toLowerCase().includes(this.searchName.toLowerCase());
-            })
-          }
+            getRecipesByName() {
+                return this.recipes.filter((item) => {
+                    if (this.togglePopSearch) return item.hot;
+                    else return item.title.toLowerCase().includes(this.searchName.toLowerCase());
+                })
+            }
         }
-      })
-  </script>
+    })
+</script>
 {% endblock %}

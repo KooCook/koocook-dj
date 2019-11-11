@@ -1,153 +1,158 @@
 {% extends 'base/index.html' %}
 {% block page_title %}Home{% endblock %}
 {% block page_body %}
-      <section class="section">
-          <nav class="level">
+<section class="section">
+    <nav class="level">
 
-              <p class="level-item has-text-centered">
-                  <figure class="image is-48x48">
-{#                      <img alt="KooCook!" src="{% static "img/chicken_logo.svg" %}" style="max-height: unset">#}
-                    </figure>
-                    <span class="is-size-1 has-text-weight-bold">KooCook!</span>
-              </p>
-             <p class="level-item"></p>
-            </nav>
-            <nav class="navbar navbar-themed" role="navigation" aria-label="main navigation">
-         <div class="container">
-           <div class="navbar-brand">
+        <p class="level-item has-text-centered">
+            <figure class="image is-48x48">
+                {# <img alt="KooCook!" src="{% static "img/chicken_logo.svg" %}" style="max-height: unset">#}
+            </figure>
+            <span class="is-size-1 has-text-weight-bold">KooCook!</span>
+        </p>
+        <p class="level-item"></p>
+    </nav>
+    <nav class="navbar navbar-themed" role="navigation" aria-label="main navigation">
+        <div class="container">
+            <div class="navbar-brand">
 
-             <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
-                data-target="navbarMain">
-               <span aria-hidden="true"></span>
-               <span aria-hidden="true"></span>
-               <span aria-hidden="true"></span>
-             </a>
-           </div>
-
-           <div id="navbarMain" class="navbar-menu">
-              <div class="navbar-center">
-                <a class="navbar-item is-active">
-                  Home
+                <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
+                   data-target="navbarMain">
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
                 </a>
+            </div>
 
-               <a class="navbar-item is-disabled">
-                 Stream
-               </a>
+            <div id="navbarMain" class="navbar-menu">
+                <div class="navbar-center">
+                    <a class="navbar-item is-active">
+                        Home
+                    </a>
 
-               <div class="navbar-item has-dropdown is-hoverable is-disabled">
-                 <a class="navbar-link">
-                   Browse
-                 </a>
+                    <a class="navbar-item is-disabled">
+                        Stream
+                    </a>
 
-                 <div class="navbar-dropdown is-boxed">
-                   <a class="navbar-item" title="Look at our suggested recipe">
-                     Featured recipes
-                   </a>
-                   <a class="navbar-item" title="Look at what other people are making">
-                     Popular recipes
-                   </a>
-                   <a class="navbar-item" title="Get personalised recipe recommendations">
-                     Suggested recipes
-                   </a>
-                   <a class="navbar-item" title="Get a random recipe">
-                     I'm feeling hungry!
-                   </a>
-                   <hr class="navbar-divider">
-                   <a class="navbar-item" title="Can't find an ingredient? Look no further">
-                     Ingredients
-                   </a>
-                   <a class="navbar-item" title="Looking to get some new cookwares? We've got you covered">
-                     Cookware
-                   </a>
-                 </div>
-               </div>
+                    <div class="navbar-item has-dropdown is-hoverable is-disabled">
+                        <a class="navbar-link">
+                            Browse
+                        </a>
 
-               <div class="navbar-item has-dropdown is-hoverable is-disabled">
-                 <a class="navbar-link">
-                   More
-                 </a>
+                        <div class="navbar-dropdown is-boxed">
+                            <a class="navbar-item" title="Look at our suggested recipe">
+                                Featured recipes
+                            </a>
+                            <a class="navbar-item" title="Look at what other people are making">
+                                Popular recipes
+                            </a>
+                            <a class="navbar-item" title="Get personalised recipe recommendations">
+                                Suggested recipes
+                            </a>
+                            <a class="navbar-item" title="Get a random recipe">
+                                I'm feeling hungry!
+                            </a>
+                            <hr class="navbar-divider">
+                            <a class="navbar-item" title="Can't find an ingredient? Look no further">
+                                Ingredients
+                            </a>
+                            <a class="navbar-item" title="Looking to get some new cookwares? We've got you covered">
+                                Cookware
+                            </a>
+                        </div>
+                    </div>
 
-                 <div class="navbar-dropdown is-boxed">
-                   <a class="navbar-item">
-                     About
-                   </a>
-                   <a class="navbar-item">
-                     Contact
-                   </a>
-                   <a class="navbar-item">
-                     Privacy Policy
-                   </a>
-                   <hr class="navbar-divider">
-                   <a class="navbar-item">
-                     Report an issue
-                   </a>
-                 </div>
-               </div>
+                    <div class="navbar-item has-dropdown is-hoverable is-disabled">
+                        <a class="navbar-link">
+                            More
+                        </a>
 
-                {% if not user.is_authenticated %}
-               <div class="navbar-item">
-                 <div class="buttons">
+                        <div class="navbar-dropdown is-boxed">
+                            <a class="navbar-item">
+                                About
+                            </a>
+                            <a class="navbar-item">
+                                Contact
+                            </a>
+                            <a class="navbar-item">
+                                Privacy Policy
+                            </a>
+                            <hr class="navbar-divider">
+                            <a class="navbar-item">
+                                Report an issue
+                            </a>
+                        </div>
+                    </div>
+
+                    {% if not user.is_authenticated %}
+                    <div class="navbar-item">
+                        <div class="buttons">
 
 
-                          <a href="{% url "social:begin" "google-oauth2" %}" class="button is-secondary">
-                              <strong>Sign in with <i class="fab fa-google"></i>oogle</strong>
-                          </a>
+                            <a href="{% url "social:begin" "google-oauth2" %}" class="button is-secondary">
+                            <strong>Sign in with <i class="fab fa-google"></i>oogle</strong>
+                            </a>
 
-                 </div>
+                        </div>
 
-               </div>
-                {% else %}
-               <div class="navbar-item has-dropdown is-hoverable">
-                 <a class="navbar-link is-arrowless">
-                   <div class="profile-pic-48">
-                       <div class="has-text-grey-dark profile-initial-48">{{ user.username|title|slice:"0:1" }}</div>
-                   </div>
-                 </a>
+                    </div>
+                    {% else %}
+                    <div class="navbar-item has-dropdown is-hoverable">
+                        <a class="navbar-link is-arrowless">
+                            <div class="profile-pic-48">
+                                <div class="has-text-grey-dark profile-initial-48">{{ user.username|title|slice:"0:1"
+                                    }}
+                                </div>
+                            </div>
+                        </a>
 
-                 <div class="navbar-dropdown is-right is-boxed">
-                     <div class="navbar-item">
-                        <strong>{{ user.username }}</strong>
-                     </div>
-                   <a class="navbar-item is-disabled">
-                     Your profile
-                   </a>
-                   <a class="navbar-item is-disabled">
-                     Your subscriptions
-                   </a>
-                   <a class="navbar-item" href="{% url 'koocook_core:recipe-user' %}">
-                     Your recipes
-                   </a>
-                   <hr class="navbar-divider">
-                   <a class="navbar-item is-disabled">
-                     Help
-                   </a>
-                   <a class="navbar-item is-disabled">
-                     Settings
-                   </a>
-                   <a href="{% url "koocook_auth:logout" %}" class="navbar-item">
-                     Sign out
-                   </a>
-                 </div>
-               </div>
-                {% endif %}
-             </div>
-           </div>
-         </div>
-       </nav>
-            <div class="level">
-                <div class="level-item control has-icons-left search-bar-section">
+                        <div class="navbar-dropdown is-right is-boxed">
+                            <div class="navbar-item">
+                                <strong>{{ user.username }}</strong>
+                            </div>
+                            <a class="navbar-item is-disabled">
+                                Your profile
+                            </a>
+                            <a class="navbar-item is-disabled">
+                                Your subscriptions
+                            </a>
+                            <a class="navbar-item" href="{% url 'koocook_core:recipe-user' %}">
+                                Your recipes
+                            </a>
+                            <hr class="navbar-divider">
+                            <a class="navbar-item is-disabled">
+                                Help
+                            </a>
+                            <a class="navbar-item is-disabled">
+                                Settings
+                            </a>
+                            <a href="{% url "koocook_auth:logout" %}" class="navbar-item">
+                            Sign out
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+    <div class="level">
+        <div class="level-item control has-icons-left search-bar-section">
 
-                    <input v-model="searchName" class="level-item input search-bar" type="text" placeholder="Don't know how to cook a dish? Search KooCook!">
-                    <span class="icon is-small is-left">
+            <input v-model="searchName" class="level-item input search-bar" type="text"
+                   placeholder="Don't know how to cook a dish? Search KooCook!">
+            <span class="icon is-small is-left">
                         <i class="fas fa-search"></i>
                       </span>
-                    </div>
-            </div>
-            <div class="level">
-                    <div class="level-item">
-                      <a class="is-disabled" href="search/results-ex-1.html"><button class="button is-link">Search</button></a>
-                    </div>
-            </div>
-          </section>
+        </div>
+    </div>
+    <div class="level">
+        <div class="level-item">
+            <a class="is-disabled" href="search/results-ex-1.html">
+                <button class="button is-link">Search</button>
+            </a>
+        </div>
+    </div>
+</section>
 {% endblock %}
 
