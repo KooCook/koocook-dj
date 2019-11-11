@@ -1,24 +1,24 @@
 # Single view w/ Ajax
 from django.db.models import Model
 from django.contrib.auth.decorators import login_required
-from django.http import HttpRequest, HttpResponse, HttpResponseForbidden, JsonResponse, QueryDict
+from django.http import HttpRequest, HttpResponse, JsonResponse, QueryDict
 
-from .base import BaseController, BaseHandler
+from .base import BaseController, BaseHandler, ControllerResponse, ControllerResponseUnauthorised
 from ..models import Post, Author
 from ..views import GuestPostStreamView, UserPostStreamView
 
 
 def apply_author_from_session(func):
-    def wrapper(controller, request: HttpRequest, *args, **kwargs):
+    def wrapper(controller, *args, **kwargs):
         try:
-            request.author = Author.from_dj_user(request.user)
+            controller.request_fields['author'] = Author.from_dj_user(controller.request.user)
         except Author.DoesNotExist:
-            return HttpResponseForbidden()
+            return ControllerResponseUnauthorised()
 
         if (len(args) > 0 and args[0] is not None) or len(kwargs) > 0:
-            return func(controller, request, *args, **kwargs)
+            return func(controller, *args, **kwargs)
         else:
-            return func(controller, request)
+            return func(controller)
     return wrapper
 
 
@@ -27,22 +27,22 @@ class PostController(BaseController):
     def __init__(self):
         super().__init__(Post, {})
 
-    def get_model_request_fields(self, request: HttpRequest) -> dict:
-        return {field_name: request.POST.get(field_name) for field_name in self.model_field_names}
+    @classmethod
+    def default(cls):
+        return cls()
+    #
+    # def get_model_request_fields(self, request: HttpRequest) -> dict:
+    #     return {field_name: request.POST.get(field_name) for field_name in self.model_field_names}
 
     @apply_author_from_session
-    def create_post(self, request: HttpRequest) -> JsonResponse:
-        creation = self.model(**self.get_model_request_fields(request))
-        creation.author = request.author
-        creation.save()
-        return JsonResponse({'status': 'Post created', 'post': creation.as_json})
+    def create(self) -> ControllerResponse:
+        return super().create()
 
-    @staticmethod
-    def render_stream_view(request: HttpRequest) -> HttpResponse:
-        if request.user.is_authenticated:
-            return UserPostStreamView.as_view()(request)
+    def render_stream_view(self) -> HttpResponse:
+        if self.request.user.is_authenticated:
+            return UserPostStreamView.as_view()(self.request)
         else:
-            return GuestPostStreamView.as_view()(request)
+            return GuestPostStreamView.as_view()(self.request)
 
     @apply_author_from_session
     def update_post(self, request: HttpRequest, post_id: int) -> JsonResponse:
@@ -79,19 +79,20 @@ class PostController(BaseController):
 
 class PostHandler(BaseHandler):
     def __init__(self):
-        super().__init__(PostController())
-        self.plain_map = {
-            'GET': (self.controller.render_stream_view, False),
-            'POST': (self.controller.create_post, True),
+        super().__init__(PostController.default())
+        self.handler_map = {
+            'GET': 'render_stream_view',
+            'POST': 'create',
             # 'GET': None, Do we really need a single view of a post?
-            'DELETE': (self.controller.delete_post, True),
-            'PATCH': (self.controller.update_post, True)}
+            'DELETE': 'delete_post',
+            'PATCH': 'update_post'
+        }
 
     @classmethod
     def instance(cls):
         return cls()
-
-    def handle(self, request: HttpRequest, pk=None):
-        func, arg_pk = self._get_handler_for_method(request.method)
-        return func(request, pk) if arg_pk else func(request)
+    #
+    # def handle(self, request: HttpRequest, pk=None):
+    #     func, arg_pk = self._get_handler_for_method(request.method)
+    #     return func(request, pk) if arg_pk else func(request)
 

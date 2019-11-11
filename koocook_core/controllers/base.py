@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.db.models import Model
-from django.http import JsonResponse, HttpRequest
+from django.http import JsonResponse, HttpRequest, HttpResponse
 from typing import Type
 
 from ..models.base import ModelEncoder
@@ -27,9 +27,14 @@ class ControllerResponseUnauthorised(ControllerResponse):
         super().__init__('Unauthorised')
 
 
+class ControllerResponseNotAllowed(ControllerResponse):
+    def __init__(self):
+        super().__init__('Method Not Allowed')
+
+
 def user_only(func):
-    def wrapper(controller: BaseController, *args, **kwargs):
-        if type(controller.request_fields['user']) == User:
+    def wrapper(controller, *args, **kwargs):
+        if not controller.request_fields['user'].is_authenticated:
             return ControllerResponseUnauthorised()
         if (len(args) > 0 and args[0] is not None) or len(kwargs) > 0:
             return func(controller, *args, **kwargs)
@@ -53,7 +58,8 @@ class BaseController:
 
     @property
     def model_request_fields(self) -> dict:
-        return {field_name: self.request_fields[field_name] for field_name in self.model_field_names}
+        return {field_name: self.request_fields[field_name] for field_name in self.model_field_names
+                if field_name in self.request_fields}
 
     def find_by_id(self, model_id: int) -> Model:
         return self.model.objects.get(pk=model_id)
@@ -80,6 +86,11 @@ class BaseController:
 
 
 class BaseHandler:
+    STATUS_CODE_MAP = {
+        ControllerResponse: 200,
+        ControllerResponseUnauthorised: 401,
+        ControllerResponseNotAllowed: 405
+    }
 
     def __init__(self, controller_type: BaseController):
         self.controller = controller_type
@@ -89,44 +100,57 @@ class BaseHandler:
     def instance(cls):
         return cls(BaseController.default())
 
-    def get_handler_for(self, request: HttpRequest, alias):
+    def get_handler_for(self, request: HttpRequest, controller, alias):
         if not alias:
-            return self._get_handler_for_method(request.method)
+            return self._get_handler_for_method(controller, request.method, self.handler_map)
         sub_handler = self.handler_map[alias]
-        if callable(sub_handler):
-            return sub_handler
-        else:
-            return self._get_handler_for_method(request.method)
+        if type(sub_handler) is str:
+            if callable(getattr(controller, sub_handler)):
+                return sub_handler
+            raise ValueError
+        elif type(sub_handler) is dict:
+            return self._get_handler_for_method(controller, request.method, sub_handler)
 
-    def _get_handler_for_method(self, method):
-        if method.upper() in self.handler_map:
-            return self.handler_map[method]
-        raise NotImplementedError
+    def _get_handler_for_method(self, controller, method, method_map):
+        normalised_method = method.upper()
+        if normalised_method in method_map:
+            handler = method_map[normalised_method]
+            return getattr(controller, handler)
+        return ControllerResponseNotAllowed()
 
-    def restore_controller_fields(self, request: HttpRequest):
-        self.controller = self.controller.default()
-        self.controller.request_fields.update(request.POST.dict())
-        self.controller.request_fields['user'] = request.user
+    def restore_controller(self, request: HttpRequest):
+        controller = self.controller.default()
+        controller.request_fields.update(request.POST.dict())
+        controller.request_fields['user'] = request.user
+        return controller
 
-    def handle(self, request: HttpRequest, alias: str = None) -> ControllerResponse:
-        self.restore_controller_fields(request)
-        handler = self.get_handler_for(request, alias)
-        if type(handler) is tuple:
+    def _internal_handle(self, request: HttpRequest, alias: str = None, **kwargs) -> ControllerResponse:
+        controller = self.restore_controller(request)
+        controller.request = request
+        handler = self.get_handler_for(request, controller, alias)
+        if len(kwargs) > 0:
             func, args = handler
+            return func(request, **kwargs)
         else:
             func = handler
-        return func(request)
-
-
-class JsonRequestHandler(BaseHandler):
-    STATUS_CODE_MAP = {
-        ControllerResponse: 200,
-        ControllerResponseUnauthorised: 401,
-    }
+            if callable(func):
+                return func()
+            else:
+                return func
 
     def get_status_code(self, response: ControllerResponse) -> int:
         return self.STATUS_CODE_MAP[type(response)]
 
-    def handle(self, request: HttpRequest, alias: str = None) -> JsonResponse:
-        res = super().handle(request, alias)
-        return JsonResponse(res.as_json(), status=self.get_status_code(res))
+    def handle(self, request: HttpRequest, alias: str = None, **kwargs) -> HttpResponse:
+        res = self._internal_handle(request, alias, **kwargs)
+        if hasattr(res, 'as_json'):
+            return JsonResponse(res.as_dict(), status=self.get_status_code(res), encoder=ModelEncoder)
+        else:
+            return res
+
+
+class JsonRequestHandler(BaseHandler):
+
+    def handle(self, request: HttpRequest, alias: str = None, **kwargs) -> JsonResponse:
+        res = self._internal_handle(request, alias, **kwargs)
+        return JsonResponse(res.as_dict(), status=self.get_status_code(res), encoder=ModelEncoder)
