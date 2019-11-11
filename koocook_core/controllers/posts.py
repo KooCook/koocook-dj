@@ -3,7 +3,7 @@ from django.db.models import Model
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse, JsonResponse, QueryDict
 
-from .base import BaseController, BaseHandler, ControllerResponse, ControllerResponseUnauthorised
+from .base import BaseController, BaseHandler, ControllerResponse, ControllerResponseUnauthorised, ControllerResponseForbidden
 from ..models import Post, Author
 from ..views import GuestPostStreamView, UserPostStreamView
 
@@ -16,7 +16,7 @@ def apply_author_from_session(func):
             return ControllerResponseUnauthorised()
 
         if (len(args) > 0 and args[0] is not None) or len(kwargs) > 0:
-            return func(controller, *args, **kwargs)
+            return func(controller, **kwargs)
         else:
             return func(controller)
     return wrapper
@@ -30,6 +30,10 @@ class PostController(BaseController):
     @classmethod
     def default(cls):
         return cls()
+
+    @property
+    def author(self):
+        return self.request_fields['author']
     #
     # def get_model_request_fields(self, request: HttpRequest) -> dict:
     #     return {field_name: request.POST.get(field_name) for field_name in self.model_field_names}
@@ -45,25 +49,32 @@ class PostController(BaseController):
             return GuestPostStreamView.as_view()(self.request)
 
     @apply_author_from_session
-    def update_post(self, request: HttpRequest, post_id: int) -> JsonResponse:
-        found = self.find_by_id(post_id)
-        if found.author != request.author:
-            return JsonResponse({'status': 'Forbidden'}, status=403)
-        params = QueryDict(request.body).dict()
-        updated_fields = list(set(params.keys()).intersection(set(self.model_field_names)))
-        for field in updated_fields:
-            setattr(found, field, params[field])
-        found.save()
-        return JsonResponse({'status': 'Post updated', 'post': found.as_json})
+    def retrieve_all_for_user(self) -> ControllerResponse:
+        """
+        Retrieves all posts of the current user
+
+            Returns:
+                ControllerResponse: A response and its result in ControllerResponse class
+        """
+        return ControllerResponse(status_text='Retrieved', obj=list(self.model.objects.filter(author=self.author)))
 
     @apply_author_from_session
-    def delete_post(self, request: HttpRequest, post_id: int) -> JsonResponse:
-        found = self.find_by_id(post_id)
-        if found.author != request.author:
-            return JsonResponse({'status': 'Forbidden'}, status=403)
-        found.delete()
-        return JsonResponse({'status': 'Post deleted'})
+    def update_post(self, pk: int) -> ControllerResponse:
+        obj = self.find_by_id(pk)
+        if obj.author == self.author:
+            return self.update(obj)
+        else:
+            return ControllerResponseForbidden()
 
+    @apply_author_from_session
+    def delete_post(self, pk: int) -> ControllerResponse:
+        obj = self.find_by_id(pk)
+        if obj.author == self.author:
+            return self.delete(obj)
+        else:
+            return ControllerResponseForbidden()
+
+    # TODO: Needs more implementation on this
     def upsert_post(self, request: HttpRequest, post_id: int) -> JsonResponse:
         found, created = self.model.objects.get_or_create(pk=post_id)
         if not created:
@@ -81,6 +92,9 @@ class PostHandler(BaseHandler):
     def __init__(self):
         super().__init__(PostController.default())
         self.handler_map = {
+            'user': {
+                'GET': 'retrieve_all_for_user'
+            },
             'GET': 'render_stream_view',
             'POST': 'create',
             # 'GET': None, Do we really need a single view of a post?

@@ -27,6 +27,11 @@ class ControllerResponseUnauthorised(ControllerResponse):
         super().__init__('Unauthorised')
 
 
+class ControllerResponseForbidden(ControllerResponse):
+    def __init__(self):
+        super().__init__('Forbidden')
+
+
 class ControllerResponseNotAllowed(ControllerResponse):
     def __init__(self):
         super().__init__('Method Not Allowed')
@@ -47,6 +52,11 @@ class BaseController:
     def __init__(self, model: Type[Model], request_fields: dict):
         self.model = model
         self.request_fields = request_fields
+        self.request_params = {}
+
+    @property
+    def user(self) -> User:
+        return self.request_fields['user']
 
     @classmethod
     def default(cls):
@@ -71,8 +81,13 @@ class BaseController:
         return ControllerResponse(status_text='Created', obj=creation)
 
     @user_only
-    def update(self) -> ControllerResponse:
-        pass
+    def update(self, found) -> ControllerResponse:
+        # params = QueryDict(request.body).dict()
+        updated_fields = list(set(self.request_fields.keys()).intersection(set(self.model_field_names)))
+        for field in updated_fields:
+            setattr(found, field, self.request_fields[field])
+        found.save()
+        return ControllerResponse(status_text='Updated', obj=found)
 
     def retrieve_one(self) -> ControllerResponse:
         pass
@@ -81,14 +96,16 @@ class BaseController:
         pass
 
     @user_only
-    def delete(self) -> ControllerResponse:
-        pass
+    def delete(self, found) -> ControllerResponse:
+        found.delete()
+        return ControllerResponse(status_text='Deleted', obj=found)
 
 
 class BaseHandler:
     STATUS_CODE_MAP = {
         ControllerResponse: 200,
         ControllerResponseUnauthorised: 401,
+        ControllerResponseForbidden: 403,
         ControllerResponseNotAllowed: 405
     }
 
@@ -129,7 +146,7 @@ class BaseHandler:
         controller.request = request
         handler = self.get_handler_for(request, controller, alias)
         if len(kwargs) > 0:
-            func, args = handler
+            func = handler
             return func(request, **kwargs)
         else:
             func = handler
