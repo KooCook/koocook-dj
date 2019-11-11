@@ -163,7 +163,7 @@ def parse_cooking_method(cooking_method: str) -> models.Tag:
 def parse_ingredients(ingredients: structured_data.Property) -> List[models.RecipeIngredient]:
     recipeingredients = []
     for ingredient in ingredients:
-        number, unit, meta_str = utils.split_ingredient_str(ingredient)
+        number, unit, description = utils.split_ingredient_str(ingredient)
         if unit != '':
             unit = support.get_unit(unit)
         else:
@@ -171,32 +171,35 @@ def parse_ingredients(ingredients: structured_data.Property) -> List[models.Reci
         quantity = support.Quantity(number, unit)
         try:
             # try exact match
-            meta = models.MetaIngredient.objects.filter(name__iexact=meta_str).get()
+            meta = models.MetaIngredient.objects.filter(name__iexact=description).get()
         except ObjectDoesNotExist:
             # try contains
             names = {meta.name: meta for meta in models.MetaIngredient.objects.all()}
-            match = datatrans.utils.get_closest_match(meta_str, names.keys())
+            match = datatrans.utils.get_closest_match(description, names.keys())
             if match is not None:
                 meta = models.MetaIngredient.objects.filter(name__exact=match).get()
             else:
-                warnings.warn('Found no matching meta ingredient')
-                parts = meta_str.split(' ')
-                if len(parts) == 1:
-                    meta = models.MetaIngredient.objects.create(name=meta_str, nutrients={})
-                elif len(parts) < 3:
-                    warnings.warn('Found no matching meta ingredient. '
-                                  'Creating new meta ingredient \'{}\''
-                                  .format(meta_str))
-                    meta = models.MetaIngredient.objects.create(name=meta_str, nutrients={})
-                else:
-                    warnings.warn('Found no matching meta ingredient. '
-                                  'Creating new meta ingredient \'{}\''
-                                  .format(meta_str))
-                    meta = models.MetaIngredient.objects.create(name=meta_str, nutrients={})
-                    # raise ValueError('Found no matching meta ingredient.'
-                    #                  'Please defer ingredient creation.')
+                warnings.warn('Found no matching meta ingredient, trying FoodDataAPI')
+                nutrients, name = support.scripts.get_nutrients(description)
+                meta = models.MetaIngredient(name=name, nutrients=nutrients)
+                meta.save()
+                # parts = meta_str.split(' ')
+                # if len(parts) == 1:
+                #     meta = models.MetaIngredient.objects.create(name=meta_str, nutrients={})
+                # elif len(parts) < 3:
+                #     warnings.warn('Found no matching meta ingredient. '
+                #                   'Creating new meta ingredient \'{}\''
+                #                   .format(meta_str))
+                #     meta = models.MetaIngredient.objects.create(name=meta_str, nutrients={})
+                # else:
+                #     warnings.warn('Found no matching meta ingredient. '
+                #                   'Creating new meta ingredient \'{}\''
+                #                   .format(meta_str))
+                #     meta = models.MetaIngredient.objects.create(name=meta_str, nutrients={})
+                #     # raise ValueError('Found no matching meta ingredient.'
+                #     #                  'Please defer ingredient creation.')
         # don't catch MultipleObjectsReturned
-        recipeingredients.append(models.RecipeIngredient.objects.create(quantity=quantity, meta=meta))
+        recipeingredients.append(models.RecipeIngredient.objects.create(description=description, quantity=quantity, meta=meta))
     return recipeingredients
 
 
