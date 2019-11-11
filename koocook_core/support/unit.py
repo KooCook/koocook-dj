@@ -148,7 +148,7 @@ class ServingUnit(Unit):
 
 
 class SpecialUnit(Unit):
-    NONE = '', None, 'units', 'unit'
+    NONE = 'None', None, 'units', 'unit'
     IU = 'IU', None, 'International Units', 'International Unit'
 
 
