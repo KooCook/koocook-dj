@@ -65,7 +65,7 @@ class VolumeUnit(Unit):
     LITRE = 'L', 0.001
     MILLILITRE = 'mL', 0.000_001
 
-    CUP = None, 0.000_240
+    CUP = 'cup', 0.000_240
     TABLESPOON = 'tbsp', 0.000_015
     TEASPOON = 'tsp', 0.000_005
 
