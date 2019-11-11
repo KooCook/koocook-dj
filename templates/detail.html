@@ -15,8 +15,8 @@
 
             <div class="field is-grouped is-grouped-multiline">
                 <div class="control">
-                    {% for tag in recipe.tag.all %}
-                    <span class="tag  is-medium">{{ tag.name }}</span>
+                    {% for tag in recipe.tag_set.all %}
+                        <span class="tag  is-medium">{{ tag.name }}</span>
                     {% endfor %}
                 </div>
             </div>
@@ -44,22 +44,22 @@
                             <div>
                                 <p class="heading">Time</p>
                                 {% if recipe.total_time.seconds > 0 %}
-                                {% if recipe.total_time.seconds > 60 %}
-                                {% if recipe.total_time.seconds > 3600 %}
-                                <p class="title">
-                                    {{ recipe.total_time.seconds|hours }}
-                                    {{ recipe.total_time.seconds|minutes }}
-                                </p>
+                                    {% if recipe.total_time.seconds > 60 %}
+                                        {% if recipe.total_time.seconds > 3600 %}
+                                            <p class="title">
+                                                {{ recipe.total_time.seconds|hours }}
+                                                {{ recipe.total_time.seconds|minutes }}
+                                            </p>
+                                        {% else %}
+                                            <p class="title">
+                                                {{ recipe.total_time.seconds|minutes }}
+                                            </p>
+                                        {% endif %}
+                                    {% else %}
+                                        <p class="title">1 M</p>
+                                    {% endif %}
                                 {% else %}
-                                <p class="title">
-                                    {{ recipe.total_time.seconds|minutes }}
-                                </p>
-                                {% endif %}
-                                {% else %}
-                                <p class="title">1 M</p>
-                                {% endif %}
-                                {% else %}
-                                <p class="title">-</p>
+                                    <p class="title">-</p>
                                 {% endif %}
                             </div>
                         </div>
@@ -76,8 +76,8 @@
                             <!-- times -->
                             <progress
                                     class="level-item progress is-success"
-                                    value="1"
-                                    max="4"
+                                    value="{{ recipe.total_time.seconds|time_bar }}"
+                                    max="6"
                                     style="border-radius: 0; height: 0.2rem"
                             ></progress>
                         </div>
