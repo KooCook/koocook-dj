@@ -7,9 +7,9 @@ register = template.Library()
 def hours(seconds):
     hour = seconds // 3600
     if hour > 1:
-        return f'{hour} hrs'
+        return f'{hour} H'
     else:
-        return '1 hr'
+        return '1 H'
 
 
 @register.filter()
@@ -18,9 +18,9 @@ def minutes(seconds):
         seconds /= 60
     minute = seconds // 60
     if minute > 1:
-        return f'{minute} mins'
+        return f'{minute} M'
     else:
-        return '1 min'
+        return '1 M'
 
 
 @register.filter
