@@ -135,7 +135,7 @@
             <div class="tile is-ancestor">
                 <div class="tile is-vertical">
                     <div class="tile">
-                        <div class="tile is-parent">
+                        <div class="tile is-parent" id="ingredients">
                             <div class="tile is-child">
                                 <h3 class="title is-4">
                                     Ingredients
@@ -149,24 +149,23 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="tile is-parent">
-                            <div class="tile is-child">
-                                <h3 class="title is-4">
-                                    Equipment
-                                </h3>
-                                <div class="content">
-                                    <ul style="list-style-type: none">
-                                        <!-- <li>Whisk</li>
-                                          <li>Large bowl</li>
-                                          <li>Medium bowl</li>
-                                          <li>Griddle or large skillet</li>
-                                          <li>Spatula</li>
-                                          <li>Measuring cup</li> -->
-                                    </ul>
-                                </div>
+
+                        <div class="tile is-parent" id="nutrition">
+                        <div class="tile is-child">
+                            <h3 class="title is-4">
+                                Nutrition
+                            </h3>
+                            <div class="content">
+                                <ul style="list-style-type: none">
+                                    {% for fact in recipe.nutrition %}
+                                    <li>{{ fact }}</li>
+                                    {% endfor %}
+                                </ul>
                             </div>
                         </div>
                     </div>
+                    </div>
+
                     <div class="tile is-parent">
                         <div class="tile is-child">
                             <h3 class="title is-4">
