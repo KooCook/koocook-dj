@@ -11,6 +11,7 @@ from koocook.settings.dirs import BASE_DIR
 from koocook_core import models
 from koocook_core import support
 from koocook_core.support import utils
+from koocook_core.support import scripts
 
 import datatrans.utils.structured_data
 from datatrans import structured_data
