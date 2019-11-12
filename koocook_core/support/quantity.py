@@ -28,6 +28,8 @@ class Quantity:
         return '{} {}'.format(self.amount, self.unit.plural)
 
     def get_db_str(self):
+        if self.unit.symbol:
+            return '{} {}'.format(self.amount, self.unit.symbol)
         return self.__str__()
 
     # Monkey patched
