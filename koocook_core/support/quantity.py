@@ -34,6 +34,13 @@ class Quantity:
     def __len__(self):
         return len(str(self))
 
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return False
+        if other.amount == self.amount and other.unit == self.unit:
+            return True
+        return False
+
 
 def parse_quantity(quantity_string: str) -> Quantity:
     amount, *unit = quantity_string.split(' ')
