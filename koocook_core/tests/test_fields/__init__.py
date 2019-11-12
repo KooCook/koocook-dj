@@ -62,7 +62,7 @@ class TestQuantity(unittest.TestCase):
     float_amounts = tuple(x / 8 for x in range(20))
     amounts = int_amounts + float_amounts
 
-    def test_amount_can_be_int(self):
+    def test_quantity_amount_can_be_int(self):
         for amount in TestQuantity.int_amounts:
             with self.subTest(amount=amount):
                 try:
@@ -70,7 +70,7 @@ class TestQuantity(unittest.TestCase):
                 except ValueError as e:
                     raise self.failureException(f'test raised {e.__class__.__name__} unexpectedly') from e
 
-    def test_amount_can_be_float(self):
+    def test_quantity_amount_can_be_float(self):
         for amount in TestQuantity.float_amounts:
             with self.subTest(amount=amount):
                 try:
@@ -78,7 +78,7 @@ class TestQuantity(unittest.TestCase):
                 except ValueError as e:
                     raise self.failureException(f'test raised {e.__class__.__name__} unexpectedly') from e
 
-    def test_unit_can_be_Unit(self):
+    def test_quantity_unit_can_be_Unit(self):
         for U in unit.units:
             for u in U:
                 with self.subTest(unit=u):
@@ -88,7 +88,7 @@ class TestQuantity(unittest.TestCase):
                     except ValueError as e:
                         raise self.failureException(f'test raised {e.__class__.__name__} unexpectedly') from e
 
-    def test_unit_can_be_str_symbol(self):
+    def test_quantity_unit_can_be_str_symbol(self):
         for U in unit.units:
             for u in U:
                 with self.subTest(unit=u):
@@ -98,7 +98,7 @@ class TestQuantity(unittest.TestCase):
                     except ValueError as e:
                         raise self.failureException(f'test raised {e.__class__.__name__} unexpectedly') from e
 
-    def test_unit_can_be_str_plural(self):
+    def test_quantity_unit_can_be_str_plural(self):
         for U in unit.units:
             for u in U:
                 with self.subTest(unit=u):
@@ -108,7 +108,7 @@ class TestQuantity(unittest.TestCase):
                     except ValueError as e:
                         raise self.failureException(f'test raised {e.__class__.__name__} unexpectedly') from e
 
-    def test_unit_can_be_str_singular(self):
+    def test_quantity_unit_can_be_str_singular(self):
         for U in unit.units:
             for u in U:
                 with self.subTest(unit=u):
