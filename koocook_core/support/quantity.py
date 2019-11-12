@@ -30,10 +30,6 @@ class Quantity:
     def get_db_str(self):
         return self.__str__()
 
-    @property
-    def not_a_unit(self):
-        return self.unit is unit_.SpecialUnit.NONE
-
     # Monkey patched
     def __len__(self):
         return len(str(self))
