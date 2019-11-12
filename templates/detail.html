@@ -42,10 +42,10 @@
                     <nav class="level is-mobile">
                         <div class="level-item has-text-centered">
                             <div>
-                                <p class="heading">Time</p>
+                                <p class="heading">Total Time</p>
                                 {% if recipe.total_time.seconds > 0 %}
-                                    {% if recipe.total_time.seconds > 60 %}
-                                        {% if recipe.total_time.seconds > 3600 %}
+                                    {% if recipe.total_time.seconds >= 60 %}
+                                        {% if recipe.total_time.seconds >= 3600 %}
                                             <p class="title">
                                                 {{ recipe.total_time.seconds|hours }}
                                                 {{ recipe.total_time.seconds|minutes }}
@@ -63,11 +63,28 @@
                                 {% endif %}
                             </div>
                         </div>
+
                         <div class="level-item has-text-centered">
                             <div>
-                                <!-- Have no Measure cooking skill -->
-                                <p class="heading">Difficulty</p>
-                                <p class="title">Simple</p>
+                                <p class="heading">Prep Time</p>
+                                {% if recipe.prep_time.seconds > 0 %}
+                                    {% if recipe.prep_time.seconds >= 60 %}
+                                        {% if recipe.prep_time.seconds >= 3600 %}
+                                            <p class="title">
+                                                {{ recipe.prep_time.seconds|hours }}
+                                                {{ recipe.prep_time.seconds|minutes }}
+                                            </p>
+                                        {% else %}
+                                            <p class="title">
+                                                {{ recipe.prep_time.seconds|minutes }}
+                                            </p>
+                                        {% endif %}
+                                    {% else %}
+                                        <p class="title">1 M</p>
+                                    {% endif %}
+                                {% else %}
+                                    <p class="title">-</p>
+                                {% endif %}
                             </div>
                         </div>
                     </nav>
@@ -84,9 +101,9 @@
                         <div class="level-item">
                             <!-- skills -->
                             <progress
-                                    class="level-item progress is-success"
-                                    value="1"
-                                    max="3"
+                                    class="level-item progress is-warning"
+                                    value="{{ recipe.prep_time.seconds|time_bar }}"
+                                    max="6"
                                     style="border-radius: 0; height: 0.2rem"
                             ></progress>
                         </div>
@@ -96,10 +113,28 @@
                     <nav class="level is-mobile">
                         <div class="level-item has-text-centered">
                             <div>
-                                <p class="heading">Views</p>
-                                <p class="title">456K</p>
+                                <p class="heading">Cook Time</p>
+                                {% if recipe.cook_time.seconds > 0 %}
+                                    {% if recipe.cook_time.seconds >= 60 %}
+                                        {% if recipe.cook_time.seconds >= 3600 %}
+                                            <p class="title">
+                                                {{ recipe.cook_time.seconds|hours }}
+                                                {{ recipe.cook_time.seconds|minutes }}
+                                            </p>
+                                        {% else %}
+                                            <p class="title">
+                                                {{ recipe.cook_time.seconds|minutes }}
+                                            </p>
+                                        {% endif %}
+                                    {% else %}
+                                        <p class="title">1 M</p>
+                                    {% endif %}
+                                {% else %}
+                                    <p class="title">-</p>
+                                {% endif %}
                             </div>
                         </div>
+
                         <div class="level-item has-text-centered">
                             <div>
                                 <p class="heading">Ratings</p>
@@ -110,9 +145,9 @@
                     <nav class="level is-mobile">
                         <div class="level-item">
                             <progress
-                                    class="progress is-hidden"
-                                    value="0"
-                                    max="100"
+                                    class="progress is-danger"
+                                    value="{{ recipe.cook_time.seconds|time_bar }}"
+                                    max="6"
                                     style="border-radius: 0; height: 0.2rem"
                             ></progress>
                         </div>
