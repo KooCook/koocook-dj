@@ -12,11 +12,8 @@ from koocook_core import models
 from koocook_core import support
 from koocook_core.support import utils
 
-try:
-    import datatrans.utils.structured_data
-    from datatrans import structured_data
-except ModuleNotFoundError:
-    pass
+import datatrans.utils.structured_data
+from datatrans import structured_data
 
 DATA_DIR = BASE_DIR / 'data'
 

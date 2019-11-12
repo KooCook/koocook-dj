@@ -1,18 +1,8 @@
 from typing import List
 
 
-def add_datatrans_to_path():
-    import sys
-    sys.path.insert(0, 'C:\\Users\\User\\PycharmProjects\\datatrans')
-
-
-try:
-    from datatrans import fooddata
-    from datatrans.fooddata.search import *
-except ModuleNotFoundError:
-    add_datatrans_to_path()
-    from datatrans import fooddata
-    from datatrans.fooddata.search import *
+from datatrans import fooddata
+from datatrans.fooddata.search import *
 
 
 from koocook_core import support

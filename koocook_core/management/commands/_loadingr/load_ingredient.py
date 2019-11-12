@@ -1,13 +1,9 @@
 import koocook_core.support as support
 from koocook_core import models
 
-try:
-    import datatrans.utils
-    from datatrans import fooddata
-    from datatrans.fooddata.search import *
-    from datatrans.fooddata.detail import *
-except ModuleNotFoundError:
-    pass
+from datatrans import fooddata
+from datatrans.fooddata.search import *
+from datatrans.fooddata.detail import *
 
 
 def main():
