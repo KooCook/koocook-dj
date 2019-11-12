@@ -8,6 +8,8 @@ __all__ = ['Unit', 'units', 'LengthUnit', 'AreaUnit', 'VolumeUnit', 'MassUnit',
 @enum.unique
 class Unit(enum.Enum):
 
+    # IDENTIFIER = (symbol or None, conversion factor or None[, plural form][, singular form][, synonyms ...])
+
     def __new__(cls, symbol: Optional[str], *args):
         obj = object.__new__(cls)
         # ``symbol`` is canonical value
