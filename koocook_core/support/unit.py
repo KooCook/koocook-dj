@@ -79,7 +79,7 @@ class MassUnit(Unit):
     KILOGRAM = 'kg', 1.
     GRAM = 'g', 0.001
     MILLIGRAM = 'mg', 0.000_001
-    MICROGRAM = 'µg', 0.000_000_001
+    MICROGRAM = '\u03bcg', 0.000_000_001, None, None, '\u00b5g'
 
     OUNCE = 'oz', 0.028  # US Food nutrition labeling
     POUND = 'lb', 0.453592  # Google

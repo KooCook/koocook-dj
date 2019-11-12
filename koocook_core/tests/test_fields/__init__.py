@@ -16,7 +16,7 @@ class TestUnit(unittest.TestCase):
         'ounces',
         'g',
         'mg',
-        'μg',
+        '\u03bcg',
         # Energy
         'J',
         'kJ',
