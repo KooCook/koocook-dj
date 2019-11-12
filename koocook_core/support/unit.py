@@ -79,9 +79,18 @@ class MassUnit(Unit):
     KILOGRAM = 'kg', 1.
     GRAM = 'g', 0.001
     MILLIGRAM = 'mg', 0.000_001
+    MICROGRAM = 'µg', 0.000_000_001
 
     OUNCE = 'oz', 0.028  # US Food nutrition labeling
     POUND = 'lb', 0.453592  # Google
+
+
+class EnergyUnit(Unit):
+    JOULE = 'J', 1.
+    KILOJOULE = 'kJ', 1000.
+    KILOCALORIE = 'kcal', 4184.
+    CALORIE = 'cal', 4.184
+    FOOD_CALORIE = 'Cal', 4184., 'Calories', 'Calorie'
 
 
 class TemperatureUnit(Unit):
@@ -139,7 +148,8 @@ def _from_celsius(value: float, quote: Union[TemperatureUnit, str]) -> float:
 
 
 class SpecialUnit(Unit):
-    NONE = '', None, 'units', 'unit'
+    NONE = 'None', None, 'units', 'unit'
+    IU = 'IU', None, 'International Units', 'International Unit'
     SERVING = None, None,
     PERSON = None, None, 'people'
 
