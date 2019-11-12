@@ -105,7 +105,7 @@ class TemperatureUnit(Unit):
         if symbol[0] == '°':
             _singular = 'degree ' + self._name_.title()
             _plural = 'degrees ' + self._name_.title()
-            args = (_plural, _singular, symbol[1:])
+            args = (_plural, _singular, symbol[1:], self._name_.title())
         else:
             _singular = self._name_.lower()
             _plural = self._name_.lower() + 's'
