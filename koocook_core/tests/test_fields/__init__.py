@@ -58,20 +58,8 @@ class TestUnit(unittest.TestCase):
 
 
 class TestQuantity(unittest.TestCase):
-    int_amounts = (
-        0,
-        1,
-        2,
-        3,
-        9,
-    )
-
-    float_amounts = (
-        0.5,
-        1.,
-        1.5,
-    )
-
+    int_amounts = tuple(range(20))
+    float_amounts = tuple(x / 8 for x in range(20))
     amounts = int_amounts + float_amounts
 
     def test_amount_can_be_int(self):
