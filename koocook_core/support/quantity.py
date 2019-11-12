@@ -62,12 +62,10 @@ class QuantityField(models.CharField):
         self.max_length = 50
         super().__init__(*args, **kwargs)
 
-    # def deconstruct(self):
-    #     name, path, args, kwargs = super().deconstruct()
-    #     # Only include kwarg if it's not the default
-    #     if self.nau:
-    #         kwargs['nau'] = self.nau
-    #     return name, path, args, kwargs
+    def deconstruct(self):
+        name, path, args, kwargs = super().deconstruct()
+        kwargs.pop('max_length')
+        return name, path, args, kwargs
 
     def from_db_value(self, value, expression, connection):
         if value is None or value is '':
