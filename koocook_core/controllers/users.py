@@ -41,7 +41,7 @@ class UserController(BaseController):
     def follow(self):
         followee = KoocookUser.objects.get(user_id=self.request_fields['followee_id'])
         self.user.follow(followee)
-        return ControllerResponse(status_text='Followed')
+        return ControllerResponse(status_text='Followed', obj=followee)
 
     @to_koocook_user
     def unfollow(self):

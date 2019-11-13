@@ -95,6 +95,9 @@ class PostHandler(BaseHandler):
             'user': {
                 'GET': 'retrieve_all_for_user'
             },
+            'all': {
+                'GET': 'retrieve_all'
+            },
             'GET': 'render_stream_view',
             'POST': 'create',
             # 'GET': None, Do we really need a single view of a post?

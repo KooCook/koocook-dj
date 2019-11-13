@@ -1,4 +1,13 @@
 Vue.component("follow-widget", {
+  computed: {
+    following: function() {
+      return this.followees.findIndex(obj => obj.id === this.followeeId) !== -1;
+      }
+  },
+  // methods: {
+  //   following: function() {
+  //     return this.followees.findIndex(obj => obj.id === this.followeeId) !== -1;
+  //     },
   methods: {
     async follow() {
       const resp = await fetch(`/profile/follow/`, {
@@ -9,18 +18,17 @@ Vue.component("follow-widget", {
         }
       });
       if (resp.ok) {
-        this.following = true;
-        this.$buefy.toast.open({
-          message: 'Successfully followed !',
-          type: 'is-success'
-        });
+        console.log(this.followees);
+        this.followees.push((await resp.json()).current);
+
       } else {
         this.$buefy.toast.open({
           message: 'Failed to follow! Try again',
           type: 'is-danger'
         })
       }
-    }, async unfollow() {
+    },
+    async unfollow() {
       const resp = await fetch(`/profile/unfollow/`, {
         body: "followee_id=" + this.followeeId,
         method: "POST", credentials: 'include', headers: {
@@ -29,26 +37,29 @@ Vue.component("follow-widget", {
         }
       });
       if (resp.ok) {
-        this.following = false;
-        this.$buefy.toast.open({
-          message: 'Successfully followed !',
-          type: 'is-success'
-        });
+        const idx = this.followees.findIndex(obj => obj.id === this.followeeId);
+        this.followees.splice(idx, 1);
       } else {
         this.$buefy.toast.open({
           message: 'Failed to follow! Try again',
           type: 'is-danger'
         })
       }
-    }
+    },
+
   },
   data: function() {
     return {
-      following: false
+      followee: [
+
+      ]// ], following: false
     };
   },
-  props: ["followeeId"],
+  props: ["followeeId", "followees"],
   template:
     '<button v-if="!following" @click="follow">Follow</button>' +
-      '<button v-else @click="unfollow">Unfollow</button>'
+      '<button v-else @click="unfollow">Unfollow</button>',
+    mounted: async () => {
+
+    }
 });
