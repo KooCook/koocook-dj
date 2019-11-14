@@ -19,6 +19,10 @@ class UserController(BaseController):
         return self.request_fields['user']
 
     @to_koocook_user
+    def edit_profile(self):
+        pass
+
+    @to_koocook_user
     def get_following(self):
         return ControllerResponse(status_text='Retrieved', obj=list(self.user.following.all()))
 

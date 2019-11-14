@@ -136,31 +136,17 @@
         </nav>
       </div>
       <div class="media-right">
-          <follow-widget :followee-id="userPost.author.user.id" :followees="followee"></follow-widget>
+          <follow-widget :followee-id="userPost.author.user.id" :followees="followees"></follow-widget>
       </div>
     </article></b-tab-item>
 </b-tabs>
 
 <script>
-  app = new Vue({
-    el: '#app',
-    computed: {
-      publicationElapsed() {
-        if (this.posts.length > 0)
-          return this.posts.map((post) => { return moment(post.date_published).fromNow(); });
-        else
-          return [];
-      }
-    },
-    data: {
-      searchName: '',
+Object.assign(GLOBAL_DATA, {
       activeTab: 0,
       showModal: false,
       selectedPost: {},
       posts: [
-{#        {% for user_post in user_posts %}#}
-{#                    {{ user_post.as_json | safe }},#}
-{#    {% endfor %}#}
             ],
     followeePosts: [
 {#           {% for post in posts %}#}
@@ -171,8 +157,19 @@
         currentPost: {
             body: ''
           },
-        followee: []
-        },
+        });
+
+  app = new Vue({
+    el: '#app',
+    computed: {
+      publicationElapsed() {
+        if (this.posts.length > 0)
+          return this.posts.map((post) => { return moment(post.date_published).fromNow(); });
+        else
+          return [];
+      }
+    },
+    data: GLOBAL_DATA,
     methods: {
     async createPost() {
       const formData = new FormData();
@@ -264,22 +261,7 @@
       } else {
 
       }
-       resp = await fetch(`/profile/follow/`, {
-        method: "GET", credentials: 'include', headers: {
-          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-          'X-CSRFToken': getCookie('csrftoken')
-        }
-       });
-      if (resp.ok) {
-          if (typeof (await resp.json()).current == "undefined") this.followee = [];
-        else this.followee = (await resp.json()).current;
 
-      } else {
-        this.$buefy.toast.open({
-          message: 'Failed to follow! Try again',
-          type: 'is-danger'
-        })
-      }
 
       }
       })

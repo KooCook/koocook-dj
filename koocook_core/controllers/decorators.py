@@ -1,9 +1,9 @@
-from .base import BaseController, BaseHandler, ControllerResponse, ControllerResponseUnauthorised, ControllerResponseForbidden
+from .base import ControllerResponseUnauthorised, ControllerResponseForbidden
 from ..models import KoocookUser, Author
 
 
 def apply_author_from_session(func):
-    def wrapper(controller: BaseController, *args, **kwargs):
+    def wrapper(controller, *args, **kwargs):
         try:
             controller.request_fields['author'] = Author.from_dj_user(controller.request.user)
         except Author.DoesNotExist:
@@ -17,7 +17,7 @@ def apply_author_from_session(func):
 
 
 def to_koocook_user(func):
-    def wrapper(controller: BaseController, *args, **kwargs):
+    def wrapper(controller, *args, **kwargs):
         if not controller.user.is_authenticated:
             return ControllerResponseUnauthorised()
         try:
@@ -30,3 +30,6 @@ def to_koocook_user(func):
         else:
             return func(controller)
     return wrapper
+
+
+

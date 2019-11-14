@@ -6,6 +6,17 @@ from typing import Type
 from ..models.base import ModelEncoder
 
 
+def user_only(func):
+    def wrapper(controller, *args, **kwargs):
+        if not controller.request_fields['user'].is_authenticated:
+            return ControllerResponseUnauthorised()
+        if (len(args) > 0 and args[0] is not None) or len(kwargs) > 0:
+            return func(controller, *args, **kwargs)
+        else:
+            return func(controller)
+    return wrapper
+
+
 class ControllerResponse:
     def __init__(self, status_text: str, obj: object = None):
         self.status_text = status_text
@@ -37,22 +48,12 @@ class ControllerResponseNotAllowed(ControllerResponse):
         super().__init__('Method Not Allowed')
 
 
-def user_only(func):
-    def wrapper(controller, *args, **kwargs):
-        if not controller.request_fields['user'].is_authenticated:
-            return ControllerResponseUnauthorised()
-        if (len(args) > 0 and args[0] is not None) or len(kwargs) > 0:
-            return func(controller, *args, **kwargs)
-        else:
-            return func(controller)
-    return wrapper
-
-
 class BaseController:
     def __init__(self, model: Type[Model], request_fields: dict):
         self.model = model
         self.request_fields = request_fields
         self.request_params = {}
+        self.http_verb_map = {}
 
     @property
     def user(self) -> User:
