@@ -30,7 +30,7 @@
                   Home
                 </a>
 
-               <a class="navbar-item is-disabled">
+               <a class="navbar-item" href="{% url 'koocook_core:posts:all' %}">
                  Stream
                </a>
 
@@ -114,7 +114,7 @@
                    <a class="navbar-item is-disabled">
                      Your subscriptions
                    </a>
-                   <a class="navbar-item is-disabled">
+                   <a class="navbar-item" href="{% url 'koocook_core:recipe-user' %}">
                      Your recipes
                    </a>
                    <hr class="navbar-divider">
