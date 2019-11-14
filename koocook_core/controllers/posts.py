@@ -4,22 +4,9 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse, JsonResponse, QueryDict
 
 from .base import BaseController, BaseHandler, ControllerResponse, ControllerResponseUnauthorised, ControllerResponseForbidden
+from .decorators import apply_author_from_session
 from ..models import Post, Author
 from ..views import GuestPostStreamView, UserPostStreamView
-
-
-def apply_author_from_session(func):
-    def wrapper(controller, *args, **kwargs):
-        try:
-            controller.request_fields['author'] = Author.from_dj_user(controller.request.user)
-        except Author.DoesNotExist:
-            return ControllerResponseUnauthorised()
-
-        if (len(args) > 0 and args[0] is not None) or len(kwargs) > 0:
-            return func(controller, **kwargs)
-        else:
-            return func(controller)
-    return wrapper
 
 
 class PostController(BaseController):

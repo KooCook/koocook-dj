@@ -3,22 +3,7 @@ from django.contrib.auth.models import AnonymousUser
 
 from .base import BaseController, ControllerResponseUnauthorised, JsonRequestHandler, ControllerResponse
 from ..models import KoocookUser
-
-
-def to_koocook_user(func):
-    def wrapper(controller: BaseController, *args, **kwargs):
-        if not controller.user.is_authenticated:
-            return ControllerResponseUnauthorised()
-        try:
-            controller.request_fields['user'] = KoocookUser.objects.get(user=controller.request_fields['user'])
-        except KoocookUser.DoesNotExist:
-            return ControllerResponseUnauthorised()
-
-        if (len(args) > 0 and args[0] is not None) or len(kwargs) > 0:
-            return func(controller, *args, **kwargs)
-        else:
-            return func(controller)
-    return wrapper
+from .decorators import to_koocook_user
 
 
 class UserController(BaseController):
