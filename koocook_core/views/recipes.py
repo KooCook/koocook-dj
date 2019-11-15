@@ -9,11 +9,16 @@ from django.views.generic.edit import UpdateView
 
 from .forms import RecipeForm
 from ..models import Recipe, Author, KoocookUser, RecipeIngredient, MetaIngredient
-from ..support import Quantity
 
 
-class RecipeViewMixin:
-    def form_valid(self, form):
+class AuthorMixin:
+    def form_valid(self, form: RecipeForm):
+        form.instance.author = Author.objects.get(user__user=self.request.user)
+        return super().form_valid(form)
+
+
+class RecipeViewMixin(AuthorMixin):
+    def form_valid(self, form: RecipeForm):
         response = super().form_valid(form)
         ingredients = json.loads(self.request.POST.get('ingredients'))
         if ingredients:
@@ -60,15 +65,8 @@ class UserRecipeListView(ListView):
 
 class RecipeCreateView(RecipeViewMixin, CreateView):
     http_method_names = ['post', 'get']
-    form_class = RecipeForm  # model = Recipe
-    # fields = '__all__'
+    form_class = RecipeForm
     template_name = 'recipes/create.html'
-
-    @property
-    def initial(self):
-        initial = super().initial
-        initial.update({'author': Author.objects.filter(user__user=self.request.user)[0]})
-        return initial.copy()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -79,8 +77,9 @@ class RecipeCreateView(RecipeViewMixin, CreateView):
 
 
 class RecipeUpdateView(RecipeViewMixin, UpdateView):
+    form_class = RecipeForm
     model = Recipe
-    fields = '__all__'  # ['name']
+    # fields = '__all__'  # ['name']
     template_name = 'recipes/update.html'
 
     def get_success_url(self):
