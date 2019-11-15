@@ -1,6 +1,8 @@
 {% extends 'base/content.html' %}
+{% load static %}
 {% load widget_tweaks %}
 {% block page_title %}Post Stream{% endblock %}
+{% block content_deps %}<script src="{% static 'js/components/follow.js' %}"></script>{% endblock %}
 {% block section_after_nav %}<section class="hero is-primary">
   <div class="hero-body">
     <div class="container">
@@ -94,11 +96,70 @@
     </article>
   </b-tab-item>
   <b-tab-item label="Trending"></b-tab-item>
-  <b-tab-item label="Following"></b-tab-item>
+  <b-tab-item label="Following"><article class="media" v-for="(userPost, upIndex) in followeePosts" v-on:mouseover="$set(userPost, 'hovered', true)"
+      v-on:mouseleave="$set(userPost, 'hovered', false)">
+      <figure class="media-left">
+        <p class="image is-64x64">
+          <img src="https://bulma.io/images/placeholders/128x128.png">
+        </p>
+      </figure>
+      <div class="media-content">
+        <div class="content">
+          <p>
+            <strong>{% templatetag openvariable %} userPost.author.qualified_name
+              {% templatetag closevariable %}</strong> <small>@{% templatetag openvariable %} userPost.author.name
+              {% templatetag closevariable %}</small> <small>{% templatetag openvariable %} userPost.date_published | time-passed
+              {% templatetag closevariable %}</small>
+            <br>
+            <div v-if="userPost.editing">
+              <form method="post" @submit.prevent="editPost(upIndex)">
+                {% csrf_token %}
+                <b-field>
+                  {{ form.body|attr:"v-model: userPost.body"|add_class:'textarea' }}
+                </b-field>
+                <b-field>
+                  <div class="buttons">
+                    <button type="submit" class="button is-primary is-small">Confirm edits</button>
+                  </div>
+                </b-field>
+              </form>
+            </div>
+            <span v-else>{% templatetag openvariable %} userPost.body {% templatetag closevariable %}</span>
+          </p>
+        </div>
+        <nav class="level is-mobile">
+          <div class="level-left">
+            <a class="level-item" @click="showEdit(userPost)">
+              <span class="icon is-small"><i class="fas fa-pencil-alt"></i></span>
+            </a>
+          </div>
+        </nav>
+      </div>
+      <div class="media-right">
+          <follow-widget :followee-id="userPost.author.user.id" :followees="followees"></follow-widget>
+      </div>
+    </article></b-tab-item>
 </b-tabs>
 
 <script>
-  new Vue({
+Object.assign(GLOBAL_DATA, {
+      activeTab: 0,
+      showModal: false,
+      selectedPost: {},
+      posts: [
+            ],
+    followeePosts: [
+{#           {% for post in posts %}#}
+{#                    {{ post.as_json | safe }},#}
+{#            {% endfor %}#}
+    ],
+        allPosts: [],
+        currentPost: {
+            body: ''
+          },
+        });
+
+  app = new Vue({
     el: '#app',
     computed: {
       publicationElapsed() {
@@ -108,20 +169,7 @@
           return [];
       }
     },
-    data: {
-      searchName: '',
-      activeTab: 0,
-      showModal: false,
-      selectedPost: {},
-      posts: [
-        {% for user_post in user_posts %}
-                    {{ user_post.as_json | safe }},
-    {% endfor %}
-            ],
-    currentPost: {
-    body: ''
-  }
-        },
+    data: GLOBAL_DATA,
     methods: {
     async createPost() {
       const formData = new FormData();
@@ -138,7 +186,7 @@
         this.$buefy.toast.open({
           message: 'Successfully posted!',
           type: 'is-success'
-        }); this.posts.unshift(JSON.parse((await resp.json()).post))
+        }); this.posts.unshift((await resp.json()).current)
       } else {
         this.$buefy.toast.open({
           message: 'Posting failed! Try again',
@@ -156,7 +204,7 @@
       });
       if (resp.ok) {
       this.posts[post_index].editing = false;
-        this.posts[post_index].body = JSON.parse((await resp.json()).post).body;
+        this.posts[post_index].body = JSON.parse((await resp.json()).current).body;
 
         this.$buefy.toast.open({
           message: 'Successfully edited the post!',
@@ -199,7 +247,23 @@
     async hideEdit(post) {
       this.$set(post, 'editing', false);
     }
-  }
+  },
+        async created () {
+          let resp = await fetch(`{% url 'koocook_core:posts:user' %}`, {
+            method: "GET", credentials: 'include', headers: {
+              'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'X-CSRFToken': getCookie('csrftoken')
+            }
+          });
+      if (resp.ok) {
+          const responseData = await resp.json();
+        this.posts = responseData.current;
+        this.followeePosts = responseData.current;
+      } else {
+
+      }
+
+
+      }
       })
 </script>
 {% endblock %}

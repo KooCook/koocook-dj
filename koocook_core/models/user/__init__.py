@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.contrib.postgres import fields
 from django.db import models
 
-from .base import SerialisableModel
+from ..base import SerialisableModel
 
 __all__ = ('KoocookUser', 'Author')
 
@@ -12,6 +12,7 @@ def _default_preferences():
 
 
 class KoocookUser(SerialisableModel, models.Model):
+    exclude = ('preferences', 'user_settings')
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     # author from Author's OneToOneField
     preferences = fields.JSONField(default=_default_preferences)
@@ -23,10 +24,12 @@ class KoocookUser(SerialisableModel, models.Model):
         db_table = "koocook_user"
 
     def follow(self, user: 'KoocookUser'):
-        pass
+        self.following.add(user)
+        self.save()
 
     def unfollow(self, user: 'KoocookUser'):
-        pass
+        self.following.remove(user)
+        self.save()
 
     @property
     def name(self):

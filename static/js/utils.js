@@ -29,6 +29,10 @@ function getCookie(name) {
   return value != null ? unescape(value[1]) : null;
 }
 
+const GLOBAL_DATA = {
+  searchName: '',
+};
+
 Vue.filter("time-passed", function(date) {
   return moment(date).fromNow();
 });
