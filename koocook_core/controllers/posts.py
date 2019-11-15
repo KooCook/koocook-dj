@@ -80,6 +80,9 @@ class PostHandler(BaseHandler):
     def __init__(self):
         super().__init__(PostController.default())
         self.handler_map = {
+            'rate': {
+                'POST': 'rate'
+            },
             'user': {
                 'GET': 'retrieve_all_for_user'
             },

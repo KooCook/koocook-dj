@@ -33,7 +33,7 @@ class ModelEncoder(JSONEncoder):
             return obj.as_dict
         else:
             dict_repr = {}
-            if type(obj) == models.Model:
+            if isinstance(obj, models.Model):
                 return {field.name: getattr(obj, field.name) for field in obj._meta.fields}
             else:
                 return str(obj)
