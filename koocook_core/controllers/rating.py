@@ -22,5 +22,6 @@ class RatableController(BaseController):
             rating.reviewed_recipe = item_reviewed
         elif self.model == Post:
             rating.reviewed_post = item_reviewed
+        rating.save()
         item_reviewed.aggregate_rating.add_rating(rating)
         return ControllerResponse(status_text='Rated', obj=item_reviewed.aggregate_rating)

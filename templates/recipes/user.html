@@ -1,4 +1,6 @@
 {% extends 'base/content.html' %}
+{% load static %}
+{% block content_deps %}<script src="{% static 'js/components/star-rating.js' %}"></script>{% endblock %}
 {% block section_after_nav %}<section class="hero is-light">
   <div class="hero-body">
     <div class="container">
@@ -48,6 +50,7 @@
   </div>
     <div class="card-content">
         <div class="media">
+            <star-rating recipe-name="{{ recipe.name }}" :item-id="{{ recipe.id }}" :initial="{{ recipe.aggregate_rating.rating_value }}"></star-rating>
       <div class="media-content">
         <p class="title is-4">{{ recipe.name }} <span class="buttons is-inline-flex has-addons  is-small">
       <a href="{% url 'koocook_core:recipe-edit' recipe.id %}"><button class="button is-primary is-outlined is-small"><i class="fas fa-pencil-alt"></i> </button></a>
