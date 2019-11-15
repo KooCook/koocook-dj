@@ -5,11 +5,12 @@ from django.http import HttpRequest, HttpResponse, JsonResponse, QueryDict
 
 from .base import BaseController, BaseHandler, ControllerResponse, ControllerResponseUnauthorised, ControllerResponseForbidden
 from .decorators import apply_author_from_session
+from .rating import RatableController
 from ..models import Post, Author
 from ..views import GuestPostStreamView, UserPostStreamView
 
 
-class PostController(BaseController):
+class PostController(RatableController):
 
     def __init__(self):
         super().__init__(Post, {})
