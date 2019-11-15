@@ -6,7 +6,9 @@
 
 ## Description
 
+__KooCook!__ is a web application that helps people—whether they are amateur cooks, homecooks, aspiring cooks, experienced cooks, or just starving people—decide on what food they want to make with the ingredients, equipment, time, and preferences that they have, and live a healthier life with nutrition information included.
 
+**This branch** is considered a submodule for the [main app](https://github.com/KooCook/koocook/tree/dev) and act as a backend (backbone) of the project.
 
 ## Team Members
 
@@ -22,20 +24,23 @@
 - [Task board (Trello)](https://trello.com/b/32svKah9/isp19-koocook)
 - [Code Review Script and Checklist (Google Docs)](https://docs.google.com/document/d/1GSI0FGx4NZyqwAVUOYt641X0tsdqfeRz3O-R3XnfGFE/edit)
 - [Project Proposal (Google Docs)](https://docs.google.com/document/d/1syrJeChO_DoCd_EE_ohzHcz8JPxZUc51QRxZaqScpJ4/edit)
-- [static mockup (GitHub)](https://github.com/KooCook/koocook-static-mockup)
+- Static mockup
+  - Screenshots & Demo: [Google Drive](https://drive.google.com/drive/folders/1oRqvuTPX0Nw1hI52laHMkh5T0WVMhhqI)
+  - Source code: [GitHub](https://github.com/KooCook/koocook-static-mockup)
 
 ## Other Links
 
 - **Deployed app:** 
     - (Production) https://koocook.appspot.com/ (*Inactive*)
     - (**Development**) https://koocook-deploy.appspot.com/ (**Active**, based on **dev** branch)
-- [project folder (Drive)](https://drive.google.com/open?id=1GpXj0oaM3n29aJF2YNDhjJwkCqqHa-04)
-- [main app (GitHub)](https://github.com/KooCook/koocook/tree/dev)
-- [django backend (GitHub)](https://github.com/KooCook/koocook-dj/tree/dev)
+- [Project folder (Drive)](https://drive.google.com/open?id=1GpXj0oaM3n29aJF2YNDhjJwkCqqHa-04)
+  - This includes mockup screenshots and demo as well.
+- [Main app (GitHub)](https://github.com/KooCook/koocook/tree/dev)
+- [Django backend (GitHub)](https://github.com/KooCook/koocook-dj/tree/dev)
 - [datatrans (GitHub)](https://github.com/KooCook/datatrans) -- supporting package for data transformation
 
 ## Notes
 
-### About branches
+### About branching
 
-Our team decided to change from using GitHub Flow to Git Flow, so our main branch is `dev` and not `master`
+Our team decided to change from using GitHub Flow to Git Flow, so our main branch is `dev` (mainly for development) and not `master` (production-only)
