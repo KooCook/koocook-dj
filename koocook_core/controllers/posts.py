@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse, JsonResponse, QueryDict
 
 from .base import BaseController, BaseHandler, ControllerResponse, ControllerResponseUnauthorised, ControllerResponseForbidden
-from .decorators import apply_author_from_session
+from .decorators import apply_author_from_session, to_koocook_user
 from .rating import RatableController
 from ..models import Post, Author
 from ..views import GuestPostStreamView, UserPostStreamView
@@ -37,6 +37,14 @@ class PostController(RatableController):
             return GuestPostStreamView.as_view()(self.request)
 
     @apply_author_from_session
+    def retrieve_all(self) -> ControllerResponse:
+        all_items = super().retrieve_all().obj
+        for item in all_items:
+            if item.author == self.author:
+                item.hidden = True
+        return ControllerResponse(status_text='Retrieved', obj=all_items)
+
+    @apply_author_from_session
     def retrieve_all_for_user(self) -> ControllerResponse:
         """
         Retrieves all posts of the current user
@@ -45,6 +53,13 @@ class PostController(RatableController):
                 ControllerResponse: A response and its result in ControllerResponse class
         """
         return ControllerResponse(status_text='Retrieved', obj=list(self.model.objects.filter(author=self.author)))
+
+    @apply_author_from_session
+    def retrieve_all_following(self) -> ControllerResponse:
+        posts = []
+        for followee in self.author.user.following.all():
+            posts.extend(Author.objects.get(user=followee).post_set.all())
+        return ControllerResponse(status_text='Retrieved posts from followees', obj=list(posts))
 
     @apply_author_from_session
     def update_post(self, pk: int) -> ControllerResponse:
@@ -88,6 +103,9 @@ class PostHandler(BaseHandler):
             },
             'all': {
                 'GET': 'retrieve_all'
+            },
+            'followed-post': {
+                'GET': 'retrieve_all_following'
             },
             'GET': 'render_stream_view',
             'POST': 'create',

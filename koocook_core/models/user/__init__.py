@@ -12,7 +12,7 @@ def _default_preferences():
 
 
 class KoocookUser(SerialisableModel, models.Model):
-    exclude = ('preferences', 'user_settings')
+    exclude = ('user','preferences', 'user_settings')
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     # author from Author's OneToOneField
     preferences = fields.JSONField(default=_default_preferences)

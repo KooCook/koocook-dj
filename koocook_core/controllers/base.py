@@ -94,7 +94,7 @@ class BaseController:
         pass
 
     def retrieve_all(self) -> ControllerResponse:
-        return ControllerResponse(status_text='Retrieved', obj=self.model.objects.all())
+        return ControllerResponse(status_text='Retrieved', obj=list(self.model.objects.all()))
 
     @user_only
     def delete(self, found) -> ControllerResponse:

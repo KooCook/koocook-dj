@@ -9,6 +9,7 @@ __all__ = ('Post',)
 
 
 class Post(SerialisableModel, models.Model):
+    include = ('hidden',)
     author = models.ForeignKey(
         'koocook_core.Author',
         on_delete=models.PROTECT,
