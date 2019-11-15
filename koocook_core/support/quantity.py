@@ -38,9 +38,7 @@ class Quantity:
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return False
-        if other.amount == self.amount and other.unit == self.unit:
-            return True
-        return False
+        return other.amount == self.amount and other.unit == self.unit
 
 
 def parse_quantity(quantity_string: str) -> Quantity:
