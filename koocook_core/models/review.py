@@ -176,4 +176,7 @@ class AggregateRating(models.Model):
 
     @property
     def item_reviewed(self):
-        return self.recipe or self.post or self.comment
+        for reviewed_item in ['recipe', 'post', 'comment']:
+            item = getattr(self, reviewed_item, None)
+            if item:
+                return item
