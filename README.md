@@ -6,9 +6,9 @@
 
 ## Description
 
-__KooCook!__ is a web application that helps people—whether they are amateur cooks, homecooks, aspiring cooks, experienced cooks, or just starving people—decide on what food they want to make with the ingredients, equipment, time, and preferences that they have, and live a healthier life with nutrition information included.
+__KooCook!__ is a web application that helps people—whether they are amateur cooks, homecooks, aspiring cooks, experienced cooks, or just starving people—decide on what food they want to make with the ingredients, equipment, time, and preferences that they have and live a healthier life with nutrition information included.
 
-**This branch** is considered a submodule for the [main app](https://github.com/KooCook/koocook/tree/dev) and act as a backend (backbone) of the project.
+**This repo** is considered a submodule for the [main app](https://github.com/KooCook/koocook/tree/dev) and act as a backend (backbone) of the project.
 
 ## Team Members
 
