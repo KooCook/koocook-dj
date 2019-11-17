@@ -20,15 +20,14 @@ jobs:
             pip install -r requirements.txt
             python3 -m venv --system-site-packages venv/
             . venv/bin/activate
+      - save_cache:
+         paths:
+           - ./venv
+         key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
       - run:
           name: Migrating models to the database
           command: |
             python3 manage.py migrate
-      - save_cache:
-          paths:
-            - ./venv
-          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
-
       - run:
           name: Running tests
           command: |

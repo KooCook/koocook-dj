@@ -1,10 +1,11 @@
 from django.urls import include, path
 
-from . import views
+from .. import views
 
 app_name = 'koocook_core'
 urlpatterns = [
     path('', views.index, name='index'),
+    path('posts/', include('koocook_core.urls.posts'), name='posts'),
     path('search/', views.search_view, name='search'),
     path('recipes/<int:recipe_id>', views.handle_recipe, name='recipe'),
     path('recipes/<int:pk>/edit', views.RecipeUpdateView.as_view(), name='recipe-edit'),

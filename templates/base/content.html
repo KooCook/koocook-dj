@@ -4,6 +4,7 @@
     <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css">
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://unpkg.com/buefy/dist/buefy.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js"></script>
     <script src="{% static 'js/utils.js' %}"></script>
     {% block content_deps %}{% endblock %}
 {% endblock %}
@@ -44,7 +45,7 @@
               Home
             </a>
 
-            <a class="navbar-item is-disabled">
+            <a class="navbar-item" href="{% url 'koocook_core:posts:all' %}">
               Stream
             </a>
 
