@@ -28,6 +28,7 @@ jobs:
           name: Migrating models to the database
           command: |
             . venv/bin/activate
+            python3 manage.py makemigrations
             python3 manage.py migrate
       - run:
           name: Running tests
