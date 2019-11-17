@@ -27,7 +27,7 @@ jobs:
       - run:
           name: Migrating models to the database
           command: |
-            python3 manage.py migrate --database=$TEST_DATABASE_NAME
+            python3 manage.py migrate
       - run:
           name: Running tests
           command: |
