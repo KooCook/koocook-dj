@@ -1,4 +1,4 @@
-# KooCook! - Django backend 
+# KooCook! - Django backend
 
 ##### Build status
 `master`: [![CircleCI](https://circleci.com/gh/KooCook/koocook-dj/tree/master.svg?style=svg&circle-token=fd2434f2ab70aacb8216f2242e272abeae57859c)](https://circleci.com/gh/KooCook/koocook-dj/tree/master)  
@@ -30,7 +30,7 @@ __KooCook!__ is a web application that helps people—whether they are amateur c
 
 ## Other Links
 
-- **Deployed app:** 
+- **Deployed app:**
     - (Production) https://koocook.appspot.com/ (*Inactive*)
     - (**Development**) https://koocook-deploy.appspot.com/ (**Active**, based on **dev** branch)
 - [Project folder (Drive)](https://drive.google.com/open?id=1GpXj0oaM3n29aJF2YNDhjJwkCqqHa-04)
