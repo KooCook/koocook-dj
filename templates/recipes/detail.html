@@ -1,4 +1,6 @@
 {% extends 'base/recipes.html' %}
+{% load static %}
+{% block content_deps %}<script src="{% static 'js/components/star-rating.js' %}"></script>{% endblock %}
 {% block no_hero %}{% endblock %}
 {% block content_page_name %}{{ object.name }}{% endblock %}
 {% block page_content %}
@@ -10,6 +12,7 @@
         </h1>
         <p class="subtitle is-4">
           Recipe by <a href="">{{ object.author.name }}</a>
+
         </p>
           <div class="field is-grouped is-grouped-multiline">
           {% for tag in object.tag_set.all %}
@@ -32,7 +35,7 @@
     <section class="section" style="padding-top: 0">
       <div class="container">
         <figure class="image is-4928x3264" style="margin-bottom: 1.5rem">
-          <img src="{{ object.image }}" alt="{{ object.name }}">
+          <img src="{{ object.image|first }}" alt="{{ object.name }}">
         </figure>
         <p class="subtitle is-6">
           <strong>Image Credit:</strong> <a href="">Skitterphoto</a>
@@ -79,7 +82,7 @@
               <div class="level-item has-text-centered">
                 <div>
                   <p class="heading">Ratings</p>
-                  <p class="title">4.4/5</p>
+                  <p class="title">{{ recipe.aggregate_rating.rating_value }}/5</p>
                 </div>
               </div>
   
@@ -104,8 +107,7 @@
                           style="border-radius: 0; height: 0.2rem"></progress>
               </div>
               <div class="level-item">
-                <progress class="progress is-info" value="34" max="40"
-                          style="border-radius: 0; height: 0.2rem"></progress>
+                  <star-rating recipe-name="{{ object.name }}" :item-id="{{ object.id }}" :initial="{{ recipe.aggregate_rating.rating_value }}"></star-rating>
               </div>
             </nav>
           </div>
@@ -422,5 +424,10 @@
           </div>
         </article>
       </div>
-    </section>  
+    </section>
+<script>
+      new Vue({
+        el: '#app'
+      })
+  </script>
 {% endblock %}

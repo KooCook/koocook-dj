@@ -44,13 +44,13 @@
     <div class="column is-half">
     <div class="card">
          <div class="card-image">
-    <figure class="image is-2by1 is-bg-cover-centered" style="background-image: url({{ recipe.image }});">
-{#      <img src="{{ recipe.image }}" alt="Recipe image">#}
+    <figure class="image is-2by1 is-bg-cover-centered">
+      <img src="{{ recipe.image|first }}" alt="Recipe image">
     </figure>
   </div>
     <div class="card-content">
         <div class="media">
-            <star-rating recipe-name="{{ recipe.name }}" :item-id="{{ recipe.id }}" :initial="{{ recipe.aggregate_rating.rating_value }}"></star-rating>
+            <star-rating recipe-name="{{ recipe.name }}" :item-id="{{ recipe.id }}" :initial="{{ recipe.aggregate_rating.rating_value }}" read-only="true"></star-rating>
       <div class="media-content">
           <p class="title is-4"><a href="{% url 'koocook_core:recipe' recipe.id %}">{{ recipe.name }}</a> <span class="buttons is-inline-flex has-addons  is-small">
       <a href="{% url 'koocook_core:recipe-edit' recipe.id %}"><button class="button is-primary is-outlined is-small"><i class="fas fa-pencil-alt"></i> </button></a>
