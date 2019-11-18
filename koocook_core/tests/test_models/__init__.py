@@ -30,9 +30,6 @@ class TestAuthorModel(djangotest.TestCase):
     def test_init(self):
         pass
 
-    def test_create_empty(self):
-        pass
-
     def test_str(self):
         pass
 

@@ -113,16 +113,6 @@ class Rating(models.Model):
                              type(self.reviewed_recipe or self.reviewed_post or self.reviewed_comment),
                              type(obj))) from e.__context__
 
-    @classmethod
-    def create_empty(cls, **kwargs) -> 'Rating':
-        """Creates an empty ``rating``"""
-        from koocook_core.models.user import Author
-
-        kwargs['rating_value'] = kwargs.pop('rating_value', 0)
-        if kwargs.get('author') is None:
-            kwargs['author'] = Author.create_empty()
-        return cls.objects.create(**kwargs)
-
 
 class AggregateRating(models.Model):
     rating_value = models.DecimalField(
