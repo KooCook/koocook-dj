@@ -175,7 +175,7 @@ class AggregateRating(models.Model):
 
     @classmethod
     def create_empty(cls, **kwargs) -> 'AggregateRating':
-        """Creates an empty ``aggregate rating``"""
+        """Creates a new empty ``aggregate rating``."""
         kwargs['rating_value'] = kwargs.pop('rating_value', 0)
         kwargs['rating_count'] = kwargs.pop('rating_count', 0)
         return cls.objects.create(**kwargs)
