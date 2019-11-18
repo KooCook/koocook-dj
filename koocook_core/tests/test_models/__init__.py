@@ -114,6 +114,43 @@ class TestRecipeIngredientModel(djangotest.TestCase):
         pass
 
 
+class TestRatingModel(djangotest.TestCase):
+    def test_init(self):
+        pass
+
+    def test_item_reviewed_getter(self):
+        pass
+
+    def test_item_reviewed_setter(self):
+        pass
+
+
+class TestKoocookUserModel(djangotest.TestCase):
+    def test_init(self):
+        pass
+
+    def test_db_table_name(self):
+        pass
+
+    def test_follow(self):
+        pass
+
+    def test_unfollow(self):
+        pass
+
+    def test_name_getter(self):
+        pass
+
+    def test_full_name_getter(self):
+        pass
+
+    def test_as_dict(self):
+        pass
+
+    def test_as_json(self):
+        pass
+
+
 class TestQuantityField(djangotest.TestCase):
     def test_quantity_field_max_length(self):
         for model, field in (('RecipeIngredient', 'quantity'), ('Recipe', 'recipe_yield')):
