@@ -1,4 +1,5 @@
 import json
+import django
 from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import reverse
@@ -6,16 +7,19 @@ from django.views.generic.edit import CreateView, ProcessFormView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import UpdateView
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import RecipeForm
 from ..models import Recipe, Author, KoocookUser, RecipeIngredient, MetaIngredient
 
+class SignInRequiredMixin(LoginRequiredMixin):
+    @property
+    def login_url(self):
+        return reverse('social:begin', args=['google-oauth2'])
 
 class AuthorMixin:
     def form_valid(self, form: RecipeForm):
         form.instance.author = Author.objects.get(user__user=self.request.user)
         return super().form_valid(form)
-
 
 class RecipeViewMixin(AuthorMixin):
     def form_valid(self, form: RecipeForm):
@@ -48,7 +52,7 @@ class RecipeViewMixin(AuthorMixin):
             return response
 
 
-class UserRecipeListView(ListView):
+class UserRecipeListView(SignInRequiredMixin, ListView):
     model = Recipe
     template_name = 'recipes/user.html'
     context_object_name = "user_recipes"
@@ -89,4 +93,14 @@ class RecipeUpdateView(RecipeViewMixin, UpdateView):
         import json
         context = super().get_context_data(**kwargs)
         context['ingredients'] = json.dumps([ing.to_dict for ing in list(self.get_object().recipe_ingredients.all())])
+        return context
+
+
+class RecipeDetailView(DetailView):
+    model = Recipe
+    template_name = 'recipes/detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['ingredients'] = [ing.to_dict for ing in list(self.get_object().recipe_ingredients.all())]
         return context

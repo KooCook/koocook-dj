@@ -1,9 +1,8 @@
-from typing import Union, Optional
-
 import enum
+from typing import Union, Optional, Iterable, Type
 
-__all__ = ['Unit', 'Units', 'LengthUnit', 'AreaUnit', 'VolumeUnit', 'MassUnit',
-           'TemperatureUnit', 'ServingUnit', 'SpecialUnit', 'get_unit']
+__all__ = ['Unit', 'units', 'LengthUnit', 'AreaUnit', 'VolumeUnit', 'MassUnit',
+           'TemperatureUnit', 'SpecialUnit', 'get_unit']
 
 
 @enum.unique
@@ -80,9 +79,18 @@ class MassUnit(Unit):
     KILOGRAM = 'kg', 1.
     GRAM = 'g', 0.001
     MILLIGRAM = 'mg', 0.000_001
+    MICROGRAM = 'µg', 0.000_000_001
 
     OUNCE = 'oz', 0.028  # US Food nutrition labeling
     POUND = 'lb', 0.453592  # Google
+
+
+class EnergyUnit(Unit):
+    JOULE = 'J', 1.
+    KILOJOULE = 'kJ', 1000.
+    KILOCALORIE = 'kcal', 4184.
+    CALORIE = 'cal', 4.184
+    FOOD_CALORIE = 'Cal', 4184., 'Calories', 'Calorie'
 
 
 class TemperatureUnit(Unit):
@@ -139,13 +147,11 @@ def _from_celsius(value: float, quote: Union[TemperatureUnit, str]) -> float:
     raise TypeError('invalid quote \'{}\''.format(quote.__class__.__name__))
 
 
-class ServingUnit(Unit):
+class SpecialUnit(Unit):
+    NONE = 'None', None, 'units', 'unit'
+    IU = 'IU', None, 'International Units', 'International Unit'
     SERVING = None, None,
     PERSON = None, None, 'people'
-
-
-class SpecialUnit(Unit):
-    NONE = '', None, 'units', 'unit'
 
 
 def get_unit(unit: Union[str, Unit]) -> Unit:
@@ -157,7 +163,7 @@ def get_unit(unit: Union[str, Unit]) -> Unit:
     if isinstance(unit, Unit):
         return unit
     else:
-        for _unit_ in Units:
+        for _unit_ in units:
             try:
                 return _unit_(unit)
             except ValueError:
@@ -166,4 +172,4 @@ def get_unit(unit: Union[str, Unit]) -> Unit:
             raise ValueError('\'{}\' is not a valid Unit'.format(unit))
 
 
-Units = (LengthUnit, AreaUnit, VolumeUnit, MassUnit, TemperatureUnit, ServingUnit, SpecialUnit)
+units: Iterable[Type[Unit]] = (LengthUnit, AreaUnit, VolumeUnit, MassUnit, TemperatureUnit, SpecialUnit)
