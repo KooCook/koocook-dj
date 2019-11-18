@@ -4,39 +4,117 @@ from koocook_core import models
 
 
 class TestAggregateRatingModel(djangotest.TestCase):
-    pass
+    def test_init_default_fields(self):
+        pass
+
+    def test_create_empty(self):
+        pass
+
+    def test_add_rating(self):
+        pass
+
+    def test_remove_rating(self):
+        pass
+
+    def test_check_rating(self):
+        pass
+
+    def test_item_reviewed_getter(self):
+        pass
+
+    def test_item_reviewed_setter(self):
+        pass
 
 
 class TestAuthorModel(djangotest.TestCase):
-    pass
+    def test_init(self):
+        pass
+
+    def test_create_empty(self):
+        pass
+
+    def test_str(self):
+        pass
+
+    def test_as_dict(self):
+        pass
+
+    def test_dj_user(self):
+        pass
+
+    def test_from_dj_user(self):
+        pass
+
+    def test_qualified_name(self):
+        pass
 
 
 class TestCommentModel(djangotest.TestCase):
-    pass
+    def test_init(self):
+        pass
+
+    def test_item_reviewed_getter(self):
+        pass
+
+    def test_item_reviewed_setter(self):
+        pass
 
 
 class TestMetaIngredientModel(djangotest.TestCase):
-    pass
+    def test_init(self):
+        pass
+
+    def test_field_nutrient(self):
+        pass
 
 
 class TestPostModel(djangotest.TestCase):
-    pass
+    def test_init(self):
+        pass
+
+    def test_as_dict(self):
+        pass
+
+    def test_processed_body(self):
+        pass
 
 
 class TestRecipeModel(djangotest.TestCase):
-    pass
+    def test_init(self):
+        pass
+
+    def test_total_time(self):
+        pass
 
 
 class TestTagLabelModel(djangotest.TestCase):
-    pass
+    def test_init(self):
+        pass
+
+    def test_field_normal_names_ok(self):
+        pass
+
+    def test_field_label_can_be_null(self):
+        pass
 
 
 class TestTagModel(djangotest.TestCase):
-    pass
+    def test_init(self):
+        pass
+
+    def test_field_normal_names_ok(self):
+        pass
 
 
 class TestRecipeIngredientModel(djangotest.TestCase):
-    pass
+    def test_init(self):
+        pass
+
+    def test_as_dict(self):
+        pass
+
+    def test_as_json(self):
+        pass
 
 
 class TestQuantityField(djangotest.TestCase):
