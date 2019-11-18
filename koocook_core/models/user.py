@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.contrib.postgres import fields
 from django.db import models
+from django.core.exceptions import ObjectDoesNotExist
 
 from .base import SerialisableModel
 
@@ -76,3 +77,9 @@ class Author(SerialisableModel, models.Model):
 
     def __str__(self):
         return self.qualified_name
+
+    @classmethod
+    def create_empty(cls, **kwargs) -> 'Author':
+        """Creates an empty ``author``."""
+        kwargs['name'] = 'default author'
+        return cls.objects.create(**kwargs)

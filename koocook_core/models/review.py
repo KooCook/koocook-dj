@@ -113,10 +113,15 @@ class Rating(models.Model):
                              type(self.reviewed_recipe or self.reviewed_post or self.reviewed_comment),
                              type(obj))) from e.__context__
 
+    @classmethod
+    def create_empty(cls, **kwargs) -> 'Rating':
+        """Creates an empty ``rating``"""
+        from koocook_core.models.user import Author
 
-def create_empty_aggregate_rating(**kwargs) -> 'AggregateRating':
-    """Creates an empty aggregate rating"""
-    return AggregateRating.objects.create(rating_value=0, rating_count=0, **kwargs)
+        kwargs['rating_value'] = kwargs.pop('rating_value', 0)
+        if kwargs.get('author') is None:
+            kwargs['author'] = Author.create_empty()
+        return cls.objects.create(**kwargs)
 
 
 class AggregateRating(models.Model):
@@ -177,3 +182,10 @@ class AggregateRating(models.Model):
     @property
     def item_reviewed(self):
         return self.recipe or self.post or self.comment
+
+    @classmethod
+    def create_empty(cls, **kwargs) -> 'AggregateRating':
+        """Creates an empty ``aggregate rating``"""
+        kwargs['rating_value'] = kwargs.pop('rating_value', 0)
+        kwargs['rating_count'] = kwargs.pop('rating_count', 0)
+        return cls.objects.create(**kwargs)
