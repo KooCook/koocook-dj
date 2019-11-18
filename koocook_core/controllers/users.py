@@ -3,6 +3,7 @@ from django.contrib.auth.models import AnonymousUser
 
 from .base import BaseController, ControllerResponseUnauthorised, JsonRequestHandler, ControllerResponse
 from ..models import KoocookUser
+from ..views import UserProfileInfoView, UserSettingsInfoView
 from .decorators import to_koocook_user
 
 
@@ -17,6 +18,14 @@ class UserController(BaseController):
     @property
     def user(self) -> KoocookUser:
         return self.request_fields['user']
+
+    @to_koocook_user
+    def view_profile(self):
+        return UserProfileInfoView.as_view()(self.request, pk=self.user.pk)
+
+    @to_koocook_user
+    def view_settings_info(self):
+        return UserSettingsInfoView.as_view()(self.request, pk=self.user.pk)
 
     @to_koocook_user
     def edit_profile(self):
@@ -43,6 +52,12 @@ class UserHandler(JsonRequestHandler):
     def __init__(self):
         super().__init__(UserController.default())
         self.handler_map = {
+            'GET': 'view_profile',
+            'POST': 'view_profile',
+            'pref': {
+                'GET': 'view_settings_info',
+                'POST': 'view_profile',
+            },
             'follow': {
                 'GET': 'get_following',
                 'POST': 'follow'

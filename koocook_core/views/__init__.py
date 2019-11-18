@@ -10,6 +10,7 @@ from django.dispatch import receiver
 from .posts import *
 from .recipes import *
 from .forms import RecipeForm
+from .profile import UserProfileInfoView, UserSettingsInfoView
 from ..models import Recipe, Author
 from ..models.user import KoocookUser
 

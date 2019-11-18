@@ -32,9 +32,11 @@ class Post(SerialisableModel, models.Model):
     def processed_body(self):
         return self.process_text_format(self.body)
 
-    @property
+    # @property
+    # Direct hack for the Django template context,
+    # as callables would return itself in a template, not the return parameter.
     def as_dict(self):
-        base_dict_repr = super().as_dict
+        base_dict_repr = super().as_dict()
         base_dict_repr.update({'body': self.processed_body})
         return base_dict_repr
 

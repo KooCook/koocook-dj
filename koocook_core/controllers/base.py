@@ -171,4 +171,7 @@ class JsonRequestHandler(BaseHandler):
 
     def handle(self, request: HttpRequest, alias: str = None, **kwargs) -> JsonResponse:
         res = self._internal_handle(request, alias, **kwargs)
-        return JsonResponse(res.as_dict(), status=self.get_status_code(res), encoder=ModelEncoder)
+        if hasattr(res, 'as_dict'):
+            return JsonResponse(res.as_dict(), status=self.get_status_code(res), encoder=ModelEncoder)
+        else:
+            return res
