@@ -33,9 +33,6 @@ class TestAuthorModel(djangotest.TestCase):
     def test_str(self):
         pass
 
-    def test_as_dict(self):
-        pass
-
     def test_dj_user(self):
         pass
 
@@ -43,6 +40,12 @@ class TestAuthorModel(djangotest.TestCase):
         pass
 
     def test_qualified_name(self):
+        pass
+
+    def test_as_dict(self):
+        pass
+
+    def test_as_json(self):
         pass
 
 
@@ -69,10 +72,13 @@ class TestPostModel(djangotest.TestCase):
     def test_init(self):
         pass
 
+    def test_processed_body(self):
+        pass
+
     def test_as_dict(self):
         pass
 
-    def test_processed_body(self):
+    def test_as_json(self):
         pass
 
 
