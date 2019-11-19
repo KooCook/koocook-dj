@@ -16,6 +16,7 @@ class TestAggregateRatingModel(djangotest.TestCase):
         with self.subTest(field='rating_value'):
             self.assertEqual(
                 aggr._meta.get_field('rating_value').decimal_places, 10)
+        with self.subTest(field='rating_value'):
             self.assertEqual(
                 aggr._meta.get_field('rating_value').max_digits, 13)
 
@@ -28,27 +29,24 @@ class TestAggregateRatingModel(djangotest.TestCase):
 
     def test_create_empty(self):
         aggr = AggregateRating.create_empty()
-        self.assertIsInstance(aggr, AggregateRating)
-        self.assertEqual(aggr.best_rating, 5)
-        self.assertEqual(aggr.worst_rating, 1)
-        self.assertEqual(aggr.rating_value, 0)
-        self.assertEqual(aggr.rating_count, 0)
+        with self.subTest('type'):
+            self.assertIsInstance(aggr, AggregateRating)
+        for attr, value in (
+            ('best_rating', 5),
+            ('worst_rating', 1),
+            ('rating_value', 0),
+            ('rating_count', 0),
+        ):
+            with self.subTest('values', attr=attr):
+                self.assertEqual(getattr(aggr, attr), value)
 
     def test_item_reviewed_getter(self):
-        with self.subTest(item=Post.__qualname__):
-            item = Post()
-            self.assertIs(item.aggregate_rating.post, item)
-            self.assertIs(item.aggregate_rating.item_reviewed, item)
-
-        with self.subTest(item=Recipe.__qualname__):
-            item = Recipe()
-            self.assertIs(item.aggregate_rating.recipe, item)
-            self.assertIs(item.aggregate_rating.item_reviewed, item)
-
-        with self.subTest(item=Comment.__qualname__):
-            item = Comment()
-            self.assertIs(item.aggregate_rating.comment, item)
-            self.assertIs(item.aggregate_rating.item_reviewed, item)
+        for cls in (Post, Recipe, Comment):
+            with self.subTest(item=cls.__qualname__):
+                item = cls()
+                self.assertIs(
+                    getattr(item.aggregate_rating, cls.__name__.lower()), item)
+                self.assertIs(item.aggregate_rating.item_reviewed, item)
 
     def test_check_rating(self):
         author = Author(name='author name')
@@ -74,12 +72,14 @@ class TestAggregateRatingModel(djangotest.TestCase):
                 item.aggregate_rating.add_rating(rating)
                 self.assertEqual(item.aggregate_rating.rating_count, 1)
                 self.assertEqual(item.aggregate_rating.rating_value, 5)
+
             rating = Rating(author=author, rating_value=3)
             rating.item_reviewed = item
             with self.subTest('add second', item=cls.__qualname__):
                 item.aggregate_rating.add_rating(rating)
                 self.assertEqual(item.aggregate_rating.rating_count, 2)
                 self.assertEqual(item.aggregate_rating.rating_value, 4)
+
             # Re-using ratings should result in error
             with self.subTest('re-add rating', item=cls.__qualname__):
                 with self.assertRaises(ValidationError):
@@ -92,18 +92,22 @@ class TestAggregateRatingModel(djangotest.TestCase):
         # test special error prone values
         # add more as necessary
         for i in (0, 0.):
-            with self.subTest(i=i, old=(0, 0)):
+            with self.subTest('test manual', i=i, old=(0, 0)):
                 self.assertEqual(review._add_rating(Decimal(0), 0, i), i)
+
         # do monkey test, 999 is the maximum rating_value set
         for i in utils.gen_ints(-1000, 1000, 100):
-            with self.subTest(i=i, old=(0, 0)):
+            with self.subTest('test int', i=i, old=(0, 0)):
                 self.assertEqual(review._add_rating(Decimal(0), 0, i), i)
+
         for i in utils.gen_floats(-1000, 1000, 1_000):
             i = round(i, 1)
-            with self.subTest(i=i, old=(0, 0)):
+            with self.subTest('test float', i=i, old=(0, 0)):
                 # current use is with 1 decimal places for new ratings
                 self.assertEqual(review._add_rating(Decimal(0), 0, i),
                                  round(Decimal(i), 1))
+
+    # TODO: Add these tests
 
     def test_add_rating_calculation_from_nonempty(self):
         pass
@@ -131,13 +135,12 @@ class TestAuthorModel(djangotest.TestCase):
                 self.test_author._meta.get_field('koocook_user').null)
 
     def test_str(self):
-        for expected_str, user in zip(
-                ('Alice Merryweather', 'Bob', 'C123', 'Dylan'), (
-                    self.test_user,
-                    User.objects.create(first_name='Bob', username='Bobby'),
-                    User.objects.create(username='C123'),
-                    User.objects.create(last_name='Dylan', username='DD'),
-                )):
+        for expected_str, user in (
+            ('Alice Merryweather', self.test_user),
+            ('Bob', User.objects.create(first_name='Bob', username='Bobby')),
+            ('C123', User.objects.create(username='C123')),
+            ('Dylan', User.objects.create(last_name='Dylan', username='DD')),
+        ):
             with self.subTest('author with user',
                               first_name=user.first_name,
                               last_name=user.last_name,
@@ -172,6 +175,7 @@ class TestAuthorModel(djangotest.TestCase):
         #   This test is only made based on the actual implementation
 
     def test_as_json(self):
+        # TODO: Fix this test
         with self.subTest('author with user'):
             self.assertEqual(
                 json.loads(self.test_user.koocookuser.author.as_json),
@@ -291,8 +295,10 @@ class TestKoocookUserModel(djangotest.TestCase):
 
 class TestQuantityField(djangotest.TestCase):
     def test_quantity_field_max_length(self):
-        for model, field in (('RecipeIngredient', 'quantity'),
-                             ('Recipe', 'recipe_yield')):
+        for model, field in (
+            ('RecipeIngredient', 'quantity'),
+            ('Recipe', 'recipe_yield'),
+        ):
             with self.subTest(model=model, field=field):
                 m = getattr(models_, model)()
                 max_length = m._meta.get_field(field).max_length
