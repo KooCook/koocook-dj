@@ -44,14 +44,17 @@ class AggregateRating(models.Model):
             ValidationError: When `rating` is not valid
         """
         if rating.item_reviewed != self.item_reviewed:
-            raise ValidationError(_("incompatible item_reviewed: '{}' != '{}'"
-                                    .format(rating.item_reviewed, self.item_reviewed)))
+            raise ValidationError(_(
+                f'incompatible item_reviewed: '
+                f"'{rating.item_reviewed}' != '{self.item_reviewed}'"))
         if rating.best_rating != self.best_rating:
-            raise ValidationError(_("incompatible best_rating: '{}' != '{}'"
-                                    .format(rating.best_rating, self.best_rating)))
+            raise ValidationError(_(
+                f'incompatible best_rating: '
+                f"'{rating.best_rating}' != '{self.best_rating}'"))
         if rating.worst_rating != self.worst_rating:
-            raise ValidationError(_("incompatible worst_rating: '{}' != '{}'"
-                                    .format(rating.worst_rating, self.worst_rating)))
+            raise ValidationError(_(
+                f'incompatible worst_rating: '
+                f"'{rating.worst_rating}' != '{self.worst_rating}'"))
 
     def add_rating(self, rating: 'Rating'):
         """Adds a rating from an aggregate rating.
@@ -155,9 +158,8 @@ class Comment(models.Model):
         elif isinstance(obj, Comment):
             self.reviewed_comment = obj
         else:
-            raise TypeError('item_reviewed must be of the correct type '
-                            "'{}' not '{}'"
-                            .format(type(self.item_reviewed), type(obj)))
+            raise TypeError(f'item_reviewed must be of the correct type '
+                            f"'{type(self.item_reviewed)}' not '{type(obj)}'")
 
 
 class Rating(models.Model):
@@ -204,6 +206,5 @@ class Rating(models.Model):
         elif isinstance(obj, Comment):
             self.reviewed_comment = obj
         else:
-            raise TypeError('item_reviewed must be of the correct type '
-                            "'{}' not '{}'"
-                            .format(type(self.item_reviewed), type(obj)))
+            raise TypeError(f'item_reviewed must be of the correct type '
+                            f"'{type(self.item_reviewed)}' not '{type(obj)}'")
