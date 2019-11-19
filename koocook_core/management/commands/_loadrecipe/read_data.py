@@ -179,8 +179,11 @@ def parse_ingredients(ingredients: structured_data.Property) -> List[models.Reci
                 meta = models.MetaIngredient.objects.filter(name__exact=match).get()
             else:
                 warnings.warn('Found no matching meta ingredient, trying FoodDataAPI')
-                nutrients, name = support.scripts.get_nutrients(description)
-                meta = models.MetaIngredient(name=name, nutrients=nutrients)
+                try:
+                    nutrients, name = support.scripts.get_nutrients(description)
+                except KeyError as e:
+                    raise ResourceWarning from e
+                meta = models.MetaIngredient(name=name, nutrient=nutrients)
                 meta.save()
                 # parts = meta_str.split(' ')
                 # if len(parts) == 1:
