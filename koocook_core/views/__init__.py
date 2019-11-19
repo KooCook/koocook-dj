@@ -25,7 +25,7 @@ def dispatch(sender, instance: User, created, **kwargs):
 
 @require_http_methods(["GET"])
 def index(request):
-    return render(request, 'index.html')
+    return render(request, 'index.html', {'object': Recipe.objects.all()})
 
 
 @require_http_methods(["GET"])
