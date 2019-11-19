@@ -160,7 +160,21 @@
                         <img src="{{ recipe.image|first }}" alt="Recipe image">
                     </figure>
                 </div>
-                <div class="card-content" style="margin-bottom: 12px">
+                <div class="card-content">
+                    <div class="media">
+                        <div class="media-left">
+                            <div class="profile-pic-48">
+                                <div class="has-text-grey-dark profile-initial-48">
+                                    {{ user.username|title|slice:"0:1" }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="media-content">
+                            <p class="title is-4">{{ recipe.author }}</p>
+                            {# <p><a href="#">profile</a></p> #}
+                        </div>
+                    </div>
                     <a href="{% url 'koocook_core:recipe' recipe.id %}" class="button">
                         {{ recipe.name }}
                     </a>
