@@ -8,10 +8,22 @@ from koocook_core.tests import utils
 
 
 class TestAggregateRatingModel(djangotest.TestCase):
+    def test_field_settings(self):
+        aggr = models.AggregateRating()
+        with self.subTest(field='rating_value'):
+            self.assertEqual(
+                aggr._meta.get_field('rating_value').decimal_places,
+                10)
+            self.assertEqual(
+                aggr._meta.get_field('rating_value').max_digits,
+                13)
+
     def test_init_default_fields(self):
         aggr = models.AggregateRating()
-        self.assertEqual(aggr.best_rating, 5)
-        self.assertEqual(aggr.worst_rating, 1)
+        with self.subTest(field='best_rating'):
+            self.assertEqual(aggr.best_rating, 5)
+        with self.subTest(field='worst_rating'):
+            self.assertEqual(aggr.worst_rating, 1)
 
     def test_create_empty(self):
         aggr = models.AggregateRating.create_empty()
@@ -84,10 +96,12 @@ class TestAggregateRatingModel(djangotest.TestCase):
         for i in utils.gen_ints(-1000, 1000, 100):
             with self.subTest(i=i, old=(0, 0)):
                 self.assertEqual(models.review._add_rating(Decimal(0), 0, i), i)
-        for i in utils.gen_floats(-1000, 1000, 10_000):
+        for i in utils.gen_floats(-1000, 1000, 1_000):
+            i = round(i, 1)
             with self.subTest(i=i, old=(0, 0)):
-                # current use is with 10 decimal places
-                self.assertEqual(round(models.review._add_rating(Decimal(0), 0, i), 10), round(Decimal(i), 10))
+                # current use is with 1 decimal places for new ratings
+                self.assertEqual(models.review._add_rating(Decimal(0), 0, i),
+                                 round(Decimal(i), 1))
 
     def test_add_rating_calculation_from_nonempty(self):
         pass
