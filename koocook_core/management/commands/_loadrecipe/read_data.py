@@ -16,6 +16,7 @@ from koocook_core.support import scripts
 import datatrans.utils.structured_data
 from datatrans import structured_data
 
+
 DATA_DIR = BASE_DIR / 'data'
 
 
