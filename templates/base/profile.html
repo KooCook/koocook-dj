@@ -1,0 +1,54 @@
+{% extends 'base/content.html' %}
+{% block page_title %}Profile & Site Preferences{% endblock %}
+{% block section_after_nav %}<section class="hero is-light">
+  <div class="hero-body">
+    <div class="container">
+      <h1 class="title">
+        Profile & Site Preferences
+      </h1>
+    </div>
+  </div>
+</section>{% endblock %}
+{% block page_content %}
+
+    <div class="columns">
+    <div class="column is-4">
+    <aside class="menu">
+  <p class="menu-label">
+    General
+  </p>
+  <ul class="menu-list">
+    <li><a {% if section == 'info' %}class="is-active"{% endif %} href="{% url 'koocook_core:profile:info' %}">Basic info</a></li>
+    <li><a {% if section == 'pref' %}class="is-active"{% endif %} href="{% url 'koocook_core:profile:pref' %}">Preferences</a></li>
+  </ul>
+{#  <p class="menu-label">#}
+{#    Preferences#}
+{#  </p>#}
+{#  <ul class="menu-list">#}
+{#    <li><a>Team Settings</a></li>#}
+{#    <li>#}
+{#      <a class="is-active">Manage Your Team</a>#}
+{#      <ul>#}
+{#        <li><a>Members</a></li>#}
+{#        <li><a>Plugins</a></li>#}
+{#        <li><a>Add a member</a></li>#}
+{#      </ul>#}
+{#    </li>#}
+{#    <li><a>Invitations</a></li>#}
+{#    <li><a>Cloud Storage Environment Settings</a></li>#}
+{#    <li><a>Authentication</a></li>#}
+{#  </ul>#}
+{#  <p class="menu-label">#}
+{#    Transactions#}
+{#  </p>#}
+{#  <ul class="menu-list">#}
+{#    <li><a>Payments</a></li>#}
+{#    <li><a>Transfers</a></li>#}
+{#    <li><a>Balance</a></li>#}
+{#  </ul>#}
+</aside>
+        </div><div class="column is-8">
+        {% block user_console %} {% endblock %}
+        </div>
+    </div>
+{% endblock %}
