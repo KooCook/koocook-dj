@@ -52,5 +52,6 @@ class Recipe(models.Model):
 
     @property
     def recipe_ingredients(self):
+
         """ Proxy property for consistency with Schema.org's standard """
         return self.recipeingredient_set.all()

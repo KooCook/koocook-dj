@@ -4,6 +4,7 @@ from django.utils.html import mark_safe
 
 from .base import SerialisableModel
 from .review import create_empty_aggregate_rating
+from ..support import MarkdownField
 
 __all__ = ('Post',)
 
@@ -14,7 +15,7 @@ class Post(SerialisableModel, models.Model):
         on_delete=models.PROTECT,
     )
     date_published = models.DateTimeField(auto_now_add=True)
-    body = models.TextField()
+    body = MarkdownField()
     # comment_set from Comment's ForeignKey
     aggregate_rating = models.OneToOneField(
         'koocook_core.AggregateRating',
@@ -30,7 +31,10 @@ class Post(SerialisableModel, models.Model):
 
     @property
     def processed_body(self):
-        return self.process_text_format(self.body)
+        if hasattr(self.body, 'rendered'):
+            return self.body.rendered
+        else:
+            return self.body
 
     @property
     def as_dict(self):
