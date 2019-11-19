@@ -1,85 +1,87 @@
+import json
 from decimal import Decimal
 
 from django import test as djangotest
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
-from koocook_core import models
+from koocook_core import models as models_
+from koocook_core.models import *
 from koocook_core.tests import utils
 
 
 class TestAggregateRatingModel(djangotest.TestCase):
     def test_field_settings(self):
-        aggr = models.AggregateRating()
+        aggr = AggregateRating()
         with self.subTest(field='rating_value'):
             self.assertEqual(
-                aggr._meta.get_field('rating_value').decimal_places,
-                10)
+                aggr._meta.get_field('rating_value').decimal_places, 10)
             self.assertEqual(
-                aggr._meta.get_field('rating_value').max_digits,
-                13)
+                aggr._meta.get_field('rating_value').max_digits, 13)
 
     def test_init_default_fields(self):
-        aggr = models.AggregateRating()
+        aggr = AggregateRating()
         with self.subTest(field='best_rating'):
             self.assertEqual(aggr.best_rating, 5)
         with self.subTest(field='worst_rating'):
             self.assertEqual(aggr.worst_rating, 1)
 
     def test_create_empty(self):
-        aggr = models.AggregateRating.create_empty()
-        self.assertIsInstance(aggr, models.AggregateRating)
+        aggr = AggregateRating.create_empty()
+        self.assertIsInstance(aggr, AggregateRating)
         self.assertEqual(aggr.best_rating, 5)
         self.assertEqual(aggr.worst_rating, 1)
         self.assertEqual(aggr.rating_value, 0)
         self.assertEqual(aggr.rating_count, 0)
 
     def test_item_reviewed_getter(self):
-        with self.subTest(item=models.Post.__qualname__):
-            item = models.Post()
+        with self.subTest(item=Post.__qualname__):
+            item = Post()
             self.assertIs(item.aggregate_rating.post, item)
             self.assertIs(item.aggregate_rating.item_reviewed, item)
 
-        with self.subTest(item=models.Recipe.__qualname__):
-            item = models.Recipe()
+        with self.subTest(item=Recipe.__qualname__):
+            item = Recipe()
             self.assertIs(item.aggregate_rating.recipe, item)
             self.assertIs(item.aggregate_rating.item_reviewed, item)
 
-        with self.subTest(item=models.Comment.__qualname__):
-            item = models.Comment()
+        with self.subTest(item=Comment.__qualname__):
+            item = Comment()
             self.assertIs(item.aggregate_rating.comment, item)
             self.assertIs(item.aggregate_rating.item_reviewed, item)
 
     def test_check_rating(self):
-        author = models.Author(name='author name')
-        for cls in (models.Post, models.Recipe, models.Comment):
+        author = Author(name='author name')
+        for cls in (Post, Recipe, Comment):
             with self.subTest(item=cls.__qualname__):
                 item = cls()
-                rating = models.Rating(author=author, rating_value=5)
+                rating = Rating(author=author, rating_value=5)
                 rating.item_reviewed = item
                 try:
                     item.aggregate_rating.check_rating(rating)
                 except Exception as e:
-                    raise self.failureException('unexpected exception raised') from e
+                    raise self.failureException(
+                        'unexpected exception raised') from e
 
     def test_add_rating(self):
-        author = models.Author(name='author name')
-        for cls in (models.Post, models.Recipe, models.Comment):
+        author = Author(name='author name')
+        for cls in (Post, Recipe, Comment):
             item = cls()
             # TODO: Add function to initialize Recipe and Post so that it is savable
-            rating = models.Rating(author=author, rating_value=5)
+            rating = Rating(author=author, rating_value=5)
             rating.item_reviewed = item
-            with self.subTest(subtest='from empty', item=cls.__qualname__):
+            with self.subTest('from empty', item=cls.__qualname__):
                 item.aggregate_rating.add_rating(rating)
                 self.assertEqual(item.aggregate_rating.rating_count, 1)
                 self.assertEqual(item.aggregate_rating.rating_value, 5)
-            rating = models.Rating(author=author, rating_value=3)
+            rating = Rating(author=author, rating_value=3)
             rating.item_reviewed = item
-            with self.subTest(subtest='add second', item=cls.__qualname__):
+            with self.subTest('add second', item=cls.__qualname__):
                 item.aggregate_rating.add_rating(rating)
                 self.assertEqual(item.aggregate_rating.rating_count, 2)
                 self.assertEqual(item.aggregate_rating.rating_value, 4)
             # Re-using ratings should result in error
-            with self.subTest(subtest='re-add rating', item=cls.__qualname__):
+            with self.subTest('re-add rating', item=cls.__qualname__):
                 with self.assertRaises(ValidationError):
                     item.aggregate_rating.add_rating(rating)
 
@@ -89,18 +91,18 @@ class TestAggregateRatingModel(djangotest.TestCase):
     def test_add_rating_calculation_from_empty(self):
         # test special error prone values
         # add more as necessary
-        for i in (0, 0., ):
+        for i in (0, 0.):
             with self.subTest(i=i, old=(0, 0)):
-                self.assertEqual(models.review._add_rating(Decimal(0), 0, i), i)
+                self.assertEqual(review._add_rating(Decimal(0), 0, i), i)
         # do monkey test, 999 is the maximum rating_value set
         for i in utils.gen_ints(-1000, 1000, 100):
             with self.subTest(i=i, old=(0, 0)):
-                self.assertEqual(models.review._add_rating(Decimal(0), 0, i), i)
+                self.assertEqual(review._add_rating(Decimal(0), 0, i), i)
         for i in utils.gen_floats(-1000, 1000, 1_000):
             i = round(i, 1)
             with self.subTest(i=i, old=(0, 0)):
                 # current use is with 1 decimal places for new ratings
-                self.assertEqual(models.review._add_rating(Decimal(0), 0, i),
+                self.assertEqual(review._add_rating(Decimal(0), 0, i),
                                  round(Decimal(i), 1))
 
     def test_add_rating_calculation_from_nonempty(self):
@@ -114,26 +116,69 @@ class TestAggregateRatingModel(djangotest.TestCase):
 
 
 class TestAuthorModel(djangotest.TestCase):
-    def test_init(self):
-        pass
+    def setUp(self) -> None:
+        self.test_user = User.objects.create(username='AliceWonder',
+                                             first_name='Alice',
+                                             last_name='Merryweather')
+        self.test_author = Author.objects.create(name='Bobby Brown')
+
+    def test_field_settings(self):
+        with self.subTest(field='name'):
+            self.assertEqual(
+                self.test_author._meta.get_field('name').max_length, 100)
+        with self.subTest(field='koocook_user'):
+            self.assertTrue(
+                self.test_author._meta.get_field('koocook_user').null)
 
     def test_str(self):
-        pass
+        for expected_str, user in zip(
+                ('Alice Merryweather', 'Bob', 'C123', 'Dylan'), (
+                    self.test_user,
+                    User.objects.create(first_name='Bob', username='Bobby'),
+                    User.objects.create(username='C123'),
+                    User.objects.create(last_name='Dylan', username='DD'),
+                )):
+            with self.subTest('author with user',
+                              first_name=user.first_name,
+                              last_name=user.last_name,
+                              username=user.username):
+                self.assertEqual(expected_str, str(user.koocookuser.author))
+        for name in ('Ethan Ethanoate', 'Farseer'):
+            with self.subTest('author without user', name=name):
+                author = Author.objects.create(name=name)
+                self.assertEqual(str(author), author.name)
+        # Note for review:
+        #   This test is only made based on the actual implementation
 
     def test_dj_user(self):
-        pass
+        self.assertIs(self.test_user.koocookuser.author.dj_user,
+                      self.test_user)
 
     def test_from_dj_user(self):
-        pass
+        self.assertIs(Author.from_dj_user(self.test_user),
+                      self.test_user.koocookuser.author)
+        # Note for review:
+        #   This function seems unnecessary
+        #   (one dot away but doesn't need importing Author)
 
     def test_qualified_name(self):
         pass
+        # Note for review:
+        #   This test is only made based on the actual implementation
 
     def test_as_dict(self):
         pass
+        # Note for review:
+        #   This test is only made based on the actual implementation
 
     def test_as_json(self):
-        pass
+        with self.subTest('author with user'):
+            self.assertEqual(
+                json.loads(self.test_user.koocookuser.author.as_json),
+                self.test_user.koocookuser.author.as_dict)
+        with self.subTest('author without user'):
+            self.assertEqual(json.loads(self.test_author.as_json),
+                             self.test_author.as_dict)
 
 
 class TestCommentModel(djangotest.TestCase):
@@ -246,8 +291,9 @@ class TestKoocookUserModel(djangotest.TestCase):
 
 class TestQuantityField(djangotest.TestCase):
     def test_quantity_field_max_length(self):
-        for model, field in (('RecipeIngredient', 'quantity'), ('Recipe', 'recipe_yield')):
+        for model, field in (('RecipeIngredient', 'quantity'),
+                             ('Recipe', 'recipe_yield')):
             with self.subTest(model=model, field=field):
-                m = getattr(models, model)()
+                m = getattr(models_, model)()
                 max_length = m._meta.get_field(field).max_length
-                self.assertEqual(max_length, 40)
+                self.assertEqual(max_length, 50)
