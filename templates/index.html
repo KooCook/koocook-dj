@@ -150,17 +150,25 @@
                     </div>
             </div>
           </section>
-    <section class="section">
-        <div class="level">
-            <div class="level-item">
-                <ul>
-                    {% for recipe in object|top_latest %}
-                        <li>{{ recipe.name }}</li>
-                    {% endfor %}
-                </ul>
+
+<div class="columns is-multiline">
+    {% for recipe in object|top_latest %}
+        <div class="column is-three-fifths is-offset-one-fifth">
+            <div class="card">
+                <div class="card-image">
+                    <figure class="image is-2by1 is-bg-cover-centered">
+                        <img src="{{ recipe.image|first }}" alt="Recipe image">
+                    </figure>
+                </div>
+                <div class="card-content" style="margin-bottom: 12px">
+                    <a href="{% url 'koocook_core:recipe' recipe.id %}" class="button">
+                        {{ recipe.name }}
+                    </a>
+                </div>
             </div>
         </div>
-    </section>
+    {% endfor %}
+</div>
 
 {% endblock %}
 
