@@ -1,4 +1,5 @@
 {% extends 'base/index.html' %}
+{% load recipe_extras %}
 {% block page_title %}Home{% endblock %}
 {% block page_body %}
       <section class="section">
@@ -149,5 +150,17 @@
                     </div>
             </div>
           </section>
+    <section class="section">
+        <div class="level">
+            <div class="level-item">
+                <ul>
+                    {% for recipe in object|top_latest %}
+                        <li>{{ recipe.name }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </section>
+
 {% endblock %}
 
