@@ -8,20 +8,25 @@ __all__ = ('KoocookUser', 'Author')
 
 
 def _default_preferences():
-    return dict()
+    return dict
 
 
 class KoocookUser(SerialisableModel, models.Model):
     exclude = ('preferences', 'user_settings')
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     # author from Author's OneToOneField
-    preferences = fields.JSONField(default=_default_preferences)
-    user_settings = fields.JSONField(default=_default_preferences)
+    preferences = fields.JSONField(default=_default_preferences())
+    user_settings = fields.JSONField(default=_default_preferences())
     following = models.ManyToManyField('self')
     followers = models.ManyToManyField('self')
 
     class Meta:
         db_table = "koocook_user"
+
+    @property
+    def formal_preferences(self):
+        from ...support import PreferenceManager
+        return PreferenceManager.from_koocook_user(self)
 
     def follow(self, user: 'KoocookUser'):
         self.following.add(user)

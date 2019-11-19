@@ -5,6 +5,19 @@ from .forms import BasicProfileForm, ExtendedProfileForm
 from ..models import KoocookUser
 
 
+class PreferencesMixin:
+    def post(self, request, *args, **kwargs):
+        print(self.request.POST.dict())
+        return super().post(request, *args, **kwargs)
+
+    def form_valid(self, form):
+
+        self.object.formal_preferences.update_from_json(self.request.POST["preferences"])
+        response = super().form_valid(form)
+
+        return response
+
+
 class UserProfileInfoView(UpdateView):
     model = User
     form_class = BasicProfileForm
@@ -19,8 +32,7 @@ class UserProfileInfoView(UpdateView):
         return self.request.path
 
 
-
-class UserSettingsInfoView(UpdateView):
+class UserSettingsInfoView(PreferencesMixin, UpdateView):
     model = KoocookUser
     form_class = ExtendedProfileForm
     template_name = 'users/settings.html'
@@ -29,3 +41,6 @@ class UserSettingsInfoView(UpdateView):
         context = super().get_context_data(**kwargs)
         context['section'] = 'pref'
         return context
+
+    def get_success_url(self):
+        return self.request.path
