@@ -70,7 +70,7 @@ class VolumeUnit(Unit):
     LITRE = 'L', 0.001
     MILLILITRE = 'mL', 0.000_001
 
-    CUP = 'cup', 0.000_240
+    CUP = None, 0.000_240
     TABLESPOON = 'tbsp', 0.000_015
     TEASPOON = 'tsp', 0.000_005
 
@@ -172,4 +172,4 @@ def get_unit(unit: Union[str, Unit]) -> Unit:
             raise ValueError('\'{}\' is not a valid Unit'.format(unit))
 
 
-units: Iterable[Type[Unit]] = (LengthUnit, AreaUnit, VolumeUnit, MassUnit, TemperatureUnit, SpecialUnit)
+units: Iterable[Type[Unit]] = (LengthUnit, AreaUnit, VolumeUnit, MassUnit, EnergyUnit, TemperatureUnit, SpecialUnit)
