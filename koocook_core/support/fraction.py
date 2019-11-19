@@ -287,6 +287,8 @@ def to_ratio(x: Union[float, int]) -> Tuple[int, int]:
         (7, 8)
         >>> to_ratio(-0.048)
         (-6, 125)
+        >>> to_ratio(-3.6)
+        (-18, 5)
         >>> to_ratio(math.inf)
         (1, 0)
         >>> to_ratio(math.nan)
@@ -305,10 +307,14 @@ def to_ratio(x: Union[float, int]) -> Tuple[int, int]:
     if x == -math.inf:
         return -1, 0
     if isinstance(x, float):
+        neg = False
         number, decimal = str(x).split('.')
+        if number[0] == '-':
+            number = number[1:]
+            neg = True
         i = len(decimal)
         num = int(number) * 10 ** i + int(decimal)
-        if x < 0:
+        if neg:
             num = -num
         assert x == round(num / 10 ** i, 17), f'{x} != {round(num / 10 ** i, 17)}'
         return to_proper(num, 10 ** i)
