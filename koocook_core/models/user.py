@@ -2,14 +2,16 @@ from django.contrib.auth.models import User
 from django.contrib.postgres import fields
 from django.db import models
 
-__all__ = ['KoocookUser', 'Author']
+from .base import SerialisableModel
+
+__all__ = ('KoocookUser', 'Author')
 
 
 def _default_preferences():
     return dict()
 
 
-class KoocookUser(models.Model):
+class KoocookUser(SerialisableModel, models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     # author from Author's OneToOneField
     preferences = fields.JSONField(default=_default_preferences)
@@ -38,7 +40,7 @@ class KoocookUser(models.Model):
         return self.user.get_full_name()
 
 
-class Author(models.Model):
+class Author(SerialisableModel, models.Model):
     name = models.CharField(max_length=100)
     user = models.OneToOneField(
         'koocook_core.KoocookUser',
@@ -52,11 +54,25 @@ class Author(models.Model):
     # post_set from Post
 
     @property
+    def dj_user(self):
+        return self.user.user
+
+    @classmethod
+    def from_dj_user(cls, user: User):
+        return cls.objects.get(user__user=user)
+
+    @property
     def qualified_name(self):
         if self.user and self.user.full_name:
             return self.user.full_name
         else:
             return self.name
+
+    @property
+    def as_dict(self):
+        base_dict_repr = super().as_dict
+        base_dict_repr.update({'qualified_name': self.qualified_name})
+        return base_dict_repr
 
     def __str__(self):
         return self.qualified_name

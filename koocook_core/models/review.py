@@ -114,6 +114,11 @@ class Rating(models.Model):
                              type(obj))) from e.__context__
 
 
+def create_empty_aggregate_rating(**kwargs) -> 'AggregateRating':
+    """Creates an empty aggregate rating"""
+    return AggregateRating.objects.create(rating_value=0, rating_count=0, **kwargs)
+
+
 class AggregateRating(models.Model):
     rating_value = models.DecimalField(
         decimal_places=10,

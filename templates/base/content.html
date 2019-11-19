@@ -2,9 +2,11 @@
 {% load static %}
 {% block page_deps %}
     <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://unpkg.com/buefy/dist/buefy.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js"></script>
     <script src="{% static 'js/utils.js' %}"></script>
+    {% block content_deps %}{% endblock %}
 {% endblock %}
 {% block page_body %}
     <div id="app">
@@ -43,7 +45,7 @@
               Home
             </a>
 
-            <a class="navbar-item is-disabled">
+            <a class="navbar-item" href="{% url 'koocook_core:posts:all' %}">
               Stream
             </a>
 
@@ -145,9 +147,28 @@
           </div>
         </div>
         </div>
-    </nav>{% block section_after_nav %}{% endblock %}
+    </nav>{% block section_after_nav %}
+        {% block no_breadcrumb %}<div class="container"><nav class="breadcrumb breadcrumb-nav" aria-label="breadcrumbs">
+      <ul>
+        <li><a href="{% url "koocook_core:index" %}">KooCook!</a></li>
+        {% block breadcrumb_category %}
+            <li><a href="{% block content_category_url %}{% endblock %}">{% block content_category %}{% endblock %}</a></li>
+            <li class="is-active"><a href="#" aria-current="page">{% block content_page_name %}{% endblock %}</a></li>
+        {% endblock %}
+        {% block breadcrumb_item_extension %}{% endblock %}
+      </ul>
+    </nav></div>{% endblock %}{% block no_hero %}<section class="hero is-light">
+        <div class="hero-body">
+        <div class="container">
+          <h1 class="title">
+            {% block hero_title %}{% endblock %}
+          </h1>
+        </div>
+      </div>
+    </section>{% endblock %}{% endblock %}
      <div class="container">
-    <section class="section">{% block page_content %}{% endblock %}
+    <section class="section">
+        {% block page_content %}{% endblock %}
     </section>
       </div>
     <script src="{% static "js/navbar.js" %}"></script>

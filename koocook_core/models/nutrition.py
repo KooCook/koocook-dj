@@ -9,9 +9,17 @@ __all__ = ['MetaIngredient', 'RecipeIngredient']
 
 
 class MetaIngredient(models.Model):
+    """
+        Note: ingredient_set from Ingredient's ForeignKey
+    """
     name = models.CharField(max_length=255)
-    nutrients = fields.JSONField()
-    # ingredient_set from Ingredient's ForeignKey
+    # Monkey patched
+    nutrient = fields.JSONField(default=dict)
+    description = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+    )
 
 
 class RecipeIngredient(models.Model):
@@ -31,9 +39,18 @@ class RecipeIngredient(models.Model):
     recipe = models.ForeignKey(
         'koocook_core.Recipe',
         on_delete=models.CASCADE,
+        null=True,  # monkey patch
     )
 
     @property
+    def to_dict(self):
+        return {'id': self.id, 'name': self.meta.name, 'type': self.quantity. unit.type,
+                'quantity': {'unit': self.quantity.unit.symbol, 'number': self.quantity.amount}}
+
+    @property
+    def to_json(self):
+        return json.dumps(self.to_dict)
+
+    @property
     def nutrition(self):
-        pass
         return

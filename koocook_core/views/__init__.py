@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, reverse, redirect, get_object_or_404
 from django.http import JsonResponse, HttpResponseForbidden
 from django.views.decorators.http import require_http_methods
 from django.utils.decorators import method_decorator
@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+from .posts import *
 from .recipes import *
 from .forms import RecipeForm
 from ..models import Recipe, Author
@@ -41,9 +42,9 @@ def handle_recipe(request, recipe_id):
             return JsonResponse({'status': 'deleted'})
         else:
             return HttpResponseForbidden()
+    elif request.method == 'GET':
+        recipe = get_object_or_404(Recipe, pk=recipe_id)
+        response = RecipeDetailView.as_view()
+        return response(request, pk=recipe_id)
     else:
         return HttpResponseForbidden()
-
-
-def detail_view(request):
-    return render(request, 'detail.html')

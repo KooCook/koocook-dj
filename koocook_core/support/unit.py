@@ -1,13 +1,13 @@
-from typing import Union, Optional
-
 import enum
+from typing import Union, Optional, Iterable, Type
 
-__all__ = ['Unit', 'Units', 'LengthUnit', 'AreaUnit', 'VolumeUnit', 'MassUnit',
-           'TemperatureUnit', 'ServingUnit', 'SpecialUnit', 'get_unit']
+__all__ = ['Unit', 'units', 'LengthUnit', 'AreaUnit', 'VolumeUnit', 'MassUnit',
+           'TemperatureUnit', 'SpecialUnit', 'get_unit']
 
 
 @enum.unique
 class Unit(enum.Enum):
+
     def __new__(cls, symbol: Optional[str], *args):
         obj = object.__new__(cls)
         # ``symbol`` is canonical value
@@ -39,6 +39,11 @@ class Unit(enum.Enum):
     @property
     def plural(self) -> str:
         return self._plural
+
+    @property
+    def type(self) -> str:
+        name = self.__class__.__name__
+        return name[0].lower() + name[1:]
 
     @property
     def conversion_factor(self) -> float:
@@ -142,14 +147,11 @@ def _from_celsius(value: float, quote: Union[TemperatureUnit, str]) -> float:
     raise TypeError('invalid quote \'{}\''.format(quote.__class__.__name__))
 
 
-class ServingUnit(Unit):
-    SERVING = None, None,
-    PERSON = None, None, 'people'
-
-
 class SpecialUnit(Unit):
     NONE = 'None', None, 'units', 'unit'
     IU = 'IU', None, 'International Units', 'International Unit'
+    SERVING = None, None,
+    PERSON = None, None, 'people'
 
 
 def get_unit(unit: Union[str, Unit]) -> Unit:
@@ -161,7 +163,7 @@ def get_unit(unit: Union[str, Unit]) -> Unit:
     if isinstance(unit, Unit):
         return unit
     else:
-        for _unit_ in Units:
+        for _unit_ in units:
             try:
                 return _unit_(unit)
             except ValueError:
@@ -170,4 +172,4 @@ def get_unit(unit: Union[str, Unit]) -> Unit:
             raise ValueError('\'{}\' is not a valid Unit'.format(unit))
 
 
-Units = (LengthUnit, AreaUnit, VolumeUnit, MassUnit, EnergyUnit, TemperatureUnit, ServingUnit, SpecialUnit)
+units: Iterable[Type[Unit]] = (LengthUnit, AreaUnit, VolumeUnit, MassUnit, TemperatureUnit, SpecialUnit)

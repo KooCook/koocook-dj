@@ -13,7 +13,7 @@ class Quantity:
     __slots__ = ('amount', 'unit')
 
     def __init__(self,
-                 amount: Fraction,
+                 amount: Union[Fraction, int, float],
                  unit: Union[unit_.Unit, str]):
         if isinstance(amount, Fraction):
             self.amount = amount
@@ -27,11 +27,18 @@ class Quantity:
         return '{} {}'.format(self.amount, self.unit.plural)
 
     def get_db_str(self):
-        return '{} {}'.format(self.amount, self.unit.symbol)
+        if self.unit.symbol:
+            return '{} {}'.format(self.amount, self.unit.symbol)
+        return self.__str__()
 
-    @property
-    def not_a_unit(self):
-        return self.unit is unit_.SpecialUnit.NONE
+    # Monkey patched
+    def __len__(self):
+        return len(str(self))
+
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return False
+        return other.amount == self.amount and other.unit == self.unit
 
 
 def parse_quantity(quantity_string: str) -> Quantity:
@@ -49,14 +56,13 @@ class QuantityField(models.CharField):
 
     def __init__(self, *args, **kwargs):
         kwargs['max_length'] = 50
+        self.max_length = 50
         super().__init__(*args, **kwargs)
 
-    # def deconstruct(self):
-    #     name, path, args, kwargs = super().deconstruct()
-    #     # Only include kwarg if it's not the default
-    #     if self.nau:
-    #         kwargs['nau'] = self.nau
-    #     return name, path, args, kwargs
+    def deconstruct(self):
+        name, path, args, kwargs = super().deconstruct()
+        kwargs.pop('max_length')
+        return name, path, args, kwargs
 
     def from_db_value(self, value, expression, connection):
         if value is None or value is '':

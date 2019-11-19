@@ -1,0 +1,205 @@
+{% extends 'base/content.html' %}
+{% load widget_tweaks %}
+{% block page_title %}Post Stream{% endblock %}
+{% block section_after_nav %}<section class="hero is-primary">
+  <div class="hero-body">
+    <div class="container">
+      <h1 class="title">
+        Stream
+      </h1>
+    </div>
+  </div>
+  <div class="hero-foot">
+
+  </div>
+</section>{% endblock %}
+
+
+{% block page_content %}
+<b-modal :active.sync="showModal" has-modal-card trap-focus aria-role="dialog" aria-modal>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Delete a post</p>
+    </header>
+    <section class="modal-card-body">
+      <p class="card-header-title">
+        Do you really want to delete the selected post?
+      </p>
+    </section>
+    <footer class="modal-card-foot">
+      <div class="buttons">
+        <button class="button is-danger" @click="confirmDeletion">Proceed</button>
+        <button class="button" @click="showModal = false">Cancel</button>
+      </div>
+    </footer>
+  </div>
+</b-modal>
+<b-tabs type="is-toggle" position="is-centered" class="is-fullwidth">
+  <b-tab-item label="My posts">
+    <form method="post" class="box" @submit.prevent="createPost()">
+      {% csrf_token %}
+      <b-field label="What's on your mind?">
+        {{ form.body|attr:"v-model: currentPost.body"|add_class:'textarea' }}
+      </b-field>
+      <b-field>
+        <div class="buttons">
+          <button type="submit" class="button is-primary is-medium">Post</button>
+        </div>
+      </b-field>
+    </form>
+
+    <article class="media" v-for="(userPost, upIndex) in posts" v-on:mouseover="$set(userPost, 'hovered', true)"
+      v-on:mouseleave="$set(userPost, 'hovered', false)">
+      <figure class="media-left">
+        <p class="image is-64x64">
+          <img src="https://bulma.io/images/placeholders/128x128.png">
+        </p>
+      </figure>
+      <div class="media-content">
+        <div class="content">
+          <p>
+            <strong>{% templatetag openvariable %} userPost.author.qualified_name
+              {% templatetag closevariable %}</strong> <small>@{% templatetag openvariable %} userPost.author.name
+              {% templatetag closevariable %}</small> <small>{% templatetag openvariable %} publicationElapsed[upIndex]
+              {% templatetag closevariable %}</small>
+            <br>
+            <div v-if="userPost.editing">
+              <form method="post" @submit.prevent="editPost(upIndex)">
+                {% csrf_token %}
+                <b-field>
+                  {{ form.body|attr:"v-model: userPost.body"|add_class:'textarea' }}
+                </b-field>
+                <b-field>
+                  <div class="buttons">
+                    <button type="submit" class="button is-primary is-small">Confirm edits</button>
+                  </div>
+                </b-field>
+              </form>
+            </div>
+            <span v-else>{% templatetag openvariable %} userPost.body {% templatetag closevariable %}</span>
+          </p>
+        </div>
+        <nav class="level is-mobile">
+          <div class="level-left">
+            <a class="level-item" @click="showEdit(userPost)">
+              <span class="icon is-small"><i class="fas fa-pencil-alt"></i></span>
+            </a>
+          </div>
+        </nav>
+      </div>
+      <div class="media-right">
+
+        <button v-show="userPost.hovered" class="delete" @click="deletePost(userPost)"></button>
+      </div>
+    </article>
+  </b-tab-item>
+  <b-tab-item label="Trending"></b-tab-item>
+  <b-tab-item label="Following"></b-tab-item>
+</b-tabs>
+
+<script>
+  new Vue({
+    el: '#app',
+    computed: {
+      publicationElapsed() {
+        if (this.posts.length > 0)
+          return this.posts.map((post) => { return moment(post.date_published).fromNow(); });
+        else
+          return [];
+      }
+    },
+    data: {
+      searchName: '',
+      activeTab: 0,
+      showModal: false,
+      selectedPost: {},
+      posts: [
+        {% for user_post in user_posts %}
+                    {{ user_post.as_json | safe }},
+    {% endfor %}
+            ],
+    currentPost: {
+    body: ''
+  }
+        },
+    methods: {
+    async createPost() {
+      const formData = new FormData();
+      for (const prop in this.currentPost) {
+        formData.append(prop, this.currentPost[prop]);
+      }
+      const resp = await fetch(`/posts/`, {
+        body: "body=" + this.currentPost.body,
+        method: "POST", credentials: 'include', headers: {
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'X-CSRFToken': getCookie('csrftoken')
+        }
+      });
+      if (resp.ok) {
+        this.$buefy.toast.open({
+          message: 'Successfully posted!',
+          type: 'is-success'
+        }); this.posts.unshift(JSON.parse((await resp.json()).post))
+      } else {
+        this.$buefy.toast.open({
+          message: 'Posting failed! Try again',
+          type: 'is-danger'
+        })
+      }
+    },
+    async editPost(post_index) {
+      const resp = await fetch(`/posts/${this.posts[post_index].id}`, {
+        body: "body=" + this.posts[post_index].body,
+        method: "PATCH", credentials: 'include', headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'X-CSRFToken': getCookie('csrftoken')
+        }
+      });
+      if (resp.ok) {
+      this.posts[post_index].editing = false;
+        this.posts[post_index].body = JSON.parse((await resp.json()).post).body;
+
+        this.$buefy.toast.open({
+          message: 'Successfully edited the post!',
+          type: 'is-success'
+        });
+      } else {
+        this.$buefy.toast.open({
+          message: 'Failed to edit the post! Try again',
+          type: 'is-danger'
+        })
+      }
+    },
+    async deletePost(post) {
+      this.selectedPost = post;
+      this.showModal = true;
+    },
+    async confirmDeletion() {
+      const post = this.selectedPost;
+      const resp = await fetch(`/posts/${post.id}`, {
+        method: "DELETE", credentials: 'include', headers: {
+          'X-CSRFToken': getCookie('csrftoken')
+        }
+      });
+      if (resp.ok) {
+        this.$buefy.toast.open({
+          message: 'Successfully deleted the post!',
+          type: 'is-success'
+        }); this.posts = this.posts.filter(p => p !== post);
+        this.showModal = false;
+      } else {
+        this.$buefy.toast.open({
+          message: 'Failed to delete the post! Try again',
+          type: 'is-danger'
+        })
+      }
+    },
+    async showEdit(post) {
+      this.$set(post, 'editing', true);
+    },
+    async hideEdit(post) {
+      this.$set(post, 'editing', false);
+    }
+  }
+      })
+</script>
+{% endblock %}

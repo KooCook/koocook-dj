@@ -11,4 +11,3 @@ class Command(BaseCommand):
         add_datatrans()
         from .read_data import main
         main()
-
