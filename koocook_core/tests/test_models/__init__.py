@@ -1,7 +1,10 @@
+from decimal import Decimal
+
 from django import test as djangotest
 from django.core.exceptions import ValidationError
 
 from koocook_core import models
+from koocook_core.tests import utils
 
 
 class TestAggregateRatingModel(djangotest.TestCase):
@@ -69,6 +72,30 @@ class TestAggregateRatingModel(djangotest.TestCase):
                     item.aggregate_rating.add_rating(rating)
 
     def test_remove_rating(self):
+        pass
+
+    def test_add_rating_calculation_from_empty(self):
+        # test special error prone values
+        # add more as necessary
+        for i in (0, 0., ):
+            with self.subTest(i=i, old=(0, 0)):
+                self.assertEqual(models.review._add_rating(Decimal(0), 0, i), i)
+        # do monkey test, 999 is the maximum rating_value set
+        for i in utils.gen_ints(-1000, 1000, 100):
+            with self.subTest(i=i, old=(0, 0)):
+                self.assertEqual(models.review._add_rating(Decimal(0), 0, i), i)
+        for i in utils.gen_floats(-1000, 1000, 10_000):
+            with self.subTest(i=i, old=(0, 0)):
+                # current use is with 10 decimal places
+                self.assertEqual(round(models.review._add_rating(Decimal(0), 0, i), 10), round(Decimal(i), 10))
+
+    def test_add_rating_calculation_from_nonempty(self):
+        pass
+
+    def test_remove_rating_calculation_from_empty(self):
+        pass
+
+    def test_remove_rating_calculation_from_nonempty(self):
         pass
 
 
