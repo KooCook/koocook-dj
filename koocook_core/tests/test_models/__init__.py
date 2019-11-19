@@ -51,10 +51,10 @@ class TestAggregateRatingModel(djangotest.TestCase):
 
     def test_check_rating(self):
         author = models.Author(name='author name')
-        rating = models.Rating(author=author, rating_value=5)
         for cls in (models.Post, models.Recipe, models.Comment):
             with self.subTest(item=cls.__qualname__):
                 item = cls()
+                rating = models.Rating(author=author, rating_value=5)
                 rating.item_reviewed = item
                 try:
                     item.aggregate_rating.check_rating(rating)
