@@ -19,6 +19,10 @@ class UserController(BaseController):
     def user(self) -> KoocookUser:
         return self.request_fields['user']
 
+    @property
+    def preferences(self):
+        return self._preferences
+
     @to_koocook_user
     def view_profile(self):
         return UserProfileInfoView.as_view()(self.request, pk=self.user.pk)
@@ -28,8 +32,10 @@ class UserController(BaseController):
         return UserSettingsInfoView.as_view()(self.request, pk=self.user.pk)
 
     @to_koocook_user
-    def edit_profile(self):
-        pass
+    def set_preferences(self):
+        self.user.formal_preferences['allow_glut'] = 'False'
+        self.user.save()
+        return ControllerResponse(status_text='Preferences set', obj=self.user.preferences)
 
     @to_koocook_user
     def get_following(self):
@@ -56,7 +62,10 @@ class UserHandler(JsonRequestHandler):
             'POST': 'view_profile',
             'pref': {
                 'GET': 'view_settings_info',
-                'POST': 'view_profile',
+                'POST': 'view_settings_info',
+            },
+            'pref:set': {
+                'POST': 'set_preferences',
             },
             'follow': {
                 'GET': 'get_following',
