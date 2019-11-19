@@ -14,14 +14,19 @@ class RatableController(BaseController):
     def rate(self, pk: int):
         item_reviewed = self.model.objects.get(pk=pk)
         rating_score = int(self.request_fields['rating_score'])
-        rating = Rating(author=self.request_fields['author'],
-                        rating_value=rating_score)
+        rating_fields = {'author': self.request_fields['author']}
         if self.model == Comment:
-            rating.reviewed_comment = item_reviewed
+            rating_fields['reviewed_comment'] = item_reviewed
         elif self.model == Recipe:
-            rating.reviewed_recipe = item_reviewed
+            rating_fields['reviewed_recipe'] = item_reviewed
         elif self.model == Post:
-            rating.reviewed_post = item_reviewed
+            rating_fields['reviewed_post'] = item_reviewed
+        try:
+            rating = Rating.objects.get(**rating_fields)
+            rating.old_rating_value = rating.rating_value
+        except Rating.DoesNotExist:
+            rating = Rating(**rating_fields)
+        rating.rating_value = rating_score
         rating.save()
-        item_reviewed.aggregate_rating.add_rating(rating)
+        item_reviewed.aggregate_rating.add_rating(rating, update=hasattr(rating, 'old_rating_value'))
         return ControllerResponse(status_text='Rated', obj=item_reviewed.aggregate_rating)

@@ -148,7 +148,7 @@ class AggregateRating(models.Model):
             raise ValidationError(_('Incompatible itemReviewed: \'{}\' != \'\''
                                     .format(rating.item_reviewed, self.item_reviewed)))
 
-    def add_rating(self, rating: Rating):
+    def add_rating(self, rating: Rating, update=False):
         """Adds a rating from an aggregate rating.
 
         Raises:
@@ -157,7 +157,10 @@ class AggregateRating(models.Model):
         self.check_rating(rating)
         total_value = self.rating_value * self.rating_count
         total_value += rating.rating_value
-        self.rating_count += 1
+        if not update:
+            self.rating_count += 1
+        else:
+            total_value -= rating.old_rating_value
         self.rating_value = total_value / self.rating_count
         self.save()
 
