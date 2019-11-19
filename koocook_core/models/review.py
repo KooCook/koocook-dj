@@ -11,13 +11,13 @@ __all__ = ['AggregateRating', 'Rating', 'Comment']
 def _add_rating(old_value: Decimal, old_count: int,
                 new_rating: Union[int, float]) -> Decimal:
     old_total = old_value * old_count
-    return (old_total + new_rating) / (old_count + 1)
+    return (old_total + round(Decimal(new_rating), 1)) / (old_count + 1)
 
 
 def _remove_rating(old_value: Decimal, old_count: int,
                    new_rating: Union[int, float]) -> Decimal:
     old_total = old_value * old_count
-    return (old_total - new_rating) / (old_count - 1)
+    return (old_total - round(Decimal(new_rating), 1)) / (old_count - 1)
 
 
 class AggregateRating(models.Model):
