@@ -1,40 +1,45 @@
-{% extends 'base/content.html' %} {% block section_after_nav %} {% endblock %}
+{% extends 'base/recipes.html' %}
+{% block no_hero %}{% endblock %}
+{% block content_page_name %}{{ object.name }}{% endblock %}
 {% block page_content %}
 {% load extra_tags %}
 <div style="padding: 0 3rem">
     <header class="section" style="padding-bottom: 1.5rem; margin-bottom: 1.5rem">
-        <div class="container">
-            <h1 class="title is-1">
-                {{ recipe.name }}
-            </h1>
-            <p class="subtitle is-4">
-                <!-- send to index view for now -->
-                Recipe by
-                <a href="{% url 'koocook_core:index'%}">{{ recipe.author.name }}</a>
-            </p>
-
-            <div class="field is-grouped is-grouped-multiline">
-                <div class="control">
-                    {% for tag in recipe.tag_set.all %}
-                        <span class="tag  is-medium">{{ tag.name }}</span>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
+      <div class="container">
+        <h1 class="title is-1">
+          {{ object.name }}
+        </h1>
+        <p class="subtitle is-4">
+          Recipe by <a href="">{{ object.author.name }}</a>
+        </p>
+          <div class="field is-grouped is-grouped-multiline">
+          {% for tag in object.tag_set.all %}
+            <div class="control">
+            <div class="tags has-addons">
+                    <span class="tag is-medium">{{ tag.name }}</span>
+                          {% if tag.label %}<span class="tag is-danger is-medium">
+                                {{ tag.label.name }}
+                              <button class="delete is-small"></button>
+                            </span>{% else %}
+                              <button class="delete is-small"></button>
+                              {% endif %}
+                        </div>
+             </div>
+          {% endfor %}
+          </div>
+      </div>
     </header>
 
     <section class="section" style="padding-top: 0">
-        <div class="container">
-            <figure class="image is-4928x3264" style="margin-bottom: 1.5rem">
-                <img src="{{ recipe.image|first }}" alt="pancake close up"/>
-            </figure>
-            <p class="subtitle is-6">
-                <!-- Have no image credit models -->
-                <strong>Image Credit:</strong> <a href="">Skitterphoto</a>
-            </p>
-        </div>
+      <div class="container">
+        <figure class="image is-4928x3264" style="margin-bottom: 1.5rem">
+          <img src="{{ object.image|first }}" alt="{{ object.name }}">
+        </figure>
+        <p class="subtitle is-6">
+          <strong>Image Credit:</strong> <a href="">Skitterphoto</a>
+        </p>
+      </div>
     </section>
-
     <section class="section" style="padding-top: 0">
         <div class="container">
             <div class="columns is-multiline">
@@ -166,59 +171,214 @@
     </section>
 
     <section class="section" style="padding-top: 0">
-        <div class="container" style="padding: 0 5%">
+          <div class="container" style="padding: 0 5%">
             <div class="tile is-ancestor">
-                <div class="tile is-vertical">
-                    <div class="tile">
-                        <div class="tile is-parent" id="ingredients">
-                            <div class="tile is-child">
-                                <h3 class="title is-4">
-                                    Ingredients
-                                </h3>
-                                <div class="content">
-                                    <ul style="list-style-type: none">
-                                        {% for ingredient in recipe.recipe_ingredient %}
-                                        <li>{{ ingredient }}</li>
-                                        {% endfor %}
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="tile is-parent" id="nutrition">
-                        <div class="tile is-child">
-                            <h3 class="title is-4">
-                                Nutrition
-                            </h3>
-                            <div class="content">
-                                <ul style="list-style-type: none">
-                                    {% for fact in recipe.nutrition %}
-                                    <li>{{ fact }}</li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                        </div>
+              <div class="tile is-vertical">
+                <div class="tile">
+                  <div class="tile is-parent">
+                    <div class="tile is-child">
+                      <h3 class="title is-4">
+                        Ingredients
+                      </h3>
+                      <div class="content">
+                        <ul style="list-style-type: none">
+    {#                      <li>1⅓#}
+    {#                        <div class="dropdown">#}
+    {#                          <div class="dropdown-trigger">#}
+    {#                            <a aria-haspopup="true" aria-controls="dropdown-menu">#}
+    {#                              <span class="ingredient-unit-text">cups</span>#}
+    {#                              <span class="icon is-small">#}
+    {#                                  <i class="fas fa-angle-down fa-xs" aria-hidden="true"></i>#}
+    {#                                </span>#}
+    {#                            </a>#}
+    {#                          </div>#}
+    {#                          <div class="dropdown-menu" id="dropdown-menu" role="menu">#}
+    {#                            <div class="dropdown-content">#}
+    {#                              <a class="dropdown-item">#}
+    {#                                teaspoon#}
+    {#                              </a>#}
+    {#                              <a class="dropdown-item ">#}
+    {#                                tablespoon#}
+    {#                              </a>#}
+    {#                              <a class="dropdown-item">#}
+    {#                                fluid ounce#}
+    {#                              </a>#}
+    {#                              <a class="dropdown-item is-active">#}
+    {#                                cup#}
+    {#                              </a>#}
+    {#                              <a class="dropdown-item">#}
+    {#                                pint#}
+    {#                              </a>#}
+    {#                              <hr class="dropdown-divider">#}
+    {#                              <a class="dropdown-item">#}
+    {#                                millilitre#}
+    {#                              </a>#}
+    {#                              <a class="dropdown-item">#}
+    {#                                litre#}
+    {#                              </a>#}
+    {#                              <hr class="dropdown-divider">#}
+    {#                              <a class="dropdown-item">#}
+    {#                                ounce#}
+    {#                              </a>#}
+    {#                              <a class="dropdown-item">#}
+    {#                                pound#}
+    {#                              </a>#}
+    {#                              <hr class="dropdown-divider">#}
+    {#                              <a class="dropdown-item">#}
+    {#                                milligram#}
+    {#                              </a>#}
+    {#                              <a class="dropdown-item">#}
+    {#                                gram#}
+    {#                              </a>#}
+    {#                              <a class="dropdown-item">#}
+    {#                                kilogram#}
+    {#                              </a>#}
+    {#                            </div>#}
+    {#                          </div>#}
+    {#                        </div>#}
+    {#                        all-purpose flour#}
+    {#                      </li>#}
+    {#                      <li>3#}
+    {#                        <div class="dropdown">#}
+    {#                          <div class="dropdown-trigger">#}
+    {#                            <a aria-haspopup="true" aria-controls="dropdown-menu2">#}
+    {#                              <span class="ingredient-unit-text">tablespoons</span>#}
+    {#                              <span class="icon is-small">#}
+    {#                                  <i class="fas fa-angle-down fa-xs" aria-hidden="true"></i>#}
+    {#                                </span>#}
+    {#                            </a>#}
+    {#                          </div>#}
+    {#                          <div class="dropdown-menu" id="dropdown-menu2" role="menu">#}
+    {#                            <div class="dropdown-content">#}
+    {#                              <a class="dropdown-item">#}
+    {#                                teaspoon#}
+    {#                              </a>#}
+    {#                              <a class="dropdown-item is-active">#}
+    {#                                tablespoon#}
+    {#                              </a>#}
+    {#                              <a class="dropdown-item">#}
+    {#                                fluid ounce#}
+    {#                              </a>#}
+    {#                              <a class="dropdown-item">#}
+    {#                                cup#}
+    {#                              </a>#}
+    {#                              <a class="dropdown-item">#}
+    {#                                pint#}
+    {#                              </a>#}
+    {#                              <hr class="dropdown-divider">#}
+    {#                              <a class="dropdown-item">#}
+    {#                                millilitre#}
+    {#                              </a>#}
+    {#                              <a class="dropdown-item">#}
+    {#                                litre#}
+    {#                              </a>#}
+    {#                              <hr class="dropdown-divider">#}
+    {#                              <a class="dropdown-item">#}
+    {#                                ounce#}
+    {#                              </a>#}
+    {#                              <a class="dropdown-item">#}
+    {#                                pound#}
+    {#                              </a>#}
+    {#                              <hr class="dropdown-divider">#}
+    {#                              <a class="dropdown-item">#}
+    {#                                milligram#}
+    {#                              </a>#}
+    {#                              <a class="dropdown-item">#}
+    {#                                gram#}
+    {#                              </a>#}
+    {#                              <a class="dropdown-item">#}
+    {#                                kilogram#}
+    {#                              </a>#}
+    {#                            </div>#}
+    {#                          </div>#}
+    {#                        </div>#}
+    {#                        sugar#}
+    {#                      </li>#}
+    {#                      <li>1 teaspoon#}
+    {#                        <div class="dropdown is-up is-hoverable">#}
+    {#                          <div class="dropdown-trigger">#}
+    {#                            <a aria-haspopup="true" aria-controls="dropdown-menu3">#}
+    {#                              <span class="ingredient-text">baking powder</span>#}
+    {#                            </a>#}
+    {#                          </div>#}
+    {#                          <div class="dropdown-menu" id="dropdown-menu3" role="menu">#}
+    {#                            <div class="dropdown-content">#}
+    {#                              <a class="dropdown-item">#}
+    {#                                Find ingredient#}
+    {#                              </a>#}
+    {#                              <a class="dropdown-item">#}
+    {#                                Find substitute#}
+    {#                              </a>#}
+    {#                            </div>#}
+    {#                          </div>#}
+    {#                        </div>#}
+    {#                        <sup class="icon is-small ingredient-help"#}
+    {#                             title="Baking powder is a dry chemical leavening agent, a mixture of a carbonate or bicarbonate and a weak acid. The base and acid are prevented from reacting prematurely by the inclusion of a buffer such as cornstarch. Baking powder is used to increase the volume and lighten the texture of baked goods."#}
+    {#                        >#}
+    {#                          <i class="fas fa-question fa-xs" aria-hidden="true"></i>#}
+    {#                        </sup>#}
+    {#                      </li>#}
+                            {% for ingredient in ingredients %}
+                          <li>{{ ingredient.quantity.number }} {{ ingredient.quantity.unit }} {{ ingredient.name }}</li>
+                    {% endfor %}
+                        </ul>
+                      </div>
                     </div>
+                  </div>
+                  <div class="tile is-parent">
+                    <div class="tile is-child">
+                      <h3 class="title is-4">
+                        Equipment
+                      </h3>
+                      <div class="content">
+                        <ul style="list-style-type: none">
+                          <li>Whisk</li>
+                          <li>Large bowl</li>
+                          <li>Medium bowl</li>
+                          <li>Griddle or large skillet</li>
+                          <li>Spatula</li>
+                          <li>Measuring cup</li>
+                        </ul>
+                      </div>
                     </div>
-
-                    <div class="tile is-parent">
-                        <div class="tile is-child">
-                            <h3 class="title is-4">
-                                Instruction
-                            </h3>
-                            <div class="content" style="">
-                                <ol>
-                                    {% for instruction in recipe.recipe_instructions %}
-                                    <li>{{ instruction }}</li>
-                                    {% endfor %}
-                                </ol>
-                            </div>
-                        </div>
+                  </div>
+                </div>
+                <div class="tile">
+                <div class="tile is-parent">
+                  <div class="tile is-child">
+                    <h3 class="title is-4">
+                      Instruction
+                    </h3>
+                    <div class="content" style="">
+                      <ol>
+                        {% for instruction in object.recipe_instructions %}
+                      <li>
+                        {{ instruction }}
+                      </li>
+                        {% endfor %}
+                        </ol>
+                    </div>
+                  </div>
+                </div>
+                <div class="tile is-parent" id="nutrition">
+                <div class="tile is-child">
+                    <h3 class="title is-4">
+                        Nutrition
+                    </h3>
+                    <div class="content">
+                        <ul style="list-style-type: none">
+                            {% for fact in object.nutrition %}
+                            <li>{{ fact }}</li>
+                            {% endfor %}
+                        </ul>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+              </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
     <section class="section" style="padding-top: 0">
         <div class="container">

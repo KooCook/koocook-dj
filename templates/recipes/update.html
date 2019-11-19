@@ -1,18 +1,14 @@
-{% extends 'base/content.html' %}
+{% extends 'base/recipes.html' %}
+{% load static %}
 {% load widget_tweaks %}
 {% block page_title %}Edit a recipe{% endblock %}
-{% block section_after_nav %}
-<section class="hero is-light">
-    <div class="hero-body">
-        <div class="container">
-            <h1 class="title">
-                Edit a recipe
-            </h1>
-        </div>
-    </div>
-</section>{% endblock %}
+{% block content_page_name %}Edit a recipe{% endblock %}
+{% block hero_title %}Edit a recipe{% endblock %}
+{% block content_deps %}<script src="{% static 'js/components/ingredients.js' %}"></script>{% endblock %}
 {% block page_content %}
+    <ingredient-chooser :ingredients="ingredients" :selectable-units="selectableUnits"></ingredient-chooser>
 <form method="post">{% csrf_token %}
+    <input name="ingredients" type="hidden" :value="JSON.stringify(ingredients)">
     {% for field in form.visible_fields %}
     <div class="form-group field is-horizontal">
         <div class="field-label is-normal">
@@ -46,4 +42,15 @@
         </div>
     </div>
 </form>
+     <script>
+      new Vue({
+        el: '#app',
+        data: {
+            searchName: '',
+            ingredients: {{ ingredients|safe }},
+            unitConversionFactor: CONVERSION_FACTORS,
+             selectableUnits: CONVERSION_UNITS
+        }
+      })
+  </script>
 {% endblock %}

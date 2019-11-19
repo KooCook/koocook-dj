@@ -1,11 +1,9 @@
 from django import forms
-from ...models import Recipe
+from ...models import Post
 
 
-class RecipeForm(forms.ModelForm):
-    customised_field = ['name', 'author']
-
-
+class PostForm(forms.ModelForm):
+    customised_field = ['author']
 
     def __init__(self, *args, **kwargs):
         if 'user' in kwargs:
@@ -14,8 +12,9 @@ class RecipeForm(forms.ModelForm):
         # self.fields['author'].disabled = True
 
     class Meta:
-        model = Recipe
+        model = Post
         fields = '__all__'
+        exclude = ('author', 'date_published')
 
     @property
     def vanilla_fields(self):

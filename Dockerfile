@@ -28,6 +28,7 @@ ENV DATABASE_USERNAME=$DATABASE_USERNAME
 ENV DATABASE_PASSWORD=$DATABASE_PASSWORD
 ENV DATABASE_PORT=$DATABASE_PORT
 
+
 # Register gcloud to Debian package registry
 #RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
 #RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
@@ -46,7 +47,7 @@ RUN pip install -r requirements.txt
 #RUN gcloud auth activate-service-account --key-file config/$GCP_SKEYFILE
 # Configure the target project for deployment
 #RUN gcloud config set project koocook-deploy
-RUN python manage.py migrate
+
 EXPOSE 8000
 ENTRYPOINT ["python", "manage.py"]
 CMD ["runserver", "0.0.0.0:8000"]
