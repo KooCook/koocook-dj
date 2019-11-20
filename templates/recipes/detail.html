@@ -1,4 +1,5 @@
 {% extends 'base/recipes.html' %}
+{% load recipe_extras %}
 {% block no_hero %}{% endblock %}
 {% block content_page_name %}{{ object.name }}{% endblock %}
 {% block page_content %}
@@ -16,7 +17,7 @@
             <div class="control">
             <div class="tags has-addons">
                     <span class="tag is-medium">{{ tag.name }}</span>
-                          {% if tag.label %}<span class="tag is-danger is-medium">
+                          {% if tag.label %}<span class="tag {{ tag.label.level|tag_level }} is-medium">
                                 {{ tag.label.name }}
                               <button class="delete is-small"></button>
                             </span>{% else %}
