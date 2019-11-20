@@ -36,7 +36,7 @@ def set_up_reviewables(authors: List[Author]
         recipe = Recipe.objects.create(author=author, name='recipe name')
         post = Post.objects.create(author=author)
         test_objects.extend([recipe, post])
-    for obj in random.sample(test_objects.copy(), 10):
+    for obj in random.sample(test_objects, 8):
         comment = Comment.objects.create(author=random.choice(authors), item_reviewed=obj)
         test_objects.append(comment)
         if random.random() > 0.5:
