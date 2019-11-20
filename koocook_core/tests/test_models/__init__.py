@@ -12,7 +12,6 @@ from koocook_core.tests import utils
 
 
 class TestAggregateRatingModel(djangotest.TestCase):
-
     def setUp(self) -> None:
         author = Author.objects.create(name='')
         user = User.objects.create(email='koocook@gmail.com')
@@ -28,7 +27,8 @@ class TestAggregateRatingModel(djangotest.TestCase):
 
         for author in self.test_authors:
             for obj in self.test_objects.copy():
-                comment = Comment.objects.create(author=author, item_reviewed=obj)
+                comment = Comment.objects.create(author=author,
+                                                 item_reviewed=obj)
                 self.test_objects.append(comment)
 
     def clean_up_aggregate_rating(self):
@@ -60,10 +60,10 @@ class TestAggregateRatingModel(djangotest.TestCase):
         with self.subTest('type'):
             self.assertIsInstance(aggr, AggregateRating)
         for attr, value in (
-                ('best_rating', 5),
-                ('worst_rating', 1),
-                ('rating_value', 0),
-                ('rating_count', 0),
+            ('best_rating', 5),
+            ('worst_rating', 1),
+            ('rating_value', 0),
+            ('rating_count', 0),
         ):
             with self.subTest('values', attr=attr):
                 self.assertEqual(getattr(aggr, attr), value)
@@ -79,7 +79,8 @@ class TestAggregateRatingModel(djangotest.TestCase):
     def test_check_rating(self):
         for author in self.test_authors:
             for item in self.test_objects:
-                with self.subTest(author=author, item=item.__class__.__qualname__):
+                with self.subTest(author=author,
+                                  item=item.__class__.__qualname__):
                     rating = Rating(author=author, rating_value=5)
                     rating.item_reviewed = item
                     try:
@@ -93,20 +94,26 @@ class TestAggregateRatingModel(djangotest.TestCase):
             for item in self.test_objects:
                 rating = Rating(author=author, rating_value=5)
                 rating.item_reviewed = item
-                with self.subTest('from empty', author=author, item=item.__class__.__qualname__):
+                with self.subTest('from empty',
+                                  author=author,
+                                  item=item.__class__.__qualname__):
                     item.aggregate_rating.add_rating(rating)
                     self.assertEqual(item.aggregate_rating.rating_count, 1)
                     self.assertEqual(item.aggregate_rating.rating_value, 5)
 
                 rating = Rating(author=author, rating_value=3)
                 rating.item_reviewed = item
-                with self.subTest('add second', author=author, item=item.__class__.__qualname__):
+                with self.subTest('add second',
+                                  author=author,
+                                  item=item.__class__.__qualname__):
                     item.aggregate_rating.add_rating(rating)
                     self.assertEqual(item.aggregate_rating.rating_count, 2)
                     self.assertEqual(item.aggregate_rating.rating_value, 4)
 
                 # Re-using ratings should result in error
-                with self.subTest('re-add rating', author=author, item=item.__class__.__qualname__):
+                with self.subTest('re-add rating',
+                                  author=author,
+                                  item=item.__class__.__qualname__):
                     with self.assertRaises(ValidationError):
                         item.aggregate_rating.add_rating(rating)
             self.clean_up_aggregate_rating()
@@ -119,12 +126,14 @@ class TestAggregateRatingModel(djangotest.TestCase):
         # add more as necessary
         for i in (0, 0.):
             with self.subTest('test manual', i=i, old=(0, 0)):
-                self.assertEqual(models_.review._add_rating(Decimal(0), 0, i), i)
+                self.assertEqual(models_.review._add_rating(Decimal(0), 0, i),
+                                 i)
 
         # do monkey test, 999 is the maximum rating_value set
         for i in utils.gen_ints(-1000, 1000, 100):
             with self.subTest('test int', i=i, old=(0, 0)):
-                self.assertEqual(models_.review._add_rating(Decimal(0), 0, i), i)
+                self.assertEqual(models_.review._add_rating(Decimal(0), 0, i),
+                                 i)
 
         for i in utils.gen_floats(-1000, 1000, 1_000):
             i = round(i, 1)
@@ -162,10 +171,10 @@ class TestAuthorModel(djangotest.TestCase):
 
     def test_str(self):
         for expected_str, user in (
-                ('Alice Merryweather', self.test_user),
-                ('Bob', User.objects.create(first_name='Bob', username='Bobby')),
-                ('C123', User.objects.create(username='C123')),
-                ('Dylan', User.objects.create(last_name='Dylan', username='DD')),
+            ('Alice Merryweather', self.test_user),
+            ('Bob', User.objects.create(first_name='Bob', username='Bobby')),
+            ('C123', User.objects.create(username='C123')),
+            ('Dylan', User.objects.create(last_name='Dylan', username='DD')),
         ):
             with self.subTest('author with user',
                               first_name=user.first_name,
@@ -276,8 +285,10 @@ class TestPostModel(djangotest.TestCase):
                 self.assertIs(aggr.post, post)
             with self.subTest('date published', autor=author):
                 now = timezone.now()
-                self.assertLess(now - post.date_published, timezone.timedelta(seconds=1))
-                self.assertGreaterEqual(now - post.date_published, timezone.timedelta(0))
+                self.assertLess(now - post.date_published,
+                                timezone.timedelta(seconds=1))
+                self.assertGreaterEqual(now - post.date_published,
+                                        timezone.timedelta(0))
 
     def test_init(self):
         # TODO: Test common actual posts
@@ -304,36 +315,35 @@ class TestRecipeModel(djangotest.TestCase):
 
     def test_fields_setting(self):
         recipe = Recipe()
-        for field, attr, value in (
-                ('name', 'max_length', 255),
-        ):
+        for field, attr, value in (('name', 'max_length', 255), ):
             with self.subTest(field=field, attr=attr):
-                self.assertEqual(getattr(recipe._meta.get_field(field), attr), value)
+                self.assertEqual(getattr(recipe._meta.get_field(field), attr),
+                                 value)
         for field, attr in (
-                ('image', 'null'),
-                ('image', 'blank'),
-                ('video', 'null'),
-                ('video', 'blank'),
-                ('author', 'null'),
-                ('date_published', 'null'),
-                ('prep_time', 'null'),
-                ('cook_time', 'null'),
-                ('recipe_yield', 'null'),
-                ('tag_set', 'blank'),
-                ('aggregate_rating', 'blank'),
+            ('image', 'null'),
+            ('image', 'blank'),
+            ('video', 'null'),
+            ('video', 'blank'),
+            ('author', 'null'),
+            ('date_published', 'null'),
+            ('prep_time', 'null'),
+            ('cook_time', 'null'),
+            ('recipe_yield', 'null'),
+            ('tag_set', 'blank'),
+            ('aggregate_rating', 'blank'),
         ):
             with self.subTest(field=field, attr=attr):
                 self.assertTrue(getattr(recipe._meta.get_field(field), attr))
         for field, attr in (
-                ('name', 'null'),
-                ('name', 'blank'),
-                ('author', 'blank'),
-                ('date_published', 'blank'),
-                ('prep_time', 'blank'),
-                ('cook_time', 'blank'),
-                ('recipe_instructions', 'null'),
-                ('recipe_instructions', 'blank'),
-                ('recipe_yield', 'blank'),
+            ('name', 'null'),
+            ('name', 'blank'),
+            ('author', 'blank'),
+            ('date_published', 'blank'),
+            ('prep_time', 'blank'),
+            ('cook_time', 'blank'),
+            ('recipe_instructions', 'null'),
+            ('recipe_instructions', 'blank'),
+            ('recipe_yield', 'blank'),
         ):
             with self.subTest(field=field, attr=attr):
                 self.assertFalse(getattr(recipe._meta.get_field(field), attr))
@@ -342,16 +352,22 @@ class TestRecipeModel(djangotest.TestCase):
         for author in self.test_authors:
             name = 'Buttermilk Pancakes'
             recipe = Recipe.objects.create(author=author, name=name)
-            with self.subTest(field='aggregate_rating', author=author, name=name):
+            with self.subTest(field='aggregate_rating',
+                              author=author,
+                              name=name):
                 aggr = recipe.aggregate_rating
                 self.assertEqual(aggr.rating_count, 0)
                 self.assertEqual(aggr.rating_value, 0)
                 self.assertIs(aggr.recipe, recipe)
             with self.subTest(field='date_published', autor=author, name=name):
                 now = timezone.now()
-                self.assertLess(now - recipe.date_published, timezone.timedelta(seconds=1))
-                self.assertGreaterEqual(now - recipe.date_published, timezone.timedelta(0))
-            with self.subTest(field='recipe_instructions', autor=author, name=name):
+                self.assertLess(now - recipe.date_published,
+                                timezone.timedelta(seconds=1))
+                self.assertGreaterEqual(now - recipe.date_published,
+                                        timezone.timedelta(0))
+            with self.subTest(field='recipe_instructions',
+                              autor=author,
+                              name=name):
                 # use Equal instead of ListEqual for possible changes in data structure
                 self.assertEqual(recipe.recipe_instructions, [])
 
@@ -361,21 +377,28 @@ class TestRecipeModel(djangotest.TestCase):
         # TODO: Test common actual recipes
         for author in self.test_authors:
             with self.subTest():
-                Recipe.objects.create(name='Buttermilk Pancakes', author=author)
+                Recipe.objects.create(name='Buttermilk Pancakes',
+                                      author=author)
 
     def test_total_time(self):
         td = timezone.timedelta
         # monkey test should be enough for library code, you just have to be sure
         # the operation is add and not something else
         for unit in ('seconds', 'minutes', 'hours'):
-            for a, b in zip(utils.gen_ints(0, 100, 50), utils.gen_ints(0, 100, 50)):
+            for a, b in zip(utils.gen_ints(0, 100, 50),
+                            utils.gen_ints(0, 100, 50)):
                 with self.subTest(a=a, b=b, unit=unit):
-                    recipe = Recipe(prep_time=td(**{unit: a}), cook_time=td(**{unit: b}))
-                    self.assertEqual(recipe.total_time, td(**{unit: a+b}))
-        for a, b, c in zip(utils.gen_ints(0, 100, 30), utils.gen_ints(0, 100, 30), utils.gen_ints(0, 100, 30)):
+                    recipe = Recipe(prep_time=td(**{unit: a}),
+                                    cook_time=td(**{unit: b}))
+                    self.assertEqual(recipe.total_time, td(**{unit: a + b}))
+        for a, b, c in zip(utils.gen_ints(0, 100, 30),
+                           utils.gen_ints(0, 100, 30),
+                           utils.gen_ints(0, 100, 30)):
             with self.subTest(a=a, b=b, unit=unit):
-                recipe = Recipe(prep_time=td(hours=a, minutes=b, seconds=c), cook_time=td(hours=b, minutes=c, seconds=a))
-                self.assertEqual(recipe.total_time, td(hours=a+b, minutes=b+c, seconds=c+a))
+                recipe = Recipe(prep_time=td(hours=a, minutes=b, seconds=c),
+                                cook_time=td(hours=b, minutes=c, seconds=a))
+                self.assertEqual(recipe.total_time,
+                                 td(hours=a + b, minutes=b + c, seconds=c + a))
 
 
 class TestTagLabelModel(djangotest.TestCase):
@@ -384,7 +407,6 @@ class TestTagLabelModel(djangotest.TestCase):
 
     def test_field_normal_names_ok(self):
         pass
-
 
     def test_field_label_can_be_null(self):
         pass
@@ -449,8 +471,8 @@ class TestKoocookUserModel(djangotest.TestCase):
 class TestQuantityField(djangotest.TestCase):
     def test_quantity_field_max_length(self):
         for model, field in (
-                ('RecipeIngredient', 'quantity'),
-                ('Recipe', 'recipe_yield'),
+            ('RecipeIngredient', 'quantity'),
+            ('Recipe', 'recipe_yield'),
         ):
             with self.subTest(model=model, field=field):
                 m = getattr(models_, model)()
