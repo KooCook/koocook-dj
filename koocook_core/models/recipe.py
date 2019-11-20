@@ -1,5 +1,6 @@
 from django.contrib.postgres import fields
 from django.db import models
+from django.http import HttpRequest
 
 from koocook_core import fields as koocookfields
 from .review import create_empty_aggregate_rating
@@ -43,6 +44,15 @@ class Recipe(models.Model):
             self.aggregate_rating = create_empty_aggregate_rating()
 
     @property
+    def view_count(self) -> int:
+        """
+        Returns:
+            (int) A view count of the recipe
+        """
+        print(self.recipevisit_set)
+        return self.recipevisit_set.count()
+
+    @property
     def total_time(self):
         return self.prep_time + self.cook_time
 
@@ -54,3 +64,41 @@ class Recipe(models.Model):
     def recipe_ingredients(self):
         """ Proxy property for consistency with Schema.org's standard """
         return self.recipeingredient_set.all()
+
+
+def get_client_ip(request: HttpRequest):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    return x_forwarded_for.split(',')[0] if x_forwarded_for else request.META.get('REMOTE_ADDR')
+
+
+class RecipeVisit(models.Model):
+    """
+        Represents the visit count of a Recipe
+
+        It is uniquely identified by ip_address, recipe, or user
+    """
+    class Meta:
+        db_table = 'koocook_core_recipe_visit'
+        verbose_name = 'Recipe visit count'
+        unique_together = (('ip_address', 'recipe'), ('user', 'recipe'))
+    ip_address = models.CharField(max_length=45)
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    user = models.ForeignKey('koocook_core.KoocookUser', on_delete=models.SET_NULL, null=True)
+    date_first_visited = models.DateTimeField(auto_now_add=True)
+    date_last_visited = models.DateTimeField(auto_now=True)
+
+    @classmethod
+    def associate_recipe_with_user(cls, user: 'koocook_core.KoocookUser', recipe: Recipe):
+        visit, created = cls.objects.get_or_create(user=user, recipe=recipe)
+        return visit
+
+    def add_ip_address(self, request: HttpRequest):
+        self.ip_address = get_client_ip(request)
+
+    @classmethod
+    def associate_recipe_with_ip_address(cls, request: HttpRequest, recipe: Recipe):
+        visit = cls()
+        visit.recipe = recipe
+        visit.add_ip_address(request)
+        return visit
+

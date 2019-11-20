@@ -103,6 +103,24 @@ class RecipeUpdateView(RecipeViewMixin, UpdateView):
 class RecipeDetailView(DetailView):
     model = Recipe
     template_name = 'recipes/detail.html'
+    object: Recipe
+
+    def get(self, request, *args, **kwargs):
+        from django.db.utils import IntegrityError
+        from ..models.recipe import RecipeVisit
+        from ..models import KoocookUser
+        response = super().get(request, *args, **kwargs)
+        if self.request.user.is_authenticated:
+            user: KoocookUser = KoocookUser.from_dj_user(self.request.user)
+            visit = RecipeVisit.associate_recipe_with_user(user, self.object)
+            visit.add_ip_address(self.request)
+            visit.save()
+        else:
+            try:
+                RecipeVisit.associate_recipe_with_ip_address(self.request, self.object).save()
+            except IntegrityError:
+                pass
+        return response
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
