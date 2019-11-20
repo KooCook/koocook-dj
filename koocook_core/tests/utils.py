@@ -49,3 +49,8 @@ def gen_decimals(a: float, b: float, n: int) -> Iterable[Decimal]:
         needed -= uniqs.size
     np.random.shuffle(out)
     return map(Decimal, out)
+
+
+def gen_username(first_name: str, last_name: str = '') -> str:
+    """Returns a hopefully unique username for Django."""
+    return first_name + last_name + str(random.random())[2:]

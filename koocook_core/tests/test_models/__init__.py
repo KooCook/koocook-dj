@@ -1,6 +1,6 @@
-import json
 from decimal import Decimal
 from typing import List, Union
+import random
 import itertools
 
 from django import test as djangotest
@@ -16,14 +16,16 @@ from koocook_core.support.fraction import Fraction
 from koocook_core.tests import utils
 
 
-def set_up_authors(n: int = 5) -> List[Author]:
+def set_up_authors(n: int = 4) -> List[Author]:
     test_authors = []
     for _ in range(n):
         test_authors.append(Author.objects.create(name=names.get_full_name()))
+        first_name, last_name = names.get_first_name(), names.get_last_name()
+        username = utils.gen_username(first_name, last_name)
         test_authors.append(
-            User.objects.create(
-                first_name=names.get_first_name(),
-                last_name=names.get_last_name()).koocookuser.author)
+            User.objects.create(first_name=first_name,
+                                last_name=last_name,
+                                username=username).koocookuser.author)
     return test_authors
 
 
@@ -34,9 +36,11 @@ def set_up_reviewables(authors: List[Author]
         recipe = Recipe.objects.create(author=author, name='recipe name')
         post = Post.objects.create(author=author)
         test_objects.extend([recipe, post])
-    for author in authors:
-        for obj in test_objects.copy():
-            comment = Comment.objects.create(author=author, item_reviewed=obj)
+    for obj in random.sample(test_objects.copy(), 10):
+        comment = Comment.objects.create(author=random.choice(authors), item_reviewed=obj)
+        test_objects.append(comment)
+        if random.random() > 0.5:
+            comment = Comment.objects.create(author=random.choice(authors), item_reviewed=comment)
             test_objects.append(comment)
     return test_objects
 
