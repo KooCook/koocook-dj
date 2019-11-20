@@ -436,12 +436,33 @@ class TestTagModel(djangotest.TestCase):
 
 class TestRecipeIngredientModel(djangotest.TestCase):
     def test_init(self):
+        # TODO: test common values
         pass
+
+    def test_fields_settings(self):
+        ri = RecipeIngredient()
+        with self.subTest(field='quantity', attr='max_length'):
+            self.assertEqual(ri._meta.get_field('quantity').max_length, 50)
+        with self.subTest(field='substitute_set', attr='blank'):
+            self.assertTrue(ri._meta.get_field('substitute_set').blank)
+        for field, attr in (
+                ('quantity', 'null'),
+                ('quantity', 'blank'),
+                ('meta', 'null'),
+                ('meta', 'blank'),
+                ('recipe', 'null'),
+                ('recipe', 'blank'),
+        ):
+            with self.subTest(field=field, attr=attr):
+                self.assertFalse(getattr(ri._meta.get_field(field), attr))
 
     def test_as_dict(self):
         pass
 
     def test_as_json(self):
+        pass
+
+    def test_nutrition(self):
         pass
 
 
