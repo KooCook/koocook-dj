@@ -1,5 +1,6 @@
 import json
 from decimal import Decimal
+from typing import List
 
 from django import test as djangotest
 from django.contrib.auth.models import User
@@ -9,27 +10,35 @@ from django.utils import timezone
 from koocook_core import models as models_
 from koocook_core.models import *
 from koocook_core.tests import utils
+from koocook_core.support import Quantity, unit
+from koocook_core.support.fraction import Fraction
+
+
+def set_up_reviewables(self) -> None:
+    author = Author.objects.create(name='Bobby Brown')
+    user = User.objects.create(email='alicewonder@gmail.com')
+    self.test_authors = [author, user.koocookuser.author]
+    self.test_objects = []
+
+    for author in self.test_authors:
+        recipe = Recipe.objects.create(author=author,
+                                       name='recipe name',
+                                       recipe_instructions=[])
+        post = Post.objects.create(author=author)
+        self.test_objects.extend([recipe, post])
+
+    for author in self.test_authors:
+        for obj in self.test_objects.copy():
+            comment = Comment.objects.create(author=author,
+                                             item_reviewed=obj)
+            self.test_objects.append(comment)
 
 
 class TestAggregateRatingModel(djangotest.TestCase):
     def setUp(self) -> None:
-        author = Author.objects.create(name='')
-        user = User.objects.create(email='koocook@gmail.com')
-        self.test_authors = [author, user.koocookuser.author]
-        self.test_objects = []
-
-        for author in self.test_authors:
-            recipe = Recipe.objects.create(author=author,
-                                           name='recipe name',
-                                           recipe_instructions=[])
-            post = Post.objects.create(author=author)
-            self.test_objects.extend([recipe, post])
-
-        for author in self.test_authors:
-            for obj in self.test_objects.copy():
-                comment = Comment.objects.create(author=author,
-                                                 item_reviewed=obj)
-                self.test_objects.append(comment)
+        self.test_authors: List = []
+        self.test_objects: List = []
+        set_up_reviewables(self)
 
     def clean_up_aggregate_rating(self):
         """Resets the state of aggregate ratings, for testing only."""
@@ -81,8 +90,7 @@ class TestAggregateRatingModel(djangotest.TestCase):
             for item in self.test_objects:
                 with self.subTest(author=author,
                                   item=item.__class__.__qualname__):
-                    rating = Rating(author=author, rating_value=5)
-                    rating.item_reviewed = item
+                    rating = Rating(author=author, rating_value=5, item_reviewed=item)
                     try:
                         item.aggregate_rating.check_rating(rating)
                     except Exception as e:
@@ -92,8 +100,7 @@ class TestAggregateRatingModel(djangotest.TestCase):
     def test_add_rating(self):
         for author in self.test_authors:
             for item in self.test_objects:
-                rating = Rating(author=author, rating_value=5)
-                rating.item_reviewed = item
+                rating = Rating(author=author, rating_value=5, item_reviewed=item)
                 with self.subTest('from empty',
                                   author=author,
                                   item=item.__class__.__qualname__):
@@ -101,8 +108,7 @@ class TestAggregateRatingModel(djangotest.TestCase):
                     self.assertEqual(item.aggregate_rating.rating_count, 1)
                     self.assertEqual(item.aggregate_rating.rating_value, 5)
 
-                rating = Rating(author=author, rating_value=3)
-                rating.item_reviewed = item
+                rating = Rating(author=author, rating_value=3, item_reviewed=item)
                 with self.subTest('add second',
                                   author=author,
                                   item=item.__class__.__qualname__):
@@ -437,7 +443,10 @@ class TestTagModel(djangotest.TestCase):
 class TestRecipeIngredientModel(djangotest.TestCase):
     def test_init(self):
         # TODO: test common values
-        pass
+        quantity = Quantity(Fraction(1, 2), 'tbsp')
+        mi = MetaIngredient.objects.create(name='')
+        recipe = Recipe.objects.create(name='')
+        ri = RecipeIngredient.objects.create(quantity=quantity, meta=mi, recipe=recipe)
 
     def test_fields_settings(self):
         ri = RecipeIngredient()
@@ -465,14 +474,33 @@ class TestRecipeIngredientModel(djangotest.TestCase):
 
 
 class TestRatingModel(djangotest.TestCase):
+    def setUp(self) -> None:
+        self.test_authors: List = []
+        self.test_objects: List = []
+        set_up_reviewables(self)
+
     def test_init(self):
-        pass
+        for author in self.test_authors:
+            for item in self.test_objects:
+                with self.subTest('typical', author=author, item=item):
+                    rating = Rating(author=author, rating_value=3, item_reviewed=item)
+                with self.subTest('boundary', author=author, item=item):
+                    rating = Rating(author=author, rating_value=5, item_reviewed=item)
+                    rating = Rating(author=author, rating_value=1, item_reviewed=item)
+                with self.subTest('failing', author=author, item=item):
+                    with self.assertRaises(ValueError):
+                        rating = Rating(author=author, rating_value=6, item_reviewed=item)
+                    with self.assertRaises(ValueError):
+                        rating = Rating(author=author, rating_value=0, item_reviewed=item)
 
     def test_item_reviewed_getter(self):
-        pass
-
-    def test_item_reviewed_setter(self):
-        pass
+        # TODO: Fix duplicate code
+        for item in self.test_objects:
+            with self.subTest(item=item.__class__.__qualname__):
+                self.assertIs(
+                    getattr(item.aggregate_rating,
+                            item.__class__.__name__.lower()), item)
+                self.assertIs(item.aggregate_rating.item_reviewed, item)
 
 
 class TestKoocookUserModel(djangotest.TestCase):
