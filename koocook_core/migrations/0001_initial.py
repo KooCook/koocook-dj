@@ -81,8 +81,8 @@ class Migration(migrations.Migration):
                 ('prep_time', models.DurationField(blank=True, null=True)),
                 ('cook_time', models.DurationField(null=True)),
                 ('recipe_instructions', django.contrib.postgres.fields.ArrayField(base_field=models.TextField(), size=None)),
-                ('recipe_yield', koocook_core.support.quantity.QuantityField(max_length=50, null=True)),
                 ('aggregate_rating', models.OneToOneField(blank=True, default=koocook_core.models.review.AggregateRating.create_empty, on_delete=django.db.models.deletion.PROTECT, to='koocook_core.AggregateRating')),
+                ('recipe_yield', koocook_core.support.quantity.QuantityField(null=True)),
                 ('author', models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, to='koocook_core.Author')),
             ],
         ),
@@ -105,7 +105,7 @@ class Migration(migrations.Migration):
             name='RecipeIngredient',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('quantity', koocook_core.support.quantity.QuantityField(max_length=50)),
+                ('quantity', koocook_core.support.quantity.QuantityField()),
                 ('meta', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='koocook_core.MetaIngredient')),
                 ('recipe', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='koocook_core.Recipe')),
                 ('substitute_set', models.ManyToManyField(blank=True, related_name='_recipeingredient_substitute_set_+', to='koocook_core.RecipeIngredient')),
@@ -141,7 +141,7 @@ class Migration(migrations.Migration):
                 ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
             options={
-                'db_table': 'koocook_core_koocookuser',
+                'db_table': 'koocook_user',
             },
             bases=(koocook_core.models.base.SerialisableModel, models.Model),
         ),
