@@ -27,7 +27,7 @@ class KoocookUser(SerialisableModel, models.Model):
     followers = models.ManyToManyField('self')
 
     class Meta:
-        db_table = 'koocook_core_koocookuser'
+        db_table = 'koocook_core_koocook_user'
 
     def follow(self, user: 'KoocookUser'):
         pass
