@@ -25,6 +25,13 @@ jobs:
            - ./venv
          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
       - run:
+          name: Create database
+          command: |
+            psql -U $DATABASE_USERNAME
+            $DATABASE_PASSWORD
+            CREATE DATABASE test_main;
+            exit
+      - run:
           name: Migrating models to the database
           command: |
             python3 manage.py migrate
