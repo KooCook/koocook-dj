@@ -45,16 +45,17 @@ class AggregateRating(models.Model):
         """
         if rating.item_reviewed != self.item_reviewed:
             raise ValidationError(_(
-                f'incompatible item_reviewed: '
-                f"'{rating.item_reviewed}' != '{self.item_reviewed}'"))
+            raise ValidationError(
+                _(f'incompatible item_reviewed: '
+                  f"'{rating.item_reviewed}' != '{self.item_reviewed}'"))
         if rating.best_rating != self.best_rating:
-            raise ValidationError(_(
-                f'incompatible best_rating: '
-                f"'{rating.best_rating}' != '{self.best_rating}'"))
+            raise ValidationError(
+                _(f'incompatible best_rating: '
+                  f"'{rating.best_rating}' != '{self.best_rating}'"))
         if rating.worst_rating != self.worst_rating:
-            raise ValidationError(_(
-                f'incompatible worst_rating: '
-                f"'{rating.worst_rating}' != '{self.worst_rating}'"))
+            raise ValidationError(
+                _(f'incompatible worst_rating: '
+                  f"'{rating.worst_rating}' != '{self.worst_rating}'"))
 
     def add_rating(self, rating: 'Rating'):
         """Adds a rating from an aggregate rating.
@@ -64,8 +65,10 @@ class AggregateRating(models.Model):
         """
         self.check_rating(rating)
         if rating.used:
-            raise ValidationError(_("rating is already tabulated somewhere, can't add"))
-        self.rating_value = _add_rating(self.rating_value, self.rating_count, rating.rating_value)
+            raise ValidationError(
+                _("rating is already tabulated somewhere, can't add"))
+        self.rating_value = _add_rating(self.rating_value, self.rating_count,
+                                        rating.rating_value)
         self.rating_count += 1
         self.save()
         assert not rating.used, "rating shouldn't have been used yet"
@@ -80,8 +83,11 @@ class AggregateRating(models.Model):
         """
         self.check_rating(rating)
         if not rating.used:
-            raise ValidationError(_("rating is not tabulated yet, can't remove"))
-        self.rating_value = _remove_rating(self.rating_value, self.rating_count, rating.rating_value)
+            raise ValidationError(
+                _("rating is not tabulated yet, can't remove"))
+        self.rating_value = _remove_rating(self.rating_value,
+                                           self.rating_count,
+                                           rating.rating_value)
         self.rating_count -= 1
         self.save()
         assert rating.used, "rating should have been used"
@@ -116,7 +122,7 @@ class Comment(models.Model):
         'koocook_core.Author',
         on_delete=models.PROTECT,
     )
-    date_published = models.DateTimeField()
+    date_published = models.DateTimeField(auto_now_add=True)
     body = models.TextField()
     aggregate_rating = models.OneToOneField(
         'koocook_core.AggregateRating',
@@ -142,24 +148,35 @@ class Comment(models.Model):
         blank=True,
     )
 
+    def __init__(self, *args, **kwargs):
+        item = kwargs.pop('item_reviewed', None)
+        if item:
+            assert not any(
+                k in kwargs
+                for k in ('review_recipe', 'reviewed_post', 'reviewed_comment')
+            ), "Don't specify both item reviewed and the actual item reviewed"
+            from koocook_core.models.recipe import Recipe
+            from koocook_core.models.post import Post
+            if isinstance(item, Recipe):
+                kwargs['reviewed_recipe'] = item
+            elif isinstance(item, Post):
+                kwargs['reviewed_post'] = item
+            elif isinstance(item, Comment):
+                kwargs['reviewed_comment'] = item
+            else:
+                raise TypeError(f'item_reviewed must be of the type Recipe, '
+                                f"Post or Comment not '{type(item)}'")
+        else:
+            count = list(k in kwargs
+                         for k in ('reviewed_recipe', 'reviewed_post',
+                                   'reviewed_comment')).count(True)
+            if count != 1:
+                raise ValueError(f'There must be 1 reviewed item, not {count}')
+        super().__init__(*args, **kwargs)
+
     @property
     def item_reviewed(self) -> Union['Recipe', 'Post', 'Comment', None]:
         return self.reviewed_recipe or self.reviewed_post or self.reviewed_comment
-
-    @item_reviewed.setter
-    def item_reviewed(self, obj: Union['Recipe', 'Post', 'Comment']):
-        from koocook_core.models.recipe import Recipe
-        from koocook_core.models.post import Post
-
-        if isinstance(obj, Recipe):
-            self.reviewed_recipe = obj
-        elif isinstance(obj, Post):
-            self.reviewed_post = obj
-        elif isinstance(obj, Comment):
-            self.reviewed_comment = obj
-        else:
-            raise TypeError(f'item_reviewed must be of the correct type '
-                            f"'{type(self.item_reviewed)}' not '{type(obj)}'")
 
 
 class Rating(models.Model):
