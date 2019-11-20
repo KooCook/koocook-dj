@@ -383,15 +383,15 @@ class TestRecipeModel(djangotest.TestCase):
         # monkey test should be enough for library code, you just have to be sure
         # the operation is add and not something else
         for unit in ('seconds', 'minutes', 'hours'):
-            for a, b in zip(utils.gen_ints(0, 100, 50),
-                            utils.gen_ints(0, 100, 50)):
+            for a, b in zip(utils.gen_ints(0, 1000, 100),
+                            utils.gen_ints(0, 1000, 100)):
                 with self.subTest(a=a, b=b, unit=unit):
                     recipe = Recipe(prep_time=td(**{unit: a}),
                                     cook_time=td(**{unit: b}))
                     self.assertEqual(recipe.total_time, td(**{unit: a + b}))
-        for a, b, c in zip(utils.gen_ints(0, 100, 30),
-                           utils.gen_ints(0, 100, 30),
-                           utils.gen_ints(0, 100, 30)):
+        for a, b, c in zip(utils.gen_ints(0, 1000, 100),
+                           utils.gen_ints(0, 1000, 100),
+                           utils.gen_ints(0, 1000, 100)):
             with self.subTest(a=a, b=b, unit=unit):
                 recipe = Recipe(prep_time=td(hours=a, minutes=b, seconds=c),
                                 cook_time=td(hours=b, minutes=c, seconds=a))
