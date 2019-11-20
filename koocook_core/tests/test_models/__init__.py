@@ -1,11 +1,13 @@
 import json
 from decimal import Decimal
-from typing import List
+from typing import List, Union
+import itertools
 
 from django import test as djangotest
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+import names
 
 from koocook_core import models as models_
 from koocook_core.models import *
@@ -14,30 +16,35 @@ from koocook_core.support.fraction import Fraction
 from koocook_core.tests import utils
 
 
-def set_up_reviewables(self) -> None:
-    author = Author.objects.create(name='Bobby Brown')
-    user = User.objects.create(email='alicewonder@gmail.com')
-    self.test_authors = [author, user.koocookuser.author]
-    self.test_objects = []
+def set_up_authors(n: int = 5) -> List[Author]:
+    test_authors = []
+    for _ in range(n):
+        test_authors.append(Author.objects.create(name=names.get_full_name()))
+        test_authors.append(
+            User.objects.create(
+                first_name=names.get_first_name(),
+                last_name=names.get_last_name()).koocookuser.author)
+    return test_authors
 
-    for author in self.test_authors:
-        recipe = Recipe.objects.create(author=author,
-                                       name='recipe name',
-                                       recipe_instructions=[])
+
+def set_up_reviewables(authors: List[Author]
+                       ) -> List[Union[Recipe, Post, Comment]]:
+    test_objects = []
+    for author in authors:
+        recipe = Recipe.objects.create(author=author, name='recipe name')
         post = Post.objects.create(author=author)
-        self.test_objects.extend([recipe, post])
-
-    for author in self.test_authors:
-        for obj in self.test_objects.copy():
+        test_objects.extend([recipe, post])
+    for author in authors:
+        for obj in test_objects.copy():
             comment = Comment.objects.create(author=author, item_reviewed=obj)
-            self.test_objects.append(comment)
+            test_objects.append(comment)
+    return test_objects
 
 
 class TestAggregateRatingModel(djangotest.TestCase):
     def setUp(self) -> None:
-        self.test_authors: List = []
-        self.test_objects: List = []
-        set_up_reviewables(self)
+        self.test_authors = set_up_authors()
+        self.test_objects = set_up_reviewables(self.test_authors)
 
     def clean_up_aggregate_rating(self):
         """Resets the state of aggregate ratings, for testing only."""
@@ -68,10 +75,10 @@ class TestAggregateRatingModel(djangotest.TestCase):
         with self.subTest('type'):
             self.assertIsInstance(aggr, AggregateRating)
         for attr, value in (
-                ('best_rating', 5),
-                ('worst_rating', 1),
-                ('rating_value', 0),
-                ('rating_count', 0),
+            ('best_rating', 5),
+            ('worst_rating', 1),
+            ('rating_value', 0),
+            ('rating_count', 0),
         ):
             with self.subTest('values', attr=attr):
                 self.assertEqual(getattr(aggr, attr), value)
@@ -182,10 +189,10 @@ class TestAuthorModel(djangotest.TestCase):
 
     def test_str(self):
         for expected_str, user in (
-                ('Alice Merryweather', self.test_user),
-                ('Bob', User.objects.create(first_name='Bob', username='Bobby')),
-                ('C123', User.objects.create(username='C123')),
-                ('Dylan', User.objects.create(last_name='Dylan', username='DD')),
+            ('Alice Merryweather', self.test_user),
+            ('Bob', User.objects.create(first_name='Bob', username='Bobby')),
+            ('C123', User.objects.create(username='C123')),
+            ('Dylan', User.objects.create(last_name='Dylan', username='DD')),
         ):
             with self.subTest('author with user',
                               first_name=user.first_name,
@@ -323,34 +330,34 @@ class TestRecipeModel(djangotest.TestCase):
 
     def test_fields_setting(self):
         recipe = Recipe()
-        for field, attr, value in (('name', 'max_length', 255),):
+        for field, attr, value in (('name', 'max_length', 255), ):
             with self.subTest(field=field, attr=attr):
                 self.assertEqual(getattr(recipe._meta.get_field(field), attr),
                                  value)
         for field, attr in (
-                ('image', 'null'),
-                ('image', 'blank'),
-                ('video', 'null'),
-                ('video', 'blank'),
-                ('author', 'null'),
-                ('date_published', 'null'),
-                ('prep_time', 'null'),
-                ('cook_time', 'null'),
-                ('recipe_yield', 'null'),
-                ('tag_set', 'blank'),
-                ('aggregate_rating', 'blank'),
+            ('image', 'null'),
+            ('image', 'blank'),
+            ('video', 'null'),
+            ('video', 'blank'),
+            ('author', 'null'),
+            ('date_published', 'null'),
+            ('prep_time', 'null'),
+            ('cook_time', 'null'),
+            ('recipe_yield', 'null'),
+            ('tag_set', 'blank'),
+            ('aggregate_rating', 'blank'),
         ):
             with self.subTest(field=field, attr=attr):
                 self.assertTrue(getattr(recipe._meta.get_field(field), attr))
         for field, attr in (
-                ('name', 'null'),
-                ('name', 'blank'),
-                ('author', 'blank'),
-                ('prep_time', 'blank'),
-                ('cook_time', 'blank'),
-                ('recipe_instructions', 'null'),
-                ('recipe_instructions', 'blank'),
-                ('recipe_yield', 'blank'),
+            ('name', 'null'),
+            ('name', 'blank'),
+            ('author', 'blank'),
+            ('prep_time', 'blank'),
+            ('cook_time', 'blank'),
+            ('recipe_instructions', 'null'),
+            ('recipe_instructions', 'blank'),
+            ('recipe_yield', 'blank'),
         ):
             with self.subTest(field=field, attr=attr):
                 self.assertFalse(getattr(recipe._meta.get_field(field), attr))
@@ -463,12 +470,12 @@ class TestRecipeIngredientModel(djangotest.TestCase):
         with self.subTest(field='substitute_set', attr='blank'):
             self.assertTrue(ri._meta.get_field('substitute_set').blank)
         for field, attr in (
-                ('quantity', 'null'),
-                ('quantity', 'blank'),
-                ('meta', 'null'),
-                ('meta', 'blank'),
-                ('recipe', 'null'),
-                ('recipe', 'blank'),
+            ('quantity', 'null'),
+            ('quantity', 'blank'),
+            ('meta', 'null'),
+            ('meta', 'blank'),
+            ('recipe', 'null'),
+            ('recipe', 'blank'),
         ):
             with self.subTest(field=field, attr=attr):
                 self.assertFalse(getattr(ri._meta.get_field(field), attr))
@@ -485,9 +492,8 @@ class TestRecipeIngredientModel(djangotest.TestCase):
 
 class TestRatingModel(djangotest.TestCase):
     def setUp(self) -> None:
-        self.test_authors: List = []
-        self.test_objects: List = []
-        set_up_reviewables(self)
+        self.test_authors = set_up_authors()
+        self.test_objects = set_up_reviewables(self.test_authors)
 
     def test_init(self):
         for author in self.test_authors:
@@ -524,17 +530,47 @@ class TestRatingModel(djangotest.TestCase):
 
 
 class TestKoocookUserModel(djangotest.TestCase):
-    def test_init(self):
-        pass
+    def setUp(self) -> None:
+        self.test_kc_users = [
+            User.objects.create(first_name=names.get_first_name(),
+                                last_name=names.get_last_name(),
+                                username=names.get_full_name()).koocookuser
+            for _ in range(10)
+        ]
+
+    def clean_up_followings(self):
+        for kc in self.test_kc_users:
+            kc.followers.clear()
+            kc.following.clear()
+            kc.save()
+
+    def test_fields_default(self):
+        kc = KoocookUser()
+        self.assertEqual(kc.preferences, {})
+        self.assertEqual(kc.user_settings, {})
 
     def test_db_table_name(self):
-        pass
+        kc = KoocookUser()
+        self.assertEqual(kc._meta.db_table, 'koocook_core_koocook_user')
 
     def test_follow(self):
-        pass
+        for follower, followee in zip(*itertools.tee(self.test_kc_users, 2)):
+            follower.follow(followee)
+            with self.subTest(follower=follower, followee=followee):
+                self.assertIn(follower, followee.followers.all())
+            with self.subTest(follower=follower, followee=followee):
+                self.assertIn(followee, follower.following.all())
+        self.clean_up_followings()
 
     def test_unfollow(self):
-        pass
+        for follower, followee in zip(*itertools.tee(self.test_kc_users, 2)):
+            follower.follow(followee)
+            follower.unfollow(followee)
+            with self.subTest(follower=follower, followee=followee):
+                self.assertNotIn(follower, followee.followers.all())
+            with self.subTest(follower=follower, followee=followee):
+                self.assertNotIn(followee, follower.following.all())
+        self.clean_up_followings()
 
     def test_name_getter(self):
         pass
@@ -552,8 +588,8 @@ class TestKoocookUserModel(djangotest.TestCase):
 class TestQuantityField(djangotest.TestCase):
     def test_quantity_field_max_length(self):
         for model, field in (
-                ('RecipeIngredient', 'quantity'),
-                ('Recipe', 'recipe_yield'),
+            ('RecipeIngredient', 'quantity'),
+            ('Recipe', 'recipe_yield'),
         ):
             with self.subTest(model=model, field=field):
                 m = getattr(models_, model)()
