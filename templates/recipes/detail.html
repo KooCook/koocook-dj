@@ -1,6 +1,4 @@
 {% extends 'base/recipes.html' %}
-{% load widget_tweaks %}
-
 {% block no_hero %}{% endblock %}
 {% block content_page_name %}{{ object.name }}{% endblock %}
 {% block page_content %}
@@ -126,7 +124,6 @@
                     Ingredients
                   </h3>
                   <div class="content">
-                  {% if ingredients|length > 0 %}
                     <ul style="list-style-type: none">
 {#                      <li>1⅓#}
 {#                        <div class="dropdown">#}
@@ -264,14 +261,10 @@
 {#                          <i class="fas fa-question fa-xs" aria-hidden="true"></i>#}
 {#                        </sup>#}
 {#                      </li>#}
-
                         {% for ingredient in ingredients %}
                       <li>{{ ingredient.quantity.number }} {{ ingredient.quantity.unit }} {{ ingredient.name }}</li>
                 {% endfor %}
                     </ul>
-                  {% else %}
-                      No ingredients found.
-                  {% endif %}
                   </div>
                 </div>
               </div>
@@ -319,79 +312,7 @@
         <h2 class="title">
           Comments
         </h2>
-
-{#        <article class="media">#}
-{#          <figure class="media-left">#}
-{#            <p class="image is-64x64">#}
-{#              <img src="../assets/img/placeholders/128x128.png">#}
-{#            </p>#}
-{#          </figure>#}
-{#          <div class="media-content">#}
-{#            <div class="content">#}
-{#              <p>#}
-{#                <strong>Barbara Middleton</strong>#}
-{#                <br>#}
-{#                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis porta eros lacus, nec ultricies elit blandit#}
-{#                non. Suspendisse pellentesque mauris sit amet dolor blandit rutrum. <s>Nunc in tempus turpis.</s>#}
-{#                <br>#}
-{#                <small><a>Like</a> · <a>Reply</a> · 3 hrs</small>#}
-{#              </p>#}
-{#            </div>#}
-{##}
-{#            <article class="media">#}
-{#              <figure class="media-left">#}
-{#                <p class="image is-48x48">#}
-{#                  <img src="../assets/img/placeholders/96x96.png">#}
-{#                </p>#}
-{#              </figure>#}
-{#              <div class="media-content">#}
-{#                <div class="content">#}
-{#                  <p>#}
-{#                    <strong>Sean Brown</strong>#}
-{#                    <br>#}
-{#                    Donec sollicitudin urna eget eros malesuada sagittis. Pellentesque habitant morbi tristique senectus#}
-{#                    et#}
-{#                    netus et malesuada fames ac turpis egestas. Aliquam blandit nisl a nulla sagittis, a lobortis leo#}
-{#                    feugiat.#}
-{#                  </p>#}
-{#                  <blockquote>#}
-{#                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis porta eros lacus, nec ultricies elit#}
-{#                    blandit non.#}
-{#                  </blockquote>#}
-{#                  <p>#}
-{#                    Morbi vitae diam et purus tincidunt porttitor vel vitae augue. Praesent malesuada metus sed pharetra#}
-{#                    euismod. Cras tellus odio, tincidunt iaculis diam non, porta aliquet tortor.#}
-{#                    <br>#}
-{#                    <small>5 <a>Like</a> · <a>Reply</a> · 2 hrs</small>#}
-{#                  </p>#}
-{#                </div>#}
-{#              </div>#}
-{#            </article>#}
-{##}
-{#            <article class="media">#}
-{#              <figure class="media-left">#}
-{#                <p class="image is-48x48">#}
-{#                  <img src="../assets/img/placeholders/96x96.png">#}
-{#                </p>#}
-{#              </figure>#}
-{#              <div class="media-content">#}
-{#                <div class="content">#}
-{#                  <p>#}
-{#                    <strong>Kayli Eunice </strong>#}
-{#                    <br>#}
-{#                    Sed convallis scelerisque mauris, non pulvinar nunc mattis vel. Maecenas varius felis sit amet magna#}
-{#                    vestibulum euismod malesuada cursus libero. Vestibulum ante ipsum primis in faucibus orci luctus et#}
-{#                    ultrices posuere cubilia Curae; Phasellus lacinia non nisl id feugiat.#}
-{#                    <br>#}
-{#                    <small>12 <a>Like</a> · <a>Reply</a> · 2 hrs</small>#}
-{#                  </p>#}
-{#                </div>#}
-{#              </div>#}
-{#            </article>#}
-{#          </div>#}
-{#        </article>#}
-          {% for comment in object.comment_set.all %}
-
+  
         <article class="media">
           <figure class="media-left">
             <p class="image is-64x64">
@@ -401,39 +322,105 @@
           <div class="media-content">
             <div class="content">
               <p>
-                <strong>{{ comment.author }}</strong>
-                <br>{{ comment.body }}
+                <strong>Barbara Middleton</strong>
                 <br>
-                <small><a>Like</a> · <a>Reply</a> · 31 mins</small>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis porta eros lacus, nec ultricies elit blandit
+                non. Suspendisse pellentesque mauris sit amet dolor blandit rutrum. <s>Nunc in tempus turpis.</s>
+                <br>
+                <small><a>Like</a> · <a>Reply</a> · 3 hrs</small>
               </p>
             </div>
+  
+            <article class="media">
+              <figure class="media-left">
+                <p class="image is-48x48">
+                  <img src="../assets/img/placeholders/96x96.png">
+                </p>
+              </figure>
+              <div class="media-content">
+                <div class="content">
+                  <p>
+                    <strong>Sean Brown</strong>
+                    <br>
+                    Donec sollicitudin urna eget eros malesuada sagittis. Pellentesque habitant morbi tristique senectus
+                    et
+                    netus et malesuada fames ac turpis egestas. Aliquam blandit nisl a nulla sagittis, a lobortis leo
+                    feugiat.
+                  </p>
+                  <blockquote>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis porta eros lacus, nec ultricies elit
+                    blandit non.
+                  </blockquote>
+                  <p>
+                    Morbi vitae diam et purus tincidunt porttitor vel vitae augue. Praesent malesuada metus sed pharetra
+                    euismod. Cras tellus odio, tincidunt iaculis diam non, porta aliquet tortor.
+                    <br>
+                    <small>5 <a>Like</a> · <a>Reply</a> · 2 hrs</small>
+                  </p>
+                </div>
+              </div>
+            </article>
+  
+            <article class="media">
+              <figure class="media-left">
+                <p class="image is-48x48">
+                  <img src="../assets/img/placeholders/96x96.png">
+                </p>
+              </figure>
+              <div class="media-content">
+                <div class="content">
+                  <p>
+                    <strong>Kayli Eunice </strong>
+                    <br>
+                    Sed convallis scelerisque mauris, non pulvinar nunc mattis vel. Maecenas varius felis sit amet magna
+                    vestibulum euismod malesuada cursus libero. Vestibulum ante ipsum primis in faucibus orci luctus et
+                    ultrices posuere cubilia Curae; Phasellus lacinia non nisl id feugiat.
+                    <br>
+                    <small>12 <a>Like</a> · <a>Reply</a> · 2 hrs</small>
+                  </p>
+                </div>
+              </div>
+            </article>
           </div>
         </article>
-        {% endfor %}
         <article class="media">
           <figure class="media-left">
             <p class="image is-64x64">
               <img src="../assets/img/placeholders/128x128.png">
             </p>
           </figure>
-          <div class="media-content" id="comments">
-              <form method="post" novalidate action="{{ request.path }}">
-                  {% csrf_token %}
-                  What's on <strong>{{ object.author.name }}</strong>'s mind about {{ object.name }}?
-                <div class="field">
-                  <p class="control">
-                      {{ form.body|add_class:"textarea" }}
-                  </p>
-                </div>
-                <div class="field">
-                  <p class="control">
-                    <button class="button is-primary" type="submit">Post comment</button>
-                  </p>
-                </div>
-              </form>
+          <div class="media-content">
+            <div class="content">
+              <p>
+                <strong>John Smith</strong>
+                <br>
+                <strong>The pancakes were so <em>perfectly</em> fluffy!</strong> I put some <em>fresh</em> figs and
+                blueberries on top.
+                <br>
+                <small><a>Like</a> · <a>Reply</a> · 31 mins</small>
+              </p>
+            </div>
           </div>
         </article>
-
+        <article class="media">
+          <figure class="media-left">
+            <p class="image is-64x64">
+              <img src="../assets/img/placeholders/128x128.png">
+            </p>
+          </figure>
+          <div class="media-content">
+            <div class="field">
+              <p class="control">
+                <textarea class="textarea" placeholder="Add a comment..."></textarea>
+              </p>
+            </div>
+            <div class="field">
+              <p class="control">
+                <button class="button is-primary">Post comment</button>
+              </p>
+            </div>
+          </div>
+        </article>
       </div>
     </section>  
 {% endblock %}
