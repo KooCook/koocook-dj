@@ -417,6 +417,11 @@ class TestTagLabelModel(djangotest.TestCase):
         with self.subTest('duplicates'):
             with self.assertRaises(ValueError):
                 tag = Tag.objects.create(name='French', label=label)
+            try:
+                tag = Tag.objects.create(name='Chinese', label=label)
+            except Exception as e:
+                raise self.failureException(
+                    'unexpected exception raised') from e
 
     def test_fields_settings(self):
         tag = Tag()
