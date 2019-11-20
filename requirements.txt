@@ -1,5 +1,4 @@
 Django>=2.2
-numpy
 social-auth-app-django==3.1.0
 social-auth-core==3.2.0
 psycopg2-binary==2.8.4
