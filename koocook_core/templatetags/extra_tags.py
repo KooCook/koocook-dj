@@ -25,6 +25,30 @@ def minutes(seconds):
         return ''
 
 
+@register.filter(name='to_h_m')
+def print_time(seconds):
+    if seconds == 0:
+        return '-'
+
+    result = f''
+    if seconds >= 3600:
+        hour = seconds // 3600
+        seconds %= 3600
+    else:
+        hour = 0
+
+    if seconds >= 60:
+        minute = seconds // 60
+    else:
+        minute = 1
+
+    if hour >= 1:
+        result += f'{hour} H'
+    if minute >= 1:
+        result += f'{minute} M'
+    return result
+
+
 @register.filter
 def to_int(value):
     return int(value)
