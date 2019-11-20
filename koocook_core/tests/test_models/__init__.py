@@ -266,7 +266,21 @@ class TestPostModel(djangotest.TestCase):
         user = User.objects.create(email='alicewonder@gmail.com')
         self.test_authors = [author, user.koocookuser.author]
 
+    def test_fields_default(self):
+        for author in self.test_authors:
+            post = Post.objects.create(author=author)
+            with self.subTest('aggregate rating', author=author):
+                aggr = post.aggregate_rating
+                self.assertEqual(aggr.rating_count, 0)
+                self.assertEqual(aggr.rating_value, 0)
+                self.assertIs(aggr.post, post)
+            with self.subTest('date published', autor=author):
+                now = timezone.now()
+                self.assertLess(now - post.date_published, timezone.timedelta(seconds=1))
+                self.assertGreaterEqual(now - post.date_published, timezone.timedelta(0))
+
     def test_init(self):
+        # TODO: Test common actual posts
         for author in self.test_authors:
             with self.subTest('creation', author=author):
                 try:
@@ -274,15 +288,6 @@ class TestPostModel(djangotest.TestCase):
                 except Exception as e:
                     raise self.failureException(
                         'unexpected exception raised') from e
-            with self.subTest('date published'):
-                now = timezone.now()
-                self.assertLess(now - post.date_published, timezone.timedelta(seconds=1))
-                self.assertGreaterEqual(now - post.date_published, 0)
-            with self.subTest('aggregate rating', autor=author):
-                aggr = post.aggregate_rating
-                self.assertEqual(aggr.rating_count, 0)
-                self.assertEqual(aggr.rating_value, 0)
-                self.assertIs(aggr.post, post)
 
     def test_as_dict(self):
         pass
@@ -292,8 +297,69 @@ class TestPostModel(djangotest.TestCase):
 
 
 class TestRecipeModel(djangotest.TestCase):
+    def setUp(self) -> None:
+        author = Author.objects.create(name='Bobby Brown')
+        user = User.objects.create(email='alicewonder@gmail.com')
+        self.test_authors = [author, user.koocookuser.author]
+
+    def test_fields_setting(self):
+        recipe = Recipe()
+        for field, attr, value in (
+                ('name', 'max_length', 255),
+        ):
+            with self.subTest(field=field, attr=attr):
+                self.assertEqual(getattr(recipe._meta.get_field(field), attr), value)
+        for field, attr in (
+                ('image', 'null'),
+                ('image', 'blank'),
+                ('video', 'null'),
+                ('video', 'blank'),
+                ('author', 'null'),
+                ('date_published', 'null'),
+                ('prep_time', 'null'),
+                ('cook_time', 'null'),
+                ('recipe_yield', 'null'),
+                ('tag_set', 'blank'),
+                ('aggregate_rating', 'blank'),
+        ):
+            with self.subTest(field=field, attr=attr):
+                self.assertTrue(getattr(recipe._meta.get_field(field), attr))
+        for field, attr in (
+                ('name', 'null'),
+                ('name', 'blank'),
+                ('author', 'blank'),
+                ('date_published', 'blank'),
+                ('prep_time', 'blank'),
+                ('cook_time', 'blank'),
+                ('recipe_instructions', 'null'),
+                ('recipe_instructions', 'blank'),
+                ('recipe_yield', 'blank'),
+        ):
+            with self.subTest(field=field, attr=attr):
+                self.assertFalse(getattr(recipe._meta.get_field(field), attr))
+
+    def test_fields_default(self):
+        for author in self.test_authors:
+            name = 'Buttermilk Pancakes'
+            recipe = Recipe.objects.create(author=author, name=name)
+            with self.subTest(field='aggregate_rating', author=author, name=name):
+                aggr = recipe.aggregate_rating
+                self.assertEqual(aggr.rating_count, 0)
+                self.assertEqual(aggr.rating_value, 0)
+                self.assertIs(aggr.recipe, recipe)
+            with self.subTest(field='date_published', autor=author, name=name):
+                now = timezone.now()
+                self.assertLess(now - recipe.date_published, timezone.timedelta(seconds=1))
+                self.assertGreaterEqual(now - recipe.date_published, timezone.timedelta(0))
+            with self.subTest(field='recipe_instructions', autor=author, name=name):
+                # use Equal instead of ListEqual for possible changes in data structure
+                self.assertEqual(recipe.recipe_instructions, [])
+
     def test_init(self):
-        pass
+        # TODO: Test common actual recipes
+        for author in self.test_authors:
+            with self.subTest():
+                Recipe.objects.create(name='Buttermilk Pancakes', author=author)
 
     def test_total_time(self):
         pass
@@ -305,6 +371,7 @@ class TestTagLabelModel(djangotest.TestCase):
 
     def test_field_normal_names_ok(self):
         pass
+
 
     def test_field_label_can_be_null(self):
         pass
