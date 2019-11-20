@@ -401,21 +401,37 @@ class TestRecipeModel(djangotest.TestCase):
 
 class TestTagLabelModel(djangotest.TestCase):
     def test_init(self):
-        pass
+        # TODO: add more cases
+        with self.subTest('common values'):
+            label = TagLabel.objects.create(name='cuisine')
+            tag = Tag.objects.create(name='French', label=label)
+        with self.subTest('duplicates'):
+            with self.assertRaises(ValueError):
+                tag = Tag.objects.create(name='French', label=label)
 
-    def test_field_normal_names_ok(self):
-        pass
-
-    def test_field_label_can_be_null(self):
-        pass
+    def test_fields_settings(self):
+        tag = Tag()
+        with self.subTest(field='name', attr='max_length'):
+            self.assertEqual(tag._meta.get_field('name').max_length, 50)
+        with self.subTest(field='label', attr='null'):
+            self.assertTrue(tag._meta.get_field('label').null)
+        with self.subTest(field='label', attr='blank'):
+            self.assertTrue(tag._meta.get_field('label').blank)
 
 
 class TestTagModel(djangotest.TestCase):
     def test_init(self):
-        pass
+        # TODO: add more cases
+        with self.subTest('common values'):
+            label = TagLabel.objects.create(name='cuisine')
+        with self.subTest('duplicates'):
+            with self.assertRaises(ValueError):
+                label = TagLabel.objects.create(name='cuisine')
 
-    def test_field_normal_names_ok(self):
-        pass
+    def test_fields_settings(self):
+        label = TagLabel()
+        with self.subTest(field='name', attr='max_length'):
+            self.assertEqual(label._meta.get_field('name').max_length, 50)
 
 
 class TestRecipeIngredientModel(djangotest.TestCase):
