@@ -23,11 +23,6 @@ class Post(SerialisableModel, models.Model):
         default=AggregateRating.create_empty,
     )
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if not hasattr(self, 'aggregate_rating'):
-            self.aggregate_rating = AggregateRating.create_empty()
-
     @property
     def processed_body(self):
         return self.process_text_format(self.body)

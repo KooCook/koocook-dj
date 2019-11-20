@@ -229,8 +229,7 @@ class TestCommentModel(djangotest.TestCase):
 
     def test_init(self):
         recipe = Recipe.objects.create(author=self.test_author,
-                                       name='',
-                                       recipe_instructions=[])
+                                       name='')
         post = Post.objects.create(author=self.test_author)
         for name in ('Recipe', 'Post', 'Comment'):
             item = locals()[name.lower()]
@@ -244,8 +243,7 @@ class TestCommentModel(djangotest.TestCase):
 
     def test_item_reviewed_getter(self):
         recipe = Recipe.objects.create(author=self.test_author,
-                                       name='',
-                                       recipe_instructions=[])
+                                       name='')
         post = Post.objects.create(author=self.test_author)
         for name in ('Recipe', 'Post', 'Comment'):
             item = locals()[name.lower()]
