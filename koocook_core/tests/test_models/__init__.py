@@ -38,7 +38,7 @@ class TestAggregateRatingModel(djangotest.TestCase):
             aggr.rating_count = 0
             aggr.save()
 
-    def test_field_settings(self):
+    def test_fields_settings(self):
         aggr = AggregateRating()
         with self.subTest(field='rating_value'):
             self.assertEqual(
@@ -47,7 +47,7 @@ class TestAggregateRatingModel(djangotest.TestCase):
             self.assertEqual(
                 aggr._meta.get_field('rating_value').max_digits, 13)
 
-    def test_init_default_fields(self):
+    def test_fields_default(self):
         aggr = AggregateRating()
         with self.subTest(field='best_rating'):
             self.assertEqual(aggr.best_rating, 5)
@@ -246,11 +246,17 @@ class TestCommentModel(djangotest.TestCase):
 
 
 class TestMetaIngredientModel(djangotest.TestCase):
-    def test_init(self):
-        pass
+    def test_fields_setting(self):
+        mi = MetaIngredient()
+        with self.subTest(field='name'):
+            self.assertEqual(mi._meta.get_field('name').max_length, 255)
+        with self.subTest(field='description'):
+            self.assertEqual(mi._meta.get_field('description').max_length, 255)
 
-    def test_field_nutrient(self):
-        pass
+    def test_fields_default(self):
+        mi = MetaIngredient()
+        with self.subTest(field='nutrient'):
+            self.assertEqual(mi.nutrient, {})
 
 
 class TestPostModel(djangotest.TestCase):
