@@ -44,7 +44,6 @@ class AggregateRating(models.Model):
             ValidationError: When `rating` is not valid
         """
         if rating.item_reviewed != self.item_reviewed:
-            raise ValidationError(_(
             raise ValidationError(
                 _(f'incompatible item_reviewed: '
                   f"'{rating.item_reviewed}' != '{self.item_reviewed}'"))
