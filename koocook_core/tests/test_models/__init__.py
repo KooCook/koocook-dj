@@ -441,8 +441,6 @@ class TestRecipeIngredientModel(djangotest.TestCase):
 
     def test_fields_settings(self):
         ri = RecipeIngredient()
-        with self.subTest(field='quantity', attr='max_length'):
-            self.assertEqual(ri._meta.get_field('quantity').max_length, 50)
         with self.subTest(field='substitute_set', attr='blank'):
             self.assertTrue(ri._meta.get_field('substitute_set').blank)
         for field, attr in (
