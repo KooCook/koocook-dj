@@ -48,48 +48,31 @@
                         <div class="level-item has-text-centered">
                             <div>
                                 <p class="heading">Total Time</p>
-                                {% if recipe.total_time.seconds > 0 %}
-                                    {% if recipe.total_time.seconds >= 60 %}
-                                        {% if recipe.total_time.seconds >= 3600 %}
-                                            <p class="title">
-                                                {{ recipe.total_time.seconds|hours }}
-                                                {{ recipe.total_time.seconds|minutes }}
-                                            </p>
-                                        {% else %}
-                                            <p class="title">
-                                                {{ recipe.total_time.seconds|minutes }}
-                                            </p>
-                                        {% endif %}
-                                    {% else %}
-                                        <p class="title">1 M</p>
-                                    {% endif %}
+                            <p class="title">
+                               {% if object.total_time != '0:00:00' %}
+                                        {% if object.total_time.hours > 0 %}{{ object.total_time }} hour{% endif %}
+                                        {% if object.total_time.minutes > 0 %}{{ object.total_time.minutes }} min{% endif %}
+                                        {% if object.total_time.seconds > 0 %}{{ object.total_time.seconds }} second{{ object.prep_time.seconds|pluralize }}{% endif %}
                                 {% else %}
-                                    <p class="title">-</p>
+                                    N/A
                                 {% endif %}
+                            </p>
                             </div>
                         </div>
 
                         <div class="level-item has-text-centered">
                             <div>
                                 <p class="heading">Prep Time</p>
-                                {% if recipe.prep_time.seconds > 0 %}
-                                    {% if recipe.prep_time.seconds >= 60 %}
-                                        {% if recipe.prep_time.seconds >= 3600 %}
-                                            <p class="title">
-                                                {{ recipe.prep_time.seconds|hours }}
-                                                {{ recipe.prep_time.seconds|minutes }}
-                                            </p>
-                                        {% else %}
-                                            <p class="title">
-                                                {{ recipe.prep_time.seconds|minutes }}
-                                            </p>
-                                        {% endif %}
-                                    {% else %}
-                                        <p class="title">1 M</p>
-                                    {% endif %}
+                            <p class="title">
+                                {% if object.prep_time != '0:00:00' %}
+
+                                        {% if object.prep_time.hours > 0 %}{{ object.prep_time }} hour{% endif %}
+                                        {% if object.prep_time.minutes > 0 %}{{ object.prep_time.minutes }} min{% endif %}
+                                        {% if object.prep_time.seconds > 0 %}{{ object.prep_time.seconds }} second{{ object.prep_time.seconds|pluralize }}{% endif %}
                                 {% else %}
-                                    <p class="title">-</p>
+                                    N/A
                                 {% endif %}
+                            </p>
                             </div>
                         </div>
                     </nav>
@@ -107,7 +90,7 @@
                             <!-- skills -->
                             <progress
                                     class="level-item progress is-warning"
-                                    value="{{ recipe.prep_time.seconds|time_bar }}"
+                                    value="{{ object.prep_time.seconds|time_bar }}"
                                     max="6"
                                     style="border-radius: 0; height: 0.2rem"
                             ></progress>
@@ -119,24 +102,15 @@
                         <div class="level-item has-text-centered">
                             <div>
                                 <p class="heading">Cook Time</p>
-                                {% if recipe.cook_time.seconds > 0 %}
-                                    {% if recipe.cook_time.seconds >= 60 %}
-                                        {% if recipe.cook_time.seconds >= 3600 %}
-                                            <p class="title">
-                                                {{ recipe.cook_time.seconds|hours }}
-                                                {{ recipe.cook_time.seconds|minutes }}
-                                            </p>
-                                        {% else %}
-                                            <p class="title">
-                                                {{ recipe.cook_time.seconds|minutes }}
-                                            </p>
-                                        {% endif %}
-                                    {% else %}
-                                        <p class="title">1 M</p>
-                                    {% endif %}
+                                 <p class="title">
+                                {% if object.cook_time != '0:00:00' %}
+                                        {% if object.cook_time.hours > 0 %}{{ object.cook_time }} hour{% endif %}
+                                        {% if object.cook_time.minutes > 0 %}{{ object.cook_time.minutes }} min{% endif %}
+                                        {% if object.cook_time.seconds > 0 %}{{ object.cook_time.seconds }} second{{ object.prep_time.seconds|pluralize }}{% endif %}
                                 {% else %}
-                                    <p class="title">-</p>
+                                    N/A
                                 {% endif %}
+                            </p>
                             </div>
                         </div>
 

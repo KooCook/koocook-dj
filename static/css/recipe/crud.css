@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css?family=Merriweather:400,700&display=swap');
+
+body {
+    background-color: rgb(255, 253, 241);
+}
+
+.recipe-underlined-input {
+    padding-left: 0.25em;
+    background: transparent;
+    font-family: 'Merriweather', serif;
+    color: #618077;
+    box-shadow: none;
+    border-radius: 0;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-width: 1px;
+}
+
+.recipe-underlined-input:focus {
+   box-shadow: none;
+    border-bottom: none;
+}
+
+.recipe-underlined-input:-webkit-autofill,
+.recipe-underlined-input:-webkit-autofill:hover,
+.recipe-underlined-input:-webkit-autofill:focus {
+    -webkit-text-fill-color: #7c6d61;
+    -webkit-box-shadow: 0 0 0px 1000px #eeead3 inset;
+   background-color: #8F8073;
+}
+
+.recipe-underlined-input-field > .field-body >  .field > .control:after {
+    margin-top: -1px;
+    z-index: 8000 !important;
+    border-bottom: solid 2px #8F8073;
+    content: '';
+    display: block;
+    transform: scaleX(0);
+    transition: transform 250ms ease-in-out;
+}
+.recipe-underlined-input-field > .field-body >  .field > .control:focus-within:after { transform: scaleX(1); }
+
+.underlined-input-field:active {
+    box-shadow: none;
+    transform: scale(1);
+    transition: all 0.5s
+}
+
+.underlined-input:hover ~ .field-label label {
+  color:#5264AE;
+    transform: translateY(-14px) scale(0.8);
+}
