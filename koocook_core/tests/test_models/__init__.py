@@ -9,9 +9,9 @@ from django.utils import timezone
 
 from koocook_core import models as models_
 from koocook_core.models import *
-from koocook_core.tests import utils
-from koocook_core.support import Quantity, unit
+from koocook_core.support import Quantity
 from koocook_core.support.fraction import Fraction
+from koocook_core.tests import utils
 
 
 def set_up_reviewables(self) -> None:
@@ -29,8 +29,7 @@ def set_up_reviewables(self) -> None:
 
     for author in self.test_authors:
         for obj in self.test_objects.copy():
-            comment = Comment.objects.create(author=author,
-                                             item_reviewed=obj)
+            comment = Comment.objects.create(author=author, item_reviewed=obj)
             self.test_objects.append(comment)
 
 
@@ -69,10 +68,10 @@ class TestAggregateRatingModel(djangotest.TestCase):
         with self.subTest('type'):
             self.assertIsInstance(aggr, AggregateRating)
         for attr, value in (
-            ('best_rating', 5),
-            ('worst_rating', 1),
-            ('rating_value', 0),
-            ('rating_count', 0),
+                ('best_rating', 5),
+                ('worst_rating', 1),
+                ('rating_value', 0),
+                ('rating_count', 0),
         ):
             with self.subTest('values', attr=attr):
                 self.assertEqual(getattr(aggr, attr), value)
@@ -90,7 +89,9 @@ class TestAggregateRatingModel(djangotest.TestCase):
             for item in self.test_objects:
                 with self.subTest(author=author,
                                   item=item.__class__.__qualname__):
-                    rating = Rating(author=author, rating_value=5, item_reviewed=item)
+                    rating = Rating(author=author,
+                                    rating_value=5,
+                                    item_reviewed=item)
                     try:
                         item.aggregate_rating.check_rating(rating)
                     except Exception as e:
@@ -100,7 +101,9 @@ class TestAggregateRatingModel(djangotest.TestCase):
     def test_add_rating(self):
         for author in self.test_authors:
             for item in self.test_objects:
-                rating = Rating(author=author, rating_value=5, item_reviewed=item)
+                rating = Rating(author=author,
+                                rating_value=5,
+                                item_reviewed=item)
                 with self.subTest('from empty',
                                   author=author,
                                   item=item.__class__.__qualname__):
@@ -108,7 +111,9 @@ class TestAggregateRatingModel(djangotest.TestCase):
                     self.assertEqual(item.aggregate_rating.rating_count, 1)
                     self.assertEqual(item.aggregate_rating.rating_value, 5)
 
-                rating = Rating(author=author, rating_value=3, item_reviewed=item)
+                rating = Rating(author=author,
+                                rating_value=3,
+                                item_reviewed=item)
                 with self.subTest('add second',
                                   author=author,
                                   item=item.__class__.__qualname__):
@@ -177,10 +182,10 @@ class TestAuthorModel(djangotest.TestCase):
 
     def test_str(self):
         for expected_str, user in (
-            ('Alice Merryweather', self.test_user),
-            ('Bob', User.objects.create(first_name='Bob', username='Bobby')),
-            ('C123', User.objects.create(username='C123')),
-            ('Dylan', User.objects.create(last_name='Dylan', username='DD')),
+                ('Alice Merryweather', self.test_user),
+                ('Bob', User.objects.create(first_name='Bob', username='Bobby')),
+                ('C123', User.objects.create(username='C123')),
+                ('Dylan', User.objects.create(last_name='Dylan', username='DD')),
         ):
             with self.subTest('author with user',
                               first_name=user.first_name,
@@ -234,8 +239,7 @@ class TestCommentModel(djangotest.TestCase):
         self.test_author = Author.objects.create(name='Bobby Brown')
 
     def test_init(self):
-        recipe = Recipe.objects.create(author=self.test_author,
-                                       name='')
+        recipe = Recipe.objects.create(author=self.test_author, name='')
         post = Post.objects.create(author=self.test_author)
         for name in ('Recipe', 'Post', 'Comment'):
             item = locals()[name.lower()]
@@ -248,8 +252,7 @@ class TestCommentModel(djangotest.TestCase):
                         'unexpected exception raised') from e
 
     def test_item_reviewed_getter(self):
-        recipe = Recipe.objects.create(author=self.test_author,
-                                       name='')
+        recipe = Recipe.objects.create(author=self.test_author, name='')
         post = Post.objects.create(author=self.test_author)
         for name in ('Recipe', 'Post', 'Comment'):
             item = locals()[name.lower()]
@@ -319,35 +322,35 @@ class TestRecipeModel(djangotest.TestCase):
 
     def test_fields_setting(self):
         recipe = Recipe()
-        for field, attr, value in (('name', 'max_length', 255), ):
+        for field, attr, value in (('name', 'max_length', 255),):
             with self.subTest(field=field, attr=attr):
                 self.assertEqual(getattr(recipe._meta.get_field(field), attr),
                                  value)
         for field, attr in (
-            ('image', 'null'),
-            ('image', 'blank'),
-            ('video', 'null'),
-            ('video', 'blank'),
-            ('author', 'null'),
-            ('date_published', 'null'),
-            ('prep_time', 'null'),
-            ('cook_time', 'null'),
-            ('recipe_yield', 'null'),
-            ('tag_set', 'blank'),
-            ('aggregate_rating', 'blank'),
+                ('image', 'null'),
+                ('image', 'blank'),
+                ('video', 'null'),
+                ('video', 'blank'),
+                ('author', 'null'),
+                ('date_published', 'null'),
+                ('prep_time', 'null'),
+                ('cook_time', 'null'),
+                ('recipe_yield', 'null'),
+                ('tag_set', 'blank'),
+                ('aggregate_rating', 'blank'),
         ):
             with self.subTest(field=field, attr=attr):
                 self.assertTrue(getattr(recipe._meta.get_field(field), attr))
         for field, attr in (
-            ('name', 'null'),
-            ('name', 'blank'),
-            ('author', 'blank'),
-            ('date_published', 'blank'),
-            ('prep_time', 'blank'),
-            ('cook_time', 'blank'),
-            ('recipe_instructions', 'null'),
-            ('recipe_instructions', 'blank'),
-            ('recipe_yield', 'blank'),
+                ('name', 'null'),
+                ('name', 'blank'),
+                ('author', 'blank'),
+                ('date_published', 'blank'),
+                ('prep_time', 'blank'),
+                ('cook_time', 'blank'),
+                ('recipe_instructions', 'null'),
+                ('recipe_instructions', 'blank'),
+                ('recipe_yield', 'blank'),
         ):
             with self.subTest(field=field, attr=attr):
                 self.assertFalse(getattr(recipe._meta.get_field(field), attr))
@@ -446,7 +449,9 @@ class TestRecipeIngredientModel(djangotest.TestCase):
         quantity = Quantity(Fraction(1, 2), 'tbsp')
         mi = MetaIngredient.objects.create(name='')
         recipe = Recipe.objects.create(name='')
-        ri = RecipeIngredient.objects.create(quantity=quantity, meta=mi, recipe=recipe)
+        ri = RecipeIngredient.objects.create(quantity=quantity,
+                                             meta=mi,
+                                             recipe=recipe)
 
     def test_fields_settings(self):
         ri = RecipeIngredient()
@@ -483,15 +488,25 @@ class TestRatingModel(djangotest.TestCase):
         for author in self.test_authors:
             for item in self.test_objects:
                 with self.subTest('typical', author=author, item=item):
-                    rating = Rating(author=author, rating_value=3, item_reviewed=item)
+                    rating = Rating(author=author,
+                                    rating_value=3,
+                                    item_reviewed=item)
                 with self.subTest('boundary', author=author, item=item):
-                    rating = Rating(author=author, rating_value=5, item_reviewed=item)
-                    rating = Rating(author=author, rating_value=1, item_reviewed=item)
+                    rating = Rating(author=author,
+                                    rating_value=5,
+                                    item_reviewed=item)
+                    rating = Rating(author=author,
+                                    rating_value=1,
+                                    item_reviewed=item)
                 with self.subTest('failing', author=author, item=item):
                     with self.assertRaises(ValueError):
-                        rating = Rating(author=author, rating_value=6, item_reviewed=item)
+                        rating = Rating(author=author,
+                                        rating_value=6,
+                                        item_reviewed=item)
                     with self.assertRaises(ValueError):
-                        rating = Rating(author=author, rating_value=0, item_reviewed=item)
+                        rating = Rating(author=author,
+                                        rating_value=0,
+                                        item_reviewed=item)
 
     def test_item_reviewed_getter(self):
         # TODO: Fix duplicate code
@@ -532,8 +547,8 @@ class TestKoocookUserModel(djangotest.TestCase):
 class TestQuantityField(djangotest.TestCase):
     def test_quantity_field_max_length(self):
         for model, field in (
-            ('RecipeIngredient', 'quantity'),
-            ('Recipe', 'recipe_yield'),
+                ('RecipeIngredient', 'quantity'),
+                ('Recipe', 'recipe_yield'),
         ):
             with self.subTest(model=model, field=field):
                 m = getattr(models_, model)()
