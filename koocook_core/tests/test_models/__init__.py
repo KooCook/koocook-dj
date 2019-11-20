@@ -4,6 +4,7 @@ from decimal import Decimal
 from django import test as djangotest
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 from koocook_core import models as models_
 from koocook_core.models import *
@@ -273,7 +274,11 @@ class TestPostModel(djangotest.TestCase):
                 except Exception as e:
                     raise self.failureException(
                         'unexpected exception raised') from e
-            with self.subTest('initial aggregate rating', author=author):
+            with self.subTest('date published'):
+                now = timezone.now()
+                self.assertLess(now - post.date_published, timezone.timedelta(seconds=1))
+                self.assertGreaterEqual(now - post.date_published, 0)
+            with self.subTest('aggregate rating', autor=author):
                 aggr = post.aggregate_rating
                 self.assertEqual(aggr.rating_count, 0)
                 self.assertEqual(aggr.rating_value, 0)
