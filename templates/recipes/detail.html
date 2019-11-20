@@ -48,24 +48,7 @@
                         <div class="level-item has-text-centered">
                             <div>
                                 <p class="heading">Total Time</p>
-                                {% if recipe.total_time.seconds > 0 %}
-                                    {% if recipe.total_time.seconds >= 60 %}
-                                        {% if recipe.total_time.seconds >= 3600 %}
-                                            <p class="title">
-                                                {{ recipe.total_time.seconds|hours }}
-                                                {{ recipe.total_time.seconds|minutes }}
-                                            </p>
-                                        {% else %}
-                                            <p class="title">
-                                                {{ recipe.total_time.seconds|minutes }}
-                                            </p>
-                                        {% endif %}
-                                    {% else %}
-                                        <p class="title">1 M</p>
-                                    {% endif %}
-                                {% else %}
-                                    <p class="title">-</p>
-                                {% endif %}
+                                <p class="title">{{ recipe.total_time.seconds|to_h_m }}</p>
                             </div>
                         </div>
 
