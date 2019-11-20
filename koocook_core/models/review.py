@@ -186,6 +186,11 @@ class Rating(models.Model):
 
     def __init__(self, *args, **kwargs):
         kwargs = parse_kwargs_item_reviewed(kwargs)
+        if not kwargs.get('worst_rating', 1) <= \
+               kwargs['rating_value'] <= \
+               kwargs.get('best_rating', 5):
+            raise ValueError('`rating_value` must be between `best_rating` and '
+                             '`worst_rating`')
         super().__init__(*args, **kwargs)
 
     @property
@@ -212,9 +217,8 @@ def parse_kwargs_item_reviewed(kwargs: Dict[str, Any]) -> Dict[str, Any]:
             raise TypeError(f'item_reviewed must be of the type Recipe, '
                             f"Post or Comment not '{type(item)}'")
     else:
-        count = list(k in kwargs
-                     for k in ('reviewed_recipe', 'reviewed_post',
-                               'reviewed_comment')).count(True)
+        count = list(k in kwargs for k in ('reviewed_recipe', 'reviewed_post',
+                                           'reviewed_comment')).count(True)
         if count != 1:
             raise ValueError(f'There must be 1 reviewed item, not {count}')
     return kwargs
