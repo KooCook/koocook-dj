@@ -27,6 +27,7 @@ jobs:
       - run:
           name: Create database
           command: |
+            service postgresql start
             psql -U $DATABASE_USERNAME
             $DATABASE_PASSWORD
             CREATE DATABASE test_main;
