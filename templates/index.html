@@ -171,13 +171,15 @@
                         </div>
 
                         <div class="media-content">
-                            <p class="title is-4">{{ recipe.author }}</p>
+                            <p class="title is-4 is-marginless">
+                                <a href="{% url 'koocook_core:recipe' recipe.id %}" class="is-capitalized has-text-link">
+                                    {{ recipe.name }}
+                                </a>
+                            </p>
+                            <p class="title is-5 is-marginless">@{{ recipe.author.name }}</p>
                             {# <p><a href="#">profile</a></p> #}
                         </div>
                     </div>
-                    <a href="{% url 'koocook_core:recipe' recipe.id %}" class="button">
-                        {{ recipe.name }}
-                    </a>
                 </div>
             </div>
         </div>
