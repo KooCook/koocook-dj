@@ -186,14 +186,38 @@ class TestAuthorModel(djangotest.TestCase):
 
 
 class TestCommentModel(djangotest.TestCase):
+    def setUp(self) -> None:
+        self.test_user = User.objects.create(username='AliceWonder',
+                                             first_name='Alice',
+                                             last_name='Merryweather')
+        self.test_author = Author.objects.create(name='Bobby Brown')
+
     def test_init(self):
-        pass
+        recipe = Recipe.objects.create(author=self.test_author,
+                                       name='',
+                                       recipe_instructions=[])
+        post = Post.objects.create(author=self.test_author)
+        for name in ('Recipe', 'Post', 'Comment'):
+            item = locals()[name.lower()]
+            with self.subTest(item_reviewed=name):
+                try:
+                    comment = Comment.objects.create(author=self.test_author,
+                                                     item_reviewed=item)
+                except Exception as e:
+                    raise self.failureException(
+                        'unexpected exception raised') from e
 
     def test_item_reviewed_getter(self):
-        pass
-
-    def test_item_reviewed_setter(self):
-        pass
+        recipe = Recipe.objects.create(author=self.test_author,
+                                       name='',
+                                       recipe_instructions=[])
+        post = Post.objects.create(author=self.test_author)
+        for name in ('Recipe', 'Post', 'Comment'):
+            item = locals()[name.lower()]
+            with self.subTest(item_reviewed=name):
+                comment = Comment.objects.create(author=self.test_author,
+                                                 item_reviewed=item)
+                self.assertIs(comment.item_reviewed, item)
 
 
 class TestMetaIngredientModel(djangotest.TestCase):
