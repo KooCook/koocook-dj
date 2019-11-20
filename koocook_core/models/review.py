@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Any, Dict
 from decimal import Decimal
 
 from django.db import models
@@ -148,29 +148,7 @@ class Comment(models.Model):
     )
 
     def __init__(self, *args, **kwargs):
-        item = kwargs.pop('item_reviewed', None)
-        if item:
-            assert not any(
-                k in kwargs
-                for k in ('reviewed_recipe', 'reviewed_post', 'reviewed_comment')
-            ), "Don't specify both item reviewed and the actual item reviewed"
-            from koocook_core.models.recipe import Recipe
-            from koocook_core.models.post import Post
-            if isinstance(item, Recipe):
-                kwargs['reviewed_recipe'] = item
-            elif isinstance(item, Post):
-                kwargs['reviewed_post'] = item
-            elif isinstance(item, Comment):
-                kwargs['reviewed_comment'] = item
-            else:
-                raise TypeError(f'item_reviewed must be of the type Recipe, '
-                                f"Post or Comment not '{type(item)}'")
-        else:
-            count = list(k in kwargs
-                         for k in ('reviewed_recipe', 'reviewed_post',
-                                   'reviewed_comment')).count(True)
-            if count != 1:
-                raise ValueError(f'There must be 1 reviewed item, not {count}')
+        kwargs = parse_kwargs_item_reviewed(kwargs)
         super().__init__(*args, **kwargs)
 
     @property
@@ -207,31 +185,36 @@ class Rating(models.Model):
     used = models.BooleanField(default=False, blank=True)
 
     def __init__(self, *args, **kwargs):
-        item = kwargs.pop('item_reviewed', None)
-        if item:
-            assert not any(
-                k in kwargs
-                for k in ('reviewed_recipe', 'reviewed_post', 'reviewed_comment')
-            ), "Don't specify both item reviewed and the actual item reviewed"
-            from koocook_core.models.recipe import Recipe
-            from koocook_core.models.post import Post
-            if isinstance(item, Recipe):
-                kwargs['reviewed_recipe'] = item
-            elif isinstance(item, Post):
-                kwargs['reviewed_post'] = item
-            elif isinstance(item, Comment):
-                kwargs['reviewed_comment'] = item
-            else:
-                raise TypeError(f'item_reviewed must be of the type Recipe, '
-                                f"Post or Comment not '{type(item)}'")
-        else:
-            count = list(k in kwargs
-                         for k in ('reviewed_recipe', 'reviewed_post',
-                                   'reviewed_comment')).count(True)
-            if count != 1:
-                raise ValueError(f'There must be 1 reviewed item, not {count}')
+        kwargs = parse_kwargs_item_reviewed(kwargs)
         super().__init__(*args, **kwargs)
 
     @property
     def item_reviewed(self) -> Union['Recipe', 'Post', 'Comment', None]:
         return self.reviewed_recipe or self.reviewed_post or self.reviewed_comment
+
+
+def parse_kwargs_item_reviewed(kwargs: Dict[str, Any]) -> Dict[str, Any]:
+    item = kwargs.pop('item_reviewed', None)
+    if item:
+        assert not any(
+            k in kwargs
+            for k in ('reviewed_recipe', 'reviewed_post', 'reviewed_comment')
+        ), "Don't specify both item reviewed and the actual item reviewed"
+        from koocook_core.models.recipe import Recipe
+        from koocook_core.models.post import Post
+        if isinstance(item, Recipe):
+            kwargs['reviewed_recipe'] = item
+        elif isinstance(item, Post):
+            kwargs['reviewed_post'] = item
+        elif isinstance(item, Comment):
+            kwargs['reviewed_comment'] = item
+        else:
+            raise TypeError(f'item_reviewed must be of the type Recipe, '
+                            f"Post or Comment not '{type(item)}'")
+    else:
+        count = list(k in kwargs
+                     for k in ('reviewed_recipe', 'reviewed_post',
+                               'reviewed_comment')).count(True)
+        if count != 1:
+            raise ValueError(f'There must be 1 reviewed item, not {count}')
+    return kwargs
