@@ -355,6 +355,8 @@ class TestRecipeModel(djangotest.TestCase):
                 # use Equal instead of ListEqual for possible changes in data structure
                 self.assertEqual(recipe.recipe_instructions, [])
 
+    # TODO: Add test to validate fields (prep_time and cook_time must be postive, e.g.)
+
     def test_init(self):
         # TODO: Test common actual recipes
         for author in self.test_authors:
@@ -362,7 +364,18 @@ class TestRecipeModel(djangotest.TestCase):
                 Recipe.objects.create(name='Buttermilk Pancakes', author=author)
 
     def test_total_time(self):
-        pass
+        td = timezone.timedelta
+        # monkey test should be enough for library code, you just have to be sure
+        # the operation is add and not something else
+        for unit in ('seconds', 'minutes', 'hours'):
+            for a, b in zip(utils.gen_ints(0, 100, 50), utils.gen_ints(0, 100, 50)):
+                with self.subTest(a=a, b=b, unit=unit):
+                    recipe = Recipe(prep_time=td(**{unit: a}), cook_time=td(**{unit: b}))
+                    self.assertEqual(recipe.total_time, td(**{unit: a+b}))
+        for a, b, c in zip(utils.gen_ints(0, 100, 30), utils.gen_ints(0, 100, 30), utils.gen_ints(0, 100, 30)):
+            with self.subTest(a=a, b=b, unit=unit):
+                recipe = Recipe(prep_time=td(hours=a, minutes=b, seconds=c), cook_time=td(hours=b, minutes=c, seconds=a))
+                self.assertEqual(recipe.total_time, td(hours=a+b, minutes=b+c, seconds=c+a))
 
 
 class TestTagLabelModel(djangotest.TestCase):
