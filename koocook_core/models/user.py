@@ -30,10 +30,12 @@ class KoocookUser(SerialisableModel, models.Model):
         db_table = 'koocook_core_koocook_user'
 
     def follow(self, user: 'KoocookUser'):
-        pass
+        self.following.add(user)
+        user.followers.add(self)
 
     def unfollow(self, user: 'KoocookUser'):
-        pass
+        self.following.remove(user)
+        user.followers.remove(self)
 
     @property
     def name(self):
