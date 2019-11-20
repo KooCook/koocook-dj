@@ -260,11 +260,24 @@ class TestMetaIngredientModel(djangotest.TestCase):
 
 
 class TestPostModel(djangotest.TestCase):
-    def test_init(self):
-        pass
+    def setUp(self) -> None:
+        author = Author.objects.create(name='Bobby Brown')
+        user = User.objects.create(email='alicewonder@gmail.com')
+        self.test_authors = [author, user.koocookuser.author]
 
-    def test_processed_body(self):
-        pass
+    def test_init(self):
+        for author in self.test_authors:
+            with self.subTest('creation', author=author):
+                try:
+                    post = Post.objects.create(author=author)
+                except Exception as e:
+                    raise self.failureException(
+                        'unexpected exception raised') from e
+            with self.subTest('initial aggregate rating', author=author):
+                aggr = post.aggregate_rating
+                self.assertEqual(aggr.rating_count, 0)
+                self.assertEqual(aggr.rating_value, 0)
+                self.assertIs(aggr.post, post)
 
     def test_as_dict(self):
         pass
