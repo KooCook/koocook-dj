@@ -152,7 +152,7 @@ class Comment(models.Model):
         if item:
             assert not any(
                 k in kwargs
-                for k in ('review_recipe', 'reviewed_post', 'reviewed_comment')
+                for k in ('reviewed_recipe', 'reviewed_post', 'reviewed_comment')
             ), "Don't specify both item reviewed and the actual item reviewed"
             from koocook_core.models.recipe import Recipe
             from koocook_core.models.post import Post
@@ -206,21 +206,32 @@ class Rating(models.Model):
     )
     used = models.BooleanField(default=False, blank=True)
 
+    def __init__(self, *args, **kwargs):
+        item = kwargs.pop('item_reviewed', None)
+        if item:
+            assert not any(
+                k in kwargs
+                for k in ('reviewed_recipe', 'reviewed_post', 'reviewed_comment')
+            ), "Don't specify both item reviewed and the actual item reviewed"
+            from koocook_core.models.recipe import Recipe
+            from koocook_core.models.post import Post
+            if isinstance(item, Recipe):
+                kwargs['reviewed_recipe'] = item
+            elif isinstance(item, Post):
+                kwargs['reviewed_post'] = item
+            elif isinstance(item, Comment):
+                kwargs['reviewed_comment'] = item
+            else:
+                raise TypeError(f'item_reviewed must be of the type Recipe, '
+                                f"Post or Comment not '{type(item)}'")
+        else:
+            count = list(k in kwargs
+                         for k in ('reviewed_recipe', 'reviewed_post',
+                                   'reviewed_comment')).count(True)
+            if count != 1:
+                raise ValueError(f'There must be 1 reviewed item, not {count}')
+        super().__init__(*args, **kwargs)
+
     @property
     def item_reviewed(self) -> Union['Recipe', 'Post', 'Comment', None]:
         return self.reviewed_recipe or self.reviewed_post or self.reviewed_comment
-
-    @item_reviewed.setter
-    def item_reviewed(self, obj: Union['Recipe', 'Post', 'Comment']):
-        from koocook_core.models.recipe import Recipe
-        from koocook_core.models.post import Post
-
-        if isinstance(obj, Recipe):
-            self.reviewed_recipe = obj
-        elif isinstance(obj, Post):
-            self.reviewed_post = obj
-        elif isinstance(obj, Comment):
-            self.reviewed_comment = obj
-        else:
-            raise TypeError(f'item_reviewed must be of the correct type '
-                            f"'{type(self.item_reviewed)}' not '{type(obj)}'")
