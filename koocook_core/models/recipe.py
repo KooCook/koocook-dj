@@ -19,7 +19,11 @@ class Recipe(models.Model):
         https://schema.org/Recipe
     """
     name = models.CharField(max_length=255)
-    image = fields.ArrayField(models.CharField(max_length=200), null=True)
+    image = fields.ArrayField(
+        models.CharField(max_length=200),
+        null=True,
+        blank=True,
+    )
     video = models.URLField(null=True, blank=True)
     author = models.ForeignKey(
         'koocook_core.Author',
@@ -27,9 +31,12 @@ class Recipe(models.Model):
         null=True,
     )
     # Refactor this to use custom save() later
-    date_published = models.DateTimeField(auto_now_add=True, null=True)
+    date_published = models.DateTimeField(
+        auto_now_add=True,
+        null=True,
+    )
     description = models.TextField()
-    prep_time = models.DurationField(null=True, blank=True)
+    prep_time = models.DurationField(null=True)
     cook_time = models.DurationField(null=True)
     recipe_instructions = fields.ArrayField(models.TextField(), default=list)
     recipe_yield = koocookfields.QuantityField(null=True)
