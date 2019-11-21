@@ -23,9 +23,7 @@ class MetaIngredient(models.Model):
 
 
 class RecipeIngredient(models.Model):
-    quantity = koocookfields.QuantityField(
-        max_length=50,
-    )
+    quantity = koocookfields.QuantityField()
     meta = models.ForeignKey(
         'koocook_core.MetaIngredient',
         on_delete=models.PROTECT,
