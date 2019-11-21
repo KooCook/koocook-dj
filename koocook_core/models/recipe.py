@@ -30,7 +30,7 @@ class Recipe(models.Model):
         on_delete=models.PROTECT,
         null=True,
     )
-    # Refactor this to use custom save() later
+    # Refactor this to use custom save() later https://stackoverflow.com/questions/1737017/django-auto-now-and-auto-now-add
     date_published = models.DateTimeField(
         auto_now_add=True,
         null=True,
