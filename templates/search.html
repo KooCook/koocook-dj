@@ -75,30 +75,38 @@
 {#          </div>#}
 
         </transition-group>
-        {% if recipes.has_other_pages %}
+        {% if page_obj.has_other_pages %}
             <nav class="pagination is-centered" role="navigation" aria-label="pagination">
-                {% if recipes.has_previous %}
-                    <a href="?page={{ recipes.previous_page_number }}" class="pagination-previous">Previous</a>
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}" class="pagination-previous"> <b-icon
+                icon="arrow-left-bold"
+                size="is-small">
+            </b-icon> Previous</a>
                 {% endif %}
-                {% if users.has_next %}
-                  <a href="?page={{ recipes.next_page_number }}" class="pagination-next">Next</a>
+                {% if page_obj.has_next %}
+                  <a href="?page={{ page_obj.next_page_number }}" class="pagination-next"><b-icon
+                icon="arrow-right-bold"
+                size="is-small">
+            </b-icon> Next</a>
                 {% endif %}
-                {% for number in recipes.paginator.page_range %}
-                    {% if users.number == number %}
+            <ul class="pagination-list">
+                {% for number in paginator.page_range %}
+                    {% if page_obj.number == number %}
                         <li><a class="pagination-link is-current" aria-label="Page {{ number }}" aria-current="page">{{ number }}</a></li>
                       {% else %}
                         <li><a href="?page={{ number }}" class="pagination-link" aria-label="Go to page {{ number }}">{{ number }}</a></li>
                       {% endif %}
                 {% endfor %}
-              <ul class="pagination-list">
-                <li><a class="pagination-link" aria-label="Goto page 1">1</a></li>
-                <li><span class="pagination-ellipsis">&hellip;</span></li>
-                <li><a class="pagination-link" aria-label="Goto page 45">45</a></li>
-                <li><a class="pagination-link is-current" aria-label="Page 46" aria-current="page">46</a></li>
-                <li><a class="pagination-link" aria-label="Goto page 47">47</a></li>
-                <li><span class="pagination-ellipsis">&hellip;</span></li>
-                <li><a class="pagination-link" aria-label="Goto page 86">86</a></li>
-              </ul>
+             </ul>
+{#              <ul class="pagination-list">#}
+{#                <li><a class="pagination-link" aria-label="Goto page 1">1</a></li>#}
+{#                <li><span class="pagination-ellipsis">&hellip;</span></li>#}
+{#                <li><a class="pagination-link" aria-label="Goto page 45">45</a></li>#}
+{#                <li><a class="pagination-link is-current" aria-label="Page 46" aria-current="page">46</a></li>#}
+{#                <li><a class="pagination-link" aria-label="Goto page 47">47</a></li>#}
+{#                <li><span class="pagination-ellipsis">&hellip;</span></li>#}
+{#                <li><a class="pagination-link" aria-label="Goto page 86">86</a></li>#}
+{#              </ul>#}
             </nav>
         {% endif %}
       </div>
