@@ -5,7 +5,6 @@ from ...models import Recipe
 class RecipeForm(forms.ModelForm):
     customised_field = ['name', 'author']
 
-
     def __init__(self, *args, **kwargs):
         if 'user' in kwargs:
             self.user = kwargs.pop('user', None)
