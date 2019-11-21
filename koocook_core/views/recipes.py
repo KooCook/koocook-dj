@@ -68,13 +68,13 @@ class RecipeSearchListView(ListView):
     def get_queryset(self):
         popular = self.request.GET.get("popular")
         kw = self.request.GET.get("kw")
-        if popular:
-            return sorted(self.model.objects.all(), key=lambda t: t.view_count, reverse=True)
+        if kw:
+            query_set = self.model.objects.filter(name__iexact=kw)
         else:
-            if kw:
-                return self.model.objects.filter(name__iexact=kw)
-            else:
-                return self.model.objects.all()
+            query_set = self.model.objects.all()
+        if popular:
+            query_set = sorted(query_set, key=lambda t: t.view_count, reverse=True)
+        return query_set
 
 
 class UserRecipeListView(SignInRequiredMixin, ListView):

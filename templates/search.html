@@ -41,11 +41,11 @@
                 </b-dropdown-item>
             </b-dropdown>
           </h3>
-        <transition name="fade" mode="in-out">
-           <div v-if="!getRecipesByName.length">
-                No results matching with your search.
-            </div>
-        </transition>
+{#        <transition name="fade" mode="in-out">#}
+{#           <div v-if="!getRecipesByName.length">#}
+{#                No results matching with your search.#}
+{#            </div>#}
+{#        </transition>#}
       {% for recipe in recipes %}
                 <div class="box">
                 {% if recipe.hot %}<p class="is-6 has-text-danger"><i class="fas fa-fire"></i> Trending</p>{% endif %}
@@ -127,8 +127,7 @@
             searchFilter: function (val) {
                 const url = new URL(location.href);
                 if (val === 'popular'){
-                    url.searchParams.set('popular', 'true');
-                url.searchParams.delete('kw');}
+                    url.searchParams.set('popular', 'true'); }
                 else if (val === 'name') {
                     url.searchParams.set('kw', this.searchName);
                     url.searchParams.delete('popular');
