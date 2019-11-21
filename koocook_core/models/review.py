@@ -64,9 +64,16 @@ class Comment(SerialisableModel, models.Model):
                              type(obj))) from e.__context__
 
     @property
+    def processed_body(self):
+        if hasattr(self.body, 'rendered'):
+            return self.body.rendered
+        else:
+            return self.body
+
+    @property
     def as_dict(self):
         base_dict_repr = super().as_dict
-        base_dict_repr.update({'rendered': self.process_text_format(self.body)})
+        base_dict_repr.update({'rendered': self.processed_body})
         return base_dict_repr
 
 
