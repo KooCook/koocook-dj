@@ -6,9 +6,7 @@ from typing import List
 
 from datatrans import structured_data
 
-from koocook.settings.dirs import BASE_DIR
-
-DATA_DIR = BASE_DIR / 'data'
+from koocook.settings.dirs import DATA_DIR
 
 
 @enum.unique
