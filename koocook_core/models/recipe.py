@@ -42,13 +42,14 @@ class Recipe(models.Model):
         if not hasattr(self, 'aggregate_rating'):
             self.aggregate_rating = create_empty_aggregate_rating()
 
-    def update(self, dct: dict) -> None:
+    def update(self, dct: dict, save: bool = True) -> None:
         for field, value in dct.items():
             try:
                 setattr(self, field, value)
             except TypeError:
                 getattr(self, field).set(value)
-        self.save()
+        if save:
+            self.save()
 
     @property
     def total_time(self):
