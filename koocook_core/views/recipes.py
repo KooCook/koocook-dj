@@ -60,7 +60,7 @@ class RecipeSearchListView(ListView):
     def get_queryset(self):
         kw = self.request.GET.get("kw")
         if kw:
-            return self.model.objects.filter(name__iexact=kw)
+            return self.model.objects.filter(name__icontains=kw)
         else:
             return self.model.objects.all()
 
