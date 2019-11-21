@@ -4,9 +4,7 @@ from decimal import Decimal
 
 import numpy as np
 
-from koocook.settings.dirs import BASE_DIR
-
-TEST_DATA_DIR = BASE_DIR / 'test_data'
+from koocook.settings.dirs import TEST_DATA_DIR
 
 cached_first_names = []
 cached_last_names = []
