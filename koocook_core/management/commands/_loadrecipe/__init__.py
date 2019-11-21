@@ -9,5 +9,5 @@ class Command(BaseCommand):
         self.stdout.write('calling read_data')
         from .._add_path import add_datatrans
         add_datatrans()
-        from .read_data import main
+        from .main import main
         main()
