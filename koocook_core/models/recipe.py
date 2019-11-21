@@ -23,7 +23,7 @@ class Recipe(models.Model):
         on_delete=models.PROTECT,
         null=True,
     )
-    date_published = models.DateTimeField(null=True)
+    date_published = models.DateTimeField(null=True, auto_now_add=True)
     description = models.TextField()
     prep_time = models.DurationField(null=True, blank=True)
     cook_time = models.DurationField(null=True)
