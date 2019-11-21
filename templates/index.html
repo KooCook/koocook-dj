@@ -1,7 +1,11 @@
 {% extends 'base/index.html' %}
+{% block page_deps %}
+    {{ block.super }}
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+{% endblock %}
 {% block page_title %}Home{% endblock %}
 {% block page_body %}
-      <section class="section">
+      <section class="section" id="app">
           <nav class="level">
 
               <p class="level-item has-text-centered">
@@ -137,7 +141,7 @@
             <div class="level">
                 <div class="level-item control has-icons-left search-bar-section">
 
-                    <input v-model="searchName" class="level-item input search-bar" type="text" placeholder="Don't know how to cook a dish? Search KooCook!">
+                    <input v-model="searchTerm" class="level-item input search-bar" type="text" placeholder="Don't know how to cook a dish? Search KooCook!">
                     <span class="icon is-small is-left">
                         <i class="fas fa-search"></i>
                       </span>
@@ -145,9 +149,24 @@
             </div>
             <div class="level">
                     <div class="level-item">
-                      <a class="is-disabled" href="search/results-ex-1.html"><button class="button is-link">Search</button></a>
+                      <a :href="'search/' + getSearchTerm"><button class="button is-link">Search</button></a>
                     </div>
             </div>
           </section>
+     <script>
+      var app = new Vue({
+        el: '#app',
+        data: {
+          togglePopSearch: false,
+          searchTerm: ''
+        },
+          computed: {
+            getSearchTerm() {
+                if (this.searchTerm) return '?kw=' + this.searchTerm;
+                else return ''
+            }
+          }
+      })
+  </script>
 {% endblock %}
 

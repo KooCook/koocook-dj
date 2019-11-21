@@ -28,11 +28,6 @@ def index(request):
     return render(request, 'index.html')
 
 
-@require_http_methods(["GET"])
-def search_view(request):
-    return render(request, 'search.html')
-
-
 @require_http_methods(["GET", "DELETE"])
 def handle_recipe(request, recipe_id):
     if request.method == 'DELETE':
