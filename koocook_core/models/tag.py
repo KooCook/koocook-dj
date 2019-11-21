@@ -11,5 +11,5 @@ class Tag(models.Model):
 
 class TagLabel(models.Model):
     name = models.CharField(max_length=50)
-    level = models.IntegerField(default=0)
+    level = models.IntegerField(default=1)
     # tag_set from Tag's ForeignKey
