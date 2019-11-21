@@ -7,7 +7,6 @@ from django import test as djangotest
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-import names
 
 from koocook_core import models as models_
 from koocook_core.models import *
@@ -19,8 +18,8 @@ from koocook_core.tests import utils
 def set_up_authors(n: int = 4) -> List[Author]:
     test_authors = []
     for _ in range(n):
-        test_authors.append(Author.objects.create(name=names.get_full_name()))
-        first_name, last_name = names.get_first_name(), names.get_last_name()
+        test_authors.append(Author.objects.create(name=utils.get_full_name()))
+        first_name, last_name = utils.get_first_name(), utils.get_last_name()
         username = utils.gen_username(first_name, last_name)
         test_authors.append(
             User.objects.create(first_name=first_name,
@@ -535,12 +534,15 @@ class TestRatingModel(djangotest.TestCase):
 
 class TestKoocookUserModel(djangotest.TestCase):
     def setUp(self) -> None:
-        self.test_kc_users = [
-            User.objects.create(first_name=names.get_first_name(),
-                                last_name=names.get_last_name(),
-                                username=names.get_full_name()).koocookuser
-            for _ in range(10)
-        ]
+        self.test_kc_users = []
+        for _ in range(10):
+            first_name, last_name = utils.get_first_name(), utils.get_last_name()
+            username = utils.gen_username(first_name, last_name)
+            self.test_kc_users.append(
+                User.objects.create(first_name=first_name,
+                                    last_name=last_name,
+                                    username=username).koocookuser
+            )
 
     def clean_up_followings(self):
         for kc in self.test_kc_users:
@@ -599,3 +601,8 @@ class TestQuantityField(djangotest.TestCase):
                 m = getattr(models_, model)()
                 max_length = m._meta.get_field(field).max_length
                 self.assertEqual(max_length, 50)
+
+
+if __name__ == '__main__':
+    import unittest
+    unittest.main(verbosity=2)

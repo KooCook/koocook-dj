@@ -3,6 +3,10 @@ import random
 from decimal import Decimal
 
 import numpy as np
+import names
+
+cached_first_names = []
+cached_last_names = []
 
 
 def gen_ints(a: int, b: int, n: int) -> List[int]:
@@ -54,3 +58,45 @@ def gen_decimals(a: float, b: float, n: int) -> Iterable[Decimal]:
 def gen_username(first_name: str, last_name: str = '') -> str:
     """Returns a hopefully unique username for Django."""
     return first_name + last_name + str(random.random())[2:]
+
+
+def _init_first():
+    global cached_first_names
+    with open(names.FILES[f'first:male']) as file:
+        for line in file:
+            name = line.split()[0].capitalize()
+            cached_first_names.append(name)
+    with open(names.FILES[f'first:female']) as file:
+        for line in file:
+            name = line.split()[0].capitalize()
+            cached_first_names.append(name)
+    random.shuffle(cached_first_names)
+
+
+def _init_last():
+    global cached_last_names
+    with open(names.FILES['last']) as file:
+        for line in file:
+            name = line.split()[0].capitalize()
+            cached_last_names.append(name)
+    random.shuffle(cached_last_names)
+
+
+def get_first_name():
+    try:
+        return cached_first_names.pop(-1)
+    except IndexError:
+        _init_first()
+        return cached_first_names.pop(-1)
+
+
+def get_last_name():
+    try:
+        return cached_last_names.pop(-1)
+    except IndexError:
+        _init_last()
+        return cached_last_names.pop(-1)
+
+
+def get_full_name():
+    return ' '.join((get_first_name(), get_last_name()))
