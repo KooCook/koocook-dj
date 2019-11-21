@@ -3,7 +3,6 @@ import random
 from decimal import Decimal
 
 import numpy as np
-import names
 
 from koocook.settings.dirs import BASE_DIR
 
@@ -16,6 +15,7 @@ cached_last_names = []
 def gen_ints(a: int, b: int, n: int) -> List[int]:
     """Returns an iterable (currently list) of non-repeating, randomized ints."""
     assert a < b, "a must be smaller than b"
+    random.seed(0)
     return random.sample(range(a, b), n)
 
 
@@ -28,13 +28,14 @@ def gen_floats(a: float, b: float, n: int) -> List[float]:
         https://stackoverflow.com/questions/45394981/how-to-generate-list-of-unique-random-floats-in-python
     """
     assert a < b, "a must be smaller than b"
+    np.random.seed(0)
     out = np.empty(n)
     needed = n
     while needed != 0:
         arr = np.random.uniform(a, b, needed)
-        uniqs = np.setdiff1d(np.unique(arr), out[:n-needed])
-        out[n-needed: n-needed+uniqs.size] = uniqs
-        needed -= uniqs.size
+        uniques = np.setdiff1d(np.unique(arr), out[:n-needed])
+        out[n-needed: n-needed+uniques.size] = uniques
+        needed -= uniques.size
     np.random.shuffle(out)
     return out.tolist()
 
@@ -48,13 +49,14 @@ def gen_decimals(a: float, b: float, n: int) -> Iterable[Decimal]:
         https://stackoverflow.com/questions/45394981/how-to-generate-list-of-unique-random-floats-in-python
     """
     assert a < b, "a must be smaller than b"
+    np.random.seed(0)
     out = np.empty(n)
     needed = n
     while needed != 0:
         arr = np.random.uniform(a, b, needed)
-        uniqs = np.setdiff1d(np.unique(arr), out[:n-needed])
-        out[n-needed: n-needed+uniqs.size] = uniqs
-        needed -= uniqs.size
+        uniques = np.setdiff1d(np.unique(arr), out[:n-needed])
+        out[n-needed: n-needed+uniques.size] = uniques
+        needed -= uniques.size
     np.random.shuffle(out)
     return map(Decimal, out)
 
@@ -65,6 +67,7 @@ def gen_username(first_name: str, last_name: str = '') -> str:
 
 
 def _gen_first():
+    import names
     firstnames = []
     with open(names.FILES[f'first:male']) as file:
         for line in file:
@@ -79,6 +82,7 @@ def _gen_first():
 
 
 def _gen_last():
+    import names
     lastnames = []
     with open(names.FILES['last']) as file:
         for line in file:
