@@ -5,6 +5,10 @@ from decimal import Decimal
 import numpy as np
 import names
 
+from koocook.settings.dirs import BASE_DIR
+
+TEST_DATA_DIR = BASE_DIR / 'test_data'
+
 cached_first_names = []
 cached_last_names = []
 
@@ -60,26 +64,40 @@ def gen_username(first_name: str, last_name: str = '') -> str:
     return first_name + last_name + str(random.random())[2:]
 
 
-def _init_first():
-    global cached_first_names
+def _gen_first():
+    firstnames = []
     with open(names.FILES[f'first:male']) as file:
         for line in file:
             name = line.split()[0].capitalize()
-            cached_first_names.append(name)
+            firstnames.append(name)
     with open(names.FILES[f'first:female']) as file:
         for line in file:
             name = line.split()[0].capitalize()
-            cached_first_names.append(name)
-    random.shuffle(cached_first_names)
+            firstnames.append(name)
+    random.shuffle(firstnames)
+    return firstnames
 
 
-def _init_last():
-    global cached_last_names
+def _gen_last():
+    lastnames = []
     with open(names.FILES['last']) as file:
         for line in file:
             name = line.split()[0].capitalize()
-            cached_last_names.append(name)
-    random.shuffle(cached_last_names)
+            lastnames.append(name)
+    random.shuffle(lastnames)
+    return lastnames
+
+
+def _init_first():
+    with open(TEST_DATA_DIR / 'firstnames.txt') as file:
+        for line in file:
+            cached_first_names.append(line)
+
+
+def _init_last():
+    with open(TEST_DATA_DIR / 'lastnames.txt') as file:
+        for line in file:
+            cached_last_names.append(line)
 
 
 def get_first_name():
