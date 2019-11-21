@@ -7,7 +7,7 @@
 {% block page_content %}
     <div class="container">
           <h3 class="title is-3">
-              Search Results <b-dropdown v-model="togglePopSearch" aria-role="list">
+              Search Results <b-dropdown v-model="searchFilter" aria-role="list">
                 <button class="button" type="button" slot="trigger">
                     <template v-if="togglePopSearch">
                         <b-icon class="fas fa-fire"></b-icon>&nbsp;
@@ -20,7 +20,7 @@
                     <b-icon icon="menu-down"></b-icon>
                 </button>
 
-                <b-dropdown-item :value="true" aria-role="listitem">
+                <b-dropdown-item value="popular" aria-role="listitem">
                     <div class="media">
                       <b-icon class="media-left fas fa-fire"></b-icon>
                         <div class="media-content">
@@ -30,7 +30,7 @@
                     </div>
                 </b-dropdown-item>
 
-                <b-dropdown-item :value="false" aria-role="listitem">
+                <b-dropdown-item value="name" aria-role="listitem">
                     <div class="media">
                         <b-icon class="media-left fas fa-book"></b-icon>
                         <div class="media-content">
@@ -49,9 +49,9 @@
       {% for recipe in recipes %}
                 <div class="box">
                 {% if recipe.hot %}<p class="is-6 has-text-danger"><i class="fas fa-fire"></i> Trending</p>{% endif %}
-                <a href="{% url 'koocook_core:recipe' recipe.id %}"><h4 class="title is-4">
+                <h4 class="title is-4"><a href="{% url 'koocook_core:recipe' recipe.id %}">
                     {{ recipe.name }}
-                </h4></a>
+                </a></h4>
                 <p class="subtitle">
                     by {{ recipe.author }} <span class="date-posted subtitle is-6 has-text-grey"><i class="fas fa-calendar-alt"></i> {{ recipe.date_published }} </span> <span class="date-posted subtitle is-6 has-text-grey"><i class="fas fa-clock"></i> Ready in: {{ recipe.ready_time }}</span>
                     <span class="date-posted subtitle is-6 has-text-grey"><i class="fas fa-eye"></i> {{ recipe.view_count }} view{{ recipe.view_count|pluralize }}</span></span>
@@ -104,7 +104,8 @@
       new Vue({
         el: '#app',
         data: {
-          togglePopSearch: false,
+            firstRun: true,
+          searchFilter: '{{ search_filter }}',
           searchName: '',
           recipes: [
             {#{ author: 'Jessie Damuck', url: '../recipes/detail-ex1.html', title: "BA's Best Buttermilk Pancakes", datePosted: 'Oct 13, 2019', readyTime: '20 min', hot: true, view_count: 1925, up: 80, down: 3 },#}
@@ -121,7 +122,20 @@
               else return item.title.toLowerCase().includes(this.searchName.toLowerCase());
             })
           }
-        }
+        },
+          watch: {
+            searchFilter: function (val) {
+                const url = new URL(location.href);
+                if (val === 'popular'){
+                    url.searchParams.set('popular', 'true');
+                url.searchParams.delete('kw');}
+                else if (val === 'name') {
+                    url.searchParams.set('kw', this.searchName);
+                    url.searchParams.delete('popular');
+                }
+                location.href = url.href;
+            }
+          }
       })
   </script>
 {% endblock %}

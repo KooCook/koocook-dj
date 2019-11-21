@@ -57,12 +57,24 @@ class RecipeSearchListView(ListView):
     context_object_name = 'recipes'
     template_name = 'search.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.GET.get("popular"):
+            context['search_filter'] = 'popular'
+        elif self.request.GET.get("kw"):
+            context['search_filter'] = 'name'
+        return context
+
     def get_queryset(self):
+        popular = self.request.GET.get("popular")
         kw = self.request.GET.get("kw")
-        if kw:
-            return self.model.objects.filter(name__iexact=kw)
+        if popular:
+            return sorted(self.model.objects.all(), key=lambda t: t.view_count, reverse=True)
         else:
-            return self.model.objects.all()
+            if kw:
+                return self.model.objects.filter(name__iexact=kw)
+            else:
+                return self.model.objects.all()
 
 
 class UserRecipeListView(SignInRequiredMixin, ListView):
