@@ -10,11 +10,12 @@ class SerialisableModel:
     body = None
     exclude = ()
 
-    @staticmethod
-    def process_text_format(text: str, text_format: str = "md") -> str:
-        if text_format == 'md':
-            return mark_safe(markdown(text, safe_mode='escape', extensions=['fenced_code']))
-        return mark_safe(text)
+    # Obsolete
+    # @staticmethod
+    # def process_text_format(text: str, text_format: str = "md") -> str:
+    #     if text_format == 'md':
+    #         return mark_safe(markdown(text, safe_mode='escape', extensions=['fenced_code']))
+    #     return mark_safe(text)
 
     @property
     def as_dict(self) -> dict:
@@ -33,7 +34,6 @@ class ModelEncoder(JSONEncoder):
         if hasattr(obj, 'as_dict'):
             return obj.as_dict
         else:
-            dict_repr = {}
             if type(obj) == models.Model:
                 return {field.name: getattr(obj, field.name) for field in obj._meta.fields}
             else:
