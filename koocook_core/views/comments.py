@@ -2,7 +2,7 @@ from django.http import HttpRequest, JsonResponse
 from django.urls import resolve
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
-from ..models import Comment, Recipe, Post
+from ..models import Comment, Post, Recipe
 
 
 # This is a mess 'cause there's a fix for this
