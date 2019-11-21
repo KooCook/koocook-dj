@@ -2,6 +2,7 @@ import datetime
 import json
 import warnings
 from typing import List
+import time
 
 import datatrans.utils.structured_data
 from datatrans import structured_data
@@ -56,25 +57,14 @@ def parse_ingredients(ingredients: structured_data.Property, r: models.Recipe) -
                 warnings.warn('Found no matching meta ingredient, trying FoodDataAPI')
                 try:
                     nutrients, name = support.scripts.get_nutrients(description)
+                    time.sleep(1)
                 except KeyError as e:
                     raise ResourceWarning from e
-                meta = models.MetaIngredient(name=name, nutrient=nutrients)
-                meta.save()
-                # parts = meta_str.split(' ')
-                # if len(parts) == 1:
-                #     meta = models.MetaIngredient.objects.create(name=meta_str, nutrients={})
-                # elif len(parts) < 3:
-                #     warnings.warn('Found no matching meta ingredient. '
-                #                   'Creating new meta ingredient \'{}\''
-                #                   .format(meta_str))
-                #     meta = models.MetaIngredient.objects.create(name=meta_str, nutrients={})
-                # else:
-                #     warnings.warn('Found no matching meta ingredient. '
-                #                   'Creating new meta ingredient \'{}\''
-                #                   .format(meta_str))
-                #     meta = models.MetaIngredient.objects.create(name=meta_str, nutrients={})
-                #     # raise ValueError('Found no matching meta ingredient.'
-                #     #                  'Please defer ingredient creation.')
+                try:
+                    meta = models.MetaIngredient.objects.get(name__exact=name)
+                except ObjectDoesNotExist:
+                    meta = models.MetaIngredient(name=name, nutrient=nutrients)
+                    meta.save()
         # don't catch MultipleObjectsReturned
         recipeingredients.append(
             models.RecipeIngredient.objects.create(description=description, quantity=quantity, meta=meta, recipe=r))
@@ -181,7 +171,7 @@ def parse_recipe(recipe: structured_data.Recipe) -> models.Recipe:
             pass
 
         return r
-    r.delete()
+    return
 
 
 def main():
