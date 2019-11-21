@@ -16,9 +16,7 @@ def restful_if_ajax(request, data, status=200, to_section: str = None):
 def allow_post_comments(model: Model, id_name: str):
     def decorator(function):
         def wrapper(request: HttpRequest, **kwargs):
-
             thread_id = kwargs[id_name]
-            print(thread_id)
             if request.user.is_authenticated:
                 if request.method == 'POST':
                     comment_fields = {field: val for (field, val) in request.POST.dict().items()
