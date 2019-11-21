@@ -34,7 +34,7 @@ def parse_cooking_method(cooking_method: str) -> models.Tag:
     return tag
 
 
-def parse_ingredients(ingredients: structured_data.Property) -> List[models.RecipeIngredient]:
+def parse_ingredients(ingredients: structured_data.Property, r: models.Recipe) -> List[models.RecipeIngredient]:
     recipeingredients = []
     for ingredient in ingredients:
         number, unit, description = utils.split_ingredient_str(ingredient)
@@ -77,7 +77,7 @@ def parse_ingredients(ingredients: structured_data.Property) -> List[models.Reci
                 #     #                  'Please defer ingredient creation.')
         # don't catch MultipleObjectsReturned
         recipeingredients.append(
-            models.RecipeIngredient.objects.create(description=description, quantity=quantity, meta=meta))
+            models.RecipeIngredient.objects.create(description=description, quantity=quantity, meta=meta, recipe=r))
     return recipeingredients
 
 
@@ -125,6 +125,8 @@ def parse_datetime(datetime_str: str):
 def parse_recipe(recipe: structured_data.Recipe) -> models.Recipe:
     skip = False
     data = {}
+    r = models.Recipe.objects.create(name='', recipe_instructions=[])
+
     for k, v, f in (
             ('_name', 'name', None),
             ('_image', 'video', None),
@@ -151,9 +153,13 @@ def parse_recipe(recipe: structured_data.Recipe) -> models.Recipe:
         total_time=data.get('total_time', None)
     )
 
+    try:
+        data['recipeingredient_set'] = parse_ingredients(getattr(recipe, '_recipe_ingredient'), r)
+    except ResourceWarning:
+        skip = True
+
     later = {}
     for k, v, f in (
-            ('_recipe_ingredient', 'recipeingredient_set', parse_ingredients),
             ('_cooking_method', 'tag_set', parse_cooking_method),
             # ('', 'tag_set', None),
             # ('', 'comment_set', None),
@@ -166,24 +172,16 @@ def parse_recipe(recipe: structured_data.Recipe) -> models.Recipe:
                     later[v] = getattr(recipe, k)
         except ResourceWarning:
             skip = True
-    if not hasattr(data, 'aggregate_rating'):
-        data['aggregate_rating'] = models.AggregateRating.objects.create(
-            rating_value=0, rating_count=0
-        )
 
     if not skip:
-        r = models.Recipe(**data)
-        r.save()
-
-        for ingr in later['recipeingredient_set']:
-            r.recipeingredient_set.add(ingr)
+        r.update(dct=data)
         try:
             r.tag_set.add(later['tag_set'])
         except KeyError:
             pass
 
         return r
-    return
+    r.delete()
 
 
 def main():
