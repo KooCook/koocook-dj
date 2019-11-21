@@ -2,6 +2,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
+from ..support import FormattedField
 from .base import SerialisableModel
 
 __all__ = ['Comment', 'Rating', 'AggregateRating']
@@ -13,7 +14,7 @@ class Comment(SerialisableModel, models.Model):
         on_delete=models.PROTECT,
     )
     date_published = models.DateTimeField()
-    body = models.TextField()
+    body = FormattedField()  # models.TextField()
     aggregate_rating = models.OneToOneField(
         'koocook_core.AggregateRating',
         on_delete=models.PROTECT,

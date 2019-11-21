@@ -31,7 +31,7 @@ class MarkdownSource:
         return len(str(self))
 
 
-class MarkdownField(models.TextField):
+class FormattedField(models.TextField):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
