@@ -60,7 +60,7 @@ class RecipeSearchListView(ListView):
     def get_queryset(self):
         kw = self.request.GET.get("kw")
         if kw:
-            return self.model.objects.filter(name__contains=kw)
+            return self.model.objects.filter(name__iexact=kw)
         else:
             return self.model.objects.all()
 
@@ -80,7 +80,7 @@ class UserRecipeListView(SignInRequiredMixin, ListView):
         return Recipe.objects.filter(author=author)
 
 
-class RecipeCreateView(RecipeViewMixin, CreateView):
+class RecipeCreateView(SignInRequiredMixin, RecipeViewMixin, CreateView):
     http_method_names = ['post', 'get']
     form_class = RecipeForm  # model = Recipe
     # fields = '__all__'
@@ -100,7 +100,7 @@ class RecipeCreateView(RecipeViewMixin, CreateView):
         return reverse('koocook_core:recipe-user')
 
 
-class RecipeUpdateView(RecipeViewMixin, UpdateView):
+class RecipeUpdateView(SignInRequiredMixin, RecipeViewMixin, UpdateView):
     model = Recipe
     fields = '__all__'  # ['name']
     template_name = 'recipes/update.html'
