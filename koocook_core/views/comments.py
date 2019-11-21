@@ -2,17 +2,18 @@ from django.http import HttpRequest, JsonResponse
 from django.urls import resolve
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
-from ..models import Comment
+from ..models import Comment, Recipe, Post
 
 
+# This is a mess 'cause there's a fix for this
+# in its next dependent branch named 'personalisation',
+# avoiding any conflicts the might occur from the fix
 def get_all_comments_for(request: HttpRequest, item_id: int):
     if request.method == 'GET':
         current_url = resolve(request.path_info).route
         if 'recipe' in current_url:
-            from ..models import Recipe
             comments = Recipe.objects.get(pk=item_id).comment_set.all()
         elif 'post' in current_url:
-            from ..models import Post
             comments = Post.objects.get(pk=item_id).comment_set.all()
         elif 'comment' in current_url:
             comments = Comment.objects.get(pk=item_id).comment_set.all()
@@ -35,10 +36,8 @@ def post_comment(request: HttpRequest):
 
     current_url = resolve(request.path_info).route
     if 'recipe' in current_url:
-        from ..models import Recipe
         comment_fields.update({'reviewed_recipe': Recipe.objects.get(pk=item_id)})
     elif 'post' in current_url:
-        from ..models import Post
         comment_fields.update({'reviewed_post': Post.objects.get(pk=item_id)})
     elif 'comment' in current_url:
         comment_fields.update({'reviewed_comment': Comment.objects.get(pk=item_id)})
