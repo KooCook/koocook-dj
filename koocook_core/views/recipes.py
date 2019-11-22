@@ -10,7 +10,6 @@ from django.views.generic.edit import UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import RecipeForm
 from ..models import Recipe, Author, KoocookUser, RecipeIngredient, MetaIngredient
-from ..support import Quantity
 
 
 class SignInRequiredMixin(LoginRequiredMixin):
