@@ -1,0 +1,74 @@
+[
+{
+  "model": "koocook_core.author",
+  "pk": 1,
+  "fields": {
+    "name": "Destiny",
+    "koocook_user": null
+  }
+},
+{
+  "model": "koocook_core.author",
+  "pk": 2,
+  "fields": {
+    "name": "Natalia",
+    "koocook_user": null
+  }
+},
+{
+  "model": "koocook_core.author",
+  "pk": 3,
+  "fields": {
+    "name": "Otto",
+    "koocook_user": null
+  }
+},
+{
+  "model": "koocook_core.author",
+  "pk": 4,
+  "fields": {
+    "name": "Gayne",
+    "koocook_user": null
+  }
+},
+{
+  "model": "koocook_core.author",
+  "pk": 5,
+  "fields": {
+    "name": "Charvat",
+    "koocook_user": null
+  }
+},
+{
+  "model": "koocook_core.author",
+  "pk": 6,
+  "fields": {
+    "name": "Hamper",
+    "koocook_user": null
+  }
+},
+{
+  "model": "koocook_core.author",
+  "pk": 7,
+  "fields": {
+    "name": "Deandrea Pulos",
+    "koocook_user": null
+  }
+},
+{
+  "model": "koocook_core.author",
+  "pk": 8,
+  "fields": {
+    "name": "Delora Stucky",
+    "koocook_user": null
+  }
+},
+{
+  "model": "koocook_core.author",
+  "pk": 9,
+  "fields": {
+    "name": "Letitia Hunsicker",
+    "koocook_user": null
+  }
+}
+]
