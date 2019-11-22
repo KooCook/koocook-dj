@@ -23,4 +23,3 @@ def dispatch(sender, instance: User, created, **kwargs):
         kc_user.save()
         author = Author(name=kc_user.name, user=kc_user)
         author.save()
-

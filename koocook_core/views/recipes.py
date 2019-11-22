@@ -14,6 +14,21 @@ from ..models import Recipe, Author, KoocookUser, RecipeIngredient, MetaIngredie
 from ..support import Quantity
 
 
+class RecipeSearchListView(ListView):
+    http_method_names = ('get',)
+    model = Recipe
+    paginate_by = 10
+    context_object_name = 'recipes'
+    template_name = 'search.html'
+
+    def get_queryset(self):
+        kw = self.request.GET.get("kw")
+        if kw:
+            return self.model.objects.filter(name__icontains=kw)
+        else:
+            return self.model.objects.all()
+
+
 class UserRecipeListView(SignInRequiredMixin, ListView):
     model = Recipe
     template_name = 'recipes/user.html'
