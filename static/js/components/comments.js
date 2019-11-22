@@ -38,8 +38,7 @@ Vue.component("comments-widget", {
       '            <div class="content">\n' +
       '              <p>\n' +
       '                <strong>{{ comment.author.qualified_name }}</strong>\n' +
-      '                <br>{{ comment.body }}\n' +
-      '                <br>\n' +
+      '                <span v-html="comment.rendered"></span>\n' +
       '                <small><!--<a>Like</a> ·--> <a @click="comment.showReplies = !comment.showReplies"><span v-if="!comment.showReplies"><span v-if="comment.replies">{{ comment.replies }} </span>Reply</span><span v-else>Hide replies</span></a> · {{ comment.date_published|time-passed }}</small>\n' +
       '              </p>\n' +
       '             </div>' +
@@ -58,7 +57,7 @@ Vue.component("comments-widget", {
       '                  <strong>What do you think about {{ itemName }}?</strong>\n' +
       '                <div class="field">\n' +
       '                  <p class="control">\n' +
-      '                      <textarea v-model="comment.body" placeholder="Add a comment..." required="required" class="textarea"></textarea>\n' +
+      '                      <formatted-textarea-md v-model="comment.body" placeholder="Add a comment..." required="required" class="textarea"></formatted-textarea-md>\n' +
       '                  </p>' +
       '<b-loading :is-full-page="false" :active.sync="pending"></b-loading>' +
       '                       \n' +

@@ -1,4 +1,4 @@
-{% extends 'base/content.html' %}
+{% extends 'base/mixins/formatted-md.html' %}
 {% load widget_tweaks %}
 {% load static %}
 {% block page_title %}Post Stream{% endblock %}
@@ -47,7 +47,8 @@
     <form method="post" class="box" @submit.prevent="createPost()">
       {% csrf_token %}
       <b-field label="What's on your mind?">
-        {{ form.body|attr:"v-model: currentPost.body"|add_class:'textarea' }}
+          <formatted-textarea-md v-model="currentPost.body" name="body" cols="40" rows="10"></formatted-textarea-md>
+{#        {{ form.body|attr:"v-model: currentPost.body"|add_class:'textarea' }}#}
       </b-field>
       <b-field>
         <div class="buttons">
@@ -75,7 +76,8 @@
               <form method="post" @submit.prevent="editPost(upIndex)">
                 {% csrf_token %}
                 <b-field>
-                  {{ form.body|attr:"v-model: userPost.body"|add_class:'textarea' }}
+                    <formatted-textarea-md v-model="userPost.body" cols="40" rows="10"></formatted-textarea-md>
+{#                  {{ form.body|attr:"v-model: userPost.body"|add_class:'textarea'|add_class:'md-enabled' }}#}
                 </b-field>
                 <b-field>
                   <div class="buttons">
@@ -90,7 +92,7 @@
         <nav class="level is-mobile">
           <div class="level-left">
             <a class="level-item" @click="showEdit(userPost)">
-              <span class="icon is-small"><i class="fas fa-pencil-alt"></i></span>
+              <span class="icon is-small"><b-icon icon="pencil" size="is-small"></b-icon></span>
             </a>
           </div>
         </nav>

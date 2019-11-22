@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js"></script>
     <script src="{% static 'js/utils.js' %}"></script>
+    {% block mixin_deps %}{% endblock %}
     {% block content_deps %}{% endblock %}
 {% endblock %}
 {% block page_body %}
@@ -177,6 +178,7 @@
         {% block page_content %}{% endblock %}
     </section>
       </div>
-    <script src="{% static "js/navbar.js" %}"></script>
     </div>
+    {% block javascript_parsing %}{% endblock %}
+    <script src="{% static "js/navbar.js" %}"></script>
 {% endblock %}
