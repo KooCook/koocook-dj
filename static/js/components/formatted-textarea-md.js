@@ -1,5 +1,5 @@
-Vue.component('formatted-textarea-md', {
-  props: ['value', 'placeholder', 'required'],
+Vue.component("formatted-textarea-md", {
+  props: ["value", "placeholder", "required"],
   template: `
     <textarea ref="area" :placeholder="placeholder" required autofocus></textarea>
   `,
@@ -11,18 +11,18 @@ Vue.component('formatted-textarea-md', {
     });
     this.mde.value(this.value);
     const self = this;
-    this.mde.codemirror.on('change', function() {
-      self.$emit('input', self.mde.value())
+    this.mde.codemirror.on("change", function() {
+      self.$emit("input", self.mde.value());
     });
   },
   watch: {
     value(newVal) {
       if (newVal !== this.mde.value()) {
-        this.mde.value(newVal)
+        this.mde.value(newVal);
       }
     }
   },
   beforeDestroy() {
-    this.mde.toTextArea()
+    this.mde.toTextArea();
   }
 });
