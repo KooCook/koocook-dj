@@ -4,9 +4,10 @@
 {% block hero_title %}Create a recipe{% endblock %}
 {% block page_title %}Create a recipe{% endblock %}
 {% block content_page_name %}Create a recipe{% endblock %}
-{% block content_deps %}
-    <link rel="stylesheet" href="{% static 'css/recipe/crud.css'%} ">
-<script src="{% static 'js/components/ingredients.js' %}"></script>{% endblock %}
+{% block content_deps %}<link rel="stylesheet" href="{% static 'css/recipe/crud.css'%} ">
+<script src="{% static 'js/components/ingredients.js' %}"></script>
+<script src="{% static 'js/components/image-holder.js' %}"></script>
+{% endblock %}
 {% block page_content %}
     <form method="post" novalidate action="{{ request.path }}">
         <div class="columns">
@@ -35,7 +36,7 @@
         </div>
         <div class="columns">
             <div class="column">
-                TODO: Image holder
+                <image-holder></image-holder>
             </div>
             <div class="column"><b-tabs position="is-centered">
         <b-tab-item label="Ingredients" icon="food-croissant">
@@ -65,7 +66,16 @@
         </div>
     </div>
     {% csrf_token %}
+     {% for error in form.image.errors %}
+            <div class="invalid-feedback">
+                {{ error }}
+            </div>
+            {% endfor %}
     {% for field in form.vanilla_fields %}
+        {% if field.is_hidden %}
+            {{ field }}
+
+            {% else %}
     <div class="form-group field is-horizontal">
         <div class="field-label is-normal">
             <label class="label">{{ field.label_tag }}</label>
@@ -82,6 +92,7 @@
             {% endif %}
         </div>
     </div>
+        {% endif %}
     {% endfor %}
     <div class="field is-horizontal">
         <div class="field-label">
@@ -98,8 +109,8 @@
         </div>
     </div>
 </form>
-
 <script>
+
     new Vue({
         el: '#app',
         data: {
