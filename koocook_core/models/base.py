@@ -10,13 +10,6 @@ class SerialisableModel:
     body = None
     exclude = ()
 
-    # Obsolete
-    # @staticmethod
-    # def process_text_format(text: str, text_format: str = "md") -> str:
-    #     if text_format == 'md':
-    #         return mark_safe(markdown(text, safe_mode='escape', extensions=['fenced_code']))
-    #     return mark_safe(text)
-
     @property
     def as_dict(self) -> dict:
         dict_repr = {field.name: getattr(self, field.name) for field in self._meta.fields
