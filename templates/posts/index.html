@@ -137,12 +137,10 @@
         },
     methods: {
     async createPost() {
-      const formData = new FormData();
-      for (const prop in this.currentPost) {
-        formData.append(prop, this.currentPost[prop]);
-      }
+      const formBody = new FormData();
+        formBody.set("body", this.currentPost.body);
       const resp = await fetch(`/posts/`, {
-        body: "body=" + this.currentPost.body,
+        body: new URLSearchParams(formBody),
         method: "POST", credentials: 'include', headers: {
           'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'X-CSRFToken': getCookie('csrftoken')
         }
@@ -160,8 +158,10 @@
       }
     },
     async editPost(post_index) {
+        const formBody = new FormData();
+        formBody.set("body", this.posts[post_index].body);
       const resp = await fetch(`/posts/${this.posts[post_index].id}`, {
-        body: "body=" + this.posts[post_index].body,
+        body: new URLSearchParams(formBody),
         method: "PATCH", credentials: 'include', headers: {
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
             'X-CSRFToken': getCookie('csrftoken')

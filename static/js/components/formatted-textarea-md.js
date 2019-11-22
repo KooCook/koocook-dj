@@ -6,7 +6,8 @@ Vue.component('formatted-textarea-md', {
   mounted() {
     this.mde = new SimpleMDE({
       element: this.$refs.area,
-      forceSync: true
+      forceSync: true,
+      spellChecker: true
     });
     this.mde.value(this.value);
     const self = this;

@@ -14,7 +14,7 @@ class MarkdownSource:
         return self.render_html()
 
     def sanitise(self):
-        self.source = html2markdown.convert(self.source)
+        self.source = html2markdown.convert(html.unescape(self.source))
         self.source = html.escape(self.source).replace("&amp;", "&")
 
     def render_html(self):
