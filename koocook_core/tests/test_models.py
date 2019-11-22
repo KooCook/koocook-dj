@@ -1,6 +1,7 @@
 import random
 from decimal import Decimal
 from typing import List, Union, Iterable
+import itertools
 
 from django import test as djangotest
 from django.contrib.auth.models import User
@@ -167,6 +168,9 @@ class TestAggregateRatingModel(djangotest.TestCase):
 
 
 class TestAuthorModel(djangotest.TestCase):
+
+    fixtures = ['test_authors.json', 'test_users.json']
+
     def setUp(self) -> None:
         self.test_users = User.objects.all()
         self.test_authors = Author.objects.filter(koocook_user=None)
@@ -232,6 +236,9 @@ class TestAuthorModel(djangotest.TestCase):
 
 
 class TestCommentModel(djangotest.TestCase):
+
+    fixtures = ['test_authors.json', 'test_users.json']
+
     def setUp(self) -> None:
         self.test_user = User.objects.all()[0]
         self.test_author = Author.objects.all()[0]
@@ -477,6 +484,9 @@ class TestRecipeIngredientModel(djangotest.TestCase):
 
 
 class TestRatingModel(djangotest.TestCase):
+
+    fixtures = ['test_authors.json', 'test_users.json']
+
     def setUp(self) -> None:
         self.test_authors = Author.objects.all()
         self.test_objects = set_up_reviewables(self.test_authors)
