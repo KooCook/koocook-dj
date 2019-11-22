@@ -14,7 +14,7 @@ class RecipeForm(forms.ModelForm):
     class Meta:
         model = Recipe
         fields = '__all__'
-        exclude = ('date_published',)
+        exclude = ('author','date_published')
 
     @property
     def vanilla_fields(self):

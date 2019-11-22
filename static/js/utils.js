@@ -29,6 +29,14 @@ function getCookie(name) {
   return value != null ? unescape(value[1]) : null;
 }
 
+String.prototype.format = function() {
+  let str = this;
+  for (const arg in arguments) {
+    str = str.replace("{" + arg + "}", arguments[arg])
+  }
+  return str
+};
+
 Vue.filter("time-passed", function(date) {
   return moment(date).fromNow();
 });
