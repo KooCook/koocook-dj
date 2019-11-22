@@ -68,11 +68,11 @@ def _gen_first():
     import names
     firstnames = []
     with open(names.FILES[f'first:male']) as file:
-        for line in file:
+        for line in file.read().splitlines():
             name = line.split()[0].capitalize()
             firstnames.append(name)
     with open(names.FILES[f'first:female']) as file:
-        for line in file:
+        for line in file.read().splitlines():
             name = line.split()[0].capitalize()
             firstnames.append(name)
     random.shuffle(firstnames)
@@ -83,7 +83,7 @@ def _gen_last():
     import names
     lastnames = []
     with open(names.FILES['last']) as file:
-        for line in file:
+        for line in file.read().splitlines():
             name = line.split()[0].capitalize()
             lastnames.append(name)
     random.shuffle(lastnames)
@@ -92,13 +92,13 @@ def _gen_last():
 
 def _init_first():
     with open(TEST_DATA_DIR / 'firstnames.txt') as file:
-        for line in file:
+        for line in file.read().splitlines():
             cached_first_names.append(line)
 
 
 def _init_last():
     with open(TEST_DATA_DIR / 'lastnames.txt') as file:
-        for line in file:
+        for line in file.read().splitlines():
             cached_last_names.append(line)
 
 
