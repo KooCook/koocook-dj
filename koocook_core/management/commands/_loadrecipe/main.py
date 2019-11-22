@@ -154,7 +154,7 @@ def parse_recipe(recipe: structured_data.Recipe) -> Optional[models.Recipe]:
     if not skip:
         r.update(dct=data)
         return r
-    return
+    r.delete()
 
 
 def main():
