@@ -3,6 +3,7 @@ import json
 
 from django.contrib.postgres import fields
 from django.db import models
+from koocook_core.support.fraction import *
 
 from koocook_core import fields as koocookfields
 
@@ -54,4 +55,16 @@ class RecipeIngredient(models.Model):
 
     @property
     def nutrition(self):
-        return
+        nutrition_list = []
+        for nutrient in self.meta.nutrient:
+            if nutrient['nutrient'] not in list(map(lambda x: x['nutrient'], nutrition_list)):
+                nutrition_list.append(nutrient)
+            else:
+                for i in range(len(nutrition_list)):
+                    if nutrition_list[i]['nutrient'] == nutrient['nutrient']:
+                        nutrition_list[i]['quantity'] += nutrient['quantity']
+        return nutrition_list
+
+    @staticmethod
+    def sum_nutrient(first_):
+        pass
