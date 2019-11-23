@@ -8,6 +8,14 @@ class TestQuantity(unittest.TestCase):
     float_amounts = tuple(x / 8 for x in range(20))
     amounts = int_amounts + float_amounts
 
+    def setUp(self) -> None:
+        self.quantity1 = quantity.parse_quantity('1/3 g')
+        self.quantity2 = quantity.parse_quantity('2/3 g')
+        self.quantity3 = quantity.parse_quantity('3 g')
+        self.quantity4 = quantity.parse_quantity('1 g')
+        self.quantity5 = quantity.parse_quantity('4 g')
+        self.quantity6 = quantity.parse_quantity('4/3 g')
+
     def test_quantity_amount_can_be_int(self):
         for amount in TestQuantity.int_amounts:
             with self.subTest(amount=amount):
@@ -73,3 +81,20 @@ class TestQuantity(unittest.TestCase):
                             quantity.parse_quantity(quantity.Quantity(amount, u).get_db_str())
                         except ValueError as e:
                             raise self.failureException(f'test raised {e.__class__.__name__} unexpectedly') from e
+
+    def test_add_with_both_amount_are_fraction(self):
+        self.setUp()
+        summation1 = self.quantity1 + self.quantity1
+        self.assertEqual(summation1, self.quantity2)
+        summation2 = self.quantity1 + self.quantity2
+        self.assertEqual(summation2, self.quantity4)
+
+    def test_add_with_both_amount_are_int(self):
+        self.setUp()
+        summation = self.quantity3 + self.quantity4
+        self.assertEqual(summation, self.quantity5)
+
+    def test_add_fraction_with_int(self):
+        self.setUp()
+        summation = self.quantity1 + self.quantity4
+        self.assertEqual(summation, self.quantity6)
