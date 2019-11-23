@@ -50,6 +50,7 @@ class RecipeViewMixin:
         response = super().form_valid(form)
         tags = json.loads(self.request.POST.get('tags'))
         if tags:
+            form.instance.tag_set.clear()
             for tag in tags:
                 tag_body: dict = {field: tag[field] for field in tag if field
                                   in [f.name for f in Tag._meta.get_fields()]}

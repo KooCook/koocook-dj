@@ -16,8 +16,7 @@ class RecipeForm(forms.ModelForm):
     class Meta:
         model = Recipe
         fields = '__all__'
-        widgets = {'tag_set': forms.HiddenInput()}
-        exclude = ('author', 'date_published')
+        exclude = ('author', 'date_published', 'tag_set')
 
     @property
     def vanilla_fields(self):
