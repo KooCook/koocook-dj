@@ -18,7 +18,6 @@ class AuthAuthorMixin(SignInRequiredMixin):
 
     def form_valid(self, form):
         form.instance.author = Author.objects.get(user__user=self.request.user)
-        print(form.instance.author)
         return super().form_valid(form)
 
 
@@ -50,13 +49,21 @@ class RecipeViewMixin:
         response = super().form_valid(form)
         tags = json.loads(self.request.POST.get('tags'))
         if tags:
-            form.instance.tag_set.clear()
             for tag in tags:
                 tag_body: dict = {field: tag[field] for field in tag if field
                                   in [f.name for f in Tag._meta.get_fields()]}
-                if tag['label'] != '':
-                    tag_body['label'] = TagLabel.objects.create(name=tag['label']['name'])
-                form.instance.tag_set.add(Tag.objects.create(**tag_body))
+                if 'deleted' in tag and tag['deleted']:
+                    form.instance.tag_set.remove(Tag.objects.get(pk=tag['id']))
+                    Tag.objects.get(pk=tag['id']).delete()
+                else:
+                    if tag['label'] != '':
+                        tag_body['label'] = TagLabel.objects.create(name=tag['label']['name'])
+                    if 'id' not in tag_body:
+                        form.instance.tag_set.add(Tag.objects.create(**tag_body))
+                    else:
+                        obj = Tag.objects.get(pk=tag_body['id'])
+                        obj.name = tag_body['name']
+                        obj.save()
         else:
             form.instance.tag_set.clear()
         form.instance.save()

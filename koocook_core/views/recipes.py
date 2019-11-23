@@ -67,8 +67,10 @@ class RecipeCreateView(AuthAuthorMixin, RecipeViewMixin, CreateView):
 
 class RecipeUpdateView(AuthAuthorMixin, RecipeViewMixin, UpdateView):
     model = Recipe
-    fields = '__all__'  # ['name']
+    form_class = RecipeForm
+    # fields = '__all__'  # ['name']
     template_name = 'recipes/update.html'
+
 
     def get_success_url(self):
         return reverse('koocook_core:recipe-user')
