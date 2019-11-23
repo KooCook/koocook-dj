@@ -40,6 +40,11 @@ class Quantity:
             return False
         return other.amount == self.amount and other.unit == self.unit
 
+    def __add__(self, other):
+        if self.unit == other.unit:
+            result = self.amount + other.amount
+            return Quantity(result, self.unit)
+
 
 def parse_quantity(quantity_string: str) -> Quantity:
     amount, *unit = quantity_string.split(' ')
