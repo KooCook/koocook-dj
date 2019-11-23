@@ -3,7 +3,7 @@ import json
 
 from django.contrib.postgres import fields
 from django.db import models
-from koocook_core.support.fraction import *
+from koocook_core.support.quantity import Quantity, parse_quantity
 
 from koocook_core import fields as koocookfields
 
@@ -62,9 +62,12 @@ class RecipeIngredient(models.Model):
             else:
                 for i in range(len(nutrition_list)):
                     if nutrition_list[i]['nutrient'] == nutrient['nutrient']:
-                        nutrition_list[i]['quantity'] += nutrient['quantity']
+                        nutrition_list[i]['quantity'] = str(RecipeIngredient.sum_nutrient(
+                            nutrition_list[i]['quantity'], nutrient['quantity']
+                        ))
         return nutrition_list
 
     @staticmethod
-    def sum_nutrient(first_):
-        pass
+    def sum_nutrient(first_nutrient: str, second_nutrient: str):
+        result = parse_quantity(first_nutrient) + parse_quantity(second_nutrient)
+        return result

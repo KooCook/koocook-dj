@@ -56,7 +56,9 @@ class Recipe(models.Model):
                 else:
                     for i in range(len(nutrition_list)):
                         if nutrition_list[i]['nutrient'] == nutrient['nutrient']:
-                            nutrition_list[i]['quantity'] += nutrient['quantity']
+                            nutrition_list[i]['quantity'] = str(self.recipe_ingredients[0].sum_nutrient(
+                                nutrition_list[i]['quantity'], nutrient['quantity']
+                            ))
         return nutrition_list
 
     @property
