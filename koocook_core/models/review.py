@@ -1,11 +1,28 @@
+from typing import Union
 from django.db import models
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
 
-__all__ = ['Comment', 'Rating', 'AggregateRating']
+__all__ = ('AggregateRating', 'Comment', 'Rating', 'ReviewableModel')
 
 
-class Comment(models.Model):
+class ReviewableModel:
+    """
+        This creates an AggregateRating only after reviewables are actually created
+        and saved to a database; that is, it will be created once in need, not always.
+    """
+    aggregate_rating = None  # A signature for the AggregateRating field
+
+    def save(self, *args, **kwargs):
+        # If the aggregate rating of a reviewable has not yet been created
+        try:
+            getattr(self, 'aggregate_rating')
+        except AggregateRating.DoesNotExist:
+            self.aggregate_rating = AggregateRating.create_empty()
+        super().save(*args, **kwargs)  # Resolved at runtime
+
+
+class Comment(ReviewableModel, models.Model):
     author = models.ForeignKey(
         'koocook_core.Author',
         on_delete=models.PROTECT,
@@ -114,11 +131,6 @@ class Rating(models.Model):
                              type(obj))) from e.__context__
 
 
-def create_empty_aggregate_rating(**kwargs) -> 'AggregateRating':
-    """Creates an empty aggregate rating"""
-    return AggregateRating.objects.create(rating_value=0, rating_count=0, **kwargs)
-
-
 class AggregateRating(models.Model):
     rating_value = models.DecimalField(
         decimal_places=10,
@@ -178,8 +190,23 @@ class AggregateRating(models.Model):
         self.save()
 
     @property
-    def item_reviewed(self):
-        for reviewed_item in ['recipe', 'post', 'comment']:
-            item = getattr(self, reviewed_item, None)
-            if item:
-                return item
+    def item_reviewed(self) -> Union['Recipe', 'Post', 'Comment', None]:
+        try:
+            return self.recipe
+        except ObjectDoesNotExist:
+            pass
+        try:
+            return self.post
+        except ObjectDoesNotExist:
+            pass
+        try:
+            return self.comment
+        except ObjectDoesNotExist:
+            pass
+
+    @classmethod
+    def create_empty(cls, **kwargs) -> 'AggregateRating':
+        """Creates a new empty ``aggregate rating``."""
+        kwargs['rating_value'] = kwargs.pop('rating_value', 0)
+        kwargs['rating_count'] = kwargs.pop('rating_count', 0)
+        return cls.objects.create(**kwargs)
