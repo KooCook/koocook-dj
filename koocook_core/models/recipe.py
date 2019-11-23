@@ -2,7 +2,7 @@ from django.contrib.postgres import fields
 from django.db import models
 
 from koocook_core import fields as koocookfields
-from .review import create_empty_aggregate_rating
+# from .review import create_empty_aggregate_rating
 
 __all__ = ['Recipe']
 
@@ -33,14 +33,14 @@ class Recipe(models.Model):
     aggregate_rating = models.OneToOneField(
         'koocook_core.AggregateRating',
         on_delete=models.PROTECT,
-        blank=True,
-        default=create_empty_aggregate_rating,
+        blank=True, null=True,
+        # default=create_empty_aggregate_rating,
     )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if not hasattr(self, 'aggregate_rating'):
-            self.aggregate_rating = create_empty_aggregate_rating()
+        # if not hasattr(self, 'aggregate_rating'):
+        #     self.aggregate_rating = create_empty_aggregate_rating()
 
     @property
     def total_time(self):

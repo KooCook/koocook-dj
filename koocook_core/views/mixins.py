@@ -46,7 +46,20 @@ class CommentWidgetMixin(FormMixin, AuthAuthorMixin):
 
 class RecipeViewMixin:
     def form_valid(self, form):
+        from ..models import Tag, TagLabel
         response = super().form_valid(form)
+        tags = json.loads(self.request.POST.get('tags'))
+        if tags:
+            for tag in tags:
+                tag_body: dict = {field: tag[field] for field in tag if field
+                                  in [f.name for f in Tag._meta.get_fields()]}
+                if tag['label'] != '':
+                    tag_body['label'] = TagLabel.objects.create(name=tag['label']['name'])
+                form.instance.tag_set.add(Tag.objects.create(**tag_body))
+        else:
+            form.instance.tag_set.clear()
+        form.instance.save()
+
         ingredients = json.loads(self.request.POST.get('ingredients'))
         if ingredients:
             for ingredient in ingredients:

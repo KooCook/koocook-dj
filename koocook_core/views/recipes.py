@@ -11,7 +11,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import RecipeForm
 from .mixins import AuthAuthorMixin, CommentWidgetMixin, RecipeViewMixin, SignInRequiredMixin
 from ..models import Recipe, Author, KoocookUser, RecipeIngredient, MetaIngredient
-from ..support import Quantity
+from ..models.base import ModelEncoder
 
 
 class RecipeSearchListView(ListView):
@@ -77,6 +77,7 @@ class RecipeUpdateView(AuthAuthorMixin, RecipeViewMixin, UpdateView):
         import json
         context = super().get_context_data(**kwargs)
         context['ingredients'] = json.dumps([ing.to_dict for ing in list(self.get_object().recipe_ingredients.all())])
+        context['tags'] = json.dumps([ing.as_dict for ing in list(self.get_object().tag_set.all())], cls=ModelEncoder)
         return context
 
 

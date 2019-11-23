@@ -6,9 +6,9 @@ from .base import SerialisableModel
 __all__ = ['Comment', 'Rating', 'AggregateRating']
 
 
-def create_empty_aggregate_rating(**kwargs) -> 'AggregateRating':
-    """Creates an empty aggregate rating"""
-    return AggregateRating.objects.create(rating_value=0, rating_count=0, **kwargs)
+# def create_empty_aggregate_rating(**kwargs) -> 'AggregateRating':
+#     """Creates an empty aggregate rating"""
+#     return AggregateRating.objects.create(rating_value=0, rating_count=0, **kwargs)
 
 
 class Comment(SerialisableModel, models.Model):
@@ -21,8 +21,8 @@ class Comment(SerialisableModel, models.Model):
     body = models.TextField()
     aggregate_rating = models.OneToOneField(
         'koocook_core.AggregateRating',
-        on_delete=models.PROTECT, blank=True, null=True,
-        default=create_empty_aggregate_rating
+        on_delete=models.PROTECT, blank=True, null=True
+        # default=create_empty_aggregate_rating
     )
     # item_reviewed = models.URLField()
     reviewed_recipe = models.ForeignKey(
@@ -124,11 +124,6 @@ class Rating(models.Model):
                             '\'{}\' not \'\''.format(
                              type(self.reviewed_recipe or self.reviewed_post or self.reviewed_comment),
                              type(obj))) from e.__context__
-
-
-def create_empty_aggregate_rating(**kwargs) -> 'AggregateRating':
-    """Creates an empty aggregate rating"""
-    return AggregateRating.objects.create(rating_value=0, rating_count=0, **kwargs)
 
 
 class AggregateRating(models.Model):
