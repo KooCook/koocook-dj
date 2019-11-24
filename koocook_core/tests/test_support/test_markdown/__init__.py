@@ -2,13 +2,13 @@ import json
 import os
 import unittest
 
-from ...support.markdown import MarkdownSource
+from ....support.markdown import MarkdownSource
 
 
 def load_article():
 
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    article = json.loads(open(os.path.join(dir_path, "test_markdown/article.json")).read())
+    article = json.loads(open(os.path.join(dir_path, "article.json")).read())
     return article
 
 
