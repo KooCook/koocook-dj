@@ -1,6 +1,7 @@
 {% extends 'base/recipes.html' %}
 {% load widget_tweaks %}
 {% load static %}
+{% load recipe_extras %}
 {% block no_hero %}{% endblock %}
 {% block content_deps %}<script>
     const COMMENTS_ENDPOINTS = {
@@ -28,7 +29,7 @@
                         <div class="tags has-addons">
                             <span class="tag is-medium">{{ tag.name }}</span>
                             {% if tag.label %}
-                                <span class="tag {{ tag.label.level }} is-medium">
+                                <span class="tag {{ tag.label.level|tag_level }} is-medium">
                                     {{ tag.label.name }}
                                 </span>
                             {% endif %}
