@@ -2,7 +2,7 @@
 {% load static %}
 {% load widget_tweaks %}
 {% block page_title %}Post Stream{% endblock %}
-{% block content_deps %}<script src="{% static 'js/components/follow.js' %}"></script>{% endblock %}
+{% block content_deps %}<script src="{% static 'js/bundle.js' %}"></script>{% endblock %}
 {% block section_after_nav %}<section class="hero is-primary">
   <div class="hero-body">
     <div class="container">
@@ -95,7 +95,32 @@
       </div>
     </article>
   </b-tab-item>
-  <b-tab-item label="Trending"></b-tab-item>
+  <b-tab-item label="Trending"><article class="media" v-for="(userPost, upIndex) in allPosts" v-on:mouseover="$set(userPost, 'hovered', true)"
+      v-on:mouseleave="$set(userPost, 'hovered', false)">
+      <figure class="media-left">
+        <p class="image is-64x64">
+          <img src="https://bulma.io/images/placeholders/128x128.png">
+        </p>
+      </figure>
+      <div class="media-content">
+        <div class="content">
+          <p>
+            <strong>{% templatetag openvariable %} userPost.author.qualified_name
+              {% templatetag closevariable %}</strong> <small>@{% templatetag openvariable %} userPost.author.name
+              {% templatetag closevariable %}</small> • <follow-widget :followee-id="userPost.author.user.id" :followees="$refs.followees.followees"></follow-widget>
+            <br>
+          </p>
+            <p>{% templatetag openvariable %} userPost.body {% templatetag closevariable %}</p>
+        </div>
+        <nav class="level is-mobile">
+          <div class="level-left">
+          </div>
+        </nav>
+      </div>
+      <div class="media-right">
+          <small>{% templatetag openvariable %} userPost.date_published | time-passed {% templatetag closevariable %}</small>
+      </div>
+    </article></b-tab-item>
   <b-tab-item label="Following"><article class="media" v-for="(userPost, upIndex) in followeePosts" v-on:mouseover="$set(userPost, 'hovered', true)"
       v-on:mouseleave="$set(userPost, 'hovered', false)">
       <figure class="media-left">
@@ -108,39 +133,22 @@
           <p>
             <strong>{% templatetag openvariable %} userPost.author.qualified_name
               {% templatetag closevariable %}</strong> <small>@{% templatetag openvariable %} userPost.author.name
-              {% templatetag closevariable %}</small> <small>{% templatetag openvariable %} userPost.date_published | time-passed
-              {% templatetag closevariable %}</small>
-            <br>
-            <div v-if="userPost.editing">
-              <form method="post" @submit.prevent="editPost(upIndex)">
-                {% csrf_token %}
-                <b-field>
-                  {{ form.body|attr:"v-model: userPost.body"|add_class:'textarea' }}
-                </b-field>
-                <b-field>
-                  <div class="buttons">
-                    <button type="submit" class="button is-primary is-small">Confirm edits</button>
-                  </div>
-                </b-field>
-              </form>
-            </div>
-            <span v-else>{% templatetag openvariable %} userPost.body {% templatetag closevariable %}</span>
+              {% templatetag closevariable %}</small> • <follow-widget :followee-id="userPost.author.user.id" :followees="$refs.followees.followees"></follow-widget>
+            <p>{% templatetag openvariable %} userPost.body {% templatetag closevariable %}</p>
           </p>
         </div>
         <nav class="level is-mobile">
           <div class="level-left">
-            <a class="level-item" @click="showEdit(userPost)">
-              <span class="icon is-small"><i class="fas fa-pencil-alt"></i></span>
-            </a>
+
           </div>
         </nav>
       </div>
       <div class="media-right">
-          <follow-widget :followee-id="userPost.author.user.id" :followees="followees"></follow-widget>
+          <small>{% templatetag openvariable %} userPost.date_published | time-passed {% templatetag closevariable %}</small>
       </div>
     </article></b-tab-item>
 </b-tabs>
-
+    <followee-list ref="followees"></followee-list>
 <script>
 Object.assign(GLOBAL_DATA, {
       activeTab: 0,
@@ -159,7 +167,7 @@ Object.assign(GLOBAL_DATA, {
           },
         });
 
-  app = new Vue({
+  const app = new Vue({
     el: '#app',
     computed: {
       publicationElapsed() {
@@ -204,7 +212,7 @@ Object.assign(GLOBAL_DATA, {
       });
       if (resp.ok) {
       this.posts[post_index].editing = false;
-        this.posts[post_index].body = JSON.parse((await resp.json()).current).body;
+        this.posts[post_index].body = (await resp.json()).current.body;
 
         this.$buefy.toast.open({
           message: 'Successfully edited the post!',
@@ -257,10 +265,34 @@ Object.assign(GLOBAL_DATA, {
       if (resp.ok) {
           const responseData = await resp.json();
         this.posts = responseData.current;
+      } else {
+
+      }
+
+      resp = await fetch(`{% url 'koocook_core:posts:followee' %}`, {
+            method: "GET", credentials: 'include', headers: {
+              'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'X-CSRFToken': getCookie('csrftoken')
+            }
+          });
+      if (resp.ok) {
+          const responseData = await resp.json();
         this.followeePosts = responseData.current;
       } else {
 
       }
+
+      resp = await fetch(`{% url 'koocook_core:posts:ajax-all' %}`, {
+            method: "GET", credentials: 'include', headers: {
+              'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'X-CSRFToken': getCookie('csrftoken')
+            }
+          });
+      if (resp.ok) {
+          const responseData = await resp.json();
+        this.allPosts = responseData.current;
+      } else {
+
+      }
+
 
 
       }

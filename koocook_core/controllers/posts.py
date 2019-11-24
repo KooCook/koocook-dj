@@ -46,6 +46,11 @@ class PostController(BaseController):
         return ControllerResponse(status_text='Retrieved', obj=list(self.model.objects.filter(author=self.author)))
 
     @apply_author_from_session
+    def retrieve_all_from_following(self) -> ControllerResponse:
+        authors = [user.author for user in self.author.user.following.all()]
+        return ControllerResponse(status_text='Retrieved following', obj=list(self.model.objects.filter(author__in=authors)))
+
+    @apply_author_from_session
     def update_post(self, pk: int) -> ControllerResponse:
         obj = self.find_by_id(pk)
         if obj.author == self.author:
@@ -81,6 +86,9 @@ class PostHandler(BaseHandler):
         self.handler_map = {
             'user': {
                 'GET': 'retrieve_all_for_user'
+            },
+            'followee': {
+                'GET': 'retrieve_all_from_following'
             },
             'all': {
                 'GET': 'retrieve_all'
