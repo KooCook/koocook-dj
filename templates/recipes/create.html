@@ -9,7 +9,11 @@
 {% endblock %}
 {% block page_content %}
     <recipe-tag-input :attached="true" v-model="tags" ellipsis icon="tag" placeholder="Add a tag"
-    :allow-new="true" autocomplete></recipe-tag-input>
+    :allow-new="true" autocomplete v-slot="slotProps" maxtags="18" maxlength="24">
+    <template slot="empty">
+        There are no existing tags, but you can create a new one.
+    </template>
+    </recipe-tag-input>
     <ingredient-chooser :ingredients="ingredients" :selectable-units="selectableUnits"></ingredient-chooser>
     <form method="post" novalidate action="{{ request.path }}">
     {% for hidden in form.hidden_fields %}

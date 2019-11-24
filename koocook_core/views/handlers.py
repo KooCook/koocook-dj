@@ -1,9 +1,11 @@
+import json
 from django.shortcuts import render, reverse, redirect, get_object_or_404
 from django.http import JsonResponse, HttpResponseForbidden
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 
-from ..models import Recipe, KoocookUser
+from ..models import Recipe, KoocookUser, Tag
+from ..models.base import ModelEncoder
 from .recipes import RecipeDetailView
 from .decorators import allow_post_comments
 
@@ -33,3 +35,10 @@ def handle_recipe(request, recipe_id):
         return response(request, pk=recipe_id)
     else:
         return HttpResponseForbidden()
+
+
+@require_http_methods(["GET"])
+def recipe_tags(request):
+    name = request.GET.get("name")
+    tags = list(Tag.objects.filter(name__icontains=name))
+    return JsonResponse({'current': tags}, encoder=ModelEncoder)

@@ -61,9 +61,12 @@ class RecipeViewMixin:
                     if 'id' not in tag_body:
                         form.instance.tag_set.add(Tag.objects.create(**tag_body))
                     else:
-                        obj = Tag.objects.get(pk=tag_body['id'])
-                        obj.name = tag_body['name']
-                        obj.save()
+                        try:
+                            obj = form.instance.tag_set.get(id=tag_body['id'])
+                            obj.name = tag_body['name']
+                            obj.save()
+                        except Tag.DoesNotExist:
+                            form.instance.tag_set.add(Tag.objects.get(pk=tag_body['id']))
         else:
             form.instance.tag_set.clear()
         form.instance.save()
