@@ -56,7 +56,7 @@ def to_int(value):
 
 @register.filter
 def rating(value):
-    return f'{value:.1f}'
+    return f'{float(value):.1f}' if value else f'{0:.1f}'
 
 
 @register.filter
