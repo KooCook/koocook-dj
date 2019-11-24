@@ -61,7 +61,7 @@ class RecipeSearchListView(ListView):
         context = super().get_context_data(**kwargs)
         if self.request.GET.get("popular"):
             context['search_filter'] = 'popular'
-        elif self.request.GET.get("kw"):
+        else:
             context['search_filter'] = 'name'
         return context
 
@@ -69,10 +69,11 @@ class RecipeSearchListView(ListView):
         popular = self.request.GET.get("popular")
         kw = self.request.GET.get("kw")
         if kw:
-            query_set = self.model.objects.filter(name__iexact=kw)
+            query_set = self.model.objects.filter(name__icontains=kw).order_by("name")
         else:
-            query_set = self.model.objects.all()
+            query_set = self.model.objects.all().order_by("date_published")
         if popular:
+            query_set.order_by('aggregate_rating__rating_value')
             query_set = sorted(query_set, key=lambda t: t.view_count, reverse=True)
         return query_set
 
