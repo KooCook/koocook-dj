@@ -18,7 +18,7 @@ class MarkdownSource:
         self.source = html.escape(self.source).replace("&amp;", "&")
 
     def render_html(self):
-        return markdown(self.source, safe_mode='escape', extensions=['fenced_code'])
+        return markdown(self.source, safe_mode='escape', extensions=['fenced_code', 'tables'])
 
     def get_db_str(self):
         return self.source
