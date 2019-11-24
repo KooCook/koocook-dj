@@ -88,10 +88,10 @@ class TestMarkdownSource(unittest.TestCase):
     # This prevents malicious attacks
     def test_html_escape(self):
         with self.subTest():
-            source = MarkdownSource("\"**Test**\"")
+            source = MarkdownSource('"**Test**"')
             self.assertEqual(source.rendered, "<p>&quot;<strong>Test</strong>&quot;</p>")
         with self.subTest():
-            source = MarkdownSource("<script></script>")
+            source = MarkdownSource('<script></script>')
             self.assertEqual(source.rendered, "<p>&lt;script&gt;&lt;/script&gt;</p>")
 
     def test_html_escaped(self):
@@ -108,4 +108,4 @@ class TestMarkdownSource(unittest.TestCase):
         self.maxDiff = None
         self.article = load_article()
         source = MarkdownSource(self.article['source'])
-        self.assertEqual(source.rendered, self.article["rendered"])
+        self.assertEqual(source.rendered, self.article['rendered'])
