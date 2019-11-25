@@ -217,6 +217,9 @@ def parse_kwargs_item_reviewed(kwargs: Dict[str, Any]) -> Dict[str, Any]:
             raise TypeError(f'item_reviewed must be of the type Recipe, '
                             f"Post or Comment not '{type(item)}'")
     else:
+        # monkey patch
+        if kwargs == {}:
+            return {}
         count = list(k in kwargs for k in ('reviewed_recipe', 'reviewed_post',
                                            'reviewed_comment')).count(True)
         if count != 1:

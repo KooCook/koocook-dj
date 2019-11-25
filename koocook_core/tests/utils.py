@@ -6,6 +6,9 @@ import numpy as np
 
 from koocook.settings.dirs import TEST_DATA_DIR
 
+np.random.seed(0)
+random.seed(0)
+
 cached_first_names = []
 cached_last_names = []
 
@@ -13,7 +16,6 @@ cached_last_names = []
 def gen_ints(a: int, b: int, n: int) -> List[int]:
     """Returns an iterable (currently list) of non-repeating, randomized ints."""
     assert a < b, "a must be smaller than b"
-    random.seed(0)
     return random.sample(range(a, b), n)
 
 
@@ -26,7 +28,6 @@ def gen_floats(a: float, b: float, n: int) -> List[float]:
         https://stackoverflow.com/questions/45394981/how-to-generate-list-of-unique-random-floats-in-python
     """
     assert a < b, "a must be smaller than b"
-    np.random.seed(0)
     out = np.empty(n)
     needed = n
     while needed != 0:
@@ -47,7 +48,6 @@ def gen_decimals(a: float, b: float, n: int) -> Iterable[Decimal]:
         https://stackoverflow.com/questions/45394981/how-to-generate-list-of-unique-random-floats-in-python
     """
     assert a < b, "a must be smaller than b"
-    np.random.seed(0)
     out = np.empty(n)
     needed = n
     while needed != 0:
@@ -61,7 +61,7 @@ def gen_decimals(a: float, b: float, n: int) -> Iterable[Decimal]:
 
 def gen_username(first_name: str, last_name: str = '') -> str:
     """Returns a hopefully unique username for Django."""
-    return first_name + last_name + str(random.random())[2:]
+    return first_name + last_name + str(random.random())[2:7]
 
 
 def _gen_first():
