@@ -7,7 +7,7 @@ def main(*args):
     if args:
         n = args[0]
     else:
-        n = 2
+        n = 1
 
     for _ in range(n):
         Author.objects.create(name=utils.get_first_name())
