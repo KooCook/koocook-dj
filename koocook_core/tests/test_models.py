@@ -1,6 +1,4 @@
-import random
 from decimal import Decimal
-from typing import List, Union, Iterable
 import itertools
 
 from django import test as djangotest
