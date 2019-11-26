@@ -16,7 +16,7 @@ Vue.component("star-rating", {
     },
     template: `
     <b-rate v-model="ratingScore"
-            icon-pack="fas"
+            
             icon="star"
             :max="max"
             :disabled="readOnly">

@@ -73,11 +73,8 @@ Vue.component("comments-widget", {
     "        </article>" +
     "</div>\n",
   mounted: async function() {
-    let comments = await this.prefetchData();
-    comments.forEach(function(v) {
-      v.showReplies = false;
-      v.replies = 0;
-    });
+    const comments = await this.prefetchData();
+    if (Array.isArray(comments)) comments.forEach(function(v) { v.showReplies = false; v.replies = 0; });
     if (this.isReply) this.$emit("declare_replies", comments.length);
     this.comments = comments;
   },
@@ -90,7 +87,7 @@ Vue.component("comments-widget", {
         this.isReply || this.customUrl
           ? this.comment_endpoints.GET.format(this.itemId)
           : this.comment_endpoints.GET;
-      return JSON.parse((await (await fetch(endpoint)).json()).current);
+      return (await (await fetch(endpoint)).json()).current;
     },
     async postComment() {
       if (this.pending) return;
@@ -116,7 +113,7 @@ Vue.component("comments-widget", {
           message: "Successfully commented!",
           type: "is-success"
         });
-        this.comments.push(JSON.parse((await resp.json()).current));
+        this.comments.push((await resp.json()).current);
       } else {
         this.pending = false;
         this.$buefy.toast.open({

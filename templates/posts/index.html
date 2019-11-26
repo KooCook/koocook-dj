@@ -3,7 +3,15 @@
 {% load static %}
 {% block page_title %}Post Stream{% endblock %}
 {% block content_deps %}
-<script src="{% static 'js/components/follow.js' %}"></script>{% endblock %}
+    <script>
+    const COMMENTS_ENDPOINTS = {
+        GET: `{0}/comments`,
+        POST: `{0}/comments`,
+        PATCH: `{0}/comments`,
+    };
+</script>
+<script src="{% static 'js/components/follow.js' %}"></script>
+<script src="{% static 'js/components/comments.js' %}"></script>{% endblock %}
 {% block section_after_nav %}<section class="hero is-primary">
   <div class="hero-body">
     <div class="container">
@@ -16,15 +24,6 @@
 
   </div>
 </section>{% endblock %}
-{% block content_deps %}<script>
-    const COMMENTS_ENDPOINTS = {
-        GET: `{0}/comments`,
-        POST: `{0}/comments`,
-        PATCH: `{0}/comments`,
-    };
-</script>
-<script src="{% static 'js/components/comments.js' %}"></script>
-{% endblock %}
 {% block page_content %}
 <b-modal :active.sync="showModal" has-modal-card trap-focus aria-role="dialog" aria-modal>
   <div class="modal-card">
@@ -88,7 +87,7 @@
                 </b-field>
               </form>
             </div>
-            <span v-else v-html="userPost.renderedBody"></span>
+            <span v-else v-html="userPost.rendered"></span>
           </p>
         </div>
         <nav class="level is-mobile">
@@ -138,7 +137,7 @@
                 </b-field>
               </form>
             </div>
-            <span v-else>{% templatetag openvariable %} userPost.body {% templatetag closevariable %}</span>
+            <span v-else>{% templatetag openvariable %} userPost.rendered {% templatetag closevariable %}</span>
           </p>
         </div>
         <nav class="level is-mobile">
@@ -263,7 +262,7 @@
         });
         if (resp.ok) {
         this.posts[post_index].editing = false;
-          this.posts[post_index].renderedBody = JSON.parse((await resp.json()).post).renderedBody;
+          this.posts[post_index].rendered = (await resp.json()).post.rendered;
 
           this.$buefy.toast.open({
             message: 'Successfully edited the post!',
