@@ -3,6 +3,9 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from .base import SerialisableModel
 
+from ..support import FormattedField
+from .base import SerialisableModel
+
 __all__ = ['Comment', 'Rating', 'AggregateRating']
 
 
@@ -18,7 +21,7 @@ class Comment(SerialisableModel, models.Model):
         on_delete=models.PROTECT,
     )
     date_published = models.DateTimeField(auto_now_add=True)
-    body = models.TextField()
+    body = FormattedField()  # models.TextField()
     aggregate_rating = models.OneToOneField(
         'koocook_core.AggregateRating',
         on_delete=models.PROTECT, blank=True, null=True,
@@ -71,6 +74,19 @@ class Comment(SerialisableModel, models.Model):
     @classmethod
     def field_names(cls):
         return [f.name for f in cls._meta.fields]
+
+    @property
+    def processed_body(self):
+        if hasattr(self.body, 'rendered'):
+            return self.body.rendered
+        else:
+            return self.body
+
+    @property
+    def as_dict(self):
+        base_dict_repr = super().as_dict
+        base_dict_repr.update({'rendered': self.processed_body})
+        return base_dict_repr
 
 
 class Rating(models.Model):

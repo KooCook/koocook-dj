@@ -13,6 +13,7 @@
 {% endblock %}
 {% block content_page_name %}{{ object.name }}{% endblock %}
 {% block page_content %}
+
 <div style="padding: 0 3rem">
     <header class="section" style="padding-bottom: 1.5rem; margin-bottom: 1.5rem">
       <div class="container">
@@ -480,12 +481,12 @@
       </div>
     </section>
     <script>
-
-        app = new Vue({
+        const app = new Vue({
             el: '#app',
             data: {
                 searchName: ''
             }
         })
     </script>
+</div>
 {% endblock %}

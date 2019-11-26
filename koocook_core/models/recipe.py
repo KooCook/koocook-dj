@@ -48,7 +48,6 @@ class Recipe(models.Model):
 
     @property
     def nutrition(self):
-
         return
 
     @property
