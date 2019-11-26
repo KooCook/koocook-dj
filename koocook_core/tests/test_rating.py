@@ -29,7 +29,7 @@ class RatingTest(TestCase):
         self.username = "testuser"
         password = "123$*HCfjdksla"
         self.user = User.objects.create_user(self.username, password=password)
-        self.client.login(username=self.username, password=self.userpass)
+        self.client.login(username=self.username, password=password)
         self.recipe = create_dummy_recipe(self.user)
         self.post = create_dummy_post(self.user)
         self.recipe_rate_url = reverse('koocook_core:recipe-rate', args=(self.recipe.id,))
