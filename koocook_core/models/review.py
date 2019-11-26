@@ -36,8 +36,7 @@ class Comment(SerialisableModel, ReviewableModel, models.Model):
     body = FormattedField()  # models.TextField()
     aggregate_rating = models.OneToOneField(
         'koocook_core.AggregateRating',
-        on_delete=models.PROTECT, blank=True, null=True,
-        default=create_empty_aggregate_rating
+        on_delete=models.PROTECT, blank=True, null=True
     )
     # item_reviewed = models.URLField()
     reviewed_recipe = models.ForeignKey(

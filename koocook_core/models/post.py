@@ -10,7 +10,7 @@ __all__ = ('Post',)
 
 
 class Post(SerialisableModel, ReviewableModel, models.Model):
-    include = ('hidden',)
+    include = ('rendered',)
     author = models.ForeignKey(
         'koocook_core.Author',
         on_delete=models.PROTECT,
@@ -25,14 +25,8 @@ class Post(SerialisableModel, ReviewableModel, models.Model):
     )
 
     @property
-    def processed_body(self):
+    def rendered(self):
         if hasattr(self.body, 'rendered'):
             return self.body.rendered
         else:
             return self.body
-
-    @property
-    def as_dict(self):
-        base_dict_repr = super().as_dict
-        base_dict_repr.update({'renderedBody': self.processed_body})
-        return base_dict_repr
