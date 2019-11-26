@@ -7,6 +7,8 @@ from ..models import Rating, Comment, Recipe, Post
 
 
 class RatableController(BaseController):
+    item_reviewed_field = 'reviewed_item'
+
     def __init__(self, model: Type[Model], request_fields: dict):
         super().__init__(model, request_fields)
 

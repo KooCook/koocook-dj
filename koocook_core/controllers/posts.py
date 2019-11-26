@@ -5,12 +5,14 @@ from django.http import HttpRequest, HttpResponse, JsonResponse, QueryDict
 
 from .base import BaseController, BaseHandler, ControllerResponse, ControllerResponseUnauthorised, ControllerResponseForbidden
 from .decorators import apply_author_from_session, to_koocook_user
+from .mixins import CommentControllerMixin
 from .rating import RatableController
 from ..models import Post, Author
 from ..views import GuestPostStreamView, UserPostStreamView
 
 
-class PostController(RatableController):
+class PostController(RatableController, CommentControllerMixin):
+    item_reviewed_field = 'reviewed_post'
 
     def __init__(self):
         super().__init__(Post, {})
@@ -18,10 +20,6 @@ class PostController(RatableController):
     @classmethod
     def default(cls):
         return cls()
-
-    @property
-    def author(self):
-        return self.request_fields['author']
     #
     # def get_model_request_fields(self, request: HttpRequest) -> dict:
     #     return {field_name: request.POST.get(field_name) for field_name in self.model_field_names}
@@ -65,7 +63,7 @@ class PostController(RatableController):
     def update_post(self, pk: int) -> ControllerResponse:
         obj = self.find_by_id(pk)
         if obj.author == self.author:
-            return self.update(obj)
+            return super().update(obj)
         else:
             return ControllerResponseForbidden()
 
@@ -95,6 +93,10 @@ class PostHandler(BaseHandler):
     def __init__(self):
         super().__init__(PostController.default())
         self.handler_map = {
+            'comment': {
+                'GET': 'get_all_comments_of_item_id',
+                'POST': 'comment'
+            },
             'rate': {
                 'POST': 'rate'
             },
