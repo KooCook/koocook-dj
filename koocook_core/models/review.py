@@ -2,6 +2,10 @@ from typing import Union
 from django.db import models
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
+from .base import SerialisableModel
+
+from ..support import FormattedField
+from .base import SerialisableModel
 
 __all__ = ('AggregateRating', 'Comment', 'Rating', 'ReviewableModel')
 
@@ -22,16 +26,18 @@ class ReviewableModel:
         super().save(*args, **kwargs)  # Resolved at runtime
 
 
-class Comment(ReviewableModel, models.Model):
+class Comment(SerialisableModel, ReviewableModel, models.Model):
+    exclude = ('reviewed_comment', 'reviewed_recipe', 'reviewed_post')
     author = models.ForeignKey(
         'koocook_core.Author',
         on_delete=models.PROTECT,
     )
-    date_published = models.DateTimeField()
-    body = models.TextField()
+    date_published = models.DateTimeField(auto_now_add=True)
+    body = FormattedField()  # models.TextField()
     aggregate_rating = models.OneToOneField(
         'koocook_core.AggregateRating',
-        on_delete=models.PROTECT,
+        on_delete=models.PROTECT, blank=True, null=True,
+        default=create_empty_aggregate_rating
     )
     # item_reviewed = models.URLField()
     reviewed_recipe = models.ForeignKey(
@@ -52,6 +58,10 @@ class Comment(ReviewableModel, models.Model):
         null=True,
         blank=True,
     )
+
+    def create_empty_aggregate_rating(**kwargs) -> 'AggregateRating':
+        """Creates an empty aggregate rating"""
+        return AggregateRating.objects.create(rating_value=0, rating_count=0, **kwargs)
 
     @property
     def item_reviewed(self):
@@ -76,6 +86,23 @@ class Comment(ReviewableModel, models.Model):
                             '\'{}\' not \'\''.format(
                              type(self.reviewed_recipe or self.reviewed_post or self.reviewed_comment),
                              type(obj))) from e.__context__
+
+    @classmethod
+    def field_names(cls):
+        return [f.name for f in cls._meta.fields]
+
+    @property
+    def processed_body(self):
+        if hasattr(self.body, 'rendered'):
+            return self.body.rendered
+        else:
+            return self.body
+
+    @property
+    def as_dict(self):
+        base_dict_repr = super().as_dict
+        base_dict_repr.update({'rendered': self.processed_body})
+        return base_dict_repr
 
 
 class Rating(models.Model):
@@ -210,3 +237,6 @@ class AggregateRating(models.Model):
         kwargs['rating_value'] = kwargs.pop('rating_value', 0)
         kwargs['rating_count'] = kwargs.pop('rating_count', 0)
         return cls.objects.create(**kwargs)
+
+    def __str__(self) -> str:
+        return str(self.rating_value)

@@ -53,8 +53,8 @@
             <star-rating recipe-name="{{ recipe.name }}" :item-id="{{ recipe.id }}" :initial="{{ recipe.aggregate_rating.rating_value }}" read-only="true"></star-rating>
       <div class="media-content">
           <p class="title is-4"><a href="{% url 'koocook_core:recipe' recipe.id %}">{{ recipe.name }}</a> <span class="buttons is-inline-flex has-addons  is-small">
-      <a href="{% url 'koocook_core:recipe-edit' recipe.id %}"><button class="button is-primary is-outlined is-small"><i class="fas fa-pencil-alt"></i> </button></a>
-     <button class="button is-danger is-outlined is-small is-light" @click="showConfirmDeletion({{ recipe.id }})"><i class="fas fa-times"></i> </button>
+              <a href="{% url 'koocook_core:recipe-edit' recipe.id %}"><button class="button is-primary is-outlined is-small"><b-icon icon="pencil"></b-icon> </button></a>
+     <button class="button is-danger is-outlined is-small is-light" @click="showConfirmDeletion({{ recipe.id }})"><b-icon icon="close"></b-icon> </button>
         </span></p>
 
       </div>

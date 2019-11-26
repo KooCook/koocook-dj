@@ -121,4 +121,3 @@ class PostHandler(BaseHandler):
     # def handle(self, request: HttpRequest, pk=None):
     #     func, arg_pk = self._get_handler_for_method(request.method)
     #     return func(request, pk) if arg_pk else func(request)
-
