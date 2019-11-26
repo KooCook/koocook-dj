@@ -52,7 +52,7 @@ class UserRecipeListView(SignInRequiredMixin, ListView):
         return Recipe.objects.filter(author=author)
 
 
-class RecipeCreateView(AuthAuthorMixin, RecipeViewMixin, CreateView):
+class RecipeCreateView(SignInRequiredMixin, AuthAuthorMixin, RecipeViewMixin, CreateView):
     http_method_names = ['post', 'get']
     form_class = RecipeForm
     template_name = 'recipes/create.html'
@@ -65,7 +65,7 @@ class RecipeCreateView(AuthAuthorMixin, RecipeViewMixin, CreateView):
         return reverse('koocook_core:recipe-user')
 
 
-class RecipeUpdateView(AuthAuthorMixin, RecipeViewMixin, UpdateView):
+class RecipeUpdateView(SignInRequiredMixin, AuthAuthorMixin, RecipeViewMixin, UpdateView):
     form_class = RecipeForm
     model = Recipe
     # fields = '__all__'  # ['name']
