@@ -1,3 +1,12 @@
+.koocook-themed.hero {
+    background-color: #F9F5E4;
+    outline: 3px solid #BCB8AA;
+    outline-offset: -1rem;
+}
+
+.koocook-themed.hero .title {
+    color: #a8a496;
+}
 
 .search-bar {
   box-shadow: none;
