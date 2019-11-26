@@ -11,9 +11,10 @@ from .comments import *
 from .posts import *
 from .recipes import *
 from .handlers import *
-from .forms import RecipeForm
+from .forms import RecipeForm, FeedbackForm
 from ..models import Author
 from ..models.user import KoocookUser
+from .feedback import post_feedback
 
 
 @receiver(post_save, sender=User)

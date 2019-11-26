@@ -14,5 +14,6 @@ urlpatterns = [
     path('recipes/<int:pk>/edit', views.RecipeUpdateView.as_view(), name='recipe-edit'),
     path('recipes/new', views.RecipeCreateView.as_view(), name='recipe-create'),
     path('recipes/yours', views.UserRecipeListView.as_view(), name='recipe-user'),
-    path('recipes/detail', views.RecipeDetailView.as_view(), name='detail'),  # Placeholder for now...
+    path('recipes/detail', views.RecipeDetailView.as_view(), name='detail'),
+    path('feedback/', views.post_feedback, name='feedback')
 ]

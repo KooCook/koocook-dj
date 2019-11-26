@@ -1,0 +1,32 @@
+{% extends 'base/content.html' %}
+{% load widget_tweaks %}
+{% load static %}
+
+{% block page_title %}Feedback{% endblock %}
+
+{% block section_after_nav %}
+<section class="hero is-primary">
+    <div class="hero-body">
+        <div class="container">
+            <h1 class="title">
+                Feedback Me!!!
+            </h1>
+        </div>
+    </div>
+    <div class="hero-foot">
+    </div>
+</section>
+{% endblock %}
+
+{% block content_deps %}
+{% endblock %}
+
+{% block page_body %}
+<div>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Send</button>
+    </form>
+</div>
+{% endblock %}
