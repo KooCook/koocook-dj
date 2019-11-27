@@ -1,20 +1,28 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+from .base import SerialisableModel
 
 __all__ = ['Comment', 'Rating', 'AggregateRating']
 
 
-class Comment(models.Model):
+# def create_empty_aggregate_rating(**kwargs) -> 'AggregateRating':
+#     """Creates an empty aggregate rating"""
+#     return AggregateRating.objects.create(rating_value=0, rating_count=0, **kwargs)
+
+
+class Comment(SerialisableModel, models.Model):
+    exclude = ('reviewed_comment', 'reviewed_recipe', 'reviewed_post')
     author = models.ForeignKey(
         'koocook_core.Author',
         on_delete=models.PROTECT,
     )
-    date_published = models.DateTimeField()
+    date_published = models.DateTimeField(auto_now_add=True)
     body = models.TextField()
     aggregate_rating = models.OneToOneField(
         'koocook_core.AggregateRating',
-        on_delete=models.PROTECT,
+        on_delete=models.PROTECT, blank=True, null=True
+        # default=create_empty_aggregate_rating
     )
     # item_reviewed = models.URLField()
     reviewed_recipe = models.ForeignKey(
@@ -59,6 +67,10 @@ class Comment(models.Model):
                             '\'{}\' not \'\''.format(
                              type(self.reviewed_recipe or self.reviewed_post or self.reviewed_comment),
                              type(obj))) from e.__context__
+
+    @classmethod
+    def field_names(cls):
+        return [f.name for f in cls._meta.fields]
 
 
 class Rating(models.Model):
@@ -112,11 +124,6 @@ class Rating(models.Model):
                             '\'{}\' not \'\''.format(
                              type(self.reviewed_recipe or self.reviewed_post or self.reviewed_comment),
                              type(obj))) from e.__context__
-
-
-def create_empty_aggregate_rating(**kwargs) -> 'AggregateRating':
-    """Creates an empty aggregate rating"""
-    return AggregateRating.objects.create(rating_value=0, rating_count=0, **kwargs)
 
 
 class AggregateRating(models.Model):
@@ -177,3 +184,6 @@ class AggregateRating(models.Model):
     @property
     def item_reviewed(self):
         return self.recipe or self.post or self.comment
+
+    def __str__(self) -> str:
+        return str(self.rating_value)

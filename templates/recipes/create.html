@@ -1,20 +1,25 @@
-{% extends 'base/content.html' %}
-{% load widget_tweaks %}
+{% extends 'base/recipes.html' %}
 {% load static %}
+{% load widget_tweaks %}
+{% block hero_title %}Create a recipe{% endblock %}
 {% block page_title %}Create a recipe{% endblock %}
-{% block content_deps %}<script src="{% static 'js/components/ingredients.js' %}"></script>{% endblock %}
-{% block section_after_nav %}<section class="hero is-light">
-      <div class="hero-body">
-        <div class="container">
-          <h1 class="title">
-            Create a recipe
-          </h1>
-        </div>
-      </div>
-    </section>{% endblock %}
+{% block content_page_name %}Create a recipe{% endblock %}
+{% block content_deps %}<script src="{% static 'js/components/ingredients.js' %}"></script>
+<script src="{% static 'js/bundle.js' %}"></script>
+{% endblock %}
 {% block page_content %}
+    <recipe-tag-input :attached="true" v-model="tags" ellipsis icon="tag" placeholder="Add a tag"
+    :allow-new="true" autocomplete maxtags="18" maxlength="24">
+    <template v-slot:default="slotProps"></template>
+    <template slot="empty">
+        There are no existing tags, but you can create a new one.
+    </template>
+    </recipe-tag-input>
     <ingredient-chooser :ingredients="ingredients" :selectable-units="selectableUnits"></ingredient-chooser>
     <form method="post" novalidate action="{{ request.path }}">
+    {% for hidden in form.hidden_fields %}
+        {{ hidden }}
+    {% endfor %}
     <input name="ingredients" type="hidden" :value="JSON.stringify(ingredients)">
     <div class="form-group field is-horizontal">
         <div class="field-label is-medium">
@@ -89,6 +94,7 @@
         data: {
             searchName: '',
             ingredients: [],
+            tags: [ ],
             unitConversionFactor: CONVERSION_FACTORS,
             selectableUnits: CONVERSION_UNITS
         }
