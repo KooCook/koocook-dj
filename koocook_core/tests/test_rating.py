@@ -29,8 +29,15 @@ class RatingTest(AuthTestCase):
         super().setUp()
         self.recipe = create_dummy_recipe(self.user)
         self.post = create_dummy_post(self.user)
+        self.client.login(username=self.user2.username, password=self.password)
         self.recipe_rate_url = reverse('koocook_core:recipe-rate', args=(self.recipe.id,))
         self.post_rate_url = reverse('koocook_core:posts:rate', args=(self.post.id,))
+
+    def test_rate_same_as_item_author(self):
+        self.client.login(username=self.user.username, password=self.password)
+        response = self.client.post(self.recipe_rate_url, {'rating_score': 3})
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(get_lazy_model_object(Recipe, self.recipe.id).aggregate_rating.rating_count, 0)
 
     def test_rate_recipe_single_score(self):
         response = self.client.post(self.recipe_rate_url, {'rating_score': 3})

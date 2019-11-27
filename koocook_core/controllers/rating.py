@@ -1,12 +1,13 @@
 from typing import Type
 from django.db.models import Model
 
-from .base import BaseController, ControllerResponse
+from .base import BaseController, ControllerResponse, ControllerResponseForbidden
 from .decorators import apply_author_from_session
+from .mixins import AuthorControllerMixin
 from ..models import Rating, Comment, Recipe, Post
 
 
-class RatableController(BaseController):
+class RatableController(AuthorControllerMixin, BaseController):
     item_reviewed_field = 'reviewed_item'
 
     def __init__(self, model: Type[Model], request_fields: dict):
@@ -15,6 +16,8 @@ class RatableController(BaseController):
     @apply_author_from_session
     def rate(self, pk: int):
         item_reviewed = self.model.objects.get(pk=pk)
+        if self.author == item_reviewed.author:
+            return ControllerResponseForbidden()
         rating_score = int(self.request_fields['rating_score'])
         rating_fields = {'author': self.request_fields['author']}
         if self.model == Comment:

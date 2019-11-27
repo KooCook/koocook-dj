@@ -12,7 +12,10 @@
 const REPLIES_ENDPOINTS = {
   GET: `/comments/{0}`,
   POST: `/comments/`,
-  PATCH: `/comments/{0}`
+  PATCH: `/comments/{0}`,
+  rate: {
+    POST: `/comments/{0}/rate`,
+  }
 };
 
 Vue.component("comments-widget", {
@@ -20,6 +23,7 @@ Vue.component("comments-widget", {
     return {
       comment_endpoints: COMMENTS_ENDPOINTS,
       replies: 0,
+      rateURL: REPLIES_ENDPOINTS.rate.POST,
       comments: [],
       comment: {
         body: ""
@@ -38,7 +42,8 @@ Vue.component("comments-widget", {
     '          <div class="media-content">\n' +
     '            <div class="content">\n' +
     "              <p>\n" +
-    "                <strong>{{ comment.author.qualified_name }}</strong>\n" +
+    "                <strong>{{ comment.author.qualified_name }}</strong>" +
+      '<star-rating v-if="comment.id" :rate-url="rateURL.format(comment.id)" :item-id="comment.id" :initial="comment.aggregate_rating.rating_value"></star-rating>\n' +
     '                <span v-html="comment.rendered"></span>\n' +
     '                <small><!--<a>Like</a> ·--> <a @click="comment.showReplies = !comment.showReplies"><span v-if="!comment.showReplies"><span v-if="comment.replies">{{ comment.replies }} </span>Reply</span><span v-else>Hide replies</span></a> · {{ comment.date_published|time-passed }}</small>\n' +
     "              </p>\n" +
@@ -74,9 +79,10 @@ Vue.component("comments-widget", {
     "</div>\n",
   mounted: async function() {
     const comments = await this.prefetchData();
-    if (Array.isArray(comments)) comments.forEach(function(v) { v.showReplies = false; v.replies = 0; });
+    if (Array.isArray(comments)) {
+       comments.forEach(function(v) { v.showReplies = false; v.replies = 0; });
     if (this.isReply) this.$emit("declare_replies", comments.length);
-    this.comments = comments;
+    this.comments = comments; }
   },
   methods: {
     async prefetchData() {

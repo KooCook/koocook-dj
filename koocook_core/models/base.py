@@ -46,4 +46,7 @@ class ModelEncoder(JSONEncoder):
                 else:
                     return {field.name: getattr(obj, field.name) for field in obj._meta.fields}
             else:
-                return str(obj)
+                if type(obj) in [int, float]:
+                    return obj
+                else:
+                    return str(obj)

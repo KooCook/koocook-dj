@@ -20,7 +20,9 @@ class ReviewableModel:
     def save(self, *args, **kwargs):
         # If the aggregate rating of a reviewable has not yet been created
         try:
-            getattr(self, 'aggregate_rating')
+            rating = getattr(self, 'aggregate_rating')
+            if not rating:
+                self.aggregate_rating = AggregateRating.create_empty()
         except AggregateRating.DoesNotExist:
             self.aggregate_rating = AggregateRating.create_empty()
         super().save(*args, **kwargs)  # Resolved at runtime
@@ -233,8 +235,8 @@ class AggregateRating(models.Model):
     @classmethod
     def create_empty(cls, **kwargs) -> 'AggregateRating':
         """Creates a new empty ``aggregate rating``."""
-        kwargs['rating_value'] = kwargs.pop('rating_value', 0)
-        kwargs['rating_count'] = kwargs.pop('rating_count', 0)
+        kwargs['rating_value'] = 0 # kwargs.pop('rating_value', 0)
+        kwargs['rating_count'] = 0 # kwargs.pop('rating_count', 0)
         return cls.objects.create(**kwargs)
 
     def __str__(self) -> str:

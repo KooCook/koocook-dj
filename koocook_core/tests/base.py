@@ -21,6 +21,8 @@ class AuthTestCase(TestCase):
     def setUp(self) -> None:
         self.username = "testuser"
         password = "123$*HCfjdksla"
+        self.password = password
         self.user = User.objects.create_user(self.username, password=password)
+        self.user2 = User.objects.create_user("testuser2", password=self.password)
         self.client.login(username=self.username, password=password)
         self.author = Author.objects.get(user__user=self.user)

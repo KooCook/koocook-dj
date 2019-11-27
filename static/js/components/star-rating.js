@@ -1,15 +1,15 @@
 Vue.component("star-rating", {
     props: { itemId: Number, initial: {
-            type: Number, default: 0
+            type: [Number, String], default: 0
         },
-        rateURL: String,
+        rateUrl: String,
         recipeName: String,
         readOnly: {
             type: Boolean, default: false
         } },
     data() {
         return {
-            ratingScore: this.initial,
+            ratingScore: parseFloat(this.initial),
             max: 5,
             change: false
         }
@@ -24,7 +24,7 @@ Vue.component("star-rating", {
     `,
     watch: {
         ratingScore: async function (score) {
-            const rateURL = this.rateURL && this.itemId ? this.rateURL : `/recipes/${this.itemId}/rate`;
+            const rateURL = this.rateUrl && this.itemId ? this.rateUrl : `/recipes/${this.itemId}/rate`;
             if (score < 1) return;
             const resp = await fetch(rateURL, {
                 body: "rating_score=" + score,
