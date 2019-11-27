@@ -61,6 +61,7 @@ class PostController:
         for field in updated_fields:
             setattr(found, field, params[field])
         found.save()
+        found = self.find_by_id(found.id)
         return JsonResponse({'status': 'Post updated', 'post': found.as_json})
 
     @apply_author_from_session

@@ -61,6 +61,8 @@ class Author(SerialisableModel, models.Model):
     Notes:
         Automatically created when ``User`` is  created.
     """
+    exclude = ('user',)
+
     name = models.CharField(max_length=100)
     koocook_user = models.OneToOneField(
         'koocook_core.KoocookUser',

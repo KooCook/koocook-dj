@@ -4,6 +4,10 @@ from decimal import Decimal
 from django.db import models
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
+from .base import SerialisableModel
+
+from ..support import FormattedField
+from .base import SerialisableModel
 
 __all__ = ['AggregateRating', 'Rating', 'Comment']
 
@@ -116,16 +120,24 @@ class AggregateRating(models.Model):
         return cls.objects.create(**kwargs)
 
 
-class Comment(models.Model):
+def create_empty_aggregate_rating(**kwargs) -> 'AggregateRating':
+    """Creates an empty aggregate rating"""
+    return AggregateRating.objects.create(rating_value=0, rating_count=0, **kwargs)
+
+
+class Comment(SerialisableModel, models.Model):
+    exclude = ('reviewed_comment', 'reviewed_recipe', 'reviewed_post')
     author = models.ForeignKey(
         'koocook_core.Author',
         on_delete=models.PROTECT,
     )
     date_published = models.DateTimeField(auto_now_add=True)
-    body = models.TextField()
+    body = FormattedField()  # models.TextField()
     aggregate_rating = models.OneToOneField(
         'koocook_core.AggregateRating',
         on_delete=models.PROTECT,
+        blank=True,
+        null=True,
         default=AggregateRating.create_empty,
     )
     reviewed_recipe = models.ForeignKey(
@@ -154,6 +166,23 @@ class Comment(models.Model):
     @property
     def item_reviewed(self) -> Union['Recipe', 'Post', 'Comment', None]:
         return self.reviewed_recipe or self.reviewed_post or self.reviewed_comment
+
+    @classmethod
+    def field_names(cls):
+        return [f.name for f in cls._meta.fields]
+
+    @property
+    def processed_body(self):
+        if hasattr(self.body, 'rendered'):
+            return self.body.rendered
+        else:
+            return self.body
+
+    @property
+    def as_dict(self):
+        base_dict_repr = super().as_dict
+        base_dict_repr.update({'rendered': self.processed_body})
+        return base_dict_repr
 
 
 class Rating(models.Model):
@@ -225,3 +254,66 @@ def parse_kwargs_item_reviewed(kwargs: Dict[str, Any]) -> Dict[str, Any]:
         if count != 1:
             raise ValueError(f'There must be 1 reviewed item, not {count}')
     return kwargs
+
+
+class AggregateRating(models.Model):
+    rating_value = models.DecimalField(
+        decimal_places=10,
+        max_digits=13,
+        # every vote counts until 10 B
+    )
+    rating_count = models.IntegerField()
+    best_rating = models.IntegerField(default=5)
+    worst_rating = models.IntegerField(default=1)
+    # recipe from Recipe's OneToOneField
+    # post from Post's OneToOneField
+    # comment from Comment's OneToOneField
+
+    def check_rating(self, rating: Rating) -> None:
+        """Checks if rating is of the same type and origin or not.
+
+        Raises:
+            ValidationError: When `rating` is not valid
+        """
+        if rating.best_rating != self.best_rating:
+            raise ValidationError(_('Incompatible bestRating: \'{}\' != \'\''
+                                    .format(rating.best_rating, self.best_rating)))
+        if rating.worst_rating != self.worst_rating:
+            raise ValidationError(_('Incompatible worstRating: \'{}\' != \'\''
+                                    .format(rating.worst_rating, self.worst_rating)))
+        if rating.item_reviewed != self.item_reviewed:
+            raise ValidationError(_('Incompatible itemReviewed: \'{}\' != \'\''
+                                    .format(rating.item_reviewed, self.item_reviewed)))
+
+    def add_rating(self, rating: Rating):
+        """Adds a rating from an aggregate rating.
+
+        Raises:
+            ValidationError: When `rating` is not valid
+        """
+        self.check_rating(rating)
+        total_value = self.rating_value * self.rating_count
+        total_value += rating.rating_value
+        self.rating_count += 1
+        self.rating_value = total_value / self.rating_count
+        self.save()
+
+    def remove_rating(self, rating: Rating):
+        """Removes a rating from an aggregate rating.
+
+        Raises:
+            ValidationError: When `rating` is not valid
+        """
+        self.check_rating(rating)
+        total_value = self.rating_value * self.rating_count
+        total_value -= rating.rating_value
+        self.rating_count -= 1
+        self.rating_value = total_value / self.rating_count
+        self.save()
+
+    @property
+    def item_reviewed(self):
+        return self.recipe or self.post or self.comment
+
+    def __str__(self) -> str:
+        return str(self.rating_value)
