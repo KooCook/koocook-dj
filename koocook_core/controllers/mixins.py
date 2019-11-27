@@ -23,7 +23,7 @@ class CommentControllerMixin(AuthorControllerMixin):
 
     @apply_author_from_session
     def comment(self, item_id: int) -> ControllerResponse:
-        assert self.item_reviewed_field == "reviewed_item"  # Reviewed item not set"
+        assert self.item_reviewed_field != "reviewed_item"  # Reviewed item not set"
         comment_fields = {field: val for (field, val) in self.request_fields.items()
                           if field in Comment.field_names()}
         comment_fields['author'] = self.author
