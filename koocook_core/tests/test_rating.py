@@ -3,12 +3,8 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 
 from ..models import Author, Post, Recipe
-
-
-def create_dummy_post(user: User):
-    post = Post(body="This is a dummy post.", author=Author.objects.get(user__user=user))
-    post.save()
-    return post
+from ..controllers import PostController
+from .base import create_dummy_post, AuthTestCase
 
 
 def create_dummy_recipe(user: User):
@@ -24,12 +20,13 @@ def create_dummy_recipe(user: User):
     return recipe
 
 
-class RatingTest(TestCase):
+def get_lazy_model_object(model_cls, obj_id):
+    return model_cls.objects.get(pk=obj_id)
+
+
+class RatingTest(AuthTestCase):
     def setUp(self) -> None:
-        self.username = "testuser"
-        password = "123$*HCfjdksla"
-        self.user = User.objects.create_user(self.username, password=password)
-        self.client.login(username=self.username, password=password)
+        super().setUp()
         self.recipe = create_dummy_recipe(self.user)
         self.post = create_dummy_post(self.user)
         self.recipe_rate_url = reverse('koocook_core:recipe-rate', args=(self.recipe.id,))
@@ -39,8 +36,41 @@ class RatingTest(TestCase):
         response = self.client.post(self.recipe_rate_url, {'rating_score': 3})
         self.assertContains(response, '3.0')
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(get_lazy_model_object(Recipe, self.recipe.id).aggregate_rating.rating_count, 1)
 
     def test_rate_post_single_score(self):
         response = self.client.post(self.post_rate_url, {'rating_score': 1})
         self.assertContains(response, '1.0')
         self.assertEqual(response.status_code, 200)
+
+    def test_rate_multiple(self):
+        response = self.client.post(self.recipe_rate_url, {'rating_score': 5})
+        with self.subTest("First rate"):
+            self.assertContains(response, '5.0')
+            recipe = get_lazy_model_object(Recipe, self.recipe.id)
+            self.assertEqual(recipe.aggregate_rating.rating_value, 5)
+            self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(self.recipe_rate_url, {'rating_score': 3})
+        with self.subTest("Second rate of the multiple rating test"):
+            recipe = get_lazy_model_object(Recipe, self.recipe.id)
+            self.assertContains(response, '3.0')
+            self.assertEqual(recipe.aggregate_rating.rating_value, 3)
+            self.assertEqual(recipe.aggregate_rating.rating_count, 1)
+            self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(self.post_rate_url, {'rating_score': 4})
+        with self.subTest("First rate"):
+            self.assertContains(response, '4.0')
+            post = get_lazy_model_object(Post, self.post.id)
+            self.assertEqual(post.aggregate_rating.rating_value, 4)
+            self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(self.post_rate_url, {'rating_score': 2})
+        with self.subTest("Second rate of the multiple rating on a Post test"):
+            post = get_lazy_model_object(Post, self.post.id)
+            self.assertContains(response, '2.0')
+            self.assertEqual(post.aggregate_rating.rating_value, 2)
+            self.assertEqual(post.aggregate_rating.rating_count, 1)
+            self.assertEqual(response.status_code, 200)
+
