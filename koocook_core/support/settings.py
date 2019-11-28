@@ -1,5 +1,6 @@
 from json import dumps, loads, JSONEncoder
-from django.forms.widgets import Widget, CheckboxInput, Textarea, TextInput
+from koocook_core.widgets import RecipeTagInput
+from django.forms.widgets import Widget, CheckboxInput, Textarea, TextInput, HiddenInput
 from enum import Enum
 from typing import Type, Any
 
@@ -14,12 +15,13 @@ def str_to_bool(s: str) -> bool:
 
 
 class PreferenceEnum(Enum):
-    def __init__(self, key, val_type: Type = None, default=None, full_name: str = ''):
+    def __init__(self, key, val_type: Type = None, default=None, full_name: str = '', widget: Widget = None):
         self.key = key
         self.val_type = val_type
         self._default = default
         self._setting = self.default
         self.full_name = full_name
+        self.widget = widget
 
     def __new__(cls, key, *args):
         obj = object.__new__(cls)
@@ -54,7 +56,7 @@ class Preference:
             self.full_name = self.name
         else:
             self.full_name = full_name
-        if self.widget is None:
+        if widget is None:
             self.widget = self.build_widget_from_val_type()
         else:
             self.widget = widget
@@ -72,7 +74,8 @@ class Preference:
 
     @classmethod
     def from_enum(cls, enum: PreferenceEnum):
-        return cls(enum.key, enum.default, enum.val_type, enum.full_name)
+        return cls(enum.key, enum.default,
+                   enum.val_type, enum.full_name, widget=enum.widget)
 
     @property
     def setting(self):
@@ -107,7 +110,8 @@ class Preference:
 
 
 class TaggingPreference(PreferenceEnum):
-    PREFERRED_TAGS = 'preferred_tags', list, [], "Preferred tags"
+    PREFERRED_TAGS = 'preferred_tags', list, [], "Preferred tags", \
+                     RecipeTagInput(model='tags')
     ALLOW_GLUTEN = 'allow_glut', bool, True, "Allow gluten recipes to be shown"
 
 
@@ -201,12 +205,13 @@ class PreferenceManager:
         return self.get(key)
 
 
-def get_section(pref_key):
+def get_section(pref_key) -> Preference:
     if isinstance(pref_key, Preference):
         return pref_key
     else:
         for pref in Preferences:
             try:
+
                 return pref(pref_key)
             except ValueError:
                 pass
@@ -216,7 +221,9 @@ def get_section(pref_key):
 
 def to_preference(key: str, value: str = ''):
     section = get_section(key)
-    obj = Preference(section.key, section.default, section.val_type, section.full_name)
+    obj = Preference(section.key, section.default,
+                     section.val_type, section.full_name,
+                     section.widget)
     if value == '':
         return obj
     else:
