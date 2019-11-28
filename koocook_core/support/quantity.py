@@ -13,7 +13,7 @@ class Quantity:
     __slots__ = ('amount', 'unit')
 
     def __init__(self,
-                 amount: Union[Fraction, int, float],
+                 amount: Union[Fraction, int],
                  unit: Union[unit_.Unit, str]):
         if isinstance(amount, Fraction):
             self.amount = amount
@@ -39,6 +39,11 @@ class Quantity:
         if not isinstance(other, self.__class__):
             return False
         return other.amount == self.amount and other.unit == self.unit
+
+    def __add__(self, other):
+        if self.unit == other.unit:
+            result = self.amount + other.amount
+            return Quantity(result, self.unit)
 
 
 def parse_quantity(quantity_string: str) -> Quantity:

@@ -8,6 +8,8 @@ __all__ = ['Unit', 'units', 'LengthUnit', 'AreaUnit', 'VolumeUnit', 'MassUnit',
 @enum.unique
 class Unit(enum.Enum):
 
+    # IDENTIFIER = (symbol or None, conversion factor or None[, plural form][, singular form][, synonyms ...])
+
     def __new__(cls, symbol: Optional[str], *args):
         obj = object.__new__(cls)
         # ``symbol`` is canonical value
@@ -79,7 +81,7 @@ class MassUnit(Unit):
     KILOGRAM = 'kg', 1.
     GRAM = 'g', 0.001
     MILLIGRAM = 'mg', 0.000_001
-    MICROGRAM = 'µg', 0.000_000_001
+    MICROGRAM = '\u03bcg', 0.000_000_001, None, None, '\u00b5g'
 
     OUNCE = 'oz', 0.028  # US Food nutrition labeling
     POUND = 'lb', 0.453592  # Google
@@ -92,9 +94,6 @@ class EnergyUnit(Unit):
     CALORIE = 'cal', 4.184
     FOOD_CALORIE = 'Cal', 4184., 'Calories', 'Calorie'
 
-    OUNCE = 'oz', 0.028  # US Food nutrition labeling
-    POUND = 'lb', 0.453592  # Google
-
 
 class TemperatureUnit(Unit):
     CELSIUS = '°C',
@@ -106,7 +105,7 @@ class TemperatureUnit(Unit):
         if symbol[0] == '°':
             _singular = 'degree ' + self._name_.title()
             _plural = 'degrees ' + self._name_.title()
-            args = (_plural, _singular, symbol[1:])
+            args = (_plural, _singular, symbol[1:], self._name_.title())
         else:
             _singular = self._name_.lower()
             _plural = self._name_.lower() + 's'
@@ -159,7 +158,6 @@ class SpecialUnit(Unit):
 
 def get_unit(unit: Union[str, Unit]) -> Unit:
     """Get Unit of Error from string
-
     Raises:
         ValueError: When `unit` is not a valid ``Unit``
     """
@@ -175,4 +173,4 @@ def get_unit(unit: Union[str, Unit]) -> Unit:
             raise ValueError('\'{}\' is not a valid Unit'.format(unit))
 
 
-units: Iterable[Type[Unit]] = (LengthUnit, AreaUnit, VolumeUnit, MassUnit, TemperatureUnit, SpecialUnit)
+units: Iterable[Type[Unit]] = (LengthUnit, AreaUnit, VolumeUnit, MassUnit, TemperatureUnit, EnergyUnit, SpecialUnit)

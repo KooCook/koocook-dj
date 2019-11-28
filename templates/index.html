@@ -1,4 +1,8 @@
 {% extends 'base/index.html' %}
+{% block page_deps %}
+    {{ block.super }}
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+{% endblock %}
 {% block page_title %}Home{% endblock %}
 {% block page_body %}
 <section class="section">
