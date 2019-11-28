@@ -10,36 +10,36 @@
 <form method="post">{% csrf_token %}
     <input name="ingredients" type="hidden" :value="JSON.stringify(ingredients)">
     {% for field in form.visible_fields %}
-       <div class="form-group field is-horizontal">
-       <div class="field-label is-normal">
-        <label class="label">{{ field.label_tag }}</label>
-       </div>
-       <div class="field-body">
-           <div class="field control"> {{ field|add_class:"input is-normal" }}
-           </div>
-         {% if field.errors %}
-            {% for error in field.errors %}
-              <div class="invalid-feedback">
-                {{ error }}
-              </div>
-            {% endfor %}
-          {% endif %}
-       </div>
-      </div>
-        {% endfor %}
-<div class="field is-horizontal">
-      <div class="field-label">
-        <!-- Left empty for spacing -->
-      </div>
-      <div class="field-body">
-        <div class="field">
-          <div class="control">
-            <button type="submit" class="button is-primary">
-                Confirm edits
-            </button>
-          </div>
+    <div class="form-group field is-horizontal">
+        <div class="field-label is-normal">
+            <label class="label">{{ field.label_tag }}</label>
         </div>
-      </div>
+        <div class="field-body">
+            <div class="field control"> {{ field|add_class:"input is-normal" }}
+            </div>
+            {% if field.errors %}
+            {% for error in field.errors %}
+            <div class="invalid-feedback">
+                {{ error }}
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+    <div class="field is-horizontal">
+        <div class="field-label">
+            <!-- Left empty for spacing -->
+        </div>
+        <div class="field-body">
+            <div class="field">
+                <div class="control">
+                    <button type="submit" class="button is-primary">
+                        Confirm edits
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </form>
      <script>

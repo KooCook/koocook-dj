@@ -1,3 +1,12 @@
+.koocook-themed.hero {
+    background-color: #F9F5E4;
+    outline: 3px solid #BCB8AA;
+    outline-offset: -1rem;
+}
+
+.koocook-themed.hero .title {
+    color: #a8a496;
+}
 
 .search-bar {
   box-shadow: none;
@@ -104,4 +113,95 @@
 .breadcrumb-nav {
     margin-top: 0.5em;
     margin-bottom: 0.5em;
+}
+
+.dashed-placeholder {
+    align-items: center;
+    border: 2px dashed #999;
+    display: flex;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -o-user-select: none;
+      user-select: none;
+    justify-content: center;
+    min-height: 320px;
+    background: #e2e2e2;
+    margin: 10px 0px 50px 0px;
+}
+
+.dashed-placeholder:not(.expanded) {
+    cursor: pointer;
+    transition: 0.25s ease;
+}
+
+.holder-form:not(.expanded) > .details {
+    /*visibility: hidden;*/
+    /*opacity: 0;*/
+    transition: 0.25s linear;
+}
+
+.holder-form.expanded > .details {
+    visibility: visible;
+    opacity: 1;
+    transition: 0.25s linear;
+}
+
+.dashed-placeholder.expanded {
+     background: #c5c5c5 !important;
+     transition: 0.25s ease;
+}
+
+.is-horizontal-center {
+    justify-content: center;
+    text-align: center;
+}
+
+.holder-form > .details
+{
+    opacity: 1;
+    transition: opacity 1s ease;
+    overflow: auto;
+    max-height: 300px;
+    min-width: 300px;
+    transform: translate(35%, 35%);
+    background:#fff ;
+    border:solid 1px #ddd;
+    position: absolute;
+    padding: 1em 1em 1em 1em;
+    z-index: 50;
+}
+
+.details > .delete {
+    float: right;
+}
+
+.details > .content {
+    margin-top: 1em;
+}
+
+.add-url-row {
+    display: flex;
+    width: 100%;
+}
+
+.recipe-image-carousel {
+        max-height: 18em;
+}
+
+.carousel .carousel-list .carousel-item {
+    width: 90%;
+}
+
+.add-another-image-btn {
+    z-index: 50;
+    position:absolute;
+    max-height: 50px;
+    right:    20px;
+    bottom:   0;
+    float: right;
 }

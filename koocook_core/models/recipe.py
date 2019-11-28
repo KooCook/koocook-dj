@@ -39,8 +39,8 @@ class Recipe(models.Model):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if not hasattr(self, 'aggregate_rating'):
-            self.aggregate_rating = create_empty_aggregate_rating()
+        # if not hasattr(self, 'aggregate_rating'):
+        #     self.aggregate_rating = create_empty_aggregate_rating()
 
     @property
     def total_time(self):

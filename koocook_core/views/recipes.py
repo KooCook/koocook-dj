@@ -10,7 +10,6 @@ from django.views.generic.edit import UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import RecipeForm
 from ..models import Recipe, Author, KoocookUser, RecipeIngredient, MetaIngredient
-from ..support import Quantity
 
 
 class SignInRequiredMixin(LoginRequiredMixin):
@@ -50,21 +49,6 @@ class RecipeViewMixin:
             return response
 
 
-class RecipeSearchListView(ListView):
-    http_method_names = ('get',)
-    model = Recipe
-    paginate_by = 10
-    context_object_name = 'recipes'
-    template_name = 'search.html'
-
-    def get_queryset(self):
-        kw = self.request.GET.get("kw")
-        if kw:
-            return self.model.objects.filter(name__icontains=kw)
-        else:
-            return self.model.objects.all()
-
-
 class UserRecipeListView(SignInRequiredMixin, ListView):
     model = Recipe
     template_name = 'recipes/user.html'
@@ -80,7 +64,7 @@ class UserRecipeListView(SignInRequiredMixin, ListView):
         return Recipe.objects.filter(author=author)
 
 
-class RecipeCreateView(SignInRequiredMixin, RecipeViewMixin, CreateView):
+class RecipeCreateView(RecipeViewMixin, CreateView):
     http_method_names = ['post', 'get']
     form_class = RecipeForm  # model = Recipe
     # fields = '__all__'
@@ -100,7 +84,16 @@ class RecipeCreateView(SignInRequiredMixin, RecipeViewMixin, CreateView):
         return reverse('koocook_core:recipe-user')
 
 
-class RecipeUpdateView(SignInRequiredMixin, RecipeViewMixin, UpdateView):
+class FractionEncoder(json.JSONEncoder):
+
+    def default(self, obj):
+        if hasattr(obj, 'as_dict'):
+            return obj.as_dict
+        else:
+            return str(obj)
+
+
+class RecipeUpdateView(RecipeViewMixin, UpdateView):
     model = Recipe
     fields = '__all__'  # ['name']
     template_name = 'recipes/update.html'
@@ -111,7 +104,8 @@ class RecipeUpdateView(SignInRequiredMixin, RecipeViewMixin, UpdateView):
     def get_context_data(self, **kwargs):
         import json
         context = super().get_context_data(**kwargs)
-        context['ingredients'] = json.dumps([ing.to_dict for ing in list(self.get_object().recipe_ingredients.all())])
+        context['ingredients'] = json.dumps([ing.to_dict for ing in list(self.get_object().recipe_ingredients.all())],
+                                            cls=FractionEncoder)
         return context
 
 

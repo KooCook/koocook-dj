@@ -1,4 +1,5 @@
 from django import forms
+from django.forms.widgets import HiddenInput
 from ...models import Recipe
 
 
@@ -14,7 +15,8 @@ class RecipeForm(forms.ModelForm):
     class Meta:
         model = Recipe
         fields = '__all__'
-        exclude = ('date_published',)
+        exclude = ('date_published', 'aggregate_rating')
+        widgets = {'image': HiddenInput(), 'video': HiddenInput()}
 
     @property
     def vanilla_fields(self):

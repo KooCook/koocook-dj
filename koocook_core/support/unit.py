@@ -158,7 +158,6 @@ class SpecialUnit(Unit):
 
 def get_unit(unit: Union[str, Unit]) -> Unit:
     """Get Unit of Error from string
-
     Raises:
         ValueError: When `unit` is not a valid ``Unit``
     """

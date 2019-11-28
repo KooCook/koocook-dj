@@ -4,80 +4,114 @@
 {% block hero_title %}Create a recipe{% endblock %}
 {% block page_title %}Create a recipe{% endblock %}
 {% block content_page_name %}Create a recipe{% endblock %}
-{% block content_deps %}<script src="{% static 'js/components/ingredients.js' %}"></script>{% endblock %}
+{% block content_deps %}<link rel="stylesheet" href="{% static 'css/recipe/crud.css'%} ">
+<script src="{% static 'js/components/ingredients.js' %}"></script>
+<script src="{% static 'js/components/image-holder.js' %}"></script>
+{% endblock %}
 {% block page_content %}
-    <ingredient-chooser :ingredients="ingredients" :selectable-units="selectableUnits"></ingredient-chooser>
     <form method="post" novalidate action="{{ request.path }}">
-    <input name="ingredients" type="hidden" :value="JSON.stringify(ingredients)">
-    <div class="form-group field is-horizontal">
+        <div class="columns">
+        <div class="column"><div class="form-group field is-horizontal recipe-underlined-input-field">
         <div class="field-label is-medium">
             <label class="label">{{ form.name.label_tag }}</label>
         </div>
         <div class="field-body">
-            <div class="field control"> {{ form.name|add_class:"input is-medium" }}
-           </div>
-         {% if form.name.errors %}
+<div class="field is-expanded">
+
+            <b-input custom-class="recipe-underlined-input has-text-weight-bold is-size-3{% if form.name.errors %} is-danger{% endif %}" name="{{ form.name.name }}"
+                     placeholder="Name your delish recipe!"
+                size="is-large"
+                     type="text">
+            </b-input>
+            {% if form.name.errors %}
             {% for error in form.name.errors %}
-              <div class="invalid-feedback">
+            <p class="help is-danger">
                 {{ error }}
-              </div>
+            </p>
             {% endfor %}
-          {% endif %}
+            {% endif %}
         </div>
-    </div>
+        </div>
+    </div></div>
+        </div>
+        <div class="columns">
+            <div class="column">
+                <image-holder></image-holder>
+            </div>
+            <div class="column"><b-tabs position="is-centered">
+        <b-tab-item label="Ingredients" icon="food-croissant">
+            <ingredient-chooser :ingredients="ingredients" :selectable-units="selectableUnits"></ingredient-chooser>
+        </b-tab-item>
+        <b-tab-item label="Instructions" icon="view-headline"></b-tab-item>
+    </b-tabs></div>
+        </div>
+
+
+    <input name="ingredients" type="hidden" :value="JSON.stringify(ingredients)">
+
     <div class="form-group field is-horizontal">
         <div class="field-label is-medium">
             <label class="label">{{ form.author.label_tag }}</label>
         </div>
         <div class="field-body">
             <div class="field control"> {{ form.author|add_class:"input is-medium" }}
-           </div>
-         {% if form.author.errors %}
+            </div>
+            {% if form.author.errors %}
             {% for error in form.author.errors %}
-              <div class="invalid-feedback">
+            <div class="invalid-feedback">
                 {{ error }}
-              </div>
+            </div>
             {% endfor %}
-          {% endif %}
+            {% endif %}
         </div>
     </div>
-      {% csrf_token %}
-        {% for field in form.vanilla_fields %}
-       <div class="form-group field is-horizontal">
-       <div class="field-label is-normal">
-        <label class="label">{{ field.label_tag }}</label>
-       </div>
-       <div class="field-body">
-           <div class="field control"> {{ field|add_class:"input is-normal" }}
-           </div>
-         {% if field.errors %}
-            {% for error in field.errors %}
-              <div class="invalid-feedback">
+    {% csrf_token %}
+     {% for error in form.image.errors %}
+            <div class="invalid-feedback">
                 {{ error }}
-              </div>
+            </div>
             {% endfor %}
-          {% endif %}
-       </div>
-      </div>
-        {% endfor %}
-    <div class="field is-horizontal">
-      <div class="field-label">
-        <!-- Left empty for spacing -->
-      </div>
-      <div class="field-body">
-        <div class="field">
-          <div class="control">
-            <button type="submit" class="button is-success">
-              Create
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    </form>
+    {% for field in form.vanilla_fields %}
+        {% if field.is_hidden %}
+            {{ field }}
 
-     <script>
-      new Vue({
+            {% else %}
+    <div class="form-group field is-horizontal">
+        <div class="field-label is-normal">
+            <label class="label">{{ field.label_tag }}</label>
+        </div>
+        <div class="field-body">
+            <div class="field control"> {{ field|add_class:"input is-normal" }}
+            </div>
+            {% if field.errors %}
+            {% for error in field.errors %}
+            <div class="invalid-feedback">
+                {{ error }}
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+        {% endif %}
+    {% endfor %}
+    <div class="field is-horizontal">
+        <div class="field-label">
+            <!-- Left empty for spacing -->
+        </div>
+        <div class="field-body">
+            <div class="field">
+                <div class="control">
+                    <button type="submit" class="button is-success">
+                        Create
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+
+    new Vue({
         el: '#app',
         data: {
             searchName: '',
@@ -85,6 +119,6 @@
             unitConversionFactor: CONVERSION_FACTORS,
             selectableUnits: CONVERSION_UNITS
         }
-      })
-  </script>
+    })
+</script>
 {% endblock %}
