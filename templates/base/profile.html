@@ -1,4 +1,7 @@
 {% extends 'base/content.html' %}
+{% load static %}
+{% block content_deps %}<script src="{% static 'js/bundle.js' %}"></script>
+{% endblock %}
 {% block page_title %}Profile & Site Preferences{% endblock %}
 {% block section_after_nav %}<section class="hero is-light">
   <div class="hero-body">

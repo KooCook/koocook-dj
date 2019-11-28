@@ -56,29 +56,29 @@
               Stream
             </a>
 
-            <div class="navbar-item has-dropdown is-hoverable is-disabled">
+            <div class="navbar-item has-dropdown is-hoverable">
               <a class="navbar-link">
                 Browse
               </a>
 
               <div class="navbar-dropdown is-boxed">
-                <a class="navbar-item" title="Look at our suggested recipe">
+                <a class="navbar-item is-disabled" title="Look at our suggested recipe">
                   Featured recipes
                 </a>
-                <a class="navbar-item" title="Look at what other people are making">
+                <a class="navbar-item is-disabled" title="Look at what other people are making">
                   Popular recipes
                 </a>
-                <a class="navbar-item" title="Get personalised recipe recommendations">
+                <a href="{% url 'koocook_core:recipe-all' %}"class="navbar-item" title="Get personalised recipe recommendations">
                   Suggested recipes
                 </a>
-                <a class="navbar-item" title="Get a random recipe">
+                <a class="navbar-item is-disabled" title="Get a random recipe">
                   I'm feeling hungry!
                 </a>
                 <hr class="navbar-divider">
-                <a class="navbar-item" title="Can't find an ingredient? Look no further">
+                <a class="navbar-item is-disabled" title="Can't find an ingredient? Look no further">
                   Ingredients
                 </a>
-                <a class="navbar-item" title="Looking to get some new cookwares? We've got you covered">
+                <a class="navbar-item is-disabled" title="Looking to get some new cookwares? We've got you covered">
                   Cookware
                 </a>
               </div>
