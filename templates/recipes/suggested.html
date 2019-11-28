@@ -4,12 +4,14 @@
   <div class="hero-body">
     <div class="container">
       <h1 class="title">
-        Preferred recipes
+        Suggested recipes
       </h1>
         <h2 class="subtitle">
+
             {% for tag in tag_set %}
 
                         <div class="tags has-addons">
+                        Preferred:
                             <span class="tag is-medium">{{ tag.name }}</span>
                             {% if tag.label %}
                                 <span class="tag {{ tag.label.level|tag_level }} is-medium">

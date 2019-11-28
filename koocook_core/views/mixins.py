@@ -16,8 +16,11 @@ class SignInRequiredMixin(LoginRequiredMixin):
 
 class AuthAuthorMixin(SignInRequiredMixin):
 
+    def get_author(self) -> Author:
+        return Author.objects.get(user__user=self.request.user)
+
     def form_valid(self, form):
-        form.instance.author = Author.objects.get(user__user=self.request.user)
+        form.instance.author = self.get_author(self)
         return super().form_valid(form)
 
 

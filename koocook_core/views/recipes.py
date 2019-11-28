@@ -35,7 +35,6 @@ class UserRecipeListView(SignInRequiredMixin, ListView):
     context_object_name = "user_recipes"
 
     def get_queryset(self):
-        queryset = super().get_queryset()
         try:
             author = Author.objects.get(user__user=self.request.user)
         except ObjectDoesNotExist:
@@ -79,7 +78,7 @@ class RecipeUpdateView(AuthAuthorMixin, RecipeViewMixin, UpdateView):
         import json
         context = super().get_context_data(**kwargs)
         context['ingredients'] = json.dumps([ing.to_dict for ing in list(self.get_object().recipe_ingredients.all())])
-        context['tags'] = json.dumps([ing.as_dict for ing in list(self.get_object().tag_set.all())], cls=ModelEncoder)
+        context['tags'] = json.dumps([ing.as_dict() for ing in list(self.get_object().tag_set.all())], cls=ModelEncoder)
         return context
 
 
@@ -94,3 +93,33 @@ class RecipeDetailView(CommentWidgetMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context['ingredients'] = [ing.to_dict for ing in list(self.get_object().recipe_ingredients.all())]
         return context
+
+
+class PreferredRecipeStreamView(AuthAuthorMixin, ListView):
+    model = Recipe
+    queryset = Recipe.objects.prefetch_related('author')
+    paginate_by = 10
+    template_name = "recipes/suggested.html"
+
+    @property
+    def preferred_tags(self):
+        from ..support import PreferenceManager
+        preferences = PreferenceManager.from_koocook_user(self.get_author().user)
+        return preferences.get("preferred_tags")
+
+    def get_context_data(self, **kwargs):
+        from koocook_core.models import Tag
+        context = super().get_context_data(**kwargs)
+        context['tag_set'] = Tag.objects.filter(name__in=[tag["name"] for tag in self.preferred_tags.setting])
+        return context
+
+    def get_queryset(self):
+        tags = self.preferred_tags
+        if len(tags.setting) > 0:
+            converted_exact_tag_set_names = []
+            for tag in tags.setting:
+                converted_exact_tag_set_names.append(tag["name"])
+            return Recipe.objects.filter(tag_set__name__in=converted_exact_tag_set_names)
+        else:
+            return Recipe.objects.all()
+
