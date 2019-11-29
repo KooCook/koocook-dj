@@ -60,10 +60,6 @@ class Comment(SerialisableModel, ReviewableModel, models.Model):
         blank=True,
     )
 
-    def create_empty_aggregate_rating(**kwargs) -> 'AggregateRating':
-        """Creates an empty aggregate rating"""
-        return AggregateRating.objects.create(rating_value=0, rating_count=0, **kwargs)
-
     @property
     def item_reviewed(self):
         return self.reviewed_recipe or self.reviewed_post or self.reviewed_comment
