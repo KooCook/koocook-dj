@@ -43,7 +43,6 @@ class Recipe(ReviewableModel, models.Model):
         Returns:
             (int) A view count of the recipe
         """
-        print(self.recipevisit_set)
         return self.recipevisit_set.count()
 
     @property
@@ -66,10 +65,9 @@ def get_client_ip(request: HttpRequest):
 
 
 class RecipeVisit(models.Model):
-    """
-        Represents the visit count of a Recipe
+    """Represents the visit count of a Recipe
 
-        It is uniquely identified by ip_address, recipe, or user
+       It is uniquely identified by ip_address, recipe, or user
     """
     class Meta:
         db_table = 'koocook_core_recipe_visit'
