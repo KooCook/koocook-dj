@@ -21,7 +21,7 @@ class Post(SerialisableModel, ReviewableModel, models.Model):
     aggregate_rating = models.OneToOneField(
         'koocook_core.AggregateRating',
         on_delete=models.PROTECT,
-        blank=True, null=True,
+        blank=True,
         # default=create_empty_aggregate_rating,
     )
 
