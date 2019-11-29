@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from ..models import Comment, Post, Recipe
 
 
+# Deprecated
 # This is a mess 'cause there's a fix for this
 # in its next dependent branch named 'personalisation',
 # avoiding any conflicts the might occur from the fix
@@ -19,11 +20,12 @@ def get_all_comments_for(request: HttpRequest, item_id: int):
             comments = Comment.objects.get(pk=item_id).comment_set.all()
         import json
         from ..models.base import ModelEncoder
-        return JsonResponse({'current': json.dumps(list(comments), cls=ModelEncoder)})
+        return JsonResponse({'current': list(comments)}, encoder=ModelEncoder)
     else:
         return post_comment(request)
 
 
+# Deprecated
 @login_required
 @require_http_methods('POST')
 def post_comment(request: HttpRequest):

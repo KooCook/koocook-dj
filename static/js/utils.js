@@ -37,6 +37,10 @@ String.prototype.format = function() {
   return str
 };
 
+const GLOBAL_DATA = {
+  searchName: '',
+};
+
 Vue.filter("time-passed", function(date) {
   return moment(date).fromNow();
 });

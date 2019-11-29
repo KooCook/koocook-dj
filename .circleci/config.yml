@@ -33,7 +33,9 @@ jobs:
           name: Running tests
           command: |
             . venv/bin/activate
-            python manage.py test --noinput
+            coverage run manage.py test --noinput
+            codecov
+
       - store_test_results:
           path: test-reports
 

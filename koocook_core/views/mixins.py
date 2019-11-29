@@ -14,11 +14,10 @@ class SignInRequiredMixin(LoginRequiredMixin):
         return reverse('social:begin', args=['google-oauth2'])
 
 
-class AuthAuthorMixin(SignInRequiredMixin):
+class AuthAuthorMixin:
 
     def form_valid(self, form):
         form.instance.author = Author.objects.get(user__user=self.request.user)
-        print(form.instance.author)
         return super().form_valid(form)
 
 
@@ -73,4 +72,3 @@ class RecipeViewMixin:
             return response
         else:
             return response
-

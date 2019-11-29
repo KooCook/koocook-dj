@@ -33,7 +33,7 @@
             </p>
                 </b-field>
               <span class="icon is-small is-left">
-                       <i class="fas fa-search"></i>
+                       <b-icon icon="magnify"></b-icon>
                      </span>
             </div>
           </div>
@@ -52,7 +52,7 @@
               Home
             </a>
 
-            <a class="navbar-item" href="{% url 'koocook_core:posts:all' %}">
+            <a class="navbar-item" href="{% url 'koocook_core:posts:view' %}">
               Stream
             </a>
 
@@ -112,7 +112,7 @@
             <div class="navbar-item">
               <div class="buttons">
                 <a href="{% url "social:begin" "google-oauth2" %}" class="button is-secondary">
-                  <strong>Sign in with <i class="fab fa-google"></i>oogle</strong>
+                  <strong>Sign in with <i class="fab fa-google"></i>Google</strong>
                 </a>
               </div>
 

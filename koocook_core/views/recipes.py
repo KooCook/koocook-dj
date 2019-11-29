@@ -11,7 +11,18 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import RecipeForm
 from .mixins import AuthAuthorMixin, CommentWidgetMixin, RecipeViewMixin, SignInRequiredMixin
 from ..models import Recipe, Author, KoocookUser, RecipeIngredient, MetaIngredient
-from ..support import Quantity
+
+
+class SignInRequiredMixin(LoginRequiredMixin):
+    @property
+    def login_url(self):
+        return reverse('social:begin', args=['google-oauth2'])
+
+
+class AuthorMixin:
+    def form_valid(self, form: RecipeForm):
+        form.instance.author = Author.objects.get(user__user=self.request.user)
+        return super().form_valid(form)
 
 
 class RecipeSearchListView(ListView):
@@ -44,18 +55,10 @@ class UserRecipeListView(SignInRequiredMixin, ListView):
         return Recipe.objects.filter(author=author)
 
 
-class RecipeCreateView(AuthAuthorMixin, RecipeViewMixin, CreateView):
+class RecipeCreateView(SignInRequiredMixin, AuthAuthorMixin, RecipeViewMixin, CreateView):
     http_method_names = ['post', 'get']
-    form_class = RecipeForm  # model = Recipe
-    # fields = '__all__'
+    form_class = RecipeForm
     template_name = 'recipes/create.html'
-
-    @property
-    def initial(self):
-        initial = super().initial
-        initial.update({'aggregate_rating_id': 1})
-        initial.update({'author': Author.objects.filter(user__user=self.request.user)[0]})
-        return initial.copy()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -65,9 +68,10 @@ class RecipeCreateView(AuthAuthorMixin, RecipeViewMixin, CreateView):
         return reverse('koocook_core:recipe-user')
 
 
-class RecipeUpdateView(AuthAuthorMixin, RecipeViewMixin, UpdateView):
+class RecipeUpdateView(SignInRequiredMixin, AuthAuthorMixin, RecipeViewMixin, UpdateView):
+    form_class = RecipeForm
     model = Recipe
-    fields = '__all__'  # ['name']
+    # fields = '__all__'  # ['name']
     template_name = 'recipes/update.html'
 
     def get_success_url(self):
