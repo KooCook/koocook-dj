@@ -30,6 +30,11 @@ __KooCook!__ is a web application that helps people—whether they are amateur c
 All other dependencies are specified in `requirements.txt`
 
 ### Steps
+
+> Proxy installing via virtualenv is highly recommended
+>
+> Please consult [this link](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/) to learn how to setup *Python virtualenv*
+
 1. Make sure you are in the root directory (repository root) of the project and already clone this repo.
 2. Create ```.env``` for your local app environment settings *(Pending guide...)*
     - Make sure your secret key is strong enough. (Recommended: ```PBKDF2``` algorithm with a ```SHA256``` hash)
