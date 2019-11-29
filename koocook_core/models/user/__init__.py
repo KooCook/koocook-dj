@@ -38,6 +38,10 @@ class KoocookUser(SerialisableModel, models.Model):
         else:
             return self.user.username
 
+    @classmethod
+    def from_dj_user(cls, user: User):
+        return cls.objects.get(user=user)
+
     @property
     def full_name(self):
         return self.user.get_full_name()

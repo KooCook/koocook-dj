@@ -1,5 +1,8 @@
 {% extends 'base/content.html' %}
-
+{% load static %}
+{% block content_deps %}
+    <script src="{% static 'js/components/star-rating.js' %}"></script>
+{% endblock %}
 {% block section_after_nav %}
 
 {% endblock %}
@@ -7,22 +10,19 @@
 {% block page_content %}
     <div class="container">
           <h3 class="title is-3">
-              Search Results <b-dropdown v-model="togglePopSearch" aria-role="list">
+              Search Results <b-dropdown v-model="searchFilter" aria-role="list">
                 <button class="button" type="button" slot="trigger">
-                    <template v-if="togglePopSearch">
-                        <b-icon class="fas fa-fire"></b-icon>&nbsp;
-                        <span>by Popularity</span>
+                    <template v-if="searchFilter == 'popular'">
+                        <span>by&nbsp;&nbsp;<b-icon icon="star" size="is-small"></b-icon>&nbsp;Popularity</span>
                     </template>
                     <template v-else>
-                        <b-icon class="fas fa-book"></b-icon>&nbsp;
-                        <span>by Recipe Name</span>
+                        <span>by&nbsp;&nbsp;<b-icon icon="book" size="is-small"></b-icon>&nbsp; Recipe Name</span>
                     </template>
                     <b-icon icon="menu-down"></b-icon>
                 </button>
-
-                <b-dropdown-item :value="true" aria-role="listitem">
+                <b-dropdown-item value="popular" aria-role="listitem">
                     <div class="media">
-                      <b-icon class="media-left fas fa-fire"></b-icon>
+                      <b-icon class="media-left" icon="star" size="is-small"></b-icon>
                         <div class="media-content">
                             <h3>Popularity</h3>
                             <small>Popular recipes with high view count are shown</small>
@@ -30,9 +30,9 @@
                     </div>
                 </b-dropdown-item>
 
-                <b-dropdown-item :value="false" aria-role="listitem">
+                <b-dropdown-item value="name" aria-role="listitem">
                     <div class="media">
-                        <b-icon class="media-left fas fa-book"></b-icon>
+                        <b-icon class="media-left" icon="book" size="is-small"></b-icon>
                         <div class="media-content">
                             <h3>Recipe name</h3>
                             <small>Only show recipes with a similar name to search query</small>
@@ -41,39 +41,55 @@
                 </b-dropdown-item>
             </b-dropdown>
           </h3>
-        <transition name="fade" mode="in-out">
-           <div v-if="!getRecipesByName.length">
-                No results matching with your search.
-            </div>
-        </transition>
+{#        <transition name="fade" mode="in-out">#}
+{#           <div v-if="!getRecipesByName.length">#}
+{#                No results matching with your search.#}
+{#            </div>#}
+{#        </transition>#}
+  <div class="columns">
       {% for recipe in recipes %}
-                <div class="box">
+          <div class="column">
+                <div class="card">
+                <div class="card-image">
+                    <figure class="image is-4by3">
+                      <img src="{{ recipe.image|first}}" alt="{{ recipe.name }}">
+                    </figure>
+                  </div>
+                <div class="card-content">
+                <star-rating :read-only="true" recipe-name="{{ recipe.name }}" :item-id="{{ recipe.id }}" :initial="{{ recipe.aggregate_rating.rating_value }}"></star-rating>
                 {% if recipe.hot %}<p class="is-6 has-text-danger"><i class="fas fa-fire"></i> Trending</p>{% endif %}
-                <a href="{% url 'koocook_core:recipe' recipe.id %}"><h4 class="title is-4">
+                <h4 class="title is-4"><a href="{% url 'koocook_core:recipe' recipe.id %}">
                     {{ recipe.name }}
-                </h4></a>
+                </a></h4>
                 <p class="subtitle">
-                    by {{ recipe.author }} <span class="date-posted subtitle is-6 has-text-grey"><i class="fas fa-calendar-alt"></i> {{ recipe.date_published }} </span> <span class="date-posted subtitle is-6 has-text-grey"><i class="fas fa-clock"></i> Ready in: {{ recipe.ready_time }}</span>
-                    <span class="date-posted subtitle is-6 has-text-grey"><i class="fas fa-eye"></i> {{ recipe.view_count }} view{{ recipe.view_count|pluralize }}</span></span>
+                    by {{ recipe.author }}
                 </p>
-
+                <p class="subtitle has-text-grey is-6"><span class="date-posted"><i class="fas fa-calendar-alt"></i> {{ recipe.date_published }}</span> <span class="date-posted"><i class="fas fa-clock"></i> Ready in: {{ recipe.total_time }}</span>
+                    <span class="date-posted"><i class="fas fa-eye"></i> {{ recipe.view_count }} view{{ recipe.view_count|pluralize }}</span></p>
+                </div>
               </div>
-            {% endfor %}
-        <transition-group name="fade" mode="in-out">
-
-          <div v-for="recipe in getRecipesByName" :key="recipe.title" class="box">
-            <p class="is-6 has-text-danger" v-if="recipe.hot"><i class="fas fa-fire"></i> Trending</p>
-            <a :href="recipe.url"><h4 class="title is-4">
-                {% templatetag openvariable %} recipe.title {% templatetag closevariable %}
-            </h4></a>
-            <p class="subtitle">
-                by {% templatetag openvariable %} recipe.author {% templatetag closevariable %} <span class="date-posted subtitle is-6 has-text-grey"><i class="fas fa-calendar-alt"></i> {% templatetag openvariable %}recipe.datePosted{% templatetag closevariable %} </span> <span class="date-posted subtitle is-6 has-text-grey"><i class="fas fa-clock"></i> Ready in: {% templatetag openvariable %}recipe.readyTime{% templatetag closevariable %}</span>
-                <span class="date-posted subtitle is-6 has-text-grey"><i class="fas fa-eye"></i> {% templatetag openvariable %}recipe.view_count{% templatetag closevariable %} Views</span></span>
-            </p>
-
           </div>
-
-        </transition-group>
+          {% empty %}
+          <div class="column">
+          No results matching with your search.
+          </div>
+            {% endfor %}
+        </div>
+{#        <transition-group name="fade" mode="in-out">#}
+{##}
+{#          <div v-for="recipe in getRecipesByName" :key="recipe.title" class="box">#}
+{#            <p class="is-6 has-text-danger" v-if="recipe.hot"><i class="fas fa-fire"></i> Trending</p>#}
+{#            <a :href="recipe.url"><h4 class="title is-4">#}
+{#                {% templatetag openvariable %} recipe.title {% templatetag closevariable %}#}
+{#            </h4></a>#}
+{#            <p class="subtitle">#}
+{#                by {% templatetag openvariable %} recipe.author {% templatetag closevariable %} <span class="date-posted subtitle is-6 has-text-grey"><i class="fas fa-calendar-alt"></i> {% templatetag openvariable %}recipe.datePosted{% templatetag closevariable %} </span> <span class="date-posted subtitle is-6 has-text-grey"><i class="fas fa-clock"></i> Ready in: {% templatetag openvariable %}recipe.readyTime{% templatetag closevariable %}</span>#}
+{#                <span class="date-posted subtitle is-6 has-text-grey"><i class="fas fa-eye"></i> {% templatetag openvariable %}recipe.view_count{% templatetag closevariable %} Views</span></span>#}
+{#            </p>#}
+{##}
+{#          </div>#}
+{##}
+{#        </transition-group>#}
          {% if page_obj.has_other_pages %}
             <nav class="pagination is-centered" role="navigation" aria-label="pagination">
                 {% if page_obj.has_previous %}
@@ -104,7 +120,9 @@
       new Vue({
         el: '#app',
         data: {
-          togglePopSearch: false,
+            currentAuthorId: {{ current_author.id }},
+            firstRun: true,
+          searchFilter: '{{ search_filter }}',
           searchName: '',
           recipes: [
             {#{ author: 'Jessie Damuck', url: '../recipes/detail-ex1.html', title: "BA's Best Buttermilk Pancakes", datePosted: 'Oct 13, 2019', readyTime: '20 min', hot: true, view_count: 1925, up: 80, down: 3 },#}
@@ -115,13 +133,25 @@
           ]
         },
         computed: {
-          getRecipesByName() {
-            return this.recipes.filter((item)=>{
-              if (this.togglePopSearch) return item.hot;
-              else return item.title.toLowerCase().includes(this.searchName.toLowerCase());
-            })
+          {#getRecipesByName() {#}
+          {#  return this.recipes.filter((item)=>{#}
+          {#    if (this.togglePopSearch) return item.hot;#}
+          {#    else return item.title.toLowerCase().includes(this.searchName.toLowerCase());#}
+          {#  })#}
+
+        },
+          watch: {
+            searchFilter: function (val) {
+                const url = new URL(location.href);
+                if (val === 'popular'){
+                    url.searchParams.set('popular', 'true'); }
+                else if (val === 'name') {
+                    url.searchParams.set('kw', this.searchName);
+                    url.searchParams.delete('popular');
+                }
+                location.href = url.href;
+            }
           }
-        }
       })
   </script>
 {% endblock %}

@@ -32,12 +32,26 @@ class RecipeSearchListView(ListView):
     context_object_name = 'recipes'
     template_name = 'search.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['current_author'] = Author.objects.get(user__user=self.request.user)
+        if self.request.GET.get("popular"):
+            context['search_filter'] = 'popular'
+        else:
+            context['search_filter'] = 'name'
+        return context
+
     def get_queryset(self):
+        popular = self.request.GET.get("popular")
         kw = self.request.GET.get("kw")
         if kw:
-            return self.model.objects.filter(name__icontains=kw)
+            query_set = self.model.objects.filter(name__icontains=kw).order_by("name")
         else:
-            return self.model.objects.all()
+            query_set = self.model.objects.all().order_by("date_published")
+        if popular:
+            query_set.order_by('aggregate_rating__rating_value')
+            query_set = sorted(query_set, key=lambda t: t.view_count, reverse=True)
+        return query_set
 
 
 class UserRecipeListView(SignInRequiredMixin, ListView):
@@ -87,6 +101,24 @@ class RecipeUpdateView(SignInRequiredMixin, AuthAuthorMixin, RecipeViewMixin, Up
 class RecipeDetailView(CommentWidgetMixin, DetailView):
     model = Recipe
     template_name = 'recipes/detail.html'
+    object: Recipe
+
+    def get(self, request, *args, **kwargs):
+        from django.db.utils import IntegrityError
+        from ..models.recipe import RecipeVisit
+        from ..models import KoocookUser
+        response = super().get(request, *args, **kwargs)
+        if self.request.user.is_authenticated:
+            user: KoocookUser = KoocookUser.from_dj_user(self.request.user)
+            visit = RecipeVisit.associate_recipe_with_user(user, self.object)
+            visit.add_ip_address(self.request)
+            visit.save()
+        else:
+            try:
+                RecipeVisit.associate_recipe_with_ip_address(self.request, self.object).save()
+            except IntegrityError:
+                pass
+        return response
 
     def get_success_url(self):
         return self.request.path
