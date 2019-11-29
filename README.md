@@ -18,6 +18,8 @@ __KooCook!__ is a web application that helps people—whether they are amateur c
 | Tharathorn (Mos)  | [th-bunratta](https://github.com/th-bunratta/)
 | Chayathon (Plume) | [plumest](https://github.com/plumest/)
 
+## Local Quickstart (Running the app locally)
+
 ### Dependency requirements
 |Name|Required version(s) |
 |:---:|:---:|
@@ -27,8 +29,7 @@ __KooCook!__ is a web application that helps people—whether they are amateur c
 
 All other dependencies are specified in `requirements.txt`
 
-## Local Quickstart (Running the app locally)
-
+### Steps
 1. Make sure you are in the root directory (repository root) of the project and already clone this repo.
 2. Create ```.env``` for your local app environment settings *(Pending guide...)*
     - Make sure your secret key is strong enough. (Recommended: ```PBKDF2``` algorithm with a ```SHA256``` hash)
