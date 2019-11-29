@@ -2,7 +2,7 @@
 
 ##### Build status
 - `master`: [![CircleCI](https://circleci.com/gh/KooCook/koocook-dj/tree/master.svg?style=shield&circle-token=fd2434f2ab70aacb8216f2242e272abeae57859c)](https://circleci.com/gh/KooCook/koocook-dj/tree/master)  
-- `dev`: [![CircleCI](https://circleci.com/gh/KooCook/koocook-dj/tree/dev.svg?style=shield&circle-token=fd2434f2ab70aacb8216f2242e272abeae57859c)](https://circleci.com/gh/KooCook/koocook-dj/tree/dev) [![codecov](https://codecov.io/gh/KooCook/koocook-dj/branch/dev/graph/badge.svg)](https://codecov.io/gh/KooCook/koocook-dj/branch/dev) [![codebeat badge](https://codebeat.co/badges/402231e3-406f-4e0e-8c1a-46be46c56a2b)](https://codebeat.co/projects/github-com-koocook-koocook-dj-dev)
+- `dev`: [![CircleCI](https://circleci.com/gh/KooCook/koocook-dj/tree/dev.svg?style=shield&circle-token=fd2434f2ab70aacb8216f2242e272abeae57859c)](https://circleci.com/gh/KooCook/koocook-dj/tree/dev) [![codecov](https://codecov.io/gh/KooCook/koocook-dj/branch/dev/graph/badge.svg)](https://codecov.io/gh/KooCook/koocook-dj/branch/dev) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/9f6390cd75d94a21a2c4accf997214bf)](https://www.codacy.com/manual/KooCook/koocook-dj?branch=dev&amp;utm_source=github.com&amp;utm_medium=referral&amp;utm_content=KooCook/koocook-dj&amp;utm_campaign=Badge_Grade)
 ## Description
 
 __KooCook!__ is a web application that helps people—whether they are amateur cooks, homecooks, aspiring cooks, experienced cooks, or just starving people—decide on what food they want to make with the ingredients, equipment, time, and preferences that they have and live a healthier life with nutrition information included.
