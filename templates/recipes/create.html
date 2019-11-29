@@ -6,7 +6,7 @@
 {% block content_page_name %}Create a recipe{% endblock %}
 {% block content_deps %}<link rel="stylesheet" href="{% static 'css/recipe/crud.css'%} ">
 <script src="{% static 'js/components/ingredients.js' %}"></script>
-<script src="{% static 'js/components/image-holder.js' %}"></script>
+    <script src="{% static 'js/bundle.js' %}"></script>
 {% endblock %}
 {% block page_content %}
     <form method="post" novalidate action="{{ request.path }}">

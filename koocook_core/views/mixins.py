@@ -51,6 +51,11 @@ class CommentWidgetMixin(AuthAuthorMixin, FormMixin):
 class RecipeViewMixin:
     def form_valid(self, form):
         response = super().form_valid(form)
+        images = json.loads(self.request.POST.get('image'))
+        if isinstance(images, list):
+            form.instance.image = images
+            form.instance.save()
+
         ingredients = json.loads(self.request.POST.get('ingredients'))
         if ingredients:
             for ingredient in ingredients:
