@@ -11,9 +11,8 @@ __all__ = ('AggregateRating', 'Comment', 'Rating', 'ReviewableModel')
 
 
 class ReviewableModel:
-    """
-        This creates an AggregateRating only after reviewables are actually created
-        and saved to a database; that is, it will be created once in need, not always.
+    """This creates an AggregateRating only after reviewables are actually created
+    and saved to a database; that is, it will be created once in need, not always.
     """
     aggregate_rating = None  # A signature for the AggregateRating field
 
