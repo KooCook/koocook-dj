@@ -18,6 +18,25 @@ __KooCook!__ is a web application that helps people—whether they are amateur c
 | Tharathorn (Mos)  | [th-bunratta](https://github.com/th-bunratta/)
 | Chayathon (Plume) | [plumest](https://github.com/plumest/)
 
+### Dependency requirements
+|Name|Required version(s) |
+|:---:|:---:|
+|Python | 3.7.3 or higher|
+|Django | 2.1 or higher|
+|PostgreSQL| 12 or higher|
+
+All other dependencies are specified in `requirements.txt`
+
+## Local Quickstart (Running the app locally)
+
+1. Make sure you are in the root directory (repository root) of the project and already clone this repo.
+2. Create ```.env``` for your local app environment settings *(Pending guide...)*
+    - Make sure your secret key is strong enough. (Recommended: ```PBKDF2``` algorithm with a ```SHA256``` hash)
+3. Run <code>pip install -r [requirements.txt](requirements.txt)</code> first to install required packages for the project.
+4. _Pending mock data import instructions_
+5. If you first set up a repo of the application  on a clean slate, migrate the database as well by running the following Django command: <pre>python [manage.py](manage.py) migrate</pre>
+6. Run <pre>python [manage.py](manage.py) runserver</pre> and, Voila!, the server should listen on the default port at <code>localhost:*default_port*</code>.
+
 ## Project Documents
 
 - [Iteration Plans (Google Docs)](https://docs.google.com/document/d/1XLrRgLp4s63g2Ep8B8P56WfhL46VF5VlfczcGRQC7_Y/edit)
