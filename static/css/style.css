@@ -88,7 +88,7 @@
     /* flex-direction: column; */
 }
 
-.is-disabled {
+.is-disabled:not(.rate) {
     pointer-events: none;
     opacity: .5;
 }

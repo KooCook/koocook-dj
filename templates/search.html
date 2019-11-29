@@ -1,5 +1,8 @@
 {% extends 'base/content.html' %}
-
+{% load static %}
+{% block content_deps %}
+    <script src="{% static 'js/components/star-rating.js' %}"></script>
+{% endblock %}
 {% block section_after_nav %}
 
 {% endblock %}
@@ -49,11 +52,11 @@
                 <div class="card">
                 <div class="card-image">
                     <figure class="image is-4by3">
-                      <img src="{{ recipe.image.0 }}" alt="{{ recipe.name }}">
+                      <img src="{{ recipe.image|first}}" alt="{{ recipe.name }}">
                     </figure>
                   </div>
                 <div class="card-content">
-                {{ recipe.aggregate_rating.rating_value }}
+                <star-rating{% if not request.user.is_authenticated %} :read-only="true"{% else %} :read-only="{{ recipe.author.id }} === currentAuthorId"{% endif %} recipe-name="{{ recipe.name }}" :item-id="{{ recipe.id }}" :initial="{{ recipe.aggregate_rating.rating_value }}"></star-rating>
                 {% if recipe.hot %}<p class="is-6 has-text-danger"><i class="fas fa-fire"></i> Trending</p>{% endif %}
                 <h4 class="title is-4"><a href="{% url 'koocook_core:recipe' recipe.id %}">
                     {{ recipe.name }}
@@ -117,6 +120,7 @@
       new Vue({
         el: '#app',
         data: {
+            currentAuthorId: {{ current_author.id }},
             firstRun: true,
           searchFilter: '{{ search_filter }}',
           searchName: '',

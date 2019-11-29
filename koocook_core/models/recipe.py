@@ -3,12 +3,12 @@ from django.db import models
 from django.http import HttpRequest
 
 from koocook_core import fields as koocookfields
-from .review import create_empty_aggregate_rating
+from .review import ReviewableModel
 
 __all__ = ['Recipe']
 
 
-class Recipe(models.Model):
+class Recipe(ReviewableModel, models.Model):
     """
 
     Note:
@@ -35,13 +35,7 @@ class Recipe(models.Model):
         'koocook_core.AggregateRating',
         on_delete=models.PROTECT,
         blank=True,
-        default=create_empty_aggregate_rating,
     )
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if not hasattr(self, 'aggregate_rating'):
-            self.aggregate_rating = create_empty_aggregate_rating()
 
     @property
     def view_count(self) -> int:
