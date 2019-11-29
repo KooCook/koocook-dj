@@ -100,7 +100,7 @@
           </div>
         </nav>
           <nav class="level is-mobile">
-            <comments-widget class="level-item" item-name="this post" :item-id="userPost.id" custom-url="true"></comments-widget>
+            <comments-widget class="level-item" item-name="this post" :item-id="userPost.id" :author-id="currentAuthorId" custom-url="true"></comments-widget>
         </nav>
       </div>
       <div class="media-right">
@@ -124,7 +124,7 @@
               {% templatetag closevariable %}</strong> <small>@{% templatetag openvariable %} userPost.author.name
               {% templatetag closevariable %}</small> <small>{% templatetag openvariable %} userPost.date_published |
               time-passed
-              {% templatetag closevariable %}</small> <star-rating :rate-url="rateURL.format(userPost.id)"  :item-id="userPost.id" :initial="userPost.aggregate_rating.rating_value"></star-rating>
+              {% templatetag closevariable %}</small> <star-rating :rate-url="rateURL.format(userPost.id)"  :item-id="userPost.id" :read-only="true" :initial="userPost.aggregate_rating.rating_value"></star-rating>
             <br>
             <div v-if="userPost.editing">
               <form method="post" @submit.prevent="editPost(upIndex)">
@@ -170,7 +170,7 @@
               {% templatetag closevariable %}</strong> <small>@{% templatetag openvariable %} userPost.author.name
               {% templatetag closevariable %}</small> <small>{% templatetag openvariable %} userPost.date_published |
               time-passed
-              {% templatetag closevariable %}</small> <star-rating{% if not request.user.is_authenticated %} :read-only="true"{% endif %} :rate-url="rateURL.format(userPost.id)" :item-id="userPost.id" :initial="userPost.aggregate_rating"></star-rating>
+              {% templatetag closevariable %}</small> <star-rating :read-only="userPost.author.id === currentAuthorId" :rate-url="rateURL.format(userPost.id)" :item-id="userPost.id" :initial="userPost.aggregate_rating"></star-rating>
             <br>
             <div v-if="userPost.editing">
               <form method="post" @submit.prevent="editPost(upIndex)">
@@ -206,6 +206,7 @@
 <script>
   Object.assign(GLOBAL_DATA, {
     activeTab: 0,
+     currentAuthorId: {{ current_author.id }},
     showModal: false,
       rateURL: RATE_URL,
     selectedPost: {},

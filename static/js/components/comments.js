@@ -31,7 +31,7 @@ Vue.component("comments-widget", {
       pending: false
     };
   },
-  props: ["itemId", "itemName", "isReply", "customUrl"],
+  props: ["itemId", "itemName", "isReply", "customUrl", "authorId"],
   template:
     '<div style="display: block;"><article class="media" v-for="(comment, index) in comments" :key="index">\n' +
     '          <figure class="media-left">\n' +
@@ -43,12 +43,12 @@ Vue.component("comments-widget", {
     '            <div class="content">\n' +
     "              <p>\n" +
     "                <strong>{{ comment.author.qualified_name }}</strong>" +
-      '<star-rating v-if="comment.id" :rate-url="rateURL.format(comment.id)" :item-id="comment.id" :initial="comment.aggregate_rating.rating_value"></star-rating>\n' +
+      '<star-rating v-if="comment.id" :read-only="comment.author.id === authorId" :rate-url="rateURL.format(comment.id)" :item-id="comment.id" :initial="comment.aggregate_rating.rating_value"></star-rating>\n' +
     '                <span v-html="comment.rendered"></span>\n' +
     '                <small><!--<a>Like</a> ·--> <a @click="comment.showReplies = !comment.showReplies"><span v-if="!comment.showReplies"><span v-if="comment.replies">{{ comment.replies }} </span>Reply</span><span v-else>Hide replies</span></a> · {{ comment.date_published|time-passed }}</small>\n' +
     "              </p>\n" +
     "             </div>" +
-    '           <comments-widget @declare_replies="comment.replies = $event" v-show="comment.showReplies" is-reply="true" :item-id="comment.id" item-name="this comment"></comments-widget>\n' +
+    '           <comments-widget @declare_replies="comment.replies = $event" :author-id="authorId" v-show="comment.showReplies" is-reply="true" :item-id="comment.id" item-name="this comment"></comments-widget>\n' +
     "          </div>\n" +
     "        </article>" +
     '       <article class="media">\n' +
