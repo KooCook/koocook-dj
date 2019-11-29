@@ -2,7 +2,7 @@ from django.shortcuts import reverse
 from django.test import TestCase
 from django.contrib.auth.models import User
 
-from ..models import Author, Post, Recipe
+from ..models import Author, AggregateRating, Post, Recipe
 from ..controllers import PostController
 from .base import create_dummy_post, AuthTestCase
 
@@ -32,6 +32,11 @@ class RatingTest(AuthTestCase):
         self.client.login(username=self.user2.username, password=self.password)
         self.recipe_rate_url = reverse('koocook_core:recipe-rate', args=(self.recipe.id,))
         self.post_rate_url = reverse('koocook_core:posts:rate', args=(self.post.id,))
+
+    def test_empty_reviewable_model_creation(self):
+        recipe = create_dummy_recipe(self.user)
+        self.assertEqual(recipe.aggregate_rating.rating_value, 0)
+        self.assertTrue(isinstance(recipe.aggregate_rating, AggregateRating))
 
     def test_rate_same_as_item_author(self):
         self.client.login(username=self.user.username, password=self.password)
