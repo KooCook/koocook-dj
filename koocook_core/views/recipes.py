@@ -19,13 +19,7 @@ class SignInRequiredMixin(LoginRequiredMixin):
         return reverse('social:begin', args=['google-oauth2'])
 
 
-class AuthorMixin:
-    def form_valid(self, form: RecipeForm):
-        form.instance.author = Author.objects.get(user__user=self.request.user)
-        return super().form_valid(form)
-
-
-class RecipeSearchListView(ListView):
+class RecipeSearchListView(AuthAuthorMixin, ListView):
     http_method_names = ('get',)
     model = Recipe
     paginate_by = 10

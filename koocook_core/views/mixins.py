@@ -18,7 +18,10 @@ class AuthAuthorMixin:
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['current_author'] = Author.objects.get(user__user=self.request.user)
+        if self.request.user.is_authenticated:
+            context['current_author'] = Author.objects.get(user__user=self.request.user)
+        else:
+            context['current_author'] = {'id': 0}
         return context
 
     def form_valid(self, form):
