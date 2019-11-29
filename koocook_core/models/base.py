@@ -17,10 +17,6 @@ class SerialisableModel:
     exclude = ()
 
     @property
-    def fields(self) -> list:
-        return list(self.include) + [field.name for field in self._meta.fields]
-
-    @property
     def dict_fields(self) -> list:
         return [transform_to_field(include) for include in self.include if getattr(self, include)] + \
                [field for field in self._meta.fields]
