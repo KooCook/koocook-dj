@@ -168,10 +168,9 @@
           <p>
             <strong>{% templatetag openvariable %} userPost.author.qualified_name
               {% templatetag closevariable %}</strong> <small>@{% templatetag openvariable %} userPost.author.name
-              <star-rating{% if not request.user.is_authenticated %} :read-only="true"{% endif %} :rate-url="rateURL.format(userPost.id)" :item-id="userPost.id" :initial="userPost.aggregate_rating"></star-rating>
               {% templatetag closevariable %}</small> <small>{% templatetag openvariable %} userPost.date_published |
               time-passed
-              {% templatetag closevariable %}</small>
+              {% templatetag closevariable %}</small> <star-rating{% if not request.user.is_authenticated %} :read-only="true"{% endif %} :rate-url="rateURL.format(userPost.id)" :item-id="userPost.id" :initial="userPost.aggregate_rating"></star-rating>
             <br>
             <div v-if="userPost.editing">
               <form method="post" @submit.prevent="editPost(upIndex)">
