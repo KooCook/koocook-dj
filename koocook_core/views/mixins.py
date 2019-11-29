@@ -16,12 +16,17 @@ class SignInRequiredMixin(LoginRequiredMixin):
 
 class AuthAuthorMixin:
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['current_author'] = Author.objects.get(user__user=self.request.user)
+        return context
+
     def form_valid(self, form):
         form.instance.author = Author.objects.get(user__user=self.request.user)
         return super().form_valid(form)
 
 
-class CommentWidgetMixin(FormMixin, AuthAuthorMixin):
+class CommentWidgetMixin(AuthAuthorMixin, FormMixin):
     form_class = CommentForm
     #
     # def post(self, request, *args, **kwargs):

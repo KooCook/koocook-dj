@@ -90,7 +90,7 @@
               <div class="level-item has-text-centered">
                 <div>
                   <p class="heading">Ratings</p>
-                  <p class="title">{{ recipe.aggregate_rating.rating_value }}/5</p>
+                  <p class="title">{{ object.aggregate_rating.rating_value }}/5</p>
                 </div>
               </div>
   
@@ -115,7 +115,7 @@
                           style="border-radius: 0; height: 0.2rem"></progress>
               </div>
               <div class="level-item">
-                  <star-rating{% if not request.user.is_authenticated %} :read-only="true"{% endif %} recipe-name="{{ object.name }}" :item-id="{{ object.id }}" :initial="{{ object.aggregate_rating.rating_value }}"></star-rating>
+                  <star-rating{% if not request.user.is_authenticated %} :read-only="true"{% else %} :read-only="{{ object.author.id }} === currentAuthorId"{% endif %} recipe-name="{{ object.name }}" :item-id="{{ object.id }}" :initial="{{ object.aggregate_rating.rating_value }}"></star-rating>
               </div>
             </nav>
           </div>
@@ -323,7 +323,7 @@
           Comments
         </h2>
             {% if request.user.is_authenticated %}
-          <comments-widget item-name="{{ object.name }}" :item-id="{{ object.id }}"></comments-widget>
+          <comments-widget :author-id="currentAuthorId" item-name="{{ object.name }}" :item-id="{{ object.id }}"></comments-widget>
                 {% else %}
                 <div class="notification">
                     <p>Only KooCook users can view the comments of this recipe!</p>
@@ -339,7 +339,7 @@
         data: {
             searchName: '',
             ingredients: [],
-        }
-      })
+            currentAuthorId: {{ current_author.id }}
+        }});
   </script>
 {% endblock %}
