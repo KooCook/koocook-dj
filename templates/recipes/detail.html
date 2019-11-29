@@ -1,4 +1,14 @@
 {% extends 'base/recipes.html' %}
+{% load static %}
+{% block content_deps %}<script>
+    const COMMENTS_ENDPOINTS = {
+        GET: `{% url 'koocook_core:recipe-comments' object.id %}`,
+        POST: `{% url 'koocook_core:recipe-comments' object.id %}`,
+        PATCH: `{% url 'koocook_core:recipe-comments' object.id %}`,
+    };
+</script>
+    <script src="{% static 'js/components/comments.js' %}"></script>
+    <script src="{% static 'js/components/star-rating.js' %}"></script>{% endblock %}
 {% block no_hero %}{% endblock %}
 {% block content_page_name %}{{ object.name }}{% endblock %}
 {% block page_content %}
@@ -11,6 +21,7 @@
         </h1>
         <p class="subtitle is-4">
           Recipe by <a href="">{{ object.author.name }}</a>
+
         </p>
           <div class="field is-grouped is-grouped-multiline">
           {% for tag in object.tag_set.all %}
@@ -117,7 +128,7 @@
                         <div class="level-item has-text-centered">
                             <div>
                                 <p class="heading">Ratings</p>
-                                <p class="title">{{ recipe.aggregate_rating.rating_value|rating }}/5.0</p>
+                                <p class="title">{% templatetag openvariable %} currentRating {% templatetag closevariable %} / 5.0</p><!--{{ object.aggregate_rating.rating_value|rating }}</p>-->
                             </div>
                         </div>
                     </nav>
@@ -131,12 +142,7 @@
                             ></progress>
                         </div>
                         <div class="level-item">
-                            <progress
-                                    class="progress is-info"
-                                    value="{{ recipe.aggregate_rating.rating_value|rating }}"
-                                    max="5"
-                                    style="border-radius: 0; height: 0.2rem"
-                            ></progress>
+                            <star-rating{% if not request.user.is_authenticated %} :read-only="true"{% else %} :read-only="{{ object.author.id }} === currentAuthorId"{% endif %} recipe-name="{{ object.name }}" :item-id="{{ object.id }}" :initial="currentRating" @new-rating="changeRating"></star-rating>
                         </div>
                     </nav>
                 </div>
@@ -321,7 +327,7 @@
                 <div class="tile is-parent">
                   <div class="tile is-child">
                     <h3 class="title is-4">
-                      Instruction
+                      Instructions
                     </h3>
                     <div class="content" style="">
                       <ol>
@@ -354,130 +360,39 @@
           </div>
         </section>
 
-    <section class="section" style="padding-top: 0">
-        <div class="container">
-            <hr style="margin-top: 0"/>
+        <section class="section" style="padding-top: 0">
+          <div class="container">
+
+            <hr style="margin-top: 0">
             <h2 class="title">
-                Comments
+              Comments
             </h2>
-
-            <article class="media">
-                <figure class="media-left">
-                    <p class="image is-64x64">
-                        <img src="../assets/img/placeholders/128x128.png"/>
-                    </p>
-                </figure>
-                <div class="media-content">
-                    <div class="content">
-                        <p>
-                            <strong>Barbara Middleton</strong>
-                            <br/>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis
-                            porta eros lacus, nec ultricies elit blandit non. Suspendisse
-                            pellentesque mauris sit amet dolor blandit rutrum.
-                            <s>Nunc in tempus turpis.</s>
-                            <br/>
-                            <small><a>Like</a> · <a>Reply</a> · 3 hrs</small>
-                        </p>
+                {% if request.user.is_authenticated %}
+              <comments-widget :author-id="currentAuthorId" item-name="{{ object.name }}" :item-id="{{ object.id }}"></comments-widget>
+                    {% else %}
+                    <div class="notification">
+                        <p>Only KooCook users can view the comments of this recipe!</p>
+                        Please <a href="{% url "social:begin" "google-oauth2" %}"><strong>sign in</strong></a> to add or view comments
                     </div>
 
-                    <article class="media">
-                        <figure class="media-left">
-                            <p class="image is-48x48">
-                                <img src="../assets/img/placeholders/96x96.png"/>
-                            </p>
-                        </figure>
-                        <div class="media-content">
-                            <div class="content">
-                                <p>
-                                    <strong>Sean Brown</strong>
-                                    <br/>
-                                    Donec sollicitudin urna eget eros malesuada sagittis.
-                                    Pellentesque habitant morbi tristique senectus et netus et
-                                    malesuada fames ac turpis egestas. Aliquam blandit nisl a
-                                    nulla sagittis, a lobortis leo feugiat.
-                                </p>
-                                <blockquote>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis
-                                    porta eros lacus, nec ultricies elit blandit non.
-                                </blockquote>
-                                <p>
-                                    Morbi vitae diam et purus tincidunt porttitor vel vitae augue.
-                                    Praesent malesuada metus sed pharetra euismod. Cras tellus
-                                    odio, tincidunt iaculis diam non, porta aliquet tortor.
-                                    <br/>
-                                    <small>5 <a>Like</a> · <a>Reply</a> · 2 hrs</small>
-                                </p>
-                            </div>
-                        </div>
-                    </article>
-
-                    <article class="media">
-                        <figure class="media-left">
-                            <p class="image is-48x48">
-                                <img src="../assets/img/placeholders/96x96.png"/>
-                            </p>
-                        </figure>
-                        <div class="media-content">
-                            <div class="content">
-                                <p>
-                                    <strong>Kayli Eunice </strong>
-                                    <br/>
-                                    Sed convallis scelerisque mauris, non pulvinar nunc mattis
-                                    vel. Maecenas varius felis sit amet magna vestibulum euismod
-                                    malesuada cursus libero. Vestibulum ante ipsum primis in
-                                    faucibus orci luctus et ultrices posuere cubilia Curae;
-                                    Phasellus lacinia non nisl id feugiat.
-                                    <br/>
-                                    <small>12 <a>Like</a> · <a>Reply</a> · 2 hrs</small>
-                                </p>
-                            </div>
-                        </div>
-                    </article>
-                </div>
-            </article>
-            <article class="media">
-                <figure class="media-left">
-                    <p class="image is-64x64">
-                        <img src="../assets/img/placeholders/128x128.png"/>
-                    </p>
-                </figure>
-                <div class="media-content">
-                    <div class="content">
-                        <p>
-                            <strong>John Smith</strong>
-                            <br/>
-                            <strong>The pancakes were so <em>perfectly</em> fluffy!</strong> I
-                            put some <em>fresh</em> figs and blueberries on top.
-                            <br/>
-                            <small><a>Like</a> · <a>Reply</a> · 31 mins</small>
-                        </p>
-                    </div>
-                </div>
-            </article>
-            <article class="media">
-                <figure class="media-left">
-                    <p class="image is-64x64">
-                        <img src="../assets/img/placeholders/128x128.png"/>
-                    </p>
-                </figure>
-                <div class="media-content">
-                    <div class="field">
-                        <p class="control">
-              <textarea
-                      class="textarea"
-                      placeholder="Add a comment..."
-              ></textarea>
-                        </p>
-                    </div>
-                    <div class="field">
-                        <p class="control">
-                            <button class="button is-primary">Post comment</button>
-                        </p>
-                    </div>
-                </div>
-            </article>
-        </div>
-    </section>
+              {% endif %}
+          </div>
+        </section>
+        <script>
+             new Vue({
+                el: '#app',
+                data: {
+                    searchName: '',
+                    ingredients: [],
+                    currentAuthorId: {{ current_author.id }},
+                    currentRating: {{ object.aggregate_rating.rating_value }}.toFixed(1)
+                },
+                 methods: {
+                    changeRating(newRating) {
+                        this.currentRating = newRating.toFixed(1)
+                        }
+                 }
+             });
+          </script>
     {% endblock %}
 </div>

@@ -38,16 +38,28 @@
                         <h3>Recipe name</h3>
                         <small>Only show recipes with a similar name to search query</small>
                     </div>
-                </div>
-            </b-dropdown-item>
-        </b-dropdown>
-    </h3>
-    <transition name="fade" mode="in-out">
-        <div v-if="!getRecipesByName.length">
-            No results matching with your search.
-        </div>
-    </transition>
-    <transition-group name="fade" mode="in-out">
+                </b-dropdown-item>
+            </b-dropdown>
+          </h3>
+        <transition name="fade" mode="in-out">
+           <div v-if="!getRecipesByName.length">
+                No results matching with your search.
+            </div>
+        </transition>
+      {% for recipe in recipes %}
+                <div class="box">
+                {% if recipe.hot %}<p class="is-6 has-text-danger"><i class="fas fa-fire"></i> Trending</p>{% endif %}
+                <a href="{% url 'koocook_core:recipe' recipe.id %}"><h4 class="title is-4">
+                    {{ recipe.name }}
+                </h4></a>
+                <p class="subtitle">
+                    by {{ recipe.author }} <span class="date-posted subtitle is-6 has-text-grey"><i class="fas fa-calendar-alt"></i> {{ recipe.date_published }} </span> <span class="date-posted subtitle is-6 has-text-grey"><i class="fas fa-clock"></i> Ready in: {{ recipe.ready_time }}</span>
+                    <span class="date-posted subtitle is-6 has-text-grey"><i class="fas fa-eye"></i> {{ recipe.view_count }} view{{ recipe.view_count|pluralize }}</span></span>
+                </p>
+
+              </div>
+            {% endfor %}
+        <transition-group name="fade" mode="in-out">
 
         <div v-for="recipe in getRecipesByName" :key="recipe.title" class="box">
             <p class="is-6 has-text-danger" v-if="recipe.hot"><i class="fas fa-fire"></i> Trending</p>
@@ -63,67 +75,40 @@
 
         </div>
 
-    </transition-group>
-
-</div>
-<script>
-    new Vue({
+        </transition-group>
+         {% if page_obj.has_other_pages %}
+            <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}" class="pagination-previous"> <b-icon
+                icon="arrow-left-bold"
+                size="is-small">
+            </b-icon> Previous</a>
+                {% endif %}
+                {% if page_obj.has_next %}
+                  <a href="?page={{ page_obj.next_page_number }}" class="pagination-next"><b-icon
+                icon="arrow-right-bold"
+                size="is-small">
+            </b-icon> Next</a>
+                {% endif %}
+            <ul class="pagination-list">
+                {% for number in paginator.page_range %}
+                    {% if page_obj.number == number %}
+                        <li><a class="pagination-link is-current" aria-label="Page {{ number }}" aria-current="page">{{ number }}</a></li>
+                      {% else %}
+                        <li><a href="?page={{ number }}" class="pagination-link" aria-label="Go to page {{ number }}">{{ number }}</a></li>
+                      {% endif %}
+                {% endfor %}
+             </ul>
+            </nav>
+        {% endif %}
+      </div>
+        <script>
+      new Vue({
         el: '#app',
         data: {
-            togglePopSearch: false,
-            searchName: '',
-            recipes: [
-                {
-                    author: 'Jessie Damuck',
-                    url: '../recipes/detail-ex1.html',
-                    title: "BA's Best Buttermilk Pancakes",
-                    datePosted: 'Oct 13, 2019',
-                    readyTime: '20 min',
-                    hot: true,
-                    view_count: 1925,
-                    up: 80,
-                    down: 3
-                },
-                {
-                    author: 'Thakky',
-                    title: 'Pumpkin Waffles with Apple Cider Syrup',
-                    datePosted: 'Sep 18, 2019',
-                    readyTime: '45 min',
-                    hot: true,
-                    view_count: 125,
-                    up: 80,
-                    down: 3
-                },
-                {
-                    author: 'foo',
-                    title: 'Kare Kare Chicken Wings',
-                    datePosted: 'Sep 17, 2019',
-                    readyTime: '20 min',
-                    hot: true,
-                    view_count: 89,
-                    up: 50,
-                    down: 4
-                },
-                {
-                    author: 'bar',
-                    title: 'Guacamole',
-                    datePosted: 'Jun 15, 2019',
-                    readyTime: '10 min',
-                    hot: false,
-                    view_count: 23,
-                    up: 10,
-                    down: 2
-                },
-                {
-                    author: 'bar',
-                    title: 'Double Tomato Bruschetta',
-                    datePosted: 'Jun 13, 2019',
-                    readyTime: '35 min',
-                    hot: false,
-                    view_count: 23,
-                    up: 112
-                }
-            ]
+          togglePopSearch: false,
+          searchName: '',
+          recipes: [ ]
         },
         computed: {
             getRecipesByName() {

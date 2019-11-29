@@ -1,4 +1,6 @@
 {% extends 'base/recipes.html' %}
+{% load static %}
+{% block content_deps %}<script src="{% static 'js/components/star-rating.js' %}"></script>{% endblock %}
 {% block section_after_nav %}<section class="hero is-light">
   <div class="hero-body">
     <div class="container">
@@ -43,23 +45,24 @@
     <div class="card">
          <div class="card-image">
     <figure class="image is-2by1 is-bg-cover-centered">
-        <img src="{{ recipe.image|first }}" alt="Recipe image">
+      <img src="{{ recipe.image|first }}" alt="Recipe image">
     </figure>
   </div>
     <div class="card-content">
         <div class="media">
+            <star-rating recipe-name="{{ recipe.name }}" :item-id="{{ recipe.id }}" :initial="{{ recipe.aggregate_rating.rating_value }}" read-only="true"></star-rating>
       <div class="media-content">
           <p class="title is-4"><a href="{% url 'koocook_core:recipe' recipe.id %}">{{ recipe.name }}</a> <span class="buttons is-inline-flex has-addons  is-small">
-      <a href="{% url 'koocook_core:recipe-edit' recipe.id %}"><button class="button is-primary is-outlined is-small"><i class="fas fa-pencil-alt"></i> </button></a>
-     <button class="button is-danger is-outlined is-small is-light" @click="showConfirmDeletion({{ recipe.id }})"><i class="fas fa-times"></i> </button>
+              <a href="{% url 'koocook_core:recipe-edit' recipe.id %}"><button class="button is-primary is-outlined is-small"><b-icon icon="pencil"></b-icon> </button></a>
+     <button class="button is-danger is-outlined is-small is-light" @click="showConfirmDeletion({{ recipe.id }})"><b-icon icon="close"></b-icon> </button>
         </span></p>
 
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% empty %}
+      </div>
+    </div>
+    </div>
+    </div>
+    </div>
+{% empty %}
     <li>You have not contributed any recipe with KooCook</li>
 {% endfor %}
 </div>
@@ -109,6 +112,6 @@
                 })
             }
         }
-    })
-</script>
+      })
+  </script>
 {% endblock %}

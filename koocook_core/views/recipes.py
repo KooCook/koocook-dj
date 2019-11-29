@@ -3,12 +3,13 @@ import django
 from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import reverse
-from django.views.generic.edit import CreateView, ProcessFormView
+from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import RecipeForm
+from .mixins import AuthAuthorMixin, CommentWidgetMixin, RecipeViewMixin, SignInRequiredMixin
 from ..models import Recipe, Author, KoocookUser, RecipeIngredient, MetaIngredient
 
 
@@ -18,35 +19,25 @@ class SignInRequiredMixin(LoginRequiredMixin):
         return reverse('social:begin', args=['google-oauth2'])
 
 
-class RecipeViewMixin:
-    def form_valid(self, form):
-        response = super().form_valid(form)
-        ingredients = json.loads(self.request.POST.get('ingredients'))
-        if ingredients:
-            for ingredient in ingredients:
-                meta_queryset = MetaIngredient.objects.filter(name=ingredient['name'])
-                if not meta_queryset.exists():
-                    meta = MetaIngredient(name=ingredient['name'])
-                    meta.save()
-                else:
-                    meta = meta_queryset[0]
-                ingredient_field_values = {'meta': meta, 'recipe': form.save(commit=False),
-                                           'quantity': f"{ingredient['quantity']['number']} "
-                                                       f"{ingredient['quantity']['unit']}"}
-                if 'id' not in ingredient:
-                    RecipeIngredient(**ingredient_field_values).save()
-                else:
-                    found_ingredient = RecipeIngredient.objects.filter(pk=ingredient['id'])
-                    if not found_ingredient:
-                        RecipeIngredient(**ingredient_field_values).save()
-                    else:
-                        if 'removed' in ingredient and bool(ingredient['removed']):
-                            found_ingredient.delete()
-                        else:
-                            found_ingredient.update(**ingredient_field_values)
-            return response
+class AuthorMixin:
+    def form_valid(self, form: RecipeForm):
+        form.instance.author = Author.objects.get(user__user=self.request.user)
+        return super().form_valid(form)
+
+
+class RecipeSearchListView(ListView):
+    http_method_names = ('get',)
+    model = Recipe
+    paginate_by = 10
+    context_object_name = 'recipes'
+    template_name = 'search.html'
+
+    def get_queryset(self):
+        kw = self.request.GET.get("kw")
+        if kw:
+            return self.model.objects.filter(name__icontains=kw)
         else:
-            return response
+            return self.model.objects.all()
 
 
 class UserRecipeListView(SignInRequiredMixin, ListView):
@@ -64,17 +55,10 @@ class UserRecipeListView(SignInRequiredMixin, ListView):
         return Recipe.objects.filter(author=author)
 
 
-class RecipeCreateView(RecipeViewMixin, CreateView):
-    http_method_names = ['post', 'get']
-    form_class = RecipeForm  # model = Recipe
-    # fields = '__all__'
+class RecipeCreateView(SignInRequiredMixin, AuthAuthorMixin, RecipeViewMixin, CreateView):
+    http_method_names = ('post', 'get')
+    form_class = RecipeForm
     template_name = 'recipes/create.html'
-
-    @property
-    def initial(self):
-        initial = super().initial
-        initial.update({'author': Author.objects.filter(user__user=self.request.user)[0]})
-        return initial.copy()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -93,9 +77,9 @@ class FractionEncoder(json.JSONEncoder):
             return str(obj)
 
 
-class RecipeUpdateView(RecipeViewMixin, UpdateView):
+class RecipeUpdateView(SignInRequiredMixin, AuthAuthorMixin, RecipeViewMixin, UpdateView):
     model = Recipe
-    fields = '__all__'  # ['name']
+    form_class = RecipeForm
     template_name = 'recipes/update.html'
 
     def get_success_url(self):
@@ -109,9 +93,12 @@ class RecipeUpdateView(RecipeViewMixin, UpdateView):
         return context
 
 
-class RecipeDetailView(DetailView):
+class RecipeDetailView(CommentWidgetMixin, DetailView):
     model = Recipe
     template_name = 'recipes/detail.html'
+
+    def get_success_url(self):
+        return self.request.path
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

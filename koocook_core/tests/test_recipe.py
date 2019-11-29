@@ -20,4 +20,4 @@ class RecipeModelTests(TestCase):
 
     def test_recipe_ingredient(self):
         recipe = Recipe()
-        self.assertEqual(recipe.recipe_ingredients, recipe.recipeingredient_set.all())
+        self.assertEqual(list(recipe.recipe_ingredients.all()), list(recipe.recipeingredient_set.all()))

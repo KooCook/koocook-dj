@@ -15,7 +15,7 @@ class RecipeForm(forms.ModelForm):
     class Meta:
         model = Recipe
         fields = '__all__'
-        exclude = ('date_published', 'aggregate_rating')
+        exclude = ('aggregate_rating', 'author', 'date_published')
         widgets = {'image': HiddenInput(), 'video': HiddenInput()}
 
     @property

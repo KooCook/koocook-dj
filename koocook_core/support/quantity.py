@@ -13,7 +13,7 @@ class Quantity:
     __slots__ = ('amount', 'unit')
 
     def __init__(self,
-                 amount: Union[Fraction, int],
+                 amount: Union[Fraction, int, float],
                  unit: Union[unit_.Unit, str]):
         if isinstance(amount, Fraction):
             self.amount = amount
