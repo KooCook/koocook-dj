@@ -56,7 +56,7 @@
                     </figure>
                   </div>
                 <div class="card-content">
-                <star-rating{% if not request.user.is_authenticated %} :read-only="true"{% else %} :read-only="{{ recipe.author.id }} === currentAuthorId"{% endif %} recipe-name="{{ recipe.name }}" :item-id="{{ recipe.id }}" :initial="{{ recipe.aggregate_rating.rating_value }}"></star-rating>
+                <star-rating :read-only="true" recipe-name="{{ recipe.name }}" :item-id="{{ recipe.id }}" :initial="{{ recipe.aggregate_rating.rating_value }}"></star-rating>
                 {% if recipe.hot %}<p class="is-6 has-text-danger"><i class="fas fa-fire"></i> Trending</p>{% endif %}
                 <h4 class="title is-4"><a href="{% url 'koocook_core:recipe' recipe.id %}">
                     {{ recipe.name }}
