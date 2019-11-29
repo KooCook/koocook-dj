@@ -16,7 +16,7 @@ class RecipeForm(forms.ModelForm):
     class Meta:
         model = Recipe
         fields = '__all__'
-        exclude = ('author', 'date_published', 'tag_set')
+        exclude = ('aggregate_rating', 'author', 'date_published')
 
     @property
     def vanilla_fields(self):

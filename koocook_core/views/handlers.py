@@ -15,11 +15,6 @@ def index(request):
     return render(request, 'index.html')
 
 
-@require_http_methods(["GET"])
-def search_view(request):
-    return render(request, 'search.html')
-
-
 @require_http_methods(["GET", "POST", "DELETE"])
 @allow_post_comments(Recipe, 'recipe_id')
 def handle_recipe(request, recipe_id):

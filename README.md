@@ -1,9 +1,9 @@
 # KooCook! - Django backend
 
 ##### Build status
-`master`: [![CircleCI](https://circleci.com/gh/KooCook/koocook-dj/tree/master.svg?style=svg&circle-token=fd2434f2ab70aacb8216f2242e272abeae57859c)](https://circleci.com/gh/KooCook/koocook-dj/tree/master)  
-`dev`: [![CircleCI](https://circleci.com/gh/KooCook/koocook-dj/tree/dev.svg?style=svg&circle-token=fd2434f2ab70aacb8216f2242e272abeae57859c)](https://circleci.com/gh/KooCook/koocook-dj/tree/dev)
-
+- `master`: [![CircleCI](https://circleci.com/gh/KooCook/koocook-dj/tree/master.svg?style=svg&circle-token=fd2434f2ab70aacb8216f2242e272abeae57859c)](https://circleci.com/gh/KooCook/koocook-dj/tree/master)  
+- `dev`: [![CircleCI](https://circleci.com/gh/KooCook/koocook-dj/tree/dev.svg?style=svg&circle-token=fd2434f2ab70aacb8216f2242e272abeae57859c)](https://circleci.com/gh/KooCook/koocook-dj/tree/dev) [![codecov](https://codecov.io/gh/KooCook/koocook-dj/branch/dev/graph/badge.svg)](https://codecov.io/gh/KooCook/koocook-dj)
+  - `feature/rating`: [![codecov](https://codecov.io/gh/KooCook/koocook-dj/branch/feature/rating/graph/badge.svg)](https://codecov.io/gh/KooCook/koocook-dj)
 ## Description
 
 __KooCook!__ is a web application that helps people—whether they are amateur cooks, homecooks, aspiring cooks, experienced cooks, or just starving people—decide on what food they want to make with the ingredients, equipment, time, and preferences that they have and live a healthier life with nutrition information included.

@@ -1,5 +1,4 @@
 {% extends 'base/recipes.html' %}
-{% load widget_tweaks %}
 {% load static %}
 {% load recipe_extras %}
 {% block no_hero %}{% endblock %}
@@ -10,8 +9,9 @@
         PATCH: `{% url 'koocook_core:recipe-comments' object.id %}`,
     };
 </script>
-<script src="{% static 'js/components/comments.js' %}"></script>
-{% endblock %}
+    <script src="{% static 'js/components/comments.js' %}"></script>
+    <script src="{% static 'js/components/star-rating.js' %}"></script>{% endblock %}
+{% block no_hero %}{% endblock %}
 {% block content_page_name %}{{ object.name }}{% endblock %}
 {% block page_content %}
 <div style="padding: 0 3rem">
@@ -43,7 +43,7 @@
     <section class="section" style="padding-top: 0">
       <div class="container">
         <figure class="image is-4928x3264" style="margin-bottom: 1.5rem">
-          <img src="{{ object.image }}" alt="{{ object.name }}">
+          <img src="{{ object.image|first }}" alt="{{ object.name }}">
         </figure>
         <p class="subtitle is-6">
           <strong>Image Credit:</strong> <a href="">Skitterphoto</a>
@@ -90,7 +90,7 @@
               <div class="level-item has-text-centered">
                 <div>
                   <p class="heading">Ratings</p>
-                  <p class="title">4.4/5</p>
+                  <p class="title">{{ recipe.aggregate_rating.rating_value }}/5</p>
                 </div>
               </div>
 
@@ -115,8 +115,7 @@
                           style="border-radius: 0; height: 0.2rem"></progress>
               </div>
               <div class="level-item">
-                <progress class="progress is-info" value="34" max="40"
-                          style="border-radius: 0; height: 0.2rem"></progress>
+                  <star-rating{% if not request.user.is_authenticated %} :read-only="true"{% endif %} recipe-name="{{ object.name }}" :item-id="{{ object.id }}" :initial="{{ object.aggregate_rating.rating_value }}"></star-rating>
               </div>
             </nav>
           </div>
@@ -323,169 +322,24 @@
         <h2 class="title">
           Comments
         </h2>
-  <!-- Left untouched for templates -->
-{#        <article class="media">#}
-{#          <figure class="media-left">#}
-{#            <p class="image is-64x64">#}
-{#              <img src="../assets/img/placeholders/128x128.png">#}
-{#            </p>#}
-{#          </figure>#}
-{#          <div class="media-content">#}
-{#            <div class="content">#}
-{#              <p>#}
-{#                <strong>Barbara Middleton</strong>#}
-{#                <br>#}
-{#                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis porta eros lacus, nec ultricies elit blandit#}
-{#                non. Suspendisse pellentesque mauris sit amet dolor blandit rutrum. <s>Nunc in tempus turpis.</s>#}
-{#                <br>#}
-{#                <small><a>Like</a> · <a>Reply</a> · 3 hrs</small>#}
-{#              </p>#}
-{#            </div>#}
-{#  #}
-{#            <article class="media">#}
-{#              <figure class="media-left">#}
-{#                <p class="image is-48x48">#}
-{#                  <img src="../assets/img/placeholders/96x96.png">#}
-{#                </p>#}
-{#              </figure>#}
-{#              <div class="media-content">#}
-{#                <div class="content">#}
-{#                  <p>#}
-{#                    <strong>Sean Brown</strong>#}
-{#                    <br>#}
-{#                    Donec sollicitudin urna eget eros malesuada sagittis. Pellentesque habitant morbi tristique senectus#}
-{#                    et#}
-{#                    netus et malesuada fames ac turpis egestas. Aliquam blandit nisl a nulla sagittis, a lobortis leo#}
-{#                    feugiat.#}
-{#                  </p>#}
-{#                  <blockquote>#}
-{#                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis porta eros lacus, nec ultricies elit#}
-{#                    blandit non.#}
-{#                  </blockquote>#}
-{#                  <p>#}
-{#                    Morbi vitae diam et purus tincidunt porttitor vel vitae augue. Praesent malesuada metus sed pharetra#}
-{#                    euismod. Cras tellus odio, tincidunt iaculis diam non, porta aliquet tortor.#}
-{#                    <br>#}
-{#                    <small>5 <a>Like</a> · <a>Reply</a> · 2 hrs</small>#}
-{#                  </p>#}
-{#                </div>#}
-{#              </div>#}
-{#            </article>#}
-{#  #}
-{#            <article class="media">#}
-{#              <figure class="media-left">#}
-{#                <p class="image is-48x48">#}
-{#                  <img src="../assets/img/placeholders/96x96.png">#}
-{#                </p>#}
-{#              </figure>#}
-{#              <div class="media-content">#}
-{#                <div class="content">#}
-{#                  <p>#}
-{#                    <strong>Kayli Eunice </strong>#}
-{#                    <br>#}
-{#                    Sed convallis scelerisque mauris, non pulvinar nunc mattis vel. Maecenas varius felis sit amet magna#}
-{#                    vestibulum euismod malesuada cursus libero. Vestibulum ante ipsum primis in faucibus orci luctus et#}
-{#                    ultrices posuere cubilia Curae; Phasellus lacinia non nisl id feugiat.#}
-{#                    <br>#}
-{#                    <small>12 <a>Like</a> · <a>Reply</a> · 2 hrs</small>#}
-{#                  </p>#}
-{#                </div>#}
-{#              </div>#}
-{#            </article>#}
-{#          </div>#}
-{#        </article>#}
+            {% if request.user.is_authenticated %}
           <comments-widget item-name="{{ object.name }}" :item-id="{{ object.id }}"></comments-widget>
-{#        <article class="media">#}
-{#          <figure class="media-left">#}
-{#            <p class="image is-64x64">#}
-{#              <img src="../assets/img/placeholders/128x128.png">#}
-{#            </p>#}
-{#          </figure>#}
-{#          <div class="media-content">#}
-{#            <div class="content">#}
-{#              <p>#}
-{#                <strong>John Smith</strong>#}
-{#                <br>#}
-{#                <strong>The pancakes were so <em>perfectly</em> fluffy!</strong> I put some <em>fresh</em> figs and#}
-{#                blueberries on top.#}
-{#                <br>#}
-{#                <small><a>Like</a> · <a>Reply</a> · 31 mins</small>#}
-{#              </p>#}
-{#            </div>#}
-{#          </div>#}
-{#        </article>#}
-{#        <article class="media">#}
-{#          <figure class="media-left">#}
-{#            <p class="image is-64x64">#}
-{#              <img src="../assets/img/placeholders/128x128.png">#}
-{#            </p>#}
-{#          </figure>#}
-{#          <div class="media-content">#}
-{#            <div class="field">#}
-{#              <p class="control">#}
-{#                <textarea class="textarea" placeholder="Add a comment..."></textarea>#}
-{#              </p>#}
-{#            </div>#}
-{#            <div class="field">#}
-{#              <p class="control">#}
-{#                <button class="button is-primary">Post comment</button>#}
-{#              </p>#}
-{#            </div>#}
-{#          </div>#}
-{#        </article>#}
+                {% else %}
+                <div class="notification">
+                    <p>Only KooCook users can view the comments of this recipe!</p>
+                    Please <a href="{% url "social:begin" "google-oauth2" %}"><strong>sign in</strong></a> to add or view comments
+                </div>
 
-{#          {% for comment in object.comment_set.all %}#}
-{##}
-{#        <article class="media">#}
-{#          <figure class="media-left">#}
-{#            <p class="image is-64x64">#}
-{#              <img src="../assets/img/placeholders/128x128.png">#}
-{#            </p>#}
-{#          </figure>#}
-{#          <div class="media-content">#}
-{#            <div class="content">#}
-{#              <p>#}
-{#                <strong>{{ comment.author }}</strong>#}
-{#                <br>{{ comment.body }}#}
-{#                <br>#}
-{#                <small><a>Like</a> · <a>Reply</a> · 31 mins</small>#}
-{#              </p>#}
-{#            </div>#}
-{#          </div>#}
-{#        </article>#}
-{#        {% endfor %}#}
-{#          <article class="media">#}
-{#          <figure class="media-left">#}
-{#            <p class="image is-64x64">#}
-{#              <img src="../assets/img/placeholders/128x128.png">#}
-{#            </p>#}
-{#          </figure>#}
-{#          <div class="media-content" id="comments">#}
-{#              <form method="post" novalidate action="{{ request.path }}">#}
-{#                  {% csrf_token %}#}
-{#                  <strong>What do you think about {{ object.name }}?</strong>#}
-{#                <div class="field">#}
-{#                  <p class="control">#}
-{#                      {{ form.body|add_class:"textarea" }}#}
-{#                  </p>#}
-{#                </div>#}
-{#                <div class="field">#}
-{#                  <p class="control">#}
-{#                    <button class="button is-primary" type="submit">Post comment</button>#}
-{#                  </p>#}
-{#                </div>#}
-{#              </form>#}
-{#          </div>#}
-{#        </article>#}
+          {% endif %}
       </div>
     </section>
-    <script>
-
-        app = new Vue({
-            el: '#app',
-            data: {
-                searchName: ''
-            }
-        })
-    </script>
+<script>
+     new Vue({
+        el: '#app',
+        data: {
+            searchName: '',
+            ingredients: [],
+        }
+      })
+  </script>
 {% endblock %}

@@ -6,7 +6,11 @@ from ..views import get_all_comments_for
 app_name = 'posts'
 handler = PostHandler.instance()
 urlpatterns = [
-    path('', handler.handle, name="all"),
+    path('', handler.handle, name='view'),
+    path('all/', handler.handle, name="all", kwargs={"alias": 'all'}),
+    path('following/', handler.handle, name="followed-post", kwargs={"alias": 'followed-post'}),
+    path('user/', handler.handle, name="user", kwargs={"alias": 'user'}),
     path('<int:pk>', handler.handle, name="detail"),
-    path('<int:item_id>/comments', get_all_comments_for, name='comments'),
+    path('<int:pk>/rate/', handler.handle, name="rate", kwargs={"alias": 'rate'}),
+    path('<int:item_id>/comments', handler.handle, name='comments', kwargs={"alias": 'comment'}),
 ]
