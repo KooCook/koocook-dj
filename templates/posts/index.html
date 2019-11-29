@@ -3,7 +3,15 @@
 {% load widget_tweaks %}
 {% load static %}
 {% block page_title %}Post Stream{% endblock %}
-{% block content_deps %}<script src="{% static 'js/bundle.js' %}"></script>{% endblock %}
+{% block content_deps %}<script>
+    const COMMENTS_ENDPOINTS = {
+        GET: `{0}/comments`,
+        POST: `{0}/comments`,
+        PATCH: `{0}/comments`,
+    };
+</script>
+<script src="{% static 'js/components/comments.js' %}"></script>
+    <script src="{% static 'js/bundle.js' %}"></script>{% endblock %}
 {% block section_after_nav %}<section class="hero is-primary">
   <div class="hero-body">
     <div class="container">
@@ -16,15 +24,6 @@
 
   </div>
 </section>{% endblock %}
-{% block content_deps %}<script>
-    const COMMENTS_ENDPOINTS = {
-        GET: `{0}/comments`,
-        POST: `{0}/comments`,
-        PATCH: `{0}/comments`,
-    };
-</script>
-<script src="{% static 'js/components/comments.js' %}"></script>
-{% endblock %}
 {% block page_content %}
 <b-modal :active.sync="showModal" has-modal-card trap-focus aria-role="dialog" aria-modal>
   <div class="modal-card">
