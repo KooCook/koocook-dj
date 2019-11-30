@@ -107,8 +107,12 @@ class RecipeDetailView(CommentWidgetMixin, DetailView):
         if self.request.user.is_authenticated:
             user: KoocookUser = KoocookUser.from_dj_user(self.request.user)
             visit = RecipeVisit.associate_recipe_with_user(user, self.object)
-            visit.add_ip_address(self.request)
             visit.save()
+            try:
+                visit.add_ip_address(self.request)
+                visit.save()
+            except IntegrityError:
+                pass
         else:
             try:
                 RecipeVisit.associate_recipe_with_ip_address(self.request, self.object).save()

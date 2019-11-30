@@ -65,7 +65,8 @@ class RecipeViewMixin:
                     Tag.objects.get(pk=tag['id']).delete()
                 else:
                     if tag['label'] != '':
-                        tag['label'].pop('id')
+                        if 'id' in tag['label']:
+                            tag['label'].pop('id')
                         tag_body['label'] = TagLabel.objects.create(**tag['label'])
                     if 'id' not in tag_body:
                         form.instance.tag_set.add(Tag.objects.create(**tag_body))
