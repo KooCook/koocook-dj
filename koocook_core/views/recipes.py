@@ -20,12 +20,6 @@ class SignInRequiredMixin(LoginRequiredMixin):
         return reverse('social:begin', args=['google-oauth2'])
 
 
-class AuthorMixin:
-    def form_valid(self, form: RecipeForm):
-        form.instance.author = Author.objects.get(user__user=self.request.user)
-        return super().form_valid(form)
-
-
 class RecipeSearchListView(ListView):
     http_method_names = ('get',)
     model = Recipe
@@ -91,8 +85,8 @@ class RecipeDetailView(CommentWidgetMixin, DetailView):
     model = Recipe
     template_name = 'recipes/detail.html'
 
-    def get_success_url(self):
-        return self.request.path
+    # def get_success_url(self):
+    #     return self.request.path
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
