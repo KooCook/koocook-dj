@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.db.models import Model
-from django.http import JsonResponse, HttpRequest, HttpResponse
+from django.http import JsonResponse, HttpRequest, HttpResponse, QueryDict
 from typing import Type
 
 from ..models.base import ModelEncoder
@@ -87,7 +87,9 @@ class BaseController:
         updated_fields = list(set(self.request_fields.keys()).intersection(set(self.model_field_names)))
         for field in updated_fields:
             setattr(found, field, self.request_fields[field])
+        print(self.request_fields)
         found.save()
+        found = self.model.objects.get(pk=found.id)
         return ControllerResponse(status_text='Updated', obj=found)
 
     def retrieve_one(self) -> ControllerResponse:
@@ -138,7 +140,10 @@ class BaseHandler:
 
     def restore_controller(self, request: HttpRequest):
         controller = self.controller.default()
-        controller.request_fields.update(request.POST.dict())
+        if request.method not in ['GET', 'POST']:
+            controller.request_fields.update(QueryDict(request.body).dict())
+        else:
+            controller.request_fields.update(request.POST.dict())
         controller.request_fields['user'] = request.user
         return controller
 

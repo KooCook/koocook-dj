@@ -14,19 +14,32 @@ from ..models import Recipe, Author, KoocookUser, RecipeIngredient, MetaIngredie
 from ..models.base import ModelEncoder
 
 
-class RecipeSearchListView(ListView):
+class RecipeSearchListView(AuthAuthorMixin, ListView):
     http_method_names = ('get',)
     model = Recipe
     paginate_by = 10
     context_object_name = 'recipes'
     template_name = 'search.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.GET.get("popular"):
+            context['search_filter'] = 'popular'
+        else:
+            context['search_filter'] = 'name'
+        return context
+
     def get_queryset(self):
+        popular = self.request.GET.get("popular")
         kw = self.request.GET.get("kw")
         if kw:
-            return self.model.objects.filter(name__icontains=kw)
+            query_set = self.model.objects.filter(name__icontains=kw).order_by("name")
         else:
-            return self.model.objects.all()
+            query_set = self.model.objects.all().order_by("date_published")
+        if popular:
+            query_set.order_by('aggregate_rating__rating_value')
+            query_set = sorted(query_set, key=lambda t: t.view_count, reverse=True)
+        return query_set
 
 
 class UserRecipeListView(SignInRequiredMixin, ListView):
@@ -40,21 +53,13 @@ class UserRecipeListView(SignInRequiredMixin, ListView):
         except ObjectDoesNotExist:
             author = Author(user=KoocookUser.objects.get(user=self.request.user))
             author.save()
-        return Recipe.objects.filter(author=author)
+        return Recipe.objects.filter(author=author).order_by('-date_published')
 
 
-class RecipeCreateView(AuthAuthorMixin, RecipeViewMixin, CreateView):
+class RecipeCreateView(RecipeViewMixin, CreateView):
     http_method_names = ['post', 'get']
-    form_class = RecipeForm  # model = Recipe
-    # fields = '__all__'
+    form_class = RecipeForm
     template_name = 'recipes/create.html'
-
-    @property
-    def initial(self):
-        initial = super().initial
-        initial.update({'aggregate_rating_id': 1})
-        initial.update({'author': Author.objects.filter(user__user=self.request.user)[0]})
-        return initial.copy()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -64,20 +69,33 @@ class RecipeCreateView(AuthAuthorMixin, RecipeViewMixin, CreateView):
         return reverse('koocook_core:recipe-user')
 
 
-class RecipeUpdateView(AuthAuthorMixin, RecipeViewMixin, UpdateView):
-    model = Recipe
+class FractionEncoder(json.JSONEncoder):
+
+    def default(self, obj):
+        if hasattr(obj, 'as_dict'):
+            return obj.as_dict
+        else:
+            return str(obj)
+
+
+class RecipeUpdateView(RecipeViewMixin, UpdateView):
     form_class = RecipeForm
+    model = Recipe
     # fields = '__all__'  # ['name']
     template_name = 'recipes/update.html'
 
+    def dispatch(self, request, *args, **kwargs):
+        if request.user != self.get_object().author.dj_user:
+            return self.handle_no_permission()
+        return super().dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
         return reverse('koocook_core:recipe-user')
 
     def get_context_data(self, **kwargs):
-        import json
         context = super().get_context_data(**kwargs)
-        context['ingredients'] = json.dumps([ing.to_dict for ing in list(self.get_object().recipe_ingredients.all())])
+        context['ingredients'] = json.dumps([ing.to_dict for ing in list(self.get_object().recipe_ingredients.all())],
+                                            cls=FractionEncoder)
         context['tags'] = json.dumps([ing.as_dict() for ing in list(self.get_object().tag_set.all())], cls=ModelEncoder)
         return context
 
@@ -85,9 +103,31 @@ class RecipeUpdateView(AuthAuthorMixin, RecipeViewMixin, UpdateView):
 class RecipeDetailView(CommentWidgetMixin, DetailView):
     model = Recipe
     template_name = 'recipes/detail.html'
+    object: Recipe
 
-    def get_success_url(self):
-        return self.request.path
+    def get(self, request, *args, **kwargs):
+        from django.db.utils import IntegrityError
+        from ..models.recipe import RecipeVisit
+        from ..models import KoocookUser
+        response = super().get(request, *args, **kwargs)
+        if self.request.user.is_authenticated:
+            user: KoocookUser = KoocookUser.from_dj_user(self.request.user)
+            visit = RecipeVisit.associate_recipe_with_user(user, self.object)
+            visit.save()
+            try:
+                visit.add_ip_address(self.request)
+                visit.save()
+            except IntegrityError:
+                pass
+        else:
+            try:
+                RecipeVisit.associate_recipe_with_ip_address(self.request, self.object).save()
+            except IntegrityError:
+                pass
+        return response
+
+    # def get_success_url(self):
+    #     return self.request.path
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -104,7 +144,10 @@ class PreferredRecipeStreamView(AuthAuthorMixin, ListView):
     @property
     def preferred_tags(self):
         from ..support import PreferenceManager
-        preferences = PreferenceManager.from_koocook_user(self.get_author().user)
+        if self.request.user.is_authenticated:
+            preferences = PreferenceManager.from_koocook_user(self.get_author().user)
+        else:
+            preferences = PreferenceManager()
         return preferences.get("preferred_tags")
 
     def get_context_data(self, **kwargs):
@@ -122,4 +165,3 @@ class PreferredRecipeStreamView(AuthAuthorMixin, ListView):
             return Recipe.objects.filter(tag_set__name__in=converted_exact_tag_set_names)
         else:
             return Recipe.objects.all()
-

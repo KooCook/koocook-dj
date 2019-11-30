@@ -14,6 +14,7 @@ import os
 
 from decouple import config
 
+from .app import *
 from .auth import *
 from .db import *
 
@@ -67,6 +68,7 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'koocook_core.context_processors.globalvars_processor',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',

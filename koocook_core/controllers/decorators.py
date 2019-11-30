@@ -2,7 +2,6 @@ from .base import ControllerResponseUnauthorised, ControllerResponseForbidden
 from ..models import KoocookUser, Author
 
 
-
 def apply_author_from_session(func):
     def wrapper(controller, *args, **kwargs):
         try:
@@ -31,6 +30,3 @@ def to_koocook_user(func):
         else:
             return func(controller)
     return wrapper
-
-
-

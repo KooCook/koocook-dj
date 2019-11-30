@@ -14,8 +14,9 @@
         There are no existing tags, but you can create a new one.
     </template>
         </recipe-tag-input>
-    <ingredient-chooser :ingredients="ingredients" :selectable-units="selectableUnits"></ingredient-chooser>
 <form method="post">{% csrf_token %}
+<ingredient-chooser :selectable-units="selectableUnits"
+:initial="ingredients"></ingredient-chooser>
     <input name="tags" type="hidden" :value="JSON.stringify(tags)">
     <input name="ingredients" type="hidden" :value="JSON.stringify(ingredients)">
     {% for field in form.visible_fields %}
@@ -61,6 +62,7 @@
             unitConversionFactor: CONVERSION_FACTORS,
              selectableUnits: CONVERSION_UNITS
         }
-      })
+      });
+
   </script>
 {% endblock %}

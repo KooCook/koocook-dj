@@ -6,15 +6,9 @@ from ..models import KoocookUser
 
 
 class PreferencesMixin:
-    def post(self, request, *args, **kwargs):
-        print(self.request.POST.dict())
-        return super().post(request, *args, **kwargs)
-
     def form_valid(self, form):
-
         self.object.formal_preferences.update_from_json(self.request.POST["preferences"])
         response = super().form_valid(form)
-
         return response
 
 

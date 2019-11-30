@@ -44,8 +44,11 @@ class UserController(BaseController):
     @to_koocook_user
     def follow(self):
         followee = KoocookUser.objects.get(user_id=self.request_fields['followee_id'])
-        self.user.follow(followee)
-        return ControllerResponse(status_text='Followed', obj=followee)
+        if str(self.user.id) != str(self.request_fields['followee_id']):
+            self.user.follow(followee)
+            return ControllerResponse(status_text='Followed', obj=followee)
+        else:
+            return ControllerResponseUnauthorised()
 
     @to_koocook_user
     def unfollow(self):
@@ -79,5 +82,3 @@ class UserHandler(JsonRequestHandler):
     @classmethod
     def instance(cls):
         return cls()
-
-

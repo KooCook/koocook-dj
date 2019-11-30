@@ -19,7 +19,6 @@ class PreferencesTest(TestCase):
         self.assertEqual(TaggingPreference.PREFERRED_TAGS.full_name,
                          manager.get_full('preferred_tags').full_name)
 
-
     def test_set_single_preference(self):
         response = self.client.post(self.edit_pref_url, {'preferences': json.dumps({'preferred_tags': []})})
         self.assertEqual(response.status_code, 200)

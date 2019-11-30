@@ -1,5 +1,6 @@
 import json
 from json import JSONEncoder
+
 from django.db import models
 from django.db.models import Field
 from django.utils.html import mark_safe
@@ -15,17 +16,6 @@ class SerialisableModel:
     include = ()
     exclude = ()
 
-    # TODO: Process a Markdown text here
-    @staticmethod
-    def process_text_format(text: str, text_format: str = "md") -> str:
-        if text_format == 'md':
-            pass
-        return mark_safe(text)
-
-    @property
-    def fields(self) -> list:
-        return list(self.include) + [field.name for field in self._meta.fields]
-
     @property
     def dict_fields(self) -> list:
         return [transform_to_field(include) for include in self.include if getattr(self, include)] + \
@@ -33,14 +23,13 @@ class SerialisableModel:
 
     def as_dict(self) -> dict:
         return {field.name: getattr(self, field.name) for field in self.dict_fields
-                if field.name not in self.exclude}
+                if field.name not in self.exclude and hasattr(self, field.name)}
 
     def as_json(self) -> str:
         return json.dumps(self.as_dict, cls=ModelEncoder)
 
 
 class ModelEncoder(JSONEncoder):
-
     def default(self, obj: models.Model):
         if hasattr(obj, 'as_dict'):
             return obj.as_dict()
@@ -51,4 +40,7 @@ class ModelEncoder(JSONEncoder):
                 else:
                     return {field.name: getattr(obj, field.name) for field in obj._meta.fields}
             else:
-                return str(obj)
+                if type(obj) in [int, float]:
+                    return obj
+                else:
+                    return str(obj)

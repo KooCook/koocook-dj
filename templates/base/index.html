@@ -5,11 +5,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>KooCook! | {% block page_title %} {% endblock %}</title>
-    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/2.5.94/css/materialdesignicons.min.css">
-    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/4.5.95/css/materialdesignicons.min.css">
+    {% block override_fa %}<script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>{% endblock %}
     {% block page_deps %}<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css">{% endblock %}
     <link rel="stylesheet" href="{% static "css/style.css" %}">
 </head>
 <body>{% block page_body %} {% endblock %}
+<footer class="footer">
+  <div class="content has-text-centered">
+    <p>
+      <strong>KooCook!</strong> {{ APP_VERSION }} by <a href="https://github.com/KooCook/koocook-dj">KooCook Team</a>.
+    </p>
+      <p>The source code is licensed
+      under BSD 3-clause.</p>
+  </div>
+</footer>
 </body>
 </html>

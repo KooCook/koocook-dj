@@ -1,5 +1,4 @@
 import json
-from django.http import HttpResponse, HttpResponseForbidden, HttpRequest
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import reverse
 from django.views.generic.edit import FormMixin, ProcessFormView
@@ -14,17 +13,25 @@ class SignInRequiredMixin(LoginRequiredMixin):
         return reverse('social:begin', args=['google-oauth2'])
 
 
-class AuthAuthorMixin(SignInRequiredMixin):
+class AuthAuthorMixin:
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            context['current_author'] = Author.objects.get(user__user=self.request.user)
+        else:
+            context['current_author'] = {'id': 0}
+        return context
 
     def get_author(self) -> Author:
         return Author.objects.get(user__user=self.request.user)
 
     def form_valid(self, form):
-        form.instance.author = self.get_author(self)
+        form.instance.author = self.get_author()
         return super().form_valid(form)
 
 
-class CommentWidgetMixin(FormMixin, AuthAuthorMixin):
+class CommentWidgetMixin(AuthAuthorMixin, FormMixin):
     form_class = CommentForm
     #
     # def post(self, request, *args, **kwargs):
@@ -46,7 +53,8 @@ class CommentWidgetMixin(FormMixin, AuthAuthorMixin):
         return context
 
 
-class RecipeViewMixin:
+class RecipeViewMixin(SignInRequiredMixin, AuthAuthorMixin):
+
     def form_valid(self, form):
         from ..models import Tag, TagLabel
         response = super().form_valid(form)
@@ -60,8 +68,9 @@ class RecipeViewMixin:
                     Tag.objects.get(pk=tag['id']).delete()
                 else:
                     if tag['label'] != '':
-                        tag_body['label'] = TagLabel.objects.create(name=tag['label']['name'],
-                                                                    level=tag['label']['level'])
+                        if 'id' in tag['label']:
+                            tag['label'].pop('id')
+                        tag_body['label'] = TagLabel.objects.create(**tag['label'])
                     if 'id' not in tag_body:
                         form.instance.tag_set.add(Tag.objects.create(**tag_body))
                     else:
@@ -101,4 +110,3 @@ class RecipeViewMixin:
             return response
         else:
             return response
-

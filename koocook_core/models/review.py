@@ -1,28 +1,44 @@
+from typing import Union
 from django.db import models
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
 from .base import SerialisableModel
 
-__all__ = ['Comment', 'Rating', 'AggregateRating']
+from ..support import FormattedField
+from .base import SerialisableModel
+
+__all__ = ('AggregateRating', 'Comment', 'Rating', 'ReviewableModel')
 
 
-# def create_empty_aggregate_rating(**kwargs) -> 'AggregateRating':
-#     """Creates an empty aggregate rating"""
-#     return AggregateRating.objects.create(rating_value=0, rating_count=0, **kwargs)
+class ReviewableModel:
+    """This creates an AggregateRating only after reviewables are actually created
+    and saved to a database; that is, it will be created once in need, not always.
+    """
+    aggregate_rating = None  # A signature for the AggregateRating field
+
+    def save(self, *args, **kwargs):
+        # If the aggregate rating of a reviewable has not yet been created
+        try:
+            rating = getattr(self, 'aggregate_rating')
+            if not rating:
+                self.aggregate_rating = AggregateRating.create_empty()
+        except AggregateRating.DoesNotExist:
+            self.aggregate_rating = AggregateRating.create_empty()
+        super().save(*args, **kwargs)  # Resolved at runtime
 
 
-class Comment(SerialisableModel, models.Model):
+class Comment(SerialisableModel, ReviewableModel, models.Model):
+    include = ("rendered",)
     exclude = ('reviewed_comment', 'reviewed_recipe', 'reviewed_post')
     author = models.ForeignKey(
         'koocook_core.Author',
         on_delete=models.PROTECT,
     )
     date_published = models.DateTimeField(auto_now_add=True)
-    body = models.TextField()
+    body = FormattedField()  # models.TextField()
     aggregate_rating = models.OneToOneField(
         'koocook_core.AggregateRating',
         on_delete=models.PROTECT, blank=True, null=True
-        # default=create_empty_aggregate_rating
     )
     # item_reviewed = models.URLField()
     reviewed_recipe = models.ForeignKey(
@@ -71,6 +87,13 @@ class Comment(SerialisableModel, models.Model):
     @classmethod
     def field_names(cls):
         return [f.name for f in cls._meta.fields]
+
+    @property
+    def rendered(self):
+        if hasattr(self.body, 'rendered'):
+            return self.body.rendered
+        else:
+            return self.body
 
 
 class Rating(models.Model):
@@ -155,7 +178,7 @@ class AggregateRating(models.Model):
             raise ValidationError(_('Incompatible itemReviewed: \'{}\' != \'\''
                                     .format(rating.item_reviewed, self.item_reviewed)))
 
-    def add_rating(self, rating: Rating):
+    def add_rating(self, rating: Rating, update=False):
         """Adds a rating from an aggregate rating.
 
         Raises:
@@ -164,7 +187,10 @@ class AggregateRating(models.Model):
         self.check_rating(rating)
         total_value = self.rating_value * self.rating_count
         total_value += rating.rating_value
-        self.rating_count += 1
+        if not update:
+            self.rating_count += 1
+        else:
+            total_value -= rating.old_rating_value
         self.rating_value = total_value / self.rating_count
         self.save()
 
@@ -182,8 +208,26 @@ class AggregateRating(models.Model):
         self.save()
 
     @property
-    def item_reviewed(self):
-        return self.recipe or self.post or self.comment
+    def item_reviewed(self) -> Union['Recipe', 'Post', 'Comment', None]:
+        try:
+            return self.recipe
+        except ObjectDoesNotExist:
+            pass
+        try:
+            return self.post
+        except ObjectDoesNotExist:
+            pass
+        try:
+            return self.comment
+        except ObjectDoesNotExist:
+            pass
+
+    @classmethod
+    def create_empty(cls, **kwargs) -> 'AggregateRating':
+        """Creates a new empty ``aggregate rating``."""
+        kwargs['rating_value'] = 0 # kwargs.pop('rating_value', 0)
+        kwargs['rating_count'] = 0 # kwargs.pop('rating_count', 0)
+        return cls.objects.create(**kwargs)
 
     def __str__(self) -> str:
         return str(self.rating_value)
