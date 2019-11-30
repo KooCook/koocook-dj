@@ -55,9 +55,7 @@ def split_ingredient_str(s: str) -> ('fraction.Fraction', 'unit.Unit', str):
         try:
             number = numbers[0]
             rest = s[spans[0][1]:]
-        except IndexError as e:
-            # raise ValueError('cannot parse w/o amount string \'{}\''
-            #                  .format(s)) from e.__context__
+        except IndexError:
             number = fraction.Fraction(0)
             rest = s
 
