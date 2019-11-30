@@ -11,6 +11,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import RecipeForm
 from .mixins import AuthAuthorMixin, CommentWidgetMixin, RecipeViewMixin, SignInRequiredMixin
 from ..models import Recipe, Author, KoocookUser, RecipeIngredient, MetaIngredient
+from ..models.base import ModelEncoder
 
 
 class SignInRequiredMixin(LoginRequiredMixin):
@@ -28,7 +29,6 @@ class RecipeSearchListView(AuthAuthorMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['current_author'] = Author.objects.get(user__user=self.request.user)
         if self.request.GET.get("popular"):
             context['search_filter'] = 'popular'
         else:
@@ -82,6 +82,7 @@ class RecipeUpdateView(SignInRequiredMixin, AuthAuthorMixin, RecipeViewMixin, Up
     # fields = '__all__'  # ['name']
     template_name = 'recipes/update.html'
 
+
     def get_success_url(self):
         return reverse('koocook_core:recipe-user')
 
@@ -89,6 +90,7 @@ class RecipeUpdateView(SignInRequiredMixin, AuthAuthorMixin, RecipeViewMixin, Up
         import json
         context = super().get_context_data(**kwargs)
         context['ingredients'] = json.dumps([ing.to_dict for ing in list(self.get_object().recipe_ingredients.all())])
+        context['tags'] = json.dumps([ing.as_dict for ing in list(self.get_object().tag_set.all())], cls=ModelEncoder)
         return context
 
 
@@ -114,8 +116,8 @@ class RecipeDetailView(CommentWidgetMixin, DetailView):
                 pass
         return response
 
-    def get_success_url(self):
-        return self.request.path
+    # def get_success_url(self):
+    #     return self.request.path
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

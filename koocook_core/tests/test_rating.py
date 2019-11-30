@@ -4,20 +4,7 @@ from django.contrib.auth.models import User
 
 from ..models import Author, AggregateRating, Post, Recipe
 from ..controllers import PostController
-from .base import create_dummy_post, AuthTestCase
-
-
-def create_dummy_recipe(user: User):
-    recipe = Recipe(name='dummy', author=Author.objects.get(user__user=user))
-    recipe.image = '{"https://docs.djangoproject.com/en/2.2/ref/contrib/postgres/fields/#arrayfield"}'
-    recipe.date_published = '2019-11-05 04:04:07'
-    recipe.description = 'This is a description.'
-    recipe.prep_time = '00:00:03'
-    recipe.cook_time = '00:00:02'
-    recipe.recipe_instructions = '{"This is an instruction."}'
-    recipe.recipe_yield = '30 mL'
-    recipe.save()
-    return recipe
+from .base import create_dummy_post, create_dummy_recipe, AuthTestCase
 
 
 def get_lazy_model_object(model_cls, obj_id):
@@ -27,14 +14,14 @@ def get_lazy_model_object(model_cls, obj_id):
 class RatingTest(AuthTestCase):
     def setUp(self) -> None:
         super().setUp()
-        self.recipe = create_dummy_recipe(self.user)
+        self.recipe = create_dummy_recipe(self.author)
         self.post = create_dummy_post(self.user)
         self.client.login(username=self.user2.username, password=self.password)
         self.recipe_rate_url = reverse('koocook_core:recipe-rate', args=(self.recipe.id,))
         self.post_rate_url = reverse('koocook_core:posts:rate', args=(self.post.id,))
 
     def test_empty_reviewable_model_creation(self):
-        recipe = create_dummy_recipe(self.user)
+        recipe = create_dummy_recipe(self.author)
         self.assertEqual(recipe.aggregate_rating.rating_value, 0)
         self.assertTrue(isinstance(recipe.aggregate_rating, AggregateRating))
 

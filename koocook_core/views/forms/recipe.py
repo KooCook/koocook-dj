@@ -1,9 +1,11 @@
 from django import forms
+from django.forms.widgets import HiddenInput
 from ...models import Recipe
 
 
 class RecipeForm(forms.ModelForm):
     customised_field = ['name', 'author']
+    tags = forms.CharField(widget=forms.HiddenInput(attrs={'v-model': 'JSON.stringify(tags)'}))
 
     def __init__(self, *args, **kwargs):
         if 'user' in kwargs:
