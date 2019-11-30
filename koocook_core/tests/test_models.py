@@ -244,15 +244,15 @@ class TestCommentModel(djangotest.TestCase):
             item = locals()[name.lower()]
             with self.subTest(item_reviewed=name):
                 try:
-                    comment = Comment.objects.create(author=self.test_author,
+                    Comment.objects.create(author=self.test_author,
                                                      item_reviewed=item)
                 except Exception as e:
                     raise self.failureException(
                         'unexpected exception raised') from e
 
     def test_item_reviewed_getter(self):
-        recipe = Recipe.objects.create(author=self.test_author, name='')
-        post = Post.objects.create(author=self.test_author)
+        Recipe.objects.create(author=self.test_author, name='')
+        Post.objects.create(author=self.test_author)
         for name in ('Recipe', 'Post', 'Comment'):
             item = locals()[name.lower()]
             with self.subTest(item_reviewed=name):
@@ -450,9 +450,13 @@ class TestRecipeIngredientModel(djangotest.TestCase):
         quantity = Quantity(Fraction(1, 2), 'tbsp')
         mi = MetaIngredient.objects.create(name='')
         recipe = Recipe.objects.create(name='')
-        RecipeIngredient.objects.create(quantity=quantity,
-                                        meta=mi,
-                                        recipe=recipe)
+        try:
+            RecipeIngredient.objects.create(quantity=quantity,
+                                            meta=mi,
+                                            recipe=recipe)
+        except Exception as e:
+            raise self.failureException(
+                'unexpected exception raised') from e
 
     def test_fields_settings(self):
         ri = RecipeIngredient()
