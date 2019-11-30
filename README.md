@@ -1,9 +1,8 @@
 # KooCook! - Django backend
 
 ##### Build status
-- `master`: [![CircleCI](https://circleci.com/gh/KooCook/koocook-dj/tree/master.svg?style=svg&circle-token=fd2434f2ab70aacb8216f2242e272abeae57859c)](https://circleci.com/gh/KooCook/koocook-dj/tree/master)  
-- `dev`: [![CircleCI](https://circleci.com/gh/KooCook/koocook-dj/tree/dev.svg?style=svg&circle-token=fd2434f2ab70aacb8216f2242e272abeae57859c)](https://circleci.com/gh/KooCook/koocook-dj/tree/dev) [![codecov](https://codecov.io/gh/KooCook/koocook-dj/branch/dev/graph/badge.svg)](https://codecov.io/gh/KooCook/koocook-dj)
-  - `feature/rating`: [![codecov](https://codecov.io/gh/KooCook/koocook-dj/branch/feature/rating/graph/badge.svg)](https://codecov.io/gh/KooCook/koocook-dj)
+- `master`: [![CircleCI](https://circleci.com/gh/KooCook/koocook-dj/tree/master.svg?style=shield&circle-token=fd2434f2ab70aacb8216f2242e272abeae57859c)](https://circleci.com/gh/KooCook/koocook-dj/tree/master)  
+- `dev`: [![CircleCI](https://circleci.com/gh/KooCook/koocook-dj/tree/dev.svg?style=shield&circle-token=fd2434f2ab70aacb8216f2242e272abeae57859c)](https://circleci.com/gh/KooCook/koocook-dj/tree/dev) [![codecov](https://codecov.io/gh/KooCook/koocook-dj/branch/dev/graph/badge.svg)](https://codecov.io/gh/KooCook/koocook-dj/branch/dev) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/9f6390cd75d94a21a2c4accf997214bf)](https://www.codacy.com/manual/KooCook/koocook-dj?branch=dev&amp;utm_source=github.com&amp;utm_medium=referral&amp;utm_content=KooCook/koocook-dj&amp;utm_campaign=Badge_Grade)
 ## Description
 
 __KooCook!__ is a web application that helps people—whether they are amateur cooks, homecooks, aspiring cooks, experienced cooks, or just starving people—decide on what food they want to make with the ingredients, equipment, time, and preferences that they have and live a healthier life with nutrition information included.
@@ -17,6 +16,31 @@ __KooCook!__ is a web application that helps people—whether they are amateur c
 | Mai (Mai)         | [MaiMee1](https://github.com/MaiMee1/) \| [MaiNorapong](https://github.com/MaiNorapong/)
 | Tharathorn (Mos)  | [th-bunratta](https://github.com/th-bunratta/)
 | Chayathon (Plume) | [plumest](https://github.com/plumest/)
+
+## Local Quickstart (Running the app locally)
+
+### Dependency requirements
+|Name|Required version(s) |
+|:---:|:---:|
+|Python | 3.7.3 or higher|
+|Django | 2.1 or higher|
+|PostgreSQL| 12 or higher|
+
+All other dependencies are specified in `requirements.txt`
+
+### Steps
+
+> Proxy installing via virtualenv is highly recommended
+>
+> Please consult [this link](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/) to learn how to setup *Python virtualenv*
+
+1. Make sure you are in the root directory (repository root) of the project and already clone this repo.
+2. Create ```.env``` for your local app environment settings *(Pending guide...)*
+    - Make sure your secret key is strong enough. (Recommended: ```PBKDF2``` algorithm with a ```SHA256``` hash)
+3. Run <code>pip install -r [requirements.txt](requirements.txt)</code> first to install required packages for the project.
+4. _Pending mock data import instructions_
+5. If you first set up a repo of the application  on a clean slate, migrate the database as well by running the following Django command: <pre>python [manage.py](manage.py) migrate</pre>
+6. Run <pre>python [manage.py](manage.py) runserver</pre> and, Voila!, the server should listen on the default port at <code>localhost:*default_port*</code>.
 
 ## Project Documents
 

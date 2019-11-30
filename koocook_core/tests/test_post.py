@@ -39,7 +39,7 @@ class PostTest(AuthTestCase):
         self.controller.request_fields.update(self.comment_dict)
         response = self.controller.comment(item_id=self.post.id)
         with self.subTest():
-            self.assertEqual(response.obj.body, self.comment_dict['body'])
+            self.assertEqual(response.obj.body.source, self.comment_dict['body'])
             self.assertEqual(response.obj.reviewed_post, self.post)
 
     def test_controller_create_post(self):

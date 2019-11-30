@@ -25,6 +25,10 @@ class RatingTest(AuthTestCase):
         self.assertEqual(recipe.aggregate_rating.rating_value, 0)
         self.assertTrue(isinstance(recipe.aggregate_rating, AggregateRating))
 
+    def test_compare_rating_str(self):
+        rating = AggregateRating(rating_value=3)
+        self.assertEqual(str(rating), str(rating.rating_value))
+
     def test_rate_same_as_item_author(self):
         self.client.login(username=self.user.username, password=self.password)
         response = self.client.post(self.recipe_rate_url, {'rating_score': 3})

@@ -109,7 +109,7 @@
       </div>
     </article>
   </b-tab-item>
-  <b-tab-item label="Trending">
+  <b-tab-item label="All posts">
       <article class="media" v-for="(userPost, upIndex) in allPosts" v-on:mouseover="$set(userPost, 'hovered', true)"
       v-on:mouseleave="$set(userPost, 'hovered', false)">
       <figure class="media-left">
@@ -124,13 +124,14 @@
               {% templatetag closevariable %}</strong> <small>@{% templatetag openvariable %} userPost.author.name
               {% templatetag closevariable %}</small> <small>{% templatetag openvariable %} userPost.date_published |
               time-passed
-              {% templatetag closevariable %}</small> <star-rating :rate-url="rateURL.format(userPost.id)"  :item-id="userPost.id" :read-only="true" :initial="userPost.aggregate_rating.rating_value"></star-rating>
+              {% templatetag closevariable %}</small> <star-rating :rate-url="rateURL.format(userPost.id)"  :item-id="userPost.id" :read-only="userPost.author.id === currentAuthorId" :initial="userPost.aggregate_rating.rating_value"></star-rating>
             <br>
             <div v-if="userPost.editing">
               <form method="post" @submit.prevent="editPost(upIndex)">
                 {% csrf_token %}
                 <b-field>
-                  {{ form.body|attr:"v-model: userPost.body"|add_class:'textarea' }}
+                    <formatted-textarea-md v-model="userPost.body" cols="40" rows="10"></formatted-textarea-md>
+{#                  {{ form.body|attr:"v-model: userPost.body"|add_class:'textarea' }}#}
                 </b-field>
                 <b-field>
                   <div class="buttons">
@@ -139,7 +140,7 @@
                 </b-field>
               </form>
             </div>
-            <span v-else>{% templatetag openvariable %} userPost.rendered {% templatetag closevariable %}</span>
+            <span v-else v-html="userPost.rendered"></span>
           </p>
         </div>
         <nav class="level is-mobile">
@@ -176,7 +177,8 @@
               <form method="post" @submit.prevent="editPost(upIndex)">
                 {% csrf_token %}
                 <b-field>
-                  {{ form.body|attr:"v-model: userPost.body"|add_class:'textarea' }}
+                    <formatted-textarea-md v-model="userPost.body" cols="40" rows="10"></formatted-textarea-md>
+{#                  {{ form.body|attr:"v-model: userPost.body"|add_class:'textarea' }}#}
                 </b-field>
                 <b-field>
                   <div class="buttons">
@@ -185,7 +187,7 @@
                 </b-field>
               </form>
             </div>
-            <span v-else>{% templatetag openvariable %} userPost.body {% templatetag closevariable %}</span>
+            <span v-else v-html="userPost.rendered"></span>
           </p>
         </div>
         <nav class="level is-mobile">

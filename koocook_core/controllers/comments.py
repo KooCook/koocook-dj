@@ -21,7 +21,8 @@ class CommentAPIHandler(JsonRequestHandler):
         super().__init__(CommentController.default())
         self.handler_map = {
             'GET': 'get_all_comments_of_item_id',
-            'POST': 'update',
+            'POST': 'comment',
+            'PATCH': 'update',
             'comment': {
                 'GET': 'get_all_comments_of_item_id',
                 'POST': 'comment'

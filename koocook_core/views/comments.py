@@ -9,20 +9,20 @@ from ..models import Comment, Post, Recipe
 # This is a mess 'cause there's a fix for this
 # in its next dependent branch named 'personalisation',
 # avoiding any conflicts the might occur from the fix
-def get_all_comments_for(request: HttpRequest, item_id: int):
-    if request.method == 'GET':
-        current_url = resolve(request.path_info).route
-        if 'recipe' in current_url:
-            comments = Recipe.objects.get(pk=item_id).comment_set.all()
-        elif 'post' in current_url:
-            comments = Post.objects.get(pk=item_id).comment_set.all()
-        elif 'comment' in current_url:
-            comments = Comment.objects.get(pk=item_id).comment_set.all()
-        import json
-        from ..models.base import ModelEncoder
-        return JsonResponse({'current': list(comments)}, encoder=ModelEncoder)
-    else:
-        return post_comment(request)
+# def get_all_comments_for(request: HttpRequest, item_id: int):
+#     if request.method == 'GET':
+#         current_url = resolve(request.path_info).route
+#         if 'recipe' in current_url:
+#             comments = Recipe.objects.get(pk=item_id).comment_set.all()
+#         elif 'post' in current_url:
+#             comments = Post.objects.get(pk=item_id).comment_set.all()
+#         elif 'comment' in current_url:
+#             comments = Comment.objects.get(pk=item_id).comment_set.all()
+#         import json
+#         from ..models.base import ModelEncoder
+#         return JsonResponse({'current': list(comments)}, encoder=ModelEncoder)
+#     else:
+#         return post_comment(request)
 
 
 # Deprecated

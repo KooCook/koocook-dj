@@ -30,4 +30,5 @@ class CommentControllerMixin(AuthorControllerMixin):
         comment_fields.update({self.item_reviewed_field: self.model.objects.get(pk=item_id)})
         comment = self.comment_model(**comment_fields)
         comment.save()
+        comment = Comment.objects.get(pk=comment.id)
         return ControllerResponse(status_text='Retrieved', obj=comment)

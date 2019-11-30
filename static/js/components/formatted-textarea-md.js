@@ -5,6 +5,7 @@ Vue.component("formatted-textarea-md", {
   `,
   mounted() {
     this.mde = new SimpleMDE({
+      hideIcons: ["quote", "guide", "side-by-side", "fullscreen"],
       element: this.$refs.area,
       forceSync: true,
       spellChecker: true
