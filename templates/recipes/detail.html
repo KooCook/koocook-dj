@@ -1,5 +1,7 @@
 {% extends 'base/recipes.html' %}
 {% load static %}
+{% load recipe_extras %}
+{% block no_hero %}{% endblock %}
 {% block content_deps %}<script>
     const COMMENTS_ENDPOINTS = {
         GET: `{% url 'koocook_core:recipe-comments' object.id %}`,
@@ -9,36 +11,33 @@
 </script>
     <script src="{% static 'js/components/comments.js' %}"></script>
     <script src="{% static 'js/components/star-rating.js' %}"></script>{% endblock %}
-{% block no_hero %}{% endblock %}
 {% block content_page_name %}{{ object.name }}{% endblock %}
 {% block page_content %}
 {% load extra_tags %}
 <div style="padding: 0 3rem">
     <header class="section" style="padding-bottom: 1.5rem; margin-bottom: 1.5rem">
-      <div class="container">
-        <h1 class="title is-1">
-          {{ object.name }}
-        </h1>
-        <p class="subtitle is-4">
-          Recipe by <a href="">{{ object.author.name }}</a>
-
-        </p>
-          <div class="field is-grouped is-grouped-multiline">
-          {% for tag in object.tag_set.all %}
-            <div class="control">
-            <div class="tags has-addons">
-                    <span class="tag is-medium">{{ tag.name }}</span>
-                          {% if tag.label %}<span class="tag is-danger is-medium">
-                                {{ tag.label.name }}
-                              <button class="delete is-small"></button>
-                            </span>{% else %}
-                              <button class="delete is-small"></button>
-                              {% endif %}
+        <div class="container">
+            <h1 class="title is-1">
+                {{ object.name }}
+            </h1>
+            <p class="subtitle is-4">
+                Recipe by <a href="">{{ object.author.name }}</a>
+            </p>
+                <div class="field is-grouped is-grouped-multiline">
+                {% for tag in object.tag_set.all %}
+                    <div class="control">
+                        <div class="tags has-addons">
+                            <span class="tag is-medium">{{ tag.name }}</span>
+                            {% if tag.label %}
+                                <span class="tag {{ tag.label.level|tag_level }} is-medium">
+                                    {{ tag.label.name }}
+                                </span>
+                            {% endif %}
                         </div>
-             </div>
-          {% endfor %}
-          </div>
-      </div>
+                    </div>
+                {% endfor %}
+                </div>
+        </div>
     </header>
 
     <section class="section" style="padding-top: 0">
@@ -110,6 +109,12 @@
                 </div>
                 <div class="column is-half">
                     <nav class="level is-mobile">
+                      <div class="level-item has-text-centered">
+                        <div>
+                          <p class="heading">Views</p>
+                          <p class="title">{{ object.view_count }}</p>
+                            </div>
+                              </div>
                         <div class="level-item has-text-centered">
                             <div>
                                 <p class="heading">Cook Time</p>

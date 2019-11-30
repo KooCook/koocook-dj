@@ -1,7 +1,6 @@
 from django.urls import path
 
 from ..controllers import PostHandler
-from ..views import get_all_comments_for
 
 app_name = 'posts'
 handler = PostHandler.instance()

@@ -7,7 +7,15 @@
 {% block content_deps %}<script src="{% static 'js/bundle.js' %}"></script>{% endblock %}
 {% block page_content %}
     <ingredient-chooser :initial="ingredients" :selectable-units="selectableUnits"></ingredient-chooser>
+    <recipe-tag-input :attached="true" v-model="tags" ellipsis icon="tag" placeholder="Add a tag"
+:allow-new="true" :care-deleted="true" autocomplete maxtags="18" maxlength="24">
+<template v-slot:default="slotProps"></template>
+<template slot="empty">
+    There are no existing tags, but you can create a new one.
+</template>
+    </recipe-tag-input>
 <form method="post">{% csrf_token %}
+    <input name="tags" type="hidden" :value="JSON.stringify(tags)">
     <input name="ingredients" type="hidden" :value="JSON.stringify(ingredients)">
     {% for field in form.visible_fields %}
     <div class="form-group field is-horizontal">
@@ -48,6 +56,7 @@
         el: '#app',
         data: {
             searchName: '',
+            tags: {{ tags|safe }},
             ingredients: {{ ingredients|safe }},
             unitConversionFactor: CONVERSION_FACTORS,
              selectableUnits: CONVERSION_UNITS

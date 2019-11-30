@@ -14,6 +14,13 @@
     <form method="post" novalidate action="{{ request.path }}">
         <div class="columns">
         <div class="column"><div class="form-group field is-horizontal recipe-underlined-input-field">
+          <recipe-tag-input :attached="true" v-model="tags" ellipsis icon="tag" placeholder="Add a tag"
+          :allow-new="true" autocomplete maxtags="18" maxlength="24">
+          <template v-slot:default="slotProps"></template>
+          <template slot="empty">
+              There are no existing tags, but you can create a new one.
+          </template>
+          </recipe-tag-input>
         <div class="field-label is-medium">
             <label class="label">{{ form.name.label_tag }}</label>
         </div>
@@ -120,6 +127,7 @@
         data: {
             searchName: '',
             ingredients: [],
+            tags: [ ],
             unitConversionFactor: CONVERSION_FACTORS,
             selectableUnits: CONVERSION_UNITS
         }
