@@ -32,8 +32,3 @@ def get_nutrients(ingr: str) -> (List[dict], str):
     res = fooddata.api.send_food_detail_api_request(fdc_id=food.fdc_id)
     res = fooddata.detail.response.FoodDetailResponse(res, data_type=food.data_type)
     return parse_food_nutrients(res.food.food_nutrients), res.food.description
-
-
-if __name__ == '__main__':
-    print(get_nutrients('¾ cup (1½ sticks) cold unsalted butter, cut into ¼-inch pieces')[1])
-    pass
