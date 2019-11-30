@@ -112,7 +112,6 @@ class Preference:
 class TaggingPreference(PreferenceEnum):
     PREFERRED_TAGS = 'preferred_tags', list, [], "Preferred tags", \
                      RecipeTagInput(model='tags')
-    ALLOW_GLUTEN = 'allow_glut', bool, True, "Allow gluten recipes to be shown"
 
 
 class PrefEncoder(JSONEncoder):
@@ -211,7 +210,6 @@ def get_section(pref_key) -> Preference:
     else:
         for pref in Preferences:
             try:
-
                 return pref(pref_key)
             except ValueError:
                 pass
@@ -220,7 +218,10 @@ def get_section(pref_key) -> Preference:
 
 
 def to_preference(key: str, value: str = ''):
-    section = get_section(key)
+    try:
+        section = get_section(key)
+    except ValueError:
+        return None
     obj = Preference(section.key, section.default,
                      section.val_type, section.full_name,
                      section.widget)
