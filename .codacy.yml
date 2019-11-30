@@ -1,6 +1,6 @@
 ---
 exclude_paths:
-  - 'bundle.js'
+  - '**.js'
   - 'manage.py'
   - '*.min.js'
   - '.*migrations/.*'
