@@ -16,7 +16,7 @@ class RecipeForm(forms.ModelForm):
         model = Recipe
         fields = '__all__'
         exclude = ('aggregate_rating', 'author', 'date_published')
-        widgets = {'image': HiddenInput(), 'video': HiddenInput()}
+        widgets = {'image': HiddenInput(), 'video': HiddenInput(), 'recipe_instructions': HiddenInput()}
 
     @property
     def vanilla_fields(self):

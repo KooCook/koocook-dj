@@ -56,6 +56,11 @@ class RecipeViewMixin:
             form.instance.image = images
             form.instance.save()
 
+        recipe_instructions = json.loads(self.request.POST.get('recipe_instructions'))
+        if isinstance(recipe_instructions, list):
+            form.instance.recipe_instructions = recipe_instructions
+            form.instance.save()
+
         ingredients = json.loads(self.request.POST.get('ingredients'))
         if ingredients:
             for ingredient in ingredients:

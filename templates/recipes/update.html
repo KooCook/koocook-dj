@@ -4,9 +4,9 @@
 {% block page_title %}Edit a recipe{% endblock %}
 {% block content_page_name %}Edit a recipe{% endblock %}
 {% block hero_title %}Edit a recipe{% endblock %}
-{% block content_deps %}<script src="{% static 'js/components/ingredients.js' %}"></script>{% endblock %}
+{% block content_deps %}<script src="{% static 'js/bundle.js' %}"></script>{% endblock %}
 {% block page_content %}
-    <ingredient-chooser :ingredients="ingredients" :selectable-units="selectableUnits"></ingredient-chooser>
+    <ingredient-chooser :initial="ingredients" :selectable-units="selectableUnits"></ingredient-chooser>
 <form method="post">{% csrf_token %}
     <input name="ingredients" type="hidden" :value="JSON.stringify(ingredients)">
     {% for field in form.visible_fields %}
