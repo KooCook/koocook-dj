@@ -28,6 +28,13 @@ class PostTest(AuthTestCase):
             self.assertEqual(list(response.context['posts']), list(self.model.objects.all()))
             self.assertEqual(response.status_code, 200)
 
+    def test_view_all_guest_posts(self):
+        self.client.logout()
+        response = self.client.get(reverse('koocook_core:posts:view'))
+        with self.subTest():
+            self.assertEqual(list(response.context['posts']), list(self.model.objects.all()))
+            self.assertEqual(response.status_code, 200)
+
     def test_controller_add_comment(self):
         self.controller.request_fields.update(self.comment_dict)
         response = self.controller.comment(item_id=self.post.id)
