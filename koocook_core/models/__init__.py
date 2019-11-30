@@ -1,4 +1,4 @@
-from .nutrition import RecipeIngredient, MetaIngredient
+from .nutrition import MetaIngredient, RecipeIngredient
 from .post import Post
 from .recipe import Recipe
 from .review import AggregateRating, Comment, Rating

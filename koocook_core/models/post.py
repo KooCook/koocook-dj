@@ -1,10 +1,8 @@
-import json
 from django.db import models
-from django.utils.html import mark_safe
 
+from ..support import FormattedField
 from .base import SerialisableModel
 from .review import ReviewableModel
-from ..support import FormattedField
 
 __all__ = ('Post',)
 
