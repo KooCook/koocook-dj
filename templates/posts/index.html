@@ -46,7 +46,7 @@
   </div>
 </b-modal>
 <b-tabs type="is-toggle" position="is-centered" class="is-fullwidth">
-  <b-tab-item label="My posts">
+  {% if request.user.is_authenticated %}<b-tab-item label="My posts">
     <form method="post" class="box" @submit.prevent="createPost()">
       {% csrf_token %}
       <b-field label="What's on your mind?">
@@ -108,7 +108,7 @@
         <button v-show="userPost.hovered" class="delete" @click="deletePost(userPost)"></button>
       </div>
     </article>
-  </b-tab-item>
+  </b-tab-item> {% endif %}
   <b-tab-item label="All posts">
       <article class="media" v-for="(userPost, upIndex) in allPosts" v-on:mouseover="$set(userPost, 'hovered', true)"
       v-on:mouseleave="$set(userPost, 'hovered', false)">
@@ -156,7 +156,7 @@
       </div>
     </article>
   </b-tab-item>
-  <b-tab-item label="Following">
+  {% if request.user.is_authenticated %}<b-tab-item label="Following">
     <article class="media" v-for="(userPost, upIndex) in followeePosts" v-on:mouseover="$set(userPost, 'hovered', true)"
       v-on:mouseleave="$set(userPost, 'hovered', false)">
       <figure class="media-left">
@@ -202,13 +202,13 @@
         <follow-widget :followee-id="userPost.author.user.id" :followees="followees"></follow-widget>
       </div>
     </article>
-  </b-tab-item>
+  </b-tab-item>{% endif %}
 </b-tabs>
 
 <script>
   Object.assign(GLOBAL_DATA, {
     activeTab: 0,
-     currentAuthorId: {{ current_author.id }},
+     currentAuthorId: {% if current_author.id %}{{ current_author.id }}{% else %}0{% endif %},
     showModal: false,
       rateURL: RATE_URL,
     selectedPost: {},

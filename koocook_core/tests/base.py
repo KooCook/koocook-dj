@@ -11,8 +11,8 @@ def create_dummy_post(user: User) -> Post:
     return post
 
 
-def create_dummy_recipe(user: User):
-    recipe = Recipe(name='dummy', author=Author.objects.get(user__user=user))
+def create_dummy_recipe(author: Author) -> Recipe:
+    recipe = Recipe(name='dummy', author=author)
     recipe.image = '{"https://docs.djangoproject.com/en/2.2/ref/contrib/postgres/fields/#arrayfield"}'
     recipe.date_published = '2019-11-05 04:04:07'
     recipe.description = 'This is a description.'
@@ -28,13 +28,6 @@ def create_dummy_comment_dict() -> Dict[str, Any]:
     comment_fields: Dict[str, Any] = dict()
     comment_fields['body'] = 'Chi-squared test'
     return comment_fields
-
-
-def create_dummy_recipe(author: Author) -> Recipe:
-    recipe = Recipe(author=author, name="Dummy recipe")
-    recipe.recipe_instructions = "{}"
-    recipe.save()
-    return recipe
 
 
 class AuthTestCase(TestCase):

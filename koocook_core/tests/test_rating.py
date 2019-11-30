@@ -14,14 +14,14 @@ def get_lazy_model_object(model_cls, obj_id):
 class RatingTest(AuthTestCase):
     def setUp(self) -> None:
         super().setUp()
-        self.recipe = create_dummy_recipe(self.user)
+        self.recipe = create_dummy_recipe(self.author)
         self.post = create_dummy_post(self.user)
         self.client.login(username=self.user2.username, password=self.password)
         self.recipe_rate_url = reverse('koocook_core:recipe-rate', args=(self.recipe.id,))
         self.post_rate_url = reverse('koocook_core:posts:rate', args=(self.post.id,))
 
     def test_empty_reviewable_model_creation(self):
-        recipe = create_dummy_recipe(self.user)
+        recipe = create_dummy_recipe(self.author)
         self.assertEqual(recipe.aggregate_rating.rating_value, 0)
         self.assertTrue(isinstance(recipe.aggregate_rating, AggregateRating))
 
