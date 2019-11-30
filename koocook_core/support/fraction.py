@@ -49,7 +49,7 @@ NUMERAL = {
 _parse_numeral_pattern = re.compile(r'(?P<m>{})\b'.format(
     '|'.join(
         '|'.join([k.lower(), k.upper(), k.title()])
-        for k in NUMERAL), re.IGNORECASE))
+        for k in NUMERAL)), re.IGNORECASE)
 
 
 def parse_numeral(s: str) -> str:
