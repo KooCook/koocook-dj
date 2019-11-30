@@ -1,5 +1,5 @@
-from decimal import Decimal
 import itertools
+from decimal import Decimal 
 
 from django import test as djangotest
 from django.contrib.auth.models import User
@@ -238,14 +238,14 @@ class TestCommentModel(djangotest.TestCase):
         self.test_author = Author.objects.all()[0]
 
     def test_init(self):
-        recipe = Recipe.objects.create(author=self.test_author, name='')
-        post = Post.objects.create(author=self.test_author)
+        Recipe.objects.create(author=self.test_author, name='')
+        Post.objects.create(author=self.test_author)
         for name in ('Recipe', 'Post', 'Comment'):
             item = locals()[name.lower()]
             with self.subTest(item_reviewed=name):
                 try:
                     Comment.objects.create(author=self.test_author,
-                                                     item_reviewed=item)
+                                           item_reviewed=item)
                 except Exception as e:
                     raise self.failureException(
                         'unexpected exception raised') from e
@@ -321,7 +321,7 @@ class TestRecipeModel(djangotest.TestCase):
 
     def test_fields_setting(self):
         recipe = Recipe()
-        for field, attr, value in (('name', 'max_length', 255), ):
+        for field, attr, value in (('name', 'max_length', 255),):
             with self.subTest(field=field, attr=attr):
                 self.assertEqual(getattr(recipe._meta.get_field(field), attr),
                                  value)
@@ -589,4 +589,5 @@ class TestQuantityField(djangotest.TestCase):
 
 if __name__ == '__main__':
     import unittest
+
     unittest.main(verbosity=2)
