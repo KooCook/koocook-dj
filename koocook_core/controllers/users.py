@@ -1,6 +1,3 @@
-from django.db.models import Model
-from django.contrib.auth.models import AnonymousUser
-
 from .base import BaseController, ControllerResponseUnauthorised, JsonRequestHandler, ControllerResponse
 from ..models import KoocookUser
 from .decorators import to_koocook_user

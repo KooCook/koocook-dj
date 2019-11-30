@@ -1,4 +1,4 @@
-from .base import ControllerResponseUnauthorised, ControllerResponseForbidden
+from .base import ControllerResponseUnauthorised
 from ..models import KoocookUser, Author
 
 

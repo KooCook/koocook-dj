@@ -1,10 +1,8 @@
 # Single view w/ Ajax
-from django.db.models import Model
-from django.contrib.auth.decorators import login_required
-from django.http import HttpRequest, HttpResponse, JsonResponse, QueryDict
+from django.http import HttpRequest, HttpResponse, JsonResponse
 
-from .base import BaseController, BaseHandler, ControllerResponse, ControllerResponseUnauthorised, ControllerResponseForbidden
-from .decorators import apply_author_from_session, to_koocook_user
+from .base import BaseHandler, ControllerResponse, ControllerResponseForbidden
+from .decorators import apply_author_from_session
 from .mixins import CommentControllerMixin
 from .rating import RatableController
 from ..models import Post, Author
