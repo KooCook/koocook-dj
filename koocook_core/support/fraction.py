@@ -500,7 +500,6 @@ class Fraction:
 
 
 if __name__ == '__main__':
-    """Run the doctests in all methods."""
+    # Run the doctests in all methods.
     import doctest
-
     doctest.testmod()
