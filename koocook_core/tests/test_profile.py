@@ -3,6 +3,7 @@ from django.test import TestCase
 from django.shortcuts import reverse
 from django.contrib.auth.models import User
 
+from .base import AuthTestCase
 from ..support import PreferenceManager, TaggingPreference
 
 
@@ -23,3 +24,17 @@ class PreferencesTest(TestCase):
         response = self.client.post(self.edit_pref_url, {'preferences': json.dumps({'preferred_tags': []})})
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content, '{"status": "Preferences set", "current": {"preferred_tags": []}}')
+
+
+class UserProfileTest(AuthTestCase):
+    def test_user_profile_view(self):
+        response = self.client.get(reverse("koocook_core:profile:info"))
+        self.assertTemplateUsed(response, 'users/info.html')
+
+    def test_user_settings_post(self):
+        response = self.client.post(reverse("koocook_core:profile:pref"), {
+            'preferences': '{}'
+        })
+        with self.subTest():
+            self.assertEqual(response.context['section'], 'pref')
+            self.assertTemplateUsed(response, 'users/settings.html')

@@ -23,11 +23,9 @@ class UserController(BaseController):
     def preferences(self):
         return self._preferences
 
-    @to_koocook_user
     def view_profile(self):
         return UserProfileInfoView.as_view()(self.request, pk=self.user.pk)
 
-    @to_koocook_user
     def view_settings_info(self):
         return UserSettingsInfoView.as_view()(self.request, pk=self.user.pk)
 

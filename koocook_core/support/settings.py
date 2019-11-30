@@ -114,20 +114,16 @@ class TaggingPreference(PreferenceEnum):
                      RecipeTagInput(model='tags')
 
 
-class PrefEncoder(JSONEncoder):
-
-    def default(self, obj):
-        if hasattr(obj, 'as_dict'):
-            return obj.as_dict()
-        else:
-            if hasattr(obj, 'dict'):
-                return obj.dict
-            else:
-                return obj.__dict__
-            # if type(obj) == models.Model:
-            #     return {field.name: getattr(obj, field.name) for field in obj._meta.fields}
-            # else:
-            #     return str(obj)
+# class PrefEncoder(JSONEncoder):
+#
+#     def default(self, obj):
+#         if hasattr(obj, 'as_dict'):
+#             return obj.as_dict()
+#         else:
+#             if hasattr(obj, 'dict'):
+#                 return obj.dict
+#             else:
+#                 return obj.__dict__
 
 
 Preferences = (TaggingPreference,)

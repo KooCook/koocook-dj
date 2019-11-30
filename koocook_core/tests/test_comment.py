@@ -1,6 +1,6 @@
 from django.shortcuts import reverse
 
-from koocook_core.tests.base import create_dummy_post, AuthTestCase
+from koocook_core.tests.base import create_dummy_post, create_dummy_recipe, AuthTestCase
 from koocook_core.models import Comment, Post, Recipe
 from koocook_core.support.markdown import MarkdownSource
 
@@ -37,5 +37,13 @@ class CommentTest(AuthTestCase):
             comment.item_reviewed = post
             self.assertEqual(comment.item_reviewed, post)
             self.assertEqual(comment.reviewed_post, post)
+
+    def test_comment_recipe_reviewed(self):
+        recipe = create_dummy_recipe(self.author)
+        response = self.client.post(reverse('koocook_core:recipe-comments', kwargs={'item_id': recipe.id}), {
+            "body": self.comment_body
+        })
+        with self.subTest():
+            self.assertEqual(response.json()["current"]["body"], self.comment_body.source)
 
 
