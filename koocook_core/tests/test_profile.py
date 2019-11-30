@@ -1,3 +1,4 @@
+import json
 from django.test import TestCase
 from django.shortcuts import reverse
 from django.contrib.auth.models import User
@@ -15,11 +16,11 @@ class PreferencesTest(TestCase):
 
     def test_default_preferences(self):
         manager = PreferenceManager()
-        self.assertEqual(TaggingPreference.ALLOW_GLUTEN.full_name,
-                         manager.get_full('allow_glut').full_name)
+        self.assertEqual(TaggingPreference.PREFERRED_TAGS.full_name,
+                         manager.get_full('preferred_tags').full_name)
+
 
     def test_set_single_preference(self):
-        import json
-        response = self.client.post(self.edit_pref_url, {'preferences': json.dumps({'allow_glut': 'True'})})
+        response = self.client.post(self.edit_pref_url, {'preferences': json.dumps({'preferred_tags': []})})
         self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(response.content, '{"status": "Preferences set", "current": {"allow_glut": "False"}}')
+        self.assertJSONEqual(response.content, '{"status": "Preferences set", "current": {"preferred_tags": []}}')

@@ -33,7 +33,7 @@ class UserController(BaseController):
 
     @to_koocook_user
     def set_preferences(self):
-        self.user.formal_preferences['allow_glut'] = 'False'
+        self.user.formal_preferences.update_from_json(self.request_fields["preferences"])
         self.user.save()
         return ControllerResponse(status_text='Preferences set', obj=self.user.preferences)
 
