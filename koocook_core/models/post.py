@@ -3,7 +3,7 @@ from django.db import models
 from django.utils.html import mark_safe
 
 from .base import SerialisableModel
-from .review import create_empty_aggregate_rating
+from .review import AggregateRating
 from ..support import FormattedField
 
 __all__ = ('Post',)
