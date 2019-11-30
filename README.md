@@ -40,7 +40,7 @@ All other dependencies are specified in `requirements.txt`
 1.  Make sure you are in the root directory (repository root) of the project and
     already cloned this repo.
 
-2.  Create ```.env``` for your local app environment settings *(Pending guide...)*
+2.  Create ```.env``` for your local app environment settings _(Pending guide...)_
 
     - Make sure your secret key is strong enough. (Recommended: ```PBKDF2``` 
     algorithm with a ```SHA256``` hash)
@@ -54,7 +54,7 @@ All other dependencies are specified in `requirements.txt`
     database as well by running the following Django command: <pre>python [manage.py](manage.py) migrate</pre>
 
 6.  Run <pre>python [manage.py](manage.py) runserver</pre> and, Voila!, the 
-    server should listen on the default port at <code>localhost:*default_port*</code>.
+    server should listen on the default port at <code>localhost:_default_port_</code>.
 
 ## Project Documents
 
@@ -63,16 +63,16 @@ All other dependencies are specified in `requirements.txt`
 - [Code Review Script and Checklist (Google Docs)](https://docs.google.com/document/d/1GSI0FGx4NZyqwAVUOYt641X0tsdqfeRz3O-R3XnfGFE/edit)
 - [Project Proposal (Google Docs)](https://docs.google.com/document/d/1syrJeChO_DoCd_EE_ohzHcz8JPxZUc51QRxZaqScpJ4/edit)
 - Static mockup
-    - Screenshots & Demo: [Google Drive](https://drive.google.com/drive/folders/1oRqvuTPX0Nw1hI52laHMkh5T0WVMhhqI)
-    - Source code: [GitHub](https://github.com/KooCook/koocook-static-mockup)
+  - Screenshots & Demo: [Google Drive](https://drive.google.com/drive/folders/1oRqvuTPX0Nw1hI52laHMkh5T0WVMhhqI)
+  - Source code: [GitHub](https://github.com/KooCook/koocook-static-mockup)
 
 ## Other Links
 
 - **Deployed app:**
-    - (Production) <https://koocook.appspot.com/> (*Inactive*)
-    - (**Development**) <https://koocook-deploy.appspot.com/> (**Active**, based on **dev** branch)
+  - (Production) <https://koocook.appspot.com/> (_Inactive_)
+  - (**Development**) <https://koocook-deploy.appspot.com/> (**Active**, based on **dev** branch)
 - [Project folder (Drive)](https://drive.google.com/open?id=1GpXj0oaM3n29aJF2YNDhjJwkCqqHa-04)
-    - This includes mockup screenshots and demo as well.
+  - This includes mockup screenshots and demo as well.
 - [Main app (GitHub)](https://github.com/KooCook/koocook/tree/dev)
 - [Django backend (GitHub)](https://github.com/KooCook/koocook-dj/tree/dev)
 - [datatrans (GitHub)](https://github.com/KooCook/datatrans) -- supporting package for data transformation
