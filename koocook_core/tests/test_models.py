@@ -13,19 +13,27 @@ from koocook_core.support.fraction import Fraction
 from koocook_core.tests import utils
 
 
-class TestAggregateRatingModel(djangotest.TestCase):
+def set_up_authors():
+    if len(Author.objects.all()) == 0:
+        from .scripts import create_author
+        create_author.main()
 
+
+def set_up_reviewables():
+    if len(Recipe.objects.all()) == 0:
+        assert len(Post.objects.all()) == 0
+        assert len(Comment.objects.all()) == 0
+        from .scripts import create_reviewables
+        create_reviewables.main()
+
+
+class TestAggregateRatingModel(djangotest.TestCase):
     def setUp(self) -> None:
-        if len(Author.objects.all()) == 0:
-            from .scripts import create_author
-            create_author.main()
-        if len(Recipe.objects.all()) == 0:
-            assert len(Post.objects.all()) == 0
-            assert len(Comment.objects.all()) == 0
-            from .scripts import create_reviewables
-            create_reviewables.main()
+        set_up_authors()
+        set_up_reviewables()
         self.test_authors = Author.objects.all()
-        self.test_objects = list(Recipe.objects.all()) + list(Post.objects.all()) + list(Comment.objects.all())
+        self.test_objects = list(Recipe.objects.all()) + list(
+            Post.objects.all()) + list(Comment.objects.all())
 
     def clean_up_aggregate_rating(self):
         """Resets the state of aggregate ratings, for testing only."""
@@ -158,11 +166,8 @@ class TestAggregateRatingModel(djangotest.TestCase):
 
 
 class TestAuthorModel(djangotest.TestCase):
-
     def setUp(self) -> None:
-        if len(Author.objects.all()) == 0:
-            from .scripts import create_author
-            create_author.main()
+        set_up_authors()
         self.test_authors = Author.objects.filter(koocook_user=None)
         self.test_users = User.objects.all()
 
@@ -227,11 +232,8 @@ class TestAuthorModel(djangotest.TestCase):
 
 
 class TestCommentModel(djangotest.TestCase):
-
     def setUp(self) -> None:
-        if len(Author.objects.all()) == 0:
-            from .scripts import create_author
-            create_author.main()
+        set_up_authors()
         self.test_user = User.objects.all()[0]
         self.test_author = Author.objects.all()[0]
 
@@ -274,7 +276,6 @@ class TestMetaIngredientModel(djangotest.TestCase):
 
 
 class TestPostModel(djangotest.TestCase):
-
     def setUp(self) -> None:
         if len(Author.objects.all()) == 0:
             from .scripts import create_author
@@ -301,7 +302,7 @@ class TestPostModel(djangotest.TestCase):
         for author in self.test_authors:
             with self.subTest('creation', author=author):
                 try:
-                    post = Post.objects.create(author=author)
+                    Post.objects.create(author=author)
                 except Exception as e:
                     raise self.failureException(
                         'unexpected exception raised') from e
@@ -314,11 +315,8 @@ class TestPostModel(djangotest.TestCase):
 
 
 class TestRecipeModel(djangotest.TestCase):
-
     def setUp(self) -> None:
-        if len(Author.objects.all()) == 0:
-            from .scripts import create_author
-            create_author.main()
+        set_up_authors()
         self.test_authors = Author.objects.all()
 
     def test_fields_setting(self):
@@ -411,12 +409,12 @@ class TestTagLabelModel(djangotest.TestCase):
         # TODO: add more cases
         with self.subTest('common values'):
             label = TagLabel.objects.create(name='cuisine')
-            tag = Tag.objects.create(name='French', label=label)
+            Tag.objects.create(name='French', label=label)
         with self.subTest('duplicates'):
             with self.assertRaises(ValueError):
-                tag = Tag.objects.create(name='French', label=label)
+                Tag.objects.create(name='French', label=label)
             try:
-                tag = Tag.objects.create(name='Chinese', label=label)
+                Tag.objects.create(name='Chinese', label=label)
             except Exception as e:
                 raise self.failureException(
                     'unexpected exception raised') from e
@@ -435,10 +433,10 @@ class TestTagModel(djangotest.TestCase):
     def test_init(self):
         # TODO: add more cases
         with self.subTest('common values'):
-            label = TagLabel.objects.create(name='cuisine')
+            TagLabel.objects.create(name='cuisine')
         with self.subTest('duplicates'):
             with self.assertRaises(ValueError):
-                label = TagLabel.objects.create(name='cuisine')
+                TagLabel.objects.create(name='cuisine')
 
     def test_fields_settings(self):
         label = TagLabel()
@@ -452,9 +450,9 @@ class TestRecipeIngredientModel(djangotest.TestCase):
         quantity = Quantity(Fraction(1, 2), 'tbsp')
         mi = MetaIngredient.objects.create(name='')
         recipe = Recipe.objects.create(name='')
-        ri = RecipeIngredient.objects.create(quantity=quantity,
-                                             meta=mi,
-                                             recipe=recipe)
+        RecipeIngredient.objects.create(quantity=quantity,
+                                        meta=mi,
+                                        recipe=recipe)
 
     def test_fields_settings(self):
         ri = RecipeIngredient()
@@ -482,43 +480,31 @@ class TestRecipeIngredientModel(djangotest.TestCase):
 
 
 class TestRatingModel(djangotest.TestCase):
-
     def setUp(self) -> None:
-        if len(Author.objects.all()) == 0:
-            from .scripts import create_author
-            create_author.main()
-        if len(Recipe.objects.all()) == 0:
-            assert len(Post.objects.all()) == 0
-            assert len(Comment.objects.all()) == 0
-            from .scripts import create_reviewables
-            create_reviewables.main()
+        set_up_authors()
+        set_up_reviewables()
         self.test_authors = Author.objects.all()
-        self.test_objects = list(Recipe.objects.all()) + list(Post.objects.all()) + list(Comment.objects.all())
+        self.test_objects = list(Recipe.objects.all()) + list(
+            Post.objects.all()) + list(Comment.objects.all())
 
     def test_init(self):
         count = 0
         for author in self.test_authors:
             for item in self.test_objects:
                 with self.subTest('typical', author=author, item=item):
-                    rating = Rating(author=author,
-                                    rating_value=3,
-                                    item_reviewed=item)
+                    Rating(author=author, rating_value=3, item_reviewed=item)
                 with self.subTest('boundary', author=author, item=item):
-                    rating = Rating(author=author,
-                                    rating_value=5,
-                                    item_reviewed=item)
-                    rating = Rating(author=author,
-                                    rating_value=1,
-                                    item_reviewed=item)
+                    Rating(author=author, rating_value=5, item_reviewed=item)
+                    Rating(author=author, rating_value=1, item_reviewed=item)
                 with self.subTest('failing', author=author, item=item):
                     with self.assertRaises(ValueError):
-                        rating = Rating(author=author,
-                                        rating_value=6,
-                                        item_reviewed=item)
+                        Rating(author=author,
+                               rating_value=6,
+                               item_reviewed=item)
                     with self.assertRaises(ValueError):
-                        rating = Rating(author=author,
-                                        rating_value=0,
-                                        item_reviewed=item)
+                        Rating(author=author,
+                               rating_value=0,
+                               item_reviewed=item)
                 count += 1
                 if count > 20:
                     return
@@ -535,9 +521,7 @@ class TestRatingModel(djangotest.TestCase):
 
 class TestKoocookUserModel(djangotest.TestCase):
     def setUp(self) -> None:
-        if len(Author.objects.all()) == 0:
-            from .scripts import create_author
-            create_author.main()
+        set_up_authors()
         self.test_kc_users = [user.koocookuser for user in User.objects.all()]
 
     def clean_up_followings(self):
