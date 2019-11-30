@@ -87,7 +87,6 @@ class BaseController:
         updated_fields = list(set(self.request_fields.keys()).intersection(set(self.model_field_names)))
         for field in updated_fields:
             setattr(found, field, self.request_fields[field])
-        print(self.request_fields)
         found.save()
         found = self.model.objects.get(pk=found.id)
         return ControllerResponse(status_text='Updated', obj=found)

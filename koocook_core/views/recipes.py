@@ -121,7 +121,7 @@ class RecipeDetailView(CommentWidgetMixin, DetailView):
                 pass
         else:
             try:
-                RecipeVisit.associate_recipe_with_ip_address(self.request, self.object).save()
+                RecipeVisit.associate_recipe_with_ip_address(self.request, self.object)
             except IntegrityError:
                 pass
         return response

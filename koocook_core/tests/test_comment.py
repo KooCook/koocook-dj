@@ -30,9 +30,9 @@ class CommentTest(AuthTestCase):
         with self.subTest():
             self.assertEqual(comment.item_reviewed, post)
         with self.subTest():
-            self.assertEqual(comment.as_dict["rendered"], self.comment_body.rendered)
+            self.assertEqual(comment.as_dict()["rendered"], self.comment_body.rendered)
         with self.subTest():
-            self.assertEqual(comment.processed_body, self.comment_body.rendered)
+            self.assertEqual(comment.rendered, self.comment_body.rendered)
         with self.subTest():
             comment.item_reviewed = post
             self.assertEqual(comment.item_reviewed, post)

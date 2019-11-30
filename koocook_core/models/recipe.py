@@ -86,15 +86,20 @@ class RecipeVisit(models.Model):
 
     def add_ip_address(self, request: HttpRequest):
         ip_address = get_client_ip(request)
+        self.first = False
+        self.ip_address = ip_address
         try:
-            RecipeVisit.objects.filter(ip_address=ip_address)
+            query = RecipeVisit.objects.filter(ip_address=ip_address)
+            if self.user:
+                query.update(user=self.user)
         except RecipeVisit.DoesNotExist:
-            self.ip_address = ip_address
-
+            self.first = True
 
     @classmethod
     def associate_recipe_with_ip_address(cls, request: HttpRequest, recipe: Recipe):
         visit = cls()
         visit.recipe = recipe
         visit.add_ip_address(request)
+        if visit.first:
+            visit.save()
         return visit

@@ -96,7 +96,6 @@ class RecipeVisitTest(AuthTestCase):
             self.assertEqual(get_client_ip(self.request), self.request.META.get('REMOTE_ADDR'))
 
         visit = RecipeVisit.associate_recipe_with_ip_address(self.request, self.recipe)
-        visit.save()
         with self.subTest():
             self.assertEqual(visit.ip_address, self.request.META.get('REMOTE_ADDR'))
-            self.assertEqual(2, RecipeVisit.objects.all().count())
+            self.assertEqual(1, RecipeVisit.objects.all().count())

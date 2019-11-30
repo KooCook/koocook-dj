@@ -54,7 +54,7 @@ class PostTest(AuthTestCase):
         self.controller.request_fields["body"] = edited_post_body
         response = self.controller.update_post(pk=self.post.id)
         with self.subTest("Editing post with PostController test"):
-            self.assertEqual(response.obj.body, edited_post_body)
+            self.assertEqual(response.obj.body.source, edited_post_body)
             self.assertEqual(response.obj.author, self.author)
 
     def test_controller_delete_post(self):
