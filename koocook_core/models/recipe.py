@@ -87,7 +87,7 @@ class RecipeVisit(models.Model):
     def add_ip_address(self, request: HttpRequest):
         ip_address = get_client_ip(request)
         try:
-            self.objects.get(ip_address=ip_address)
+            RecipeVisit.objects.get(ip_address=ip_address)
         except RecipeVisit.DoesNotExist:
             self.ip_address = ip_address
 
