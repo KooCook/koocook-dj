@@ -3,7 +3,6 @@ from json import JSONEncoder
 
 from django.db import models
 from django.db.models import Field
-from django.utils.html import mark_safe
 
 
 def transform_to_field(key):

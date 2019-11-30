@@ -1,4 +1,5 @@
 from django.db import models
+
 from .base import SerialisableModel
 
 __all__ = ['Tag', 'TagLabel']

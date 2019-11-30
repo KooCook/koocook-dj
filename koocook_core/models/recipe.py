@@ -3,6 +3,7 @@ from django.db import models
 from django.http import HttpRequest
 
 from koocook_core import fields as koocookfields
+
 from .review import ReviewableModel
 
 __all__ = ['Recipe']
@@ -98,4 +99,3 @@ class RecipeVisit(models.Model):
         visit.recipe = recipe
         visit.add_ip_address(request)
         return visit
-
