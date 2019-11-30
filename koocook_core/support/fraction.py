@@ -379,7 +379,7 @@ class Fraction:
             return math.nan
         return self.numerator / self.denominator
 
-    def __add__(self, other: Union[int, float, 'Fraction']) -> Union['Fraction', math.nan]:
+    def __add__(self, other: Union[int, float, 'Fraction']) -> Union['Fraction', 'math.nan']:
         """Return the sum of two fractions as a new fraction.
            Use the standard formula  a/b + c/d = (ad+bc)/(b*d)
         """
@@ -401,7 +401,7 @@ class Fraction:
         return Fraction(self.numerator * other.denominator + other.numerator * self.denominator,
                         self.denominator * other.denominator)
 
-    def __sub__(self, other: Union[int, float, 'Fraction']) -> Union['Fraction', math.nan]:
+    def __sub__(self, other: Union[int, float, 'Fraction']) -> Union['Fraction', 'math.nan']:
         if not isinstance(other, Fraction):
             if not isinstance(other, (int, float)):
                 raise TypeError(type_error_msg_1(self, '-', other))
@@ -409,7 +409,7 @@ class Fraction:
 
         return self + (-other)
 
-    def __mul__(self, other: Union[int, float, 'Fraction']) -> Union['Fraction', math.nan]:
+    def __mul__(self, other: Union[int, float, 'Fraction']) -> Union['Fraction', 'math.nan']:
         if not isinstance(other, Fraction):
             if not isinstance(other, (int, float)):
                 raise TypeError(type_error_msg_1(self, '*', other))
@@ -417,7 +417,7 @@ class Fraction:
 
         return Fraction(self.numerator * other.numerator, self.denominator * other.denominator)
 
-    def __truediv__(self, other: Union[int, float, 'Fraction']) -> Union['Fraction', math.nan]:
+    def __truediv__(self, other: Union[int, float, 'Fraction']) -> Union['Fraction', 'math.nan']:
         if not isinstance(other, Fraction):
             if not isinstance(other, (int, float)):
                 raise TypeError(type_error_msg_1(self, '/', other))
