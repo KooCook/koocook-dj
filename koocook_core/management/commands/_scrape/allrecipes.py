@@ -104,7 +104,7 @@ def get_links(url: str) -> List[str]:
             if 'https://www.allrecipes.com/recipe/' in link:
                 try:
                     num = link.split('/')[4]
-                    if len(num) == 6:
+                    if len(num) > 4:
                         nums.add(num)
                 except IndexError:
                     pass
