@@ -12,6 +12,16 @@ class SignInRequiredMixin(LoginRequiredMixin):
     def login_url(self):
         return reverse('social:begin', args=['google-oauth2'])
 
+    def get_success_url(self):
+        return self.request.path
+
+
+class PreferencesMixin(SignInRequiredMixin):
+    def form_valid(self, form):
+        self.object.formal_preferences.update_from_json(self.request.POST["preferences"])
+        response = super().form_valid(form)
+        return response
+
 
 class AuthAuthorMixin:
 
@@ -55,6 +65,7 @@ class CommentWidgetMixin(AuthAuthorMixin, FormMixin):
 
 class RecipeViewMixin(SignInRequiredMixin, AuthAuthorMixin):
 
+    # Messy
     def form_valid(self, form):
         from ..models import Tag, TagLabel
         response = super().form_valid(form)

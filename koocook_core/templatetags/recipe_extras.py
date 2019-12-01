@@ -33,5 +33,5 @@ def duration_in_words(duration: datetime.timedelta) -> str:
     if hh:
         s = ("%d hour%s " % plural(hh)) + s
     if duration.days:
-        s = ("%d day%s, " % plural(duration.days)) + s
-    return s
+        s = ("%d day%s " % plural(duration.days)) + s
+    return s.rstrip()

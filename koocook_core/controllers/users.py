@@ -49,7 +49,7 @@ class UserController(BaseController):
     def unfollow(self):
         followee = KoocookUser.objects.get(user_id=self.request_fields['followee_id'])
         self.user.unfollow(followee)
-        return ControllerResponse(status_text='Unfollowed')
+        return ControllerResponse(status_text='Unfollowed', obj=followee)
 
 
 class UserHandler(JsonRequestHandler):
