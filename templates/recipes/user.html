@@ -1,16 +1,18 @@
 {% extends 'base/recipes.html' %}
 {% load static %}
-{% block content_deps %}<script src="{% static 'js/components/star-rating.js' %}"></script>{% endblock %}
+{% load recipe_extras %}
+{% block content_deps %}
+<script src="{% static 'js/bundle.js' %}"></script>{% endblock %}
 {% block section_after_nav %}<section class="hero is-light">
-  <div class="hero-body">
-    <div class="container">
-      <h1 class="title">
-        Your recipes
-      </h1>
-        <h2 class="subtitle">
-            <a href="{% url 'koocook_core:recipe-create' %}"> <span class="buttons">
-                <button class="button is-primary is-outlined is-small">New</button>
-            </span>
+    <div class="hero-body">
+        <div class="container">
+            <h1 class="title">
+                Your recipes
+            </h1>
+            <h2 class="subtitle">
+                <a href="{% url 'koocook_core:recipe-create' %}"> <span class="buttons">
+                        <button class="button is-primary is-outlined is-small">New</button>
+                    </span>
                 </a>
             </h2>
 
@@ -19,56 +21,78 @@
 </section>{% endblock %}
 {% block page_content %}
 <div id="app" class="container">
-  <b-modal :active.sync="showModal" has-modal-card trap-focus
-                   aria-role="dialog"
-                   aria-modal>
+    <b-modal :active.sync="showModal" has-modal-card trap-focus aria-role="dialog" aria-modal>
         <div class="modal-card">
             <header class="modal-card-head">
-        <p class="modal-card-title">Delete {% templatetag openvariable %} currentRecipe.name {% templatetag closevariable %}</p>
-      </header>
-         <section class="modal-card-body">
-              <p class="card-header-title">
-                  Do you really want to delete {% templatetag openvariable %} currentRecipe.name {% templatetag closevariable %}?
-              </p>
-          </section>
-          <footer class="modal-card-foot">
-              <div class="buttons">
-                  <button class="button is-danger" @click="confirmAction">Proceed</button>
-                  <button class="button" @click="showModal = false">Cancel</button>
-              </div>
-          </footer>
-      </div>
+                <p class="modal-card-title">Delete {% templatetag openvariable %} currentRecipe.name
+                    {% templatetag closevariable %}</p>
+            </header>
+            <section class="modal-card-body">
+                <p class="card-header-title">
+                    Do you really want to delete {% templatetag openvariable %} currentRecipe.name
+                    {% templatetag closevariable %}?
+                </p>
+            </section>
+            <footer class="modal-card-foot">
+                <div class="buttons">
+                    <button class="button is-danger" @click="confirmAction">Proceed</button>
+                    <button class="button" @click="showModal = false">Cancel</button>
+                </div>
+            </footer>
+        </div>
     </b-modal>
-<div class="columns is-2 is-multiline">
-{% for recipe in user_recipes %}
-    <div class="column is-half">
-    <div class="card">
-         <div class="card-image">
-    <figure class="image is-2by1 is-bg-cover-centered">
-      <img src="{{ recipe.image|first }}" alt="Recipe image">
-    </figure>
-  </div>
-    <div class="card-content">
-        <div class="media">
-            <star-rating recipe-name="{{ recipe.name }}" :item-id="{{ recipe.id }}" :initial="{{ recipe.aggregate_rating.rating_value }}" read-only="true"></star-rating>
-      <div class="media-content">
-          <p class="title is-4"><a href="{% url 'koocook_core:recipe' recipe.id %}">{{ recipe.name }}</a> <span class="buttons is-inline-flex has-addons  is-small">
-              <a href="{% url 'koocook_core:recipe-edit' recipe.id %}"><button class="button is-primary is-outlined is-small"><b-icon icon="pencil"></b-icon> </button></a>
-     <button class="button is-danger is-outlined is-small is-light" @click="showConfirmDeletion({{ recipe.id }})"><b-icon icon="close"></b-icon> </button>
-        </span></p>
+    <div class="columns is-2 is-multiline">
+        {% for recipe in user_recipes %}
+        <div class="column is-half">
+            <div class="card">
+                <div class="card-image">
+                    <figure class="image is-2by1 is-bg-cover-centered">
+                        <img src="{{ recipe.image|first }}" alt="Recipe image">
+                    </figure>
+                </div>
+                <div class="card-content">
+                    <div class="media">
+                        <star-rating recipe-name="{{ recipe.name }}" :item-id="{{ recipe.id }}"
+                            :initial="{{ recipe.aggregate_rating.rating_value }}" :read-only="true"></star-rating>
+                        <div class="media-content">
+                            <p class="title is-4"><a
+                                    href="{% url 'koocook_core:recipe' recipe.id %}">{{ recipe.name }}</a> <span
+                                    class="buttons is-inline-flex has-addons  is-small">
+                                    <a href="{% url 'koocook_core:recipe-edit' recipe.id %}"><button
+                                            class="button is-primary is-outlined is-small">
+                                            <b-icon icon="pencil"></b-icon>
+                                        </button></a>
+                                    <button class="button is-danger is-outlined is-small is-light"
+                                        @click="showConfirmDeletion({{ recipe.id }})">
+                                        <b-icon icon="close"></b-icon>
+                                    </button>
+                                </span></p>
 
-      </div>
+                        </div>
+                        <div class="media-bottom">
+                            <p class="subtitle has-text-grey is-6"><span class="date-posted">
+                                    <b-icon icon="calendar" size="is-small"></b-icon>
+                                    {{ recipe.date_published }}
+                                </span> <span class="date-posted">
+                                    <b-icon icon="clock" size="is-small"></b-icon> Ready in:
+                                    {{ recipe.total_time|timedel_to_words }}
+                                </span>
+                                <span class="date-posted">
+                                    <b-icon icon="eye" size="is-small"></b-icon> {{ recipe.view_count }}
+                                    view{{ recipe.view_count|pluralize }}
+                                </span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <li>You have not contributed any recipe with KooCook</li>
+        {% endfor %}
     </div>
-    </div>
-    </div>
-    </div>
-{% empty %}
-    <li>You have not contributed any recipe with KooCook</li>
-{% endfor %}
 </div>
-</div>
-     <script>
-      new Vue({
+<script>
+    new Vue({
         el: '#app',
         data: {
             showModal: false,
@@ -79,39 +103,38 @@
             searchName: '',
             recipes: [
                 {% for recipe in user_recipes %}
-                    {id: {{ recipe.id }}, name: '{{ recipe.name }}'},
-                {% endfor %}
+                    { id: {{ recipe.id }}, name: '{{ recipe.name }}'},
+        {% endfor %}
             ]
           }
         ,
         methods: {
-            showConfirmDeletion(id)
-            {
-                const obj = this.recipes.find(x => x.id === id);
-                this.currentRecipe.name = obj.name;
-                this.currentRecipe.id = obj.id;
-                this.showModal = true;
-            },
-            async confirmAction() {
-                const resp = await fetch(`/recipes/${this.currentRecipe.id}`, {
-                    method: "DELETE",
-                    credentials: 'include',
-                    headers: {'X-CSRFToken': getCookie('csrftoken')}
-                });
-                if (resp.ok) {
-                    this.showModal = false;
-                    location.reload();
-                }
-            }
+        showConfirmDeletion(id) {
+            const obj = this.recipes.find(x => x.id === id);
+            this.currentRecipe.name = obj.name;
+            this.currentRecipe.id = obj.id;
+            this.showModal = true;
         },
-        computed: {
-            getRecipesByName() {
-                return this.recipes.filter((item) => {
-                    if (this.togglePopSearch) return item.hot;
-                    else return item.title.toLowerCase().includes(this.searchName.toLowerCase());
-                })
+        async confirmAction() {
+            const resp = await fetch(`/recipes/${this.currentRecipe.id}`, {
+                method: "DELETE",
+                credentials: 'include',
+                headers: { 'X-CSRFToken': getCookie('csrftoken') }
+            });
+            if (resp.ok) {
+                this.showModal = false;
+                location.reload();
             }
         }
+    },
+        computed: {
+        getRecipesByName() {
+            return this.recipes.filter((item) => {
+                if (this.togglePopSearch) return item.hot;
+                else return item.title.toLowerCase().includes(this.searchName.toLowerCase());
+            })
+        }
+    }
       })
-  </script>
+</script>
 {% endblock %}

@@ -1,0 +1,41 @@
+{% extends 'base/content.html' %}
+{% load static %}
+{% block no_hero %}{% endblock %}
+{% block no_breadcrumb %}{% endblock %}
+{% block page_content %}
+<nav class="level">
+  <div class="level-item has-text-centered">
+    <div>
+      {% block error_mast %}{% endblock %}
+    </div>
+  </div>
+</nav>
+<nav class="level">
+  <div class="level-item has-text-centered">
+    <div>
+      <p class="title">{% block error_mast_message %}{% endblock %}</p>
+    </div>
+  </div>
+</nav>
+<nav class="level">
+  <div class="level-item has-text-centered">
+    <div>
+      <p>{% block error_msg %}{% endblock %}</p>
+
+    </div>
+
+  </div>
+</nav>
+<div class="level level-item">
+  {% block error_action %}{% endblock %}
+</div>
+<script>
+  new Vue({
+    el: '#app',
+    data: {
+      searchName: '',
+      ingredients: []
+    }
+  });
+</script>
+{% endblock %}

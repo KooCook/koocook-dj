@@ -1,5 +1,4 @@
-from .base import ControllerResponse, JsonRequestHandler
-from .decorators import apply_author_from_session
+from .base import JsonRequestHandler
 from .mixins import CommentControllerMixin
 from .rating import RatableController
 from ..models import Comment

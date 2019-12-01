@@ -94,9 +94,26 @@
     display: flex;
     flex-grow: 1;
     justify-content: center;
-    /* flex-direction: column; */
+    flex-direction: column;
 }
 
+@media screen and (min-width: 769px) {
+    .navbar-center {
+        flex-direction: column;
+    }
+    .level-left {
+        display: block;
+    }
+}
+
+@media screen and (min-width: 1024px) {
+    .navbar-center {
+        flex-direction: row;
+    }
+    .level-left {
+        display: flex;
+    }
+}
 .is-disabled:not(.rate) {
     pointer-events: none;
     opacity: .5;

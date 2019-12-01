@@ -14,8 +14,10 @@ import os
 
 from decouple import config
 
+from .app import *
 from .auth import *
 from .db import *
+from .dirs import BASE_DIR
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -28,13 +30,14 @@ DEBUG = config("DEBUG", True, cast=bool)
 
 ALLOWED_HOSTS = config("DJANGO_ALLOWED_HOSTS", ['*'], cast=list)
 
+FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
+
 # Application definition
 
 INSTALLED_APPS = [
     'social_django',
     'widget_tweaks',
-    'koocook_core.apps.KooCookConfig',
-    'koocook_auth.apps.KooCookAuthConfig',
+    'django.forms',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,6 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.postgres',
+    'koocook_core.apps.KooCookConfig',
+    'koocook_auth.apps.KooCookAuthConfig',
 ]
 
 MIDDLEWARE = [
@@ -64,6 +69,7 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'koocook_core.context_processors.globalvars_processor',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',

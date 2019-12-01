@@ -1,4 +1,4 @@
-from .base import ControllerResponseUnauthorised, ControllerResponseForbidden
+from .base import ControllerResponseUnauthorised
 from ..models import KoocookUser, Author
 
 
@@ -30,6 +30,3 @@ def to_koocook_user(func):
         else:
             return func(controller)
     return wrapper
-
-
-

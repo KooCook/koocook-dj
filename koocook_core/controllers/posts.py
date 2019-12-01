@@ -1,10 +1,8 @@
 # Single view w/ Ajax
-from django.db.models import Model
-from django.contrib.auth.decorators import login_required
-from django.http import HttpRequest, HttpResponse, JsonResponse, QueryDict
+from django.http import HttpRequest, HttpResponse, JsonResponse
 
-from .base import BaseController, BaseHandler, ControllerResponse, ControllerResponseUnauthorised, ControllerResponseForbidden
-from .decorators import apply_author_from_session, to_koocook_user
+from .base import BaseHandler, ControllerResponse, ControllerResponseForbidden
+from .decorators import apply_author_from_session
 from .mixins import CommentControllerMixin
 from .rating import RatableController
 from ..models import Post, Author
@@ -53,11 +51,9 @@ class PostController(RatableController, CommentControllerMixin):
         return ControllerResponse(status_text='Retrieved', obj=list(self.model.objects.filter(author=self.author)))
 
     @apply_author_from_session
-    def retrieve_all_following(self) -> ControllerResponse:
-        posts = []
-        for followee in self.author.user.following.all():
-            posts.extend(Author.objects.get(user=followee).post_set.all())
-        return ControllerResponse(status_text='Retrieved posts from followees', obj=list(posts))
+    def retrieve_all_from_following(self) -> ControllerResponse:
+        authors = [user.author for user in self.author.user.following.all()]
+        return ControllerResponse(status_text='Retrieved following', obj=list(self.model.objects.filter(author__in=authors)))
 
     @apply_author_from_session
     def update_post(self, pk: int) -> ControllerResponse:
@@ -106,8 +102,8 @@ class PostHandler(BaseHandler):
             'all': {
                 'GET': 'retrieve_all'
             },
-            'followed-post': {
-                'GET': 'retrieve_all_following'
+            'followee': {
+                'GET': 'retrieve_all_from_following'
             },
             'GET': 'render_stream_view',
             'POST': 'create',

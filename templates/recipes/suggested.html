@@ -1,0 +1,128 @@
+{% extends 'base/recipes.html' %}
+{% load recipe_extras %}
+{% load static %}
+{% block content_deps %}
+<script src="{% static 'js/bundle.js' %}"></script>
+{% endblock %}
+{% block section_after_nav %}<section class="hero is-light">
+  <div class="hero-body">
+    <div class="container">
+      <h1 class="title">
+        Suggested recipes
+      </h1>
+      <h2 class="subtitle">
+        {% if tag_set %}Preferred: <div class="field is-grouped is-grouped-multiline">
+          {% for tag in tag_set %}
+          <div class="control">
+            <div class="tags has-addons are-small">
+              <span class="tag is-medium">{{ tag.name }}</span>
+              {% if tag.label %}
+              <span class="tag {{ tag.label.level|tag_level }} is-medium">
+                {{ tag.label.name }}
+              </span>
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>{% endif %}
+        <a href="{% url 'koocook_core:recipe-user' %}"> <span class="buttons">
+            <button class="button is-primary is-outlined is-small">Your recipes</button>
+          </span>
+        </a>
+      </h2>
+
+    </div>
+  </div>
+</section>{% endblock %}
+{% block page_content %}
+<div id="app" class="container">
+  <div class="columns is-2 is-multiline">
+    {% for recipe in object_list %}
+    <div class="column is-half">
+      <div class="card">
+        <div class="card-image">
+          <figure class="image is-2by1 is-bg-cover-centered" style="background-image: url({{ recipe.image }});">
+            <img src="{{ recipe.image|first }}" alt="Recipe image">
+          </figure>
+        </div>
+        <div class="card-content">
+          <div class="media">
+            <div class="media-content">
+              <p class="title is-4"><a href="{% url 'koocook_core:recipe' recipe.id %}">{{ recipe.name }}</a>
+                <p class="subtitle">
+                  by {{ recipe.author }}
+                </p>
+                <star-rating :read-only="true" recipe-name="{{ recipe.name }}" :item-id="{{ recipe.id }}"
+                  :initial="{{ recipe.aggregate_rating.rating_value }}"></star-rating>
+                {% for tag in recipe.tag_set.all %}
+
+                <div class="tags has-addons">
+                  <span class="tag is-medium">{{ tag.name }}</span>
+                  {% if tag.label %}
+                  <span class="tag {{ tag.label.level|tag_level }} is-medium">
+                    {{ tag.label.name }}
+                  </span>
+                  {% endif %}
+                </div>
+                {% endfor %}
+                <p class="subtitle has-text-grey is-6"><span class="date-posted">
+                    <b-icon icon="calendar" size="is-small"></b-icon>
+                    {{ recipe.date_published }}
+                  </span> <span class="date-posted">
+                    <b-icon icon="clock" size="is-small"></b-icon> Ready in:
+                    {{ recipe.total_time|timedel_to_words }}
+                  </span>
+                  <span class="date-posted">
+                    <b-icon icon="eye" size="is-small"></b-icon> {{ recipe.view_count }}
+                    view{{ recipe.view_count|pluralize }}
+                  </span></p>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <li>Nothing here yet. Come back later!</li>
+    {% endfor %}
+  </div>
+</div>
+<script>
+  new Vue({
+    el: '#app',
+    data: {
+      showModal: false,
+      currentRecipe: {
+        name: ''
+      },
+      togglePopSearch: false,
+      searchName: '',
+      recipes: [
+        {% for recipe in user_recipes %}
+                  { id: {{ recipe.id }}, name: '{{ recipe.name }}' },
+    {% endfor %}
+          ]
+        },
+    methods: {
+    showConfirmDeletion(id) {
+      const obj = this.recipes.find(x => x.id === id);
+      this.currentRecipe.name = obj.name;
+      this.currentRecipe.id = obj.id;
+      this.showModal = true;
+    },
+    async confirmAction() {
+      const resp = await fetch(`/recipes/${this.currentRecipe.id}`, { method: "DELETE", credentials: 'include', headers: { 'X-CSRFToken': getCookie('csrftoken') } });
+      if (resp.ok) { this.showModal = false; location.reload(); }
+    }
+  },
+    computed: {
+    getRecipesByName() {
+      return this.recipes.filter((item) => {
+        if (this.togglePopSearch) return item.hot;
+        else return item.title.toLowerCase().includes(this.searchName.toLowerCase());
+      })
+    }
+  }
+      })
+</script>
+{% endblock %}

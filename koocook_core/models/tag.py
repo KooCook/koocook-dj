@@ -1,4 +1,5 @@
 from django.db import models
+
 from .base import SerialisableModel
 
 __all__ = ['Tag', 'TagLabel']
@@ -9,9 +10,8 @@ class Tag(SerialisableModel, models.Model):
     label = models.ForeignKey('koocook_core.TagLabel', null=True, blank=True, on_delete=models.SET_NULL)
     # recipe_set from Recipe's ManyToMany
 
-    @property
     def as_dict(self) -> dict:
-        di = super().as_dict
+        di = super().as_dict()
         di.update({'done': 'true'})
         return di
 

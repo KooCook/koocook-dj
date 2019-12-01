@@ -1,7 +1,7 @@
-from .base import JsonRequestHandler
-from .mixins import CommentControllerMixin
-from .rating import RatableController
-from ..models import Recipe
+from koocook_core.controllers.base import JsonRequestHandler
+from koocook_core.controllers.mixins import CommentControllerMixin
+from koocook_core.controllers.rating import RatableController
+from koocook_core.models import Recipe
 
 
 class RecipeController(RatableController, CommentControllerMixin):

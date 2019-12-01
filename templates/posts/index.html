@@ -3,17 +3,15 @@
 {% load static %}
 {% block page_title %}Post Stream{% endblock %}
 {% block content_deps %}
-    <script>
-    const COMMENTS_ENDPOINTS = {
-        GET: `{0}/comments`,
-        POST: `{0}/comments`,
-        PATCH: `{0}/comments`,
-    };
-    const RATE_URL = `{0}/rate/`;
+<script>
+  const COMMENTS_ENDPOINTS = {
+    GET: `{0}/comments`,
+    POST: `{0}/comments`,
+    PATCH: `{0}/comments`,
+  };
+  const RATE_URL = `{0}/rate/`;
 </script>
-<script src="{% static 'js/components/follow.js' %}"></script>
-    <script src="{% static 'js/components/star-rating.js' %}"></script>
-<script src="{% static 'js/components/comments.js' %}"></script>{% endblock %}
+<script src="{% static 'js/bundle.js' %}"></script>{% endblock %}
 {% block section_after_nav %}<section class="hero is-primary">
   <div class="hero-body">
     <div class="container">
@@ -50,8 +48,8 @@
     <form method="post" class="box" @submit.prevent="createPost()">
       {% csrf_token %}
       <b-field label="What's on your mind?">
-          <formatted-textarea-md v-model="currentPost.body" name="body" cols="40" rows="10"></formatted-textarea-md>
-{#        {{ form.body|attr:"v-model: currentPost.body"|add_class:'textarea' }}#}
+        <formatted-textarea-md v-model="currentPost.body" name="body" cols="40" rows="10"></formatted-textarea-md>
+        {#        {{ form.body|attr:"v-model: currentPost.body"|add_class:'textarea' }}#}
       </b-field>
       <b-field>
         <div class="buttons">
@@ -73,14 +71,16 @@
             <strong>{% templatetag openvariable %} userPost.author.qualified_name
               {% templatetag closevariable %}</strong> <small>@{% templatetag openvariable %} userPost.author.name
               {% templatetag closevariable %}</small> <small>{% templatetag openvariable %} publicationElapsed[upIndex]
-              {% templatetag closevariable %}</small>  <star-rating :rate-url="rateURL.format(userPost.id)" :read-only="true" :item-id="userPost.id" :initial="userPost.aggregate_rating.rating_value"></star-rating>
+              {% templatetag closevariable %}</small>
+            <star-rating :rate-url="rateURL.format(userPost.id)" :read-only="true" :item-id="userPost.id"
+              :initial="userPost.aggregate_rating.rating_value"></star-rating>
             <br>
             <div v-if="userPost.editing">
               <form method="post" @submit.prevent="editPost(upIndex)">
                 {% csrf_token %}
                 <b-field>
-                    <formatted-textarea-md v-model="userPost.body" cols="40" rows="10"></formatted-textarea-md>
-{#                  {{ form.body|attr:"v-model: userPost.body"|add_class:'textarea'|add_class:'md-enabled' }}#}
+                  <formatted-textarea-md v-model="userPost.body" cols="40" rows="10"></formatted-textarea-md>
+                  {#                  {{ form.body|attr:"v-model: userPost.body"|add_class:'textarea'|add_class:'md-enabled' }}#}
                 </b-field>
                 <b-field>
                   <div class="buttons">
@@ -95,12 +95,15 @@
         <nav class="level is-mobile">
           <div class="level-left">
             <a class="level-item" @click="showEdit(userPost)">
-              <span class="icon is-small"><b-icon icon="pencil" size="is-small"></b-icon></span>
+              <span class="icon is-small">
+                <b-icon icon="pencil" size="is-small"></b-icon>
+              </span>
             </a>
           </div>
         </nav>
-          <nav class="level is-mobile">
-            <comments-widget class="level-item" item-name="this post" :item-id="userPost.id" :author-id="currentAuthorId" custom-url="true"></comments-widget>
+        <nav class="level is-mobile">
+          <comments-widget class="level-item" item-name="this post" :item-id="userPost.id" :author-id="currentAuthorId"
+            custom-url="true"></comments-widget>
         </nav>
       </div>
       <div class="media-right">
@@ -110,7 +113,7 @@
     </article>
   </b-tab-item> {% endif %}
   <b-tab-item label="All posts">
-      <article class="media" v-for="(userPost, upIndex) in allPosts" v-on:mouseover="$set(userPost, 'hovered', true)"
+    <article class="media" v-for="(userPost, upIndex) in allPosts" v-on:mouseover="$set(userPost, 'hovered', true)"
       v-on:mouseleave="$set(userPost, 'hovered', false)">
       <figure class="media-left">
         <p class="image is-64x64">
@@ -119,29 +122,30 @@
       </figure>
       <div class="media-content">
         <div class="content">
-          <p>
-            <strong>{% templatetag openvariable %} userPost.author.qualified_name
-              {% templatetag closevariable %}</strong> <small>@{% templatetag openvariable %} userPost.author.name
-              {% templatetag closevariable %}</small> <small>{% templatetag openvariable %} userPost.date_published |
-              time-passed
-              {% templatetag closevariable %}</small> <star-rating :rate-url="rateURL.format(userPost.id)"  :item-id="userPost.id" :read-only="userPost.author.id === currentAuthorId" :initial="userPost.aggregate_rating.rating_value"></star-rating>
-            <br>
-            <div v-if="userPost.editing">
-              <form method="post" @submit.prevent="editPost(upIndex)">
-                {% csrf_token %}
-                <b-field>
-                    <formatted-textarea-md v-model="userPost.body" cols="40" rows="10"></formatted-textarea-md>
-{#                  {{ form.body|attr:"v-model: userPost.body"|add_class:'textarea' }}#}
-                </b-field>
-                <b-field>
-                  <div class="buttons">
-                    <button type="submit" class="button is-primary is-small">Confirm edits</button>
-                  </div>
-                </b-field>
-              </form>
-            </div>
-            <span v-else v-html="userPost.rendered"></span>
-          </p>
+          <strong>{% templatetag openvariable %} userPost.author.qualified_name
+            {% templatetag closevariable %}</strong> <small>@{% templatetag openvariable %} userPost.author.name
+            {% templatetag closevariable %}</small> <small>{% templatetag openvariable %} userPost.date_published |
+            time-passed
+            {% templatetag closevariable %}</small>
+          <star-rating :rate-url="rateURL.format(userPost.id)" :item-id="userPost.id"
+            :read-only="userPost.author.id === currentAuthorId" :initial="userPost.aggregate_rating.rating_value">
+          </star-rating>
+          <br>
+          <div v-if="userPost.editing">
+            <form method="post" @submit.prevent="editPost(upIndex)">
+              {% csrf_token %}
+              <b-field>
+                <formatted-textarea-md v-model="userPost.body" cols="40" rows="10"></formatted-textarea-md>
+                {#                  {{ form.body|attr:"v-model: userPost.body"|add_class:'textarea' }}#}
+              </b-field>
+              <b-field>
+                <div class="buttons">
+                  <button type="submit" class="button is-primary is-small">Confirm edits</button>
+                </div>
+              </b-field>
+            </form>
+          </div>
+          <span v-else v-html="userPost.rendered"></span>
         </div>
         <nav class="level is-mobile">
           <div class="level-left">
@@ -149,10 +153,13 @@
               <span class="icon is-small"><i class="fas fa-pencil-alt"></i></span>
             </a>
           </div>
+          <comments-widget class="level-item" item-name="this post" :item-id="userPost.id" :author-id="currentAuthorId"
+            custom-url="true"></comments-widget>
         </nav>
       </div>
       <div class="media-right">
-        <follow-widget v-show="!userPost.hidden" :followee-id="userPost.author.user.id" :followees="followees"></follow-widget>
+        <follow-widget v-show="!userPost.hidden && currentAuthorId !== userPost.author.id"
+          :followee-id="userPost.author.user.id" :followees="$refs.followees.followees"></follow-widget>
       </div>
     </article>
   </b-tab-item>
@@ -169,58 +176,43 @@
           <p>
             <strong>{% templatetag openvariable %} userPost.author.qualified_name
               {% templatetag closevariable %}</strong> <small>@{% templatetag openvariable %} userPost.author.name
-              {% templatetag closevariable %}</small> <small>{% templatetag openvariable %} userPost.date_published |
-              time-passed
-              {% templatetag closevariable %}</small> <star-rating :read-only="userPost.author.id === currentAuthorId" :rate-url="rateURL.format(userPost.id)" :item-id="userPost.id" :initial="userPost.aggregate_rating"></star-rating>
+              {% templatetag closevariable %}</small> • <follow-widget :followee-id="userPost.author.user.id"
+              :followees="$refs.followees.followees"></follow-widget>
             <br>
-            <div v-if="userPost.editing">
-              <form method="post" @submit.prevent="editPost(upIndex)">
-                {% csrf_token %}
-                <b-field>
-                    <formatted-textarea-md v-model="userPost.body" cols="40" rows="10"></formatted-textarea-md>
-{#                  {{ form.body|attr:"v-model: userPost.body"|add_class:'textarea' }}#}
-                </b-field>
-                <b-field>
-                  <div class="buttons">
-                    <button type="submit" class="button is-primary is-small">Confirm edits</button>
-                  </div>
-                </b-field>
-              </form>
-            </div>
-            <span v-else v-html="userPost.rendered"></span>
           </p>
+          <p>{% templatetag openvariable %} userPost.body {% templatetag closevariable %}</p>
         </div>
         <nav class="level is-mobile">
+          <comments-widget class="level-item" item-name="this post" :item-id="userPost.id" :author-id="currentAuthorId"
+            custom-url="true"></comments-widget>
           <div class="level-left">
-            <a class="level-item" @click="showEdit(userPost)">
-              <span class="icon is-small"><i class="fas fa-pencil-alt"></i></span>
-            </a>
           </div>
         </nav>
       </div>
       <div class="media-right">
-        <follow-widget :followee-id="userPost.author.user.id" :followees="followees"></follow-widget>
+        <small>{% templatetag openvariable %} userPost.date_published | time-passed
+          {% templatetag closevariable %}</small>
       </div>
     </article>
   </b-tab-item>{% endif %}
 </b-tabs>
-
+<followee-list ref="followees"></followee-list>
 <script>
   Object.assign(GLOBAL_DATA, {
     activeTab: 0,
-     currentAuthorId: {% if current_author.id %}{{ current_author.id }}{% else %}0{% endif %},
+    currentAuthorId: {% if current_author.id %}{{ current_author.id }}{% else %}0{% endif %},
     showModal: false,
-      rateURL: RATE_URL,
+    rateURL: RATE_URL,
     selectedPost: {},
     posts: [],
     followeePosts: [],
     allPosts: [],
     currentPost: {
-      body: ''
-    },
+    body: ''
+  },
   });
 
-  app = new Vue({
+  const app = new Vue({
     el: '#app',
     computed: {
       publicationElapsed() {
@@ -234,10 +226,10 @@
     methods: {
       async createPost() {
         const formBody = new FormData();
-          formBody.set("body", this.currentPost.body);
-          // for (const prop in this.currentPost) {
-          //   formData.append(prop, this.currentPost[prop]);
-          // }
+        formBody.set("body", this.currentPost.body);
+        // for (const prop in this.currentPost) {
+        //   formData.append(prop, this.currentPost[prop]);
+        // }
         const resp = await fetch(`/posts/`, {
           body: new URLSearchParams(formBody),
           method: "POST", credentials: 'include', headers: {
@@ -257,18 +249,18 @@
         }
       },
       async editPost(post_index) {
-          const formBody = new FormData();
-          formBody.set("body", this.posts[post_index].body);
+        const formBody = new FormData();
+        formBody.set("body", this.posts[post_index].body);
         const resp = await fetch(`/posts/${this.posts[post_index].id}`, {
           body: new URLSearchParams(formBody),
           method: "PATCH", credentials: 'include', headers: {
-              'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-              'X-CSRFToken': getCookie('csrftoken')
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'X-CSRFToken': getCookie('csrftoken')
           }
         });
         if (resp.ok) {
-        this.posts[post_index].editing = false;
-          this.posts[post_index].rendered = (await resp.json()).post.rendered;
+          this.posts[post_index].editing = false;
+          this.posts[post_index].rendered = (await resp.json()).current.rendered;
 
           this.$buefy.toast.open({
             message: 'Successfully edited the post!',
@@ -320,9 +312,13 @@
       });
       if (resp.ok) {
         const responseData = await resp.json();
-        if (responseData.current) this.posts = responseData.current;
+        if (responseData.current) {
+        this.posts = responseData.current;
+          this.allPosts.push(responseData.current);
+        }
+        else this.posts = [];
       }
-      resp = await fetch(`{% url 'koocook_core:posts:all' %}`, {
+      resp = await fetch(`{% url 'koocook_core:posts:ajax-all' %}`, {
         method: "GET", credentials: 'include', headers: {
           'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'X-CSRFToken': getCookie('csrftoken')
         }
@@ -332,7 +328,7 @@
         if (responseData.current) this.allPosts = responseData.current;
       }
 
-       resp = await fetch(`{% url 'koocook_core:posts:followed-post' %}`, {
+      resp = await fetch(`{% url 'koocook_core:posts:followee' %}`, {
         method: "GET", credentials: 'include', headers: {
           'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'X-CSRFToken': getCookie('csrftoken')
         }

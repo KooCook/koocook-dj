@@ -1,0 +1,82 @@
+{% extends 'base/profile.html' %}
+{% load widget_tweaks %}
+{% block user_console %}
+<form method="post" novalidate action="{{ request.path }}">
+  {% csrf_token %}
+  {{ form.as_p }}
+  {% for field in object.formal_preferences.all %}
+  <div class="form-group field is-horizontal">
+    <div class="field-label is-medium">
+      <label class="label">{{ field.full_name }}</label>
+    </div>
+    <div class="field-body">
+      <div class="field control"> {{ field.rendered }} </div>
+    </div>
+  </div>
+  {% endfor %}
+  <div class="field is-horizontal">
+    <div class="field-label">
+      <!-- Left empty for spacing -->
+    </div>
+    <div class="field-body">
+      <div class="field">
+        <div class="control">
+          <button type="submit" class="button is-success">
+            Update
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+<script>
+  console.log({{ preferences.preferred_tags | safe }});
+  new Vue({
+    el: '#app',
+    data: {
+      searchName: "",
+      preferences: {{ object.formal_preferences.json | safe }},
+    tags: []
+          },
+    computed: {
+    submission() {
+      return JSON.stringify(this.preferences);
+    },
+              { #tags() { # }
+                { #get: function () { # }
+                { #    for(const tag of JSON.parse(this.preferences.preferred_tags)) { # }
+  { #        this.internalTags.push({ name: tag.name, label: { name: '' } }); # }
+  { # } #}
+  { #  return this.internalTags; # }
+
+  {
+  #set: function (newValue) { # }
+    { #console.log("3"); # }
+    { #    this.internalTags = []; # }
+    {
+    #     for (const tag of newValue) { # }
+      { #        this.internalTags.push({ name: tag.name, label: { name: '' } }); # }
+      { # } #
+    }
+    { #  this.preferences.preferred_tags = JSON.stringify(newValue) # }
+
+    { #      return this.internalTags# }
+
+  },
+  mounted() {
+    this.tags = JSON.parse(this.preferences.preferred_tags);
+  },
+  watch: {
+    tags: function (newTags) {
+      this.preferences.preferred_tags = JSON.stringify(newTags);
+    }
+  }
+      });
+</script>
+{% endblock %}
+<script>
+  import RecipeTagInput from "../../../koocook-vue-comps/src/RecipeTagInput";
+  export default {
+    components: { RecipeTagInput }
+  }
+</script>
