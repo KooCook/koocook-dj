@@ -10,11 +10,6 @@ class BasicProfileForm(CustomisableForm):
         model = User
         fields = ('first_name', 'last_name', 'email')
 
-    def __init__(self, *args, **kwargs):
-        if 'user' in kwargs:
-            self.user = kwargs.pop('user', None)
-        super().__init__(*args, **kwargs)
-
 
 class ExtendedProfileForm(CustomisableForm):
     class Meta:
@@ -24,7 +19,3 @@ class ExtendedProfileForm(CustomisableForm):
 
     customised_field = ('user',)
 
-    def __init__(self, *args, **kwargs):
-        if 'user' in kwargs:
-            self.user = kwargs.pop('user', None)
-        super().__init__(*args, **kwargs)

@@ -1,6 +1,6 @@
 # from django.views.defaults import page_not_found
 from django.shortcuts import render, reverse, redirect, get_object_or_404
-from django.http import JsonResponse, HttpResponseForbidden
+from django.http import JsonResponse, HttpResponseForbidden, HttpResponseNotAllowed
 from django.views.decorators.http import require_http_methods
 from django.views.static import serve
 from django.conf import settings
@@ -9,7 +9,7 @@ from django.urls import re_path
 from ..models import Recipe, KoocookUser, Tag
 from ..models.base import ModelEncoder
 from .recipes import RecipeDetailView
-from .decorators import allow_post_comments
+# from .decorators import allow_post_comments
 
 
 @require_http_methods(["GET"])
@@ -34,7 +34,6 @@ def serve_static() -> list:
 
 
 @require_http_methods(["GET", "POST", "DELETE"])
-@allow_post_comments(Recipe, 'recipe_id')
 def handle_recipe(request, recipe_id):
     if request.method == 'DELETE' and request.user.is_authenticated:
         recipe = Recipe.objects.get(pk=recipe_id)
@@ -47,7 +46,7 @@ def handle_recipe(request, recipe_id):
         response = RecipeDetailView.as_view()
         return response(request, pk=recipe_id)
     else:
-        return HttpResponseForbidden()
+        return HttpResponseNotAllowed(["GET", "POST", "DELETE"])
 
 
 @require_http_methods(["GET"])
