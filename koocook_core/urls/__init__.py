@@ -21,5 +21,4 @@ urlpatterns = [
     path('recipes/<int:pk>/rate', recipe_handler.handle, name='recipe-rate', kwargs={"alias": 'rate'}),
     path('recipes/new', views.RecipeCreateView.as_view(), name='recipe-create'),
     path('recipes/yours', views.UserRecipeListView.as_view(), name='recipe-user'),
-    # path('recipes/detail', views.RecipeDetailView.as_view(), name='detail'),  # Placeholder for now...
-]
+] + views.serve_static()
