@@ -1,5 +1,5 @@
 import itertools
-from decimal import Decimal 
+from decimal import Decimal
 
 from django import test as djangotest
 from django.contrib.auth.models import User
