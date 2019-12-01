@@ -6,7 +6,7 @@
     KooCook! has gone kaput!
 {% endblock %}
 {% block error_msg %}
-    You have requested the path <code>{{ request.path }}</code>. KooCook! has no idea what you are talking about!
+    You have requested the path <code>{{ request.path }}</code>, but KooCook! has no idea what you are talking about!
 {% endblock %}
 {% block error_action %}
 <p><a href="{% url 'koocook_core:index' %}"><button class="button is-link">Back to home page</button></a></p>

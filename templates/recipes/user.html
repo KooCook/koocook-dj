@@ -1,5 +1,6 @@
 {% extends 'base/recipes.html' %}
 {% load static %}
+{% load recipe_extras %}
 {% block content_deps %}<script src="{% static 'js/components/star-rating.js' %}"></script>{% endblock %}
 {% block section_after_nav %}<section class="hero is-light">
   <div class="hero-body">
@@ -59,10 +60,10 @@
 
       </div>
             <div class="media-bottom">
-                 <p class="subtitle has-text-grey is-6"><span class="date-posted"><i class="fas fa-calendar-alt"></i>
-              {{ recipe.date_published }}</span> <span class="date-posted"><i class="fas fa-clock"></i> Ready in:
-              {{ recipe.total_time }}</span>
-            <span class="date-posted"><i class="fas fa-eye"></i> {{ recipe.view_count }}
+                 <p class="subtitle has-text-grey is-6"><span class="date-posted"><b-icon icon="calendar" size="is-small"></b-icon>
+              {{ recipe.date_published }}</span> <span class="date-posted"><b-icon icon="clock" size="is-small"></b-icon> Ready in:
+              {{ recipe.total_time|timedel_to_words }}</span>
+            <span class="date-posted"><b-icon icon="eye" size="is-small"></b-icon> {{ recipe.view_count }}
               view{{ recipe.view_count|pluralize }}</span></p>
             </div>
     </div>
