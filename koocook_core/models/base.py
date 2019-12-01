@@ -20,12 +20,10 @@ class SerialisableModel:
         return [transform_to_field(include) for include in self.include if getattr(self, include)] + \
                [field for field in self._meta.fields]
 
-    @property
     def as_dict(self) -> dict:
         return {field.name: getattr(self, field.name) for field in self.dict_fields
                 if field.name not in self.exclude and hasattr(self, field.name)}
 
-    @property
     def as_json(self) -> str:
         return json.dumps(self.as_dict, cls=ModelEncoder)
 
@@ -33,7 +31,7 @@ class SerialisableModel:
 class ModelEncoder(JSONEncoder):
     def default(self, obj: models.Model):
         if hasattr(obj, 'as_dict'):
-            return obj.as_dict
+            return obj.as_dict()
         else:
             if isinstance(obj, models.Model):
                 if isinstance(obj, SerialisableModel):

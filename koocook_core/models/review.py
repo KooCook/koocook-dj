@@ -28,6 +28,7 @@ class ReviewableModel:
 
 
 class Comment(SerialisableModel, ReviewableModel, models.Model):
+    include = ("rendered",)
     exclude = ('reviewed_comment', 'reviewed_recipe', 'reviewed_post')
     author = models.ForeignKey(
         'koocook_core.Author',
@@ -88,17 +89,11 @@ class Comment(SerialisableModel, ReviewableModel, models.Model):
         return [f.name for f in cls._meta.fields]
 
     @property
-    def processed_body(self):
+    def rendered(self):
         if hasattr(self.body, 'rendered'):
             return self.body.rendered
         else:
             return self.body
-
-    @property
-    def as_dict(self):
-        base_dict_repr = super().as_dict
-        base_dict_repr.update({'rendered': self.processed_body})
-        return base_dict_repr
 
 
 class Rating(models.Model):

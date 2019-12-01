@@ -48,6 +48,11 @@ class RecipeTests(AuthTestCase):
         with self.subTest("User has a recipe"):
             self.assertEqual(response.context["user_recipes"][0].id, recipe.id)
 
+    def test_recipe_preferred(self):
+        response = self.client.get(reverse("koocook_core:recipe-all"))
+        with self.subTest("Empty tag_set"):
+            self.assertEqual(list(response.context["tag_set"]), [])
+
     def test_recipe_search_listview(self):
         response = self.client.get(reverse("koocook_core:search"))
 
@@ -59,12 +64,26 @@ class RecipeTests(AuthTestCase):
         with self.subTest("Search view must display recipes containing search keywords"):
             self.assertEqual(response.context["object_list"].all()[0].name, recipe.name)
 
+        response = self.client.get(reverse("koocook_core:search"), {'popular': 'true'})
+        self.client.get(reverse("koocook_core:recipe", kwargs={'recipe_id': recipe.id}))
+        with self.subTest("Search by popularity alone"):
+            self.assertEqual(response.context["object_list"][0].view_count, 1)
+
 
 class RecipeVisitTest(AuthTestCase):
     def setUp(self) -> None:
         super().setUp()
         self.recipe = create_dummy_recipe(self.author)
         self.visit = RecipeVisit.associate_recipe_with_user(self.kc_user, self.recipe)
+
+    def test_unauthenticated_view(self):
+        self.client.logout()
+        response = self.client.get(reverse("koocook_core:recipe", kwargs={'recipe_id': self.recipe.id}))
+        with self.subTest():
+            self.assertEqual(response.context["object"].view_count, 2)
+        response = self.client.get(reverse("koocook_core:recipe", kwargs={'recipe_id': self.recipe.id}))
+        with self.subTest():
+            self.assertEqual(response.context["object"].view_count, 2)
 
     def test_visit_count(self):
         with self.subTest():
@@ -96,7 +115,6 @@ class RecipeVisitTest(AuthTestCase):
             self.assertEqual(get_client_ip(self.request), self.request.META.get('REMOTE_ADDR'))
 
         visit = RecipeVisit.associate_recipe_with_ip_address(self.request, self.recipe)
-        visit.save()
         with self.subTest():
             self.assertEqual(visit.ip_address, self.request.META.get('REMOTE_ADDR'))
             self.assertEqual(2, RecipeVisit.objects.all().count())

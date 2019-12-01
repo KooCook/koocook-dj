@@ -1,5 +1,6 @@
 from .base import BaseController, ControllerResponseUnauthorised, JsonRequestHandler, ControllerResponse
 from ..models import KoocookUser
+from ..views import UserProfileInfoView, UserSettingsInfoView
 from .decorators import to_koocook_user
 
 
@@ -15,9 +16,21 @@ class UserController(BaseController):
     def user(self) -> KoocookUser:
         return self.request_fields['user']
 
+    @property
+    def preferences(self):
+        return self._preferences
+
+    def view_profile(self):
+        return UserProfileInfoView.as_view()(self.request, pk=self.user.pk)
+
+    def view_settings_info(self):
+        return UserSettingsInfoView.as_view()(self.request, pk=self.user.pk)
+
     @to_koocook_user
-    def edit_profile(self):
-        pass
+    def set_preferences(self):
+        self.user.formal_preferences.update_from_json(self.request_fields["preferences"])
+        self.user.save()
+        return ControllerResponse(status_text='Preferences set', obj=self.user.preferences)
 
     @to_koocook_user
     def get_following(self):
@@ -43,6 +56,15 @@ class UserHandler(JsonRequestHandler):
     def __init__(self):
         super().__init__(UserController.default())
         self.handler_map = {
+            'GET': 'view_profile',
+            'POST': 'view_profile',
+            'pref': {
+                'GET': 'view_settings_info',
+                'POST': 'view_settings_info',
+            },
+            'pref:set': {
+                'POST': 'set_preferences',
+            },
             'follow': {
                 'GET': 'get_following',
                 'POST': 'follow'
@@ -55,5 +77,3 @@ class UserHandler(JsonRequestHandler):
     @classmethod
     def instance(cls):
         return cls()
-
-
