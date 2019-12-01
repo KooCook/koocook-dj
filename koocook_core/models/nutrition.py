@@ -21,6 +21,19 @@ class MetaIngredient(models.Model):
         blank=True,
     )
 
+    def save(self, *args, **kwargs):
+        if self.nutrient:
+            pass
+        else:
+            try:
+                from koocook_core.support.scripts import get_nutrients
+            except ModuleNotFoundError:
+                from koocook_core.management.commands._add_path import add_datatrans
+                add_datatrans()
+                from koocook_core.support.scripts import get_nutrients
+            self.nutrient = get_nutrients(self.name)
+        super().save(*args, **kwargs)
+
 
 class RecipeIngredient(models.Model):
     quantity = koocookfields.QuantityField(
