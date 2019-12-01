@@ -14,9 +14,15 @@ class Command(BaseCommand):
         from ._add_path import add_datatrans
         add_datatrans()
         from . import _scrape
-        source = options['source'][0]
+        module = getattr(_scrape, options['source'][0])
         count = 0
-        urls = getattr(_scrape, source).get_links('https://www.allrecipes.com/recipes/78/breakfast-and-brunch/')
+        i = 0
+        urls = module.get_links(f'https://www.allrecipes.com/{f"?page={i + 1}" if i else ""}')
         while count < options['num'][0]:
-            links = getattr(_scrape, source).main(urls.pop(-1))
+            try:
+                module.main(urls.pop(-1))
+            except IndexError:
+                i += 1
+                urls = module.get_links(f'https://www.allrecipes.com/{f"?page={i + 1}" if i else ""}')
+                module.main(urls.pop(-1))
             count += 1
