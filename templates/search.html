@@ -1,7 +1,7 @@
 {% extends 'base/content.html' %}
 {% load static %}
 {% block content_deps %}
-<script src="{% static 'js/components/star-rating.js' %}"></script>
+<script src="{% static 'js/bundle.js' %}"></script>
 {% endblock %}
 {% block section_after_nav %}
 
@@ -10,13 +10,16 @@
 {% block page_content %}
 <div class="container">
   <h3 class="title is-3">
-    Search Results <b-dropdown v-model="searchFilter" aria-role="list">
+    Recipe Search Results <b-dropdown v-model="searchFilter" aria-role="list">
       <button class="button" type="button" slot="trigger">
         <template v-if="searchFilter == 'popular'">
-          <span>by&nbsp;&nbsp;<b-icon icon="star" size="is-small"></b-icon>&nbsp;Popularity</span>
+          <span>Sort by&nbsp;&nbsp;<b-icon icon="star" size="is-small"></b-icon>&nbsp;Popularity</span>
+        </template>
+          <template v-else-if="searchFilter == 'name'">
+          <span>Sort by&nbsp;&nbsp;<b-icon icon="book" size="is-small"></b-icon>&nbsp;Recipe name</span>
         </template>
         <template v-else>
-          <span>by&nbsp;&nbsp;<b-icon icon="book" size="is-small"></b-icon>&nbsp; Recipe Name</span>
+          <span>Sort by&nbsp;&nbsp;<b-icon icon="calendar" size="is-small"></b-icon> Date published</span>
         </template>
         <b-icon icon="menu-down"></b-icon>
       </button>
@@ -25,17 +28,27 @@
           <b-icon class="media-left" icon="star" size="is-small"></b-icon>
           <div class="media-content">
             <h3>Popularity</h3>
-            <small>Popular recipes with high view count are shown</small>
+            <small>Popular recipes with high view count and rating are shown</small>
           </div>
         </div>
       </b-dropdown-item>
 
-      <b-dropdown-item value="name" aria-role="listitem">
+       <b-dropdown-item value="name" aria-role="listitem">
         <div class="media">
           <b-icon class="media-left" icon="book" size="is-small"></b-icon>
           <div class="media-content">
             <h3>Recipe name</h3>
             <small>Only show recipes with a similar name to search query</small>
+          </div>
+        </div>
+      </b-dropdown-item>
+
+      <b-dropdown-item value="date" aria-role="listitem">
+        <div class="media">
+          <b-icon class="media-left" icon="calendar" size="is-small"></b-icon>
+          <div class="media-content">
+            <h3>Date published</h3>
+            <small>Latest recipes are shown first</small>
           </div>
         </div>
       </b-dropdown-item>
@@ -114,12 +127,20 @@
   watch: {
     searchFilter: function (val) {
       const url = new URL(location.href);
-      if (val === 'popular') {
-        url.searchParams.set('popular', 'true');
-      }
-      else if (val === 'name') {
-        url.searchParams.set('kw', this.searchName);
-        url.searchParams.delete('popular');
+      if (url.searchParams.get('kw')) url.searchParams.set('kw', this.searchName);
+      else url.searchParams.delete('kw');
+      switch (val) {
+          case 'popular':
+               url.searchParams.set('popular', '1');
+               break;
+          case 'name':
+              url.searchParams.set('name_asc', '1');
+              url.searchParams.delete('popular');
+              break;
+          case 'date':
+              url.searchParams.delete('name_asc');
+              url.searchParams.delete('popular');
+              break;
       }
       location.href = url.href;
     }

@@ -25,20 +25,27 @@ class RecipeSearchListView(AuthAuthorMixin, ListView):
         context = super().get_context_data(**kwargs)
         if self.request.GET.get("popular"):
             context['search_filter'] = 'popular'
-        else:
+        elif self.request.GET.get("name_asc"):
             context['search_filter'] = 'name'
+        else:
+            context['search_filter'] = 'date'
         return context
 
     def get_queryset(self):
         popular = self.request.GET.get("popular")
         kw = self.request.GET.get("kw")
         if kw:
-            query_set = self.model.objects.filter(name__icontains=kw).order_by("name")
+            query_set = self.model.objects.filter(name__icontains=kw)
         else:
-            query_set = self.model.objects.all().order_by("date_published")
+            query_set = self.model.objects.all()
+        if self.request.GET.get("name_asc"):
+            query_set = query_set.order_by("name")
+        else:
+            query_set = query_set.order_by("-date_published")
         if popular:
-            query_set.order_by('aggregate_rating__rating_value')
-            query_set = sorted(query_set, key=lambda t: t.view_count, reverse=True)
+            query_set = sorted(query_set,
+                               key=lambda t: t.popularity_score,
+                               reverse=True)
         return query_set
 
 
@@ -113,17 +120,15 @@ class RecipeDetailView(CommentWidgetMixin, DetailView):
         if self.request.user.is_authenticated:
             user: KoocookUser = KoocookUser.from_dj_user(self.request.user)
             visit = RecipeVisit.associate_recipe_with_user(user, self.object)
+            ip = visit.add_ip_address(self.request, self.object)
+            # try:
+            #     RecipeVisit.objects.get(ip_address=ip, recipe=self.object).delete()
+            # except RecipeVisit.DoesNotExist:
+            #     pass
+            # visit.ip_address = ip
             visit.save()
-            try:
-                visit.add_ip_address(self.request)
-                visit.save()
-            except IntegrityError:
-                pass
         else:
-            try:
-                RecipeVisit.associate_recipe_with_ip_address(self.request, self.object)
-            except IntegrityError:
-                pass
+            RecipeVisit.associate_recipe_with_ip_address(self.request, self.object)
         return response
 
     # def get_success_url(self):
