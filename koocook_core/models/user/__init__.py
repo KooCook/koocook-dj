@@ -2,9 +2,9 @@ from django.contrib.auth.models import User
 from django.contrib.postgres import fields
 from django.db import models
 
-from .base import SerialisableModel
+from ..base import SerialisableModel
 
-__all__ = ['Author', 'KoocookUser']
+__all__ = ('KoocookUser', 'Author')
 
 
 def _default_preferences():
@@ -12,30 +12,24 @@ def _default_preferences():
 
 
 class KoocookUser(SerialisableModel, models.Model):
-    """
-
-    Attributes:
-        author (Author): from OneToOneField in ``Author``
-
-    Notes:
-        Automatically created when ``User`` is  created.
-    """
+    exclude = ('user', 'preferences', 'user_settings')
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    # author from Author's OneToOneField
     preferences = fields.JSONField(default=_default_preferences)
     user_settings = fields.JSONField(default=_default_preferences)
     following = models.ManyToManyField('self')
     followers = models.ManyToManyField('self')
 
     class Meta:
-        db_table = 'koocook_core_koocook_user'
+        db_table = "koocook_user"
 
     def follow(self, user: 'KoocookUser'):
         self.following.add(user)
-        user.followers.add(self)
+        self.save()
 
     def unfollow(self, user: 'KoocookUser'):
         self.following.remove(user)
-        user.followers.remove(self)
+        self.save()
 
     @property
     def name(self):
@@ -44,49 +38,42 @@ class KoocookUser(SerialisableModel, models.Model):
         else:
             return self.user.username
 
+    @classmethod
+    def from_dj_user(cls, user: User):
+        return cls.objects.get(user=user)
+
     @property
     def full_name(self):
         return self.user.get_full_name()
 
 
 class Author(SerialisableModel, models.Model):
-    """
-
-    Attributes:
-        rating_set (RelatedManager): from ForeignKey in ``Rating``
-        comment_set (RelatedManager): from ForeignKey in ``Comment``
-        recipe_set (RelatedManager): from ForeignKey in ``Recipe``
-        post_set (RelatedManager): from ForeignKey in ``Post``
-
-    Notes:
-        Automatically created when ``User`` is  created.
-    """
+    include = ('qualified_name',)
+    exclude = ()
     name = models.CharField(max_length=100)
-    koocook_user = models.OneToOneField(
+    user = models.OneToOneField(
         'koocook_core.KoocookUser',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
     )
-
-    def __init__(self, *args, **kwargs):
-        if 'user' in kwargs:
-            assert 'koocook_user' not in kwargs, "don't user 'user' with 'koocook_user'!"
-            kwargs['koocook_user'] = kwargs.pop('user')
-        super().__init__(*args, **kwargs)
+    # rating_set from Rating
+    # comment_set from Comment
+    # recipe_set from Recipe
+    # post_set from Post
 
     @property
     def dj_user(self):
-        return self.koocook_user.user
+        return self.user.user
 
     @classmethod
     def from_dj_user(cls, user: User):
-        return cls.objects.get(koocook_user__user=user)
+        return cls.objects.get(user__user=user)
 
     @property
     def qualified_name(self):
-        if self.koocook_user and self.koocook_user.full_name:
-            return self.koocook_user.full_name
+        if self.user and self.user.full_name:
+            return self.user.full_name
         else:
             return self.name
 

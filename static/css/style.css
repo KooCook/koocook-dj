@@ -2,16 +2,19 @@
 .search-bar {
   box-shadow: none;
   border-radius: 20em;
+    max-width: 50vw;
 }
 
 .search-bar-section {
   margin-left: auto;
   margin-right: auto;
   max-width: 50vw;
+    margin-top: 12px;
 }
 
 .date-posted {
-  margin-left: 2ch;
+    margin-right: 2ch;
+    display: inline-block;
 }
 
 .fade-enter-active, .fade-leave-active {
@@ -27,11 +30,11 @@
 .profile-pic-48 {
   align-items: center;
   display: flex;
-  border-radius: 48px; 
-  width: 48px; 
-  height: 48px; 
-  background-color: antiquewhite; 
-  margin-right: 5px; 
+  border-radius: 48px;
+  width: 48px;
+  height: 48px;
+  background-color: antiquewhite;
+  margin-right: 5px;
   margin-left: 5px;
   user-select: none;
   text-align: center;
@@ -49,10 +52,6 @@
     margin-left: auto;
     margin-right: auto;
     max-width: 50vw;
-}
-
-.date-posted {
-    margin-left: 2ch;
 }
 
 .fade-enter-active, .fade-leave-active {
@@ -84,12 +83,12 @@
 .navbar-center {
     align-items: stretch;
     display: flex;
-    flex-grow: 1; 
+    flex-grow: 1;
     justify-content: center;
     /* flex-direction: column; */
 }
 
-.is-disabled {
+.is-disabled:not(.rate) {
     pointer-events: none;
     opacity: .5;
 }
@@ -103,4 +102,3 @@
     margin-top: 0.5em;
     margin-bottom: 0.5em;
 }
-
