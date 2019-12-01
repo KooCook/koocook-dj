@@ -22,7 +22,7 @@ def get_aggr(soup: BeautifulSoup) -> AggregateRating:
 
 
 def get_name(soup: BeautifulSoup) -> str:
-    return soup.find(id='recipe-main-content').string
+    return soup.find(itemprop='name', id='recipe-main-content').string
 
 
 def get_author(soup: BeautifulSoup) -> Author:
@@ -94,8 +94,31 @@ def parse_detail_soup(soup: BeautifulSoup):
     add_ingr(soup, recipe)
 
 
-def main():
-    url = 'https://www.allrecipes.com/recipe/255937/glendas-gingerbread-pancakes/'
+def get_links(url: str) -> List[str]:
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
-    parse_detail_soup(soup)
+    nums = set()
+    for elem in soup.find_all('a'):
+        try:
+            link = elem['href']
+            if 'https://www.allrecipes.com/recipe/' in link:
+                try:
+                    num = link.split('/')[4]
+                    if len(num) == 6:
+                        nums.add(num)
+                except IndexError:
+                    pass
+        except KeyError:
+            pass
+    return list(nums)
+
+
+def main(num):
+    response = requests.get(f'https://www.allrecipes.com/recipe/{num}/')
+    soup = BeautifulSoup(response.text, 'html.parser')
+    try:
+        parse_detail_soup(soup)
+    except AttributeError:
+        pass
+    except TypeError:
+        pass
