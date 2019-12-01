@@ -3,7 +3,7 @@ from django.shortcuts import reverse
 from koocook_core.models.recipe import Recipe, RecipeVisit, get_client_ip
 from .base import create_dummy_recipe, AuthTestCase
 from django.test import TestCase, RequestFactory
-from koocook_core.tests.base import AuthTestCase, create_dummy_recipe
+from koocook_core.tests.base import AuthTestCase, create_dummy_recipe, create_dummy_recipe_body
 
 
 class RecipeTests(AuthTestCase):
@@ -28,13 +28,32 @@ class RecipeTests(AuthTestCase):
         response = self.client.get(reverse("koocook_core:recipe", kwargs={'recipe_id': recipe.id}))
         self.assertEqual(response.context["ingredients"], [])
 
-    def test_recipe_update_view_context(self):
+    def test_recipe_update_view(self):
         recipe = create_dummy_recipe(self.author)
         response = self.client.get(reverse("koocook_core:recipe-edit", kwargs={'pk': recipe.id}))
+
         with self.subTest():
             self.assertEqual(response.context["ingredients"], '[]')
+
         with self.subTest():
             self.assertEqual(response.context["tags"], '[]')
+
+        recipe_body = create_dummy_recipe_body(self.author)
+        recipe_body.update({'tags': '[{"name": "dummyTag", "label": {"name": "dummyLabel"}}]'})
+        recipe_body.update({'ingredients': '[]'})
+        self.client.post(reverse("koocook_core:recipe-edit", kwargs={'pk': recipe.id}),
+                         recipe_body)
+        response = self.client.get(reverse("koocook_core:recipe-edit", kwargs={'pk': recipe.id}))
+
+        with self.subTest("Posting a normal recipe"):
+            self.assertEqual(response.context["object"].name, 'dummy')
+            self.assertEqual(list(response.context["object"].recipe_ingredients), [])
+
+        self.client.login(username=self.user2.username, password=self.password)
+        with self.subTest("Posting with a different user"):
+            response = self.client.post(reverse("koocook_core:recipe-edit", kwargs={'pk': recipe.id}),
+                             recipe_body)
+            self.assertEqual(response.status_code, 403)
 
     def test_recipe_user_listview(self):
         response = self.client.get(reverse("koocook_core:recipe-user"))
@@ -92,12 +111,9 @@ class RecipeVisitTest(AuthTestCase):
         with self.subTest():
             self.assertEqual(0, RecipeVisit.objects.all().count())
 
-    def test_visit_count_of_user(self):
-        self.kc_user.delete()
+    def test_visit_count_of_kc_user(self):
         with self.subTest():
             self.assertEqual(1, RecipeVisit.objects.all().count())
-        with self.subTest():
-            self.assertEqual(self.visit.user.id, None)
 
     def test_associate_recipe_visit_with_user(self):
         visit = RecipeVisit.associate_recipe_with_user(self.kc_user, self.recipe)
