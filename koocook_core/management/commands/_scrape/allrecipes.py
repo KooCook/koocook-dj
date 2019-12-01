@@ -1,14 +1,11 @@
 import datetime
 from typing import List
-import time
+import itertools
 
-import datatrans.utils.structured_data
 from django.core.exceptions import ObjectDoesNotExist  # for .get()
 
 from koocook_core import models
-from koocook_core import support
-from koocook_core.support import scripts
-from koocook_core.support import utils
+from koocook_core.support import utils, Quantity, unit
 
 from koocook_core.models import Recipe, AggregateRating, Author, MetaIngredient, RecipeIngredient
 
@@ -63,17 +60,23 @@ def get_cook_time(soup: BeautifulSoup) -> datetime.timedelta:
 
 
 def add_ingr(soup: BeautifulSoup, recipe: Recipe) -> None:
-    for span in soup.find(id='lst_ingredients_1').find_all(itemprop='recipeIngredient'):
+    iterables = itertools.chain(*[soup.find(id=_).find_all(itemprop='recipeIngredient') for _ in ('lst_ingredients_1', 'lst_ingredients_2')])
+    for span in iterables:
         ingr_str: str = span.string
         '3 cups all-purpose flour'
         number, unit, description = utils.split_ingredient_str(ingr_str)
-        quantity = support.Quantity(number, unit)
+        quantity = Quantity(number, unit)
         try:
             meta = MetaIngredient.objects.filter(name__iexact=description).get()
         except ObjectDoesNotExist:
             meta = MetaIngredient.objects.create(name=description)
         # don't catch MultipleObjectsReturned
         models.RecipeIngredient.objects.create(description=description, quantity=quantity, meta=meta, recipe=recipe)
+
+
+def get_yield(soup: BeautifulSoup) -> Quantity:
+    servings = int(soup.find(itemprop='recipeYield')['content'])
+    return Quantity(servings, unit.SpecialUnit.SERVING)
 
 
 def parse_detail_soup(soup: BeautifulSoup):
@@ -86,6 +89,7 @@ def parse_detail_soup(soup: BeautifulSoup):
     recipe.recipe_instructions = get_instructions(soup)
     recipe.prep_time = get_prep_time(soup)
     recipe.cook_time = get_cook_time(soup)
+    recipe.recipe_yield = get_yield(soup)
     recipe.save()
     add_ingr(soup, recipe)
 
