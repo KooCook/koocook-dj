@@ -8,6 +8,7 @@ import django.db.models.deletion
 import koocook_core.models.base
 import koocook_core.models.review
 import koocook_core.models.user
+import koocook_core.support.markdown
 import koocook_core.support.quantity
 
 
@@ -43,11 +44,27 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('date_published', models.DateTimeField(auto_now_add=True)),
-                ('body', models.TextField()),
-                ('aggregate_rating', models.OneToOneField(default=koocook_core.models.review.AggregateRating.create_empty, on_delete=django.db.models.deletion.PROTECT, to='koocook_core.AggregateRating')),
+                ('body', koocook_core.support.markdown.FormattedField()),
+                ('aggregate_rating', models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, to='koocook_core.AggregateRating')),
                 ('author', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='koocook_core.Author')),
                 ('reviewed_comment', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='koocook_core.Comment')),
             ],
+            bases=(koocook_core.models.base.SerialisableModel, koocook_core.models.review.ReviewableModel, models.Model),
+        ),
+        migrations.CreateModel(
+            name='KoocookUser',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('preferences', django.contrib.postgres.fields.jsonb.JSONField(default=koocook_core.models.user._default_preferences)),
+                ('user_settings', django.contrib.postgres.fields.jsonb.JSONField(default=koocook_core.models.user._default_preferences)),
+                ('followers', models.ManyToManyField(related_name='_koocookuser_followers_+', to='koocook_core.KoocookUser')),
+                ('following', models.ManyToManyField(related_name='_koocookuser_following_+', to='koocook_core.KoocookUser')),
+                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+            ],
+            options={
+                'db_table': 'koocook_core_koocook_user',
+            },
+            bases=(koocook_core.models.base.SerialisableModel, models.Model),
         ),
         migrations.CreateModel(
             name='MetaIngredient',
@@ -63,11 +80,11 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('date_published', models.DateTimeField(auto_now_add=True)),
-                ('body', models.TextField()),
-                ('aggregate_rating', models.OneToOneField(blank=True, default=koocook_core.models.review.AggregateRating.create_empty, on_delete=django.db.models.deletion.PROTECT, to='koocook_core.AggregateRating')),
+                ('body', koocook_core.support.markdown.FormattedField()),
+                ('aggregate_rating', models.OneToOneField(blank=True, on_delete=django.db.models.deletion.PROTECT, to='koocook_core.AggregateRating')),
                 ('author', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='koocook_core.Author')),
             ],
-            bases=(koocook_core.models.base.SerialisableModel, models.Model),
+            bases=(koocook_core.models.base.SerialisableModel, koocook_core.models.review.ReviewableModel, models.Model),
         ),
         migrations.CreateModel(
             name='Recipe',
@@ -82,16 +99,19 @@ class Migration(migrations.Migration):
                 ('cook_time', models.DurationField(null=True)),
                 ('recipe_instructions', django.contrib.postgres.fields.ArrayField(base_field=models.TextField(), default=list, size=None)),
                 ('recipe_yield', koocook_core.support.quantity.QuantityField(null=True)),
-                ('aggregate_rating', models.OneToOneField(blank=True, default=koocook_core.models.review.AggregateRating.create_empty, on_delete=django.db.models.deletion.PROTECT, to='koocook_core.AggregateRating')),
+                ('aggregate_rating', models.OneToOneField(blank=True, on_delete=django.db.models.deletion.PROTECT, to='koocook_core.AggregateRating')),
                 ('author', models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, to='koocook_core.Author')),
             ],
+            bases=(koocook_core.models.review.ReviewableModel, models.Model),
         ),
         migrations.CreateModel(
             name='TagLabel',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=50)),
+                ('level', models.IntegerField(default=1)),
             ],
+            bases=(koocook_core.models.base.SerialisableModel, models.Model),
         ),
         migrations.CreateModel(
             name='Tag',
@@ -100,6 +120,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=50)),
                 ('label', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='koocook_core.TagLabel')),
             ],
+            bases=(koocook_core.models.base.SerialisableModel, models.Model),
         ),
         migrations.CreateModel(
             name='RecipeIngredient',
@@ -123,27 +144,11 @@ class Migration(migrations.Migration):
                 ('rating_value', models.IntegerField()),
                 ('best_rating', models.IntegerField(default=5)),
                 ('worst_rating', models.IntegerField(default=1)),
-                ('used', models.BooleanField(blank=True, default=False)),
                 ('author', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='koocook_core.Author')),
                 ('reviewed_comment', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='koocook_core.Comment')),
                 ('reviewed_post', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='koocook_core.Post')),
                 ('reviewed_recipe', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='koocook_core.Recipe')),
             ],
-        ),
-        migrations.CreateModel(
-            name='KoocookUser',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('preferences', django.contrib.postgres.fields.jsonb.JSONField(default=koocook_core.models.user._default_preferences)),
-                ('user_settings', django.contrib.postgres.fields.jsonb.JSONField(default=koocook_core.models.user._default_preferences)),
-                ('followers', models.ManyToManyField(related_name='_koocookuser_followers_+', to='koocook_core.KoocookUser')),
-                ('following', models.ManyToManyField(related_name='_koocookuser_following_+', to='koocook_core.KoocookUser')),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-            ],
-            options={
-                'db_table': 'koocook_core_koocook_user',
-            },
-            bases=(koocook_core.models.base.SerialisableModel, models.Model),
         ),
         migrations.AddField(
             model_name='comment',
@@ -159,5 +164,21 @@ class Migration(migrations.Migration):
             model_name='author',
             name='koocook_user',
             field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='koocook_core.KoocookUser'),
+        ),
+        migrations.CreateModel(
+            name='RecipeVisit',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('ip_address', models.CharField(max_length=45)),
+                ('date_first_visited', models.DateTimeField(auto_now_add=True)),
+                ('date_last_visited', models.DateTimeField(auto_now=True)),
+                ('recipe', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='koocook_core.Recipe')),
+                ('user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='koocook_core.KoocookUser')),
+            ],
+            options={
+                'verbose_name': 'Recipe visit count',
+                'db_table': 'koocook_core_recipe_visit',
+                'unique_together': {('ip_address', 'recipe'), ('user', 'recipe')},
+            },
         ),
     ]
