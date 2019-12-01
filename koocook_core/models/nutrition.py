@@ -37,7 +37,6 @@ class RecipeIngredient(models.Model):
     recipe = models.ForeignKey(
         'koocook_core.Recipe',
         on_delete=models.CASCADE,
-        null=True,  # monkey patch
     )
 
     @property
