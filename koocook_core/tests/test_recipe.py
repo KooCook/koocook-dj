@@ -80,10 +80,10 @@ class RecipeVisitTest(AuthTestCase):
         self.client.logout()
         response = self.client.get(reverse("koocook_core:recipe", kwargs={'recipe_id': self.recipe.id}))
         with self.subTest():
-            self.assertEqual(response.context["object"].view_count, 1)
+            self.assertEqual(response.context["object"].view_count, 2)
         response = self.client.get(reverse("koocook_core:recipe", kwargs={'recipe_id': self.recipe.id}))
         with self.subTest():
-            self.assertEqual(response.context["object"].view_count, 1)
+            self.assertEqual(response.context["object"].view_count, 2)
 
     def test_visit_count(self):
         with self.subTest():
@@ -117,4 +117,4 @@ class RecipeVisitTest(AuthTestCase):
         visit = RecipeVisit.associate_recipe_with_ip_address(self.request, self.recipe)
         with self.subTest():
             self.assertEqual(visit.ip_address, self.request.META.get('REMOTE_ADDR'))
-            self.assertEqual(1, RecipeVisit.objects.all().count())
+            self.assertEqual(2, RecipeVisit.objects.all().count())
