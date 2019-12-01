@@ -15,8 +15,8 @@ class KoocookUser(SerialisableModel, models.Model):
     exclude = ('user', 'preferences', 'user_settings')
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     # author from Author's OneToOneField
-    preferences = fields.JSONField(default=_default_preferences())
-    user_settings = fields.JSONField(default=_default_preferences())
+    preferences = fields.JSONField(default=_default_preferences)
+    user_settings = fields.JSONField(default=_default_preferences)
     following = models.ManyToManyField('self')
     followers = models.ManyToManyField('self')
 

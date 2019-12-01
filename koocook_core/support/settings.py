@@ -38,10 +38,10 @@ class PreferenceEnum(Enum):
 
 
 class Preference:
-    """
-        Preferences for users
-        The settings can be retrieved using .get() in PreferenceManager
-                                      and key name as the parameter
+    """Preferences for users
+
+    The settings can be retrieved using .get() in PreferenceManager
+    and key name as the parameter
     """
     name: str = 'preference'
     widget: Widget = None
@@ -177,6 +177,7 @@ class PreferenceManager:
 
     def get(self, name: str) -> Any:
         """Returns a setting in the form of its type corresponding to the given key
+
         Args:
             name: A preference key
 
