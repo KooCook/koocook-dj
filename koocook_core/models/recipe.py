@@ -17,7 +17,7 @@ class Recipe(ReviewableModel, models.Model):
         - recipeingredient_set from Ingredient's ForeignKey
         - comment_set from Comment's ForeignKey
     """
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, blank=False)
     image = fields.ArrayField(models.CharField(max_length=200), null=True)
     video = models.URLField(null=True, blank=True)
     author = models.ForeignKey(
@@ -47,6 +47,10 @@ class Recipe(ReviewableModel, models.Model):
         return self.recipevisit_set.count()
 
     @property
+    def popularity_score(self) -> float:
+        return ((float(self.view_count)*1.9)+(float(self.aggregate_rating.rating_value)*3.1))/5
+
+    @property
     def total_time(self):
         return self.prep_time + self.cook_time
 
@@ -68,12 +72,12 @@ def get_client_ip(request: HttpRequest):
 class RecipeVisit(models.Model):
     """Represents the visit count of a Recipe
 
-       It is uniquely identified by ip_address, recipe, or user
+       It is uniquely identified by ip_address, recipe, or user.
     """
     class Meta:
         db_table = 'koocook_core_recipe_visit'
         verbose_name = 'Recipe visit count'
-        unique_together = (('ip_address', 'recipe'), ('user', 'recipe'))
+        unique_together = (('ip_address', 'user', 'recipe'), ('user', 'recipe'))
     ip_address = models.CharField(max_length=45)
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     user = models.ForeignKey('koocook_core.KoocookUser', on_delete=models.SET_NULL, null=True)
@@ -85,17 +89,17 @@ class RecipeVisit(models.Model):
         visit, created = cls.objects.get_or_create(user=user, recipe=recipe)
         return visit
 
-    def add_ip_address(self, request: HttpRequest):
+    def add_ip_address(self, request: HttpRequest, recipe: Recipe) -> str:
         ip_address = get_client_ip(request)
-        try:
-            RecipeVisit.objects.get(ip_address=ip_address)
-        except RecipeVisit.DoesNotExist:
-            self.ip_address = ip_address
+        self.first = False
+        self.ip_address = ip_address
+        return ip_address
 
 
     @classmethod
     def associate_recipe_with_ip_address(cls, request: HttpRequest, recipe: Recipe):
-        visit = cls()
-        visit.recipe = recipe
-        visit.add_ip_address(request)
+        visit, created = cls.objects.get_or_create(user=None,
+                                                   ip_address=get_client_ip(request),
+                                                   recipe=recipe)
+        visit.save()
         return visit

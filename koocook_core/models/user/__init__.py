@@ -23,6 +23,11 @@ class KoocookUser(SerialisableModel, models.Model):
     class Meta:
         db_table = "koocook_user"
 
+    @property
+    def formal_preferences(self):
+        from ...support import PreferenceManager
+        return PreferenceManager.from_koocook_user(self)
+
     def follow(self, user: 'KoocookUser'):
         self.following.add(user)
         self.save()
@@ -49,7 +54,6 @@ class KoocookUser(SerialisableModel, models.Model):
 
 class Author(SerialisableModel, models.Model):
     include = ('qualified_name',)
-    exclude = ()
     name = models.CharField(max_length=100)
     user = models.OneToOneField(
         'koocook_core.KoocookUser',

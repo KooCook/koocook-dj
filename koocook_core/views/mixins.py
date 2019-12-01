@@ -1,5 +1,4 @@
 import json
-from django.http import HttpResponse, HttpResponseForbidden, HttpRequest
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import reverse
 from django.views.generic.edit import FormMixin, ProcessFormView
@@ -24,8 +23,11 @@ class AuthAuthorMixin:
             context['current_author'] = {'id': 0}
         return context
 
+    def get_author(self) -> Author:
+        return Author.objects.get(user__user=self.request.user)
+
     def form_valid(self, form):
-        form.instance.author = Author.objects.get(user__user=self.request.user)
+        form.instance.author = self.get_author()
         return super().form_valid(form)
 
 
@@ -51,7 +53,8 @@ class CommentWidgetMixin(AuthAuthorMixin, FormMixin):
         return context
 
 
-class RecipeViewMixin:
+class RecipeViewMixin(SignInRequiredMixin, AuthAuthorMixin):
+
     def form_valid(self, form):
         from ..models import Tag, TagLabel
         response = super().form_valid(form)
