@@ -144,6 +144,7 @@ class Migration(migrations.Migration):
                 ('rating_value', models.IntegerField()),
                 ('best_rating', models.IntegerField(default=5)),
                 ('worst_rating', models.IntegerField(default=1)),
+                ('used', models.BooleanField(blank=True, default=False)),
                 ('author', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='koocook_core.Author')),
                 ('reviewed_comment', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='koocook_core.Comment')),
                 ('reviewed_post', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='koocook_core.Post')),
@@ -162,7 +163,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='author',
-            name='koocook_user',
+            name='user',
             field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='koocook_core.KoocookUser'),
         ),
         migrations.CreateModel(
@@ -178,7 +179,7 @@ class Migration(migrations.Migration):
             options={
                 'verbose_name': 'Recipe visit count',
                 'db_table': 'koocook_core_recipe_visit',
-                'unique_together': {('ip_address', 'recipe'), ('user', 'recipe')},
+                'unique_together': {('user', 'recipe'), ('ip_address', 'recipe')},
             },
         ),
     ]

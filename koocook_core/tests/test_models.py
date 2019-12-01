@@ -168,16 +168,16 @@ class TestAggregateRatingModel(djangotest.TestCase):
 class TestAuthorModel(djangotest.TestCase):
     def setUp(self) -> None:
         set_up_authors()
-        self.test_authors = Author.objects.filter(koocook_user=None)
+        self.test_authors = Author.objects.filter(user=None)
         self.test_users = User.objects.all()
 
     def test_field_settings(self):
         with self.subTest(field='name'):
             self.assertEqual(
                 self.test_authors[0]._meta.get_field('name').max_length, 100)
-        with self.subTest(field='koocook_user'):
+        with self.subTest(field='user'):
             self.assertTrue(
-                self.test_authors[0]._meta.get_field('koocook_user').null)
+                self.test_authors[0]._meta.get_field('user').null)
 
     # def test_str(self):
     #     for expected_str, user in (
@@ -238,21 +238,21 @@ class TestCommentModel(djangotest.TestCase):
         self.test_author = Author.objects.all()[0]
 
     def test_init(self):
-        Recipe.objects.create(author=self.test_author, name='')
-        Post.objects.create(author=self.test_author)
+        recipe = Recipe.objects.create(author=self.test_author, name='')
+        post = Post.objects.create(author=self.test_author)
         for name in ('Recipe', 'Post', 'Comment'):
             item = locals()[name.lower()]
             with self.subTest(item_reviewed=name):
                 try:
-                    Comment.objects.create(author=self.test_author,
-                                           item_reviewed=item)
+                    comment = Comment.objects.create(author=self.test_author,
+                                                     item_reviewed=item)
                 except Exception as e:
                     raise self.failureException(
                         'unexpected exception raised') from e
 
     def test_item_reviewed_getter(self):
-        Recipe.objects.create(author=self.test_author, name='')
-        Post.objects.create(author=self.test_author)
+        recipe = Recipe.objects.create(author=self.test_author, name='')
+        post = Post.objects.create(author=self.test_author)
         for name in ('Recipe', 'Post', 'Comment'):
             item = locals()[name.lower()]
             with self.subTest(item_reviewed=name):

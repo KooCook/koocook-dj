@@ -72,31 +72,25 @@ class Author(SerialisableModel, models.Model):
     exclude = ()
 
     name = models.CharField(max_length=100)
-    koocook_user = models.OneToOneField(
+    user = models.OneToOneField(
         'koocook_core.KoocookUser',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
     )
 
-    def __init__(self, *args, **kwargs):
-        if 'user' in kwargs:
-            assert 'koocook_user' not in kwargs, "don't user 'user' with 'koocook_user'!"
-            kwargs['koocook_user'] = kwargs.pop('user')
-        super().__init__(*args, **kwargs)
-
     @property
     def dj_user(self):
-        return self.koocook_user.user
+        return self.user.user
 
     @classmethod
     def from_dj_user(cls, user: User):
-        return cls.objects.get(koocook_user__user=user)
+        return cls.objects.get(user__user=user)
 
     @property
     def qualified_name(self):
-        if self.koocook_user and self.koocook_user.full_name:
-            return self.koocook_user.full_name
+        if self.user and self.user.full_name:
+            return self.user.full_name
         else:
             return self.name
 

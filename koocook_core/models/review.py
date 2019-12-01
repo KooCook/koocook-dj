@@ -1,4 +1,5 @@
-from typing import Union
+from typing import Union, Dict, Any
+from decimal import Decimal, DivisionByZero
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
@@ -8,6 +9,24 @@ from ..support import FormattedField
 from .base import SerialisableModel
 
 __all__ = ('AggregateRating', 'Comment', 'Rating', 'ReviewableModel')
+
+
+def _add_rating(old_value: Decimal, old_count: int,
+                new_rating: Union[int, float]) -> Decimal:
+    old_total = old_value * old_count
+    try:
+        return (old_total + round(Decimal(new_rating), 1)) / (old_count + 1)
+    except DivisionByZero:
+        return old_total + round(Decimal(new_rating), 1)
+
+
+def _remove_rating(old_value: Decimal, old_count: int,
+                   new_rating: Union[int, float]) -> Decimal:
+    old_total = old_value * old_count
+    try:
+        return (old_total - round(Decimal(new_rating), 1)) / (old_count - 1)
+    except DivisionByZero:
+        return old_total - round(Decimal(new_rating), 1)
 
 
 class ReviewableModel:
@@ -59,6 +78,10 @@ class Comment(SerialisableModel, ReviewableModel, models.Model):
         blank=True,
     )
 
+    def __init__(self, *args, **kwargs):
+        kwargs = parse_kwargs_item_reviewed(kwargs, strict=False)
+        super().__init__(*args, **kwargs)
+
     @property
     def item_reviewed(self):
         return self.reviewed_recipe or self.reviewed_post or self.reviewed_comment
@@ -79,6 +102,11 @@ class Comment(SerialisableModel, ReviewableModel, models.Model):
         base_dict_repr = super().as_dict
         base_dict_repr.update({'rendered': self.processed_body})
         return base_dict_repr
+
+    def save(self, *args, **kwargs):
+        if self.item_reviewed is None:
+            raise ValidationError(_('There must be at least 1 item reviewed'))
+        super().save(*args, **kwargs)
 
 
 class Rating(models.Model):
@@ -108,10 +136,57 @@ class Rating(models.Model):
         null=True,
         blank=True,
     )
+    used = models.BooleanField(default=False, blank=True)
+
+    def __init__(self, *args, **kwargs):
+        kwargs = parse_kwargs_item_reviewed(kwargs, strict=False)
+        if 'rating_value' in kwargs:
+            if not kwargs.get('worst_rating', 1) <= \
+                   kwargs['rating_value'] <= \
+                   kwargs.get('best_rating', 5):
+                raise ValueError('`rating_value` must be between `best_rating` and '
+                                 '`worst_rating`')
+        super().__init__(*args, **kwargs)
 
     @property
     def item_reviewed(self):
         return self.reviewed_recipe or self.reviewed_post or self.reviewed_comment
+
+    def save(self, *args, **kwargs):
+        if self.item_reviewed is None:
+            raise ValidationError(_('There must be at least 1 item reviewed'))
+        super().save(*args, **kwargs)
+
+
+def parse_kwargs_item_reviewed(kwargs: Dict[str, Any], strict: bool = True) -> Dict[str, Any]:
+    item = kwargs.pop('item_reviewed', None)
+    if item:
+        assert not any(
+            k in kwargs
+            for k in ('reviewed_recipe', 'reviewed_post', 'reviewed_comment')
+        ), "Don't specify both item reviewed and the actual item reviewed"
+        from koocook_core.models.recipe import Recipe
+        from koocook_core.models.post import Post
+        if isinstance(item, Recipe):
+            kwargs['reviewed_recipe'] = item
+        elif isinstance(item, Post):
+            kwargs['reviewed_post'] = item
+        elif isinstance(item, Comment):
+            kwargs['reviewed_comment'] = item
+        else:
+            raise TypeError(f'item_reviewed must be of the type Recipe, '
+                            f"Post or Comment not '{type(item)}'")
+    else:
+        # monkey patch
+        if kwargs == {}:
+            return {}
+        count = list(k in kwargs for k in ('reviewed_recipe', 'reviewed_post',
+                                           'reviewed_comment')).count(True)
+        if count != 1:
+            if strict:
+                raise ValueError(f'There must be 1 reviewed item, not {count}')
+            return kwargs
+    return kwargs
 
 
 class AggregateRating(models.Model):
@@ -134,13 +209,13 @@ class AggregateRating(models.Model):
             ValidationError: When `rating` is not valid
         """
         if rating.best_rating != self.best_rating:
-            raise ValidationError(_('Incompatible bestRating: \'{}\' != \'\''
+            raise ValidationError(_('Incompatible bestRating: \'{}\' != \'{}\''
                                     .format(rating.best_rating, self.best_rating)))
         if rating.worst_rating != self.worst_rating:
-            raise ValidationError(_('Incompatible worstRating: \'{}\' != \'\''
+            raise ValidationError(_('Incompatible worstRating: \'{}\' != \'{}\''
                                     .format(rating.worst_rating, self.worst_rating)))
         if rating.item_reviewed != self.item_reviewed:
-            raise ValidationError(_('Incompatible itemReviewed: \'{}\' != \'\''
+            raise ValidationError(_('Incompatible itemReviewed: \'{}\' != \'{}\''
                                     .format(rating.item_reviewed, self.item_reviewed)))
 
     def add_rating(self, rating: Rating, update=False):
@@ -150,14 +225,18 @@ class AggregateRating(models.Model):
             ValidationError: When `rating` is not valid
         """
         self.check_rating(rating)
-        total_value = self.rating_value * self.rating_count
-        total_value += rating.rating_value
-        if not update:
-            self.rating_count += 1
-        else:
-            total_value -= rating.old_rating_value
-        self.rating_value = total_value / self.rating_count
+        if update:
+            self.remove_rating(rating)
+        if rating.used:
+            raise ValidationError(
+                _("rating is already tabulated somewhere, can't add"))
+        self.rating_value = _add_rating(self.rating_value, self.rating_count,
+                                        rating.rating_value)
+        self.rating_count += 1
         self.save()
+        assert not rating.used, "rating shouldn't have been used yet"
+        rating.used = True
+        rating.save()
 
     def remove_rating(self, rating: Rating):
         """Removes a rating from an aggregate rating.
@@ -166,11 +245,17 @@ class AggregateRating(models.Model):
             ValidationError: When `rating` is not valid
         """
         self.check_rating(rating)
-        total_value = self.rating_value * self.rating_count
-        total_value -= rating.rating_value
+        if not rating.used:
+            raise ValidationError(
+                _("rating is not tabulated yet, can't remove"))
+        self.rating_value = _remove_rating(self.rating_value,
+                                           self.rating_count,
+                                           rating.rating_value)
         self.rating_count -= 1
-        self.rating_value = total_value / self.rating_count
         self.save()
+        assert rating.used, "rating should have been used"
+        rating.used = False
+        rating.save()
 
     @property
     def item_reviewed(self) -> Union['Recipe', 'Post', 'Comment', None]:
