@@ -2,31 +2,82 @@
 {% load widget_tweaks %}
 {% load static %}
 
-{% block page_title %}Feedback{% endblock %}
-
-{% block section_after_nav %}
-<section class="hero is-primary">
-    <div class="hero-body">
-        <div class="container">
-            <h1 class="title">
-                Feedback Me!!!
-            </h1>
-        </div>
-    </div>
-    <div class="hero-foot">
-    </div>
-</section>
+{% block page_title %}
+    Feedback
 {% endblock %}
 
 {% block content_deps %}
+    <link rel="stylesheet" href="https://unpkg.com/vue-popperjs@2.2.0/dist/vue-popper.css">
+    <script src="https://unpkg.com/vue-popperjs"></script>
+<script src="https://cdn.jsdelivr.net/npm/vee-validate@latest/dist/vee-validate.js"></script>
+    <script src="https://unpkg.com/vue-slicksort@latest/dist/vue-slicksort.min.js"></script>
+    <script src="{% static 'js/bundle.js' %}"></script>
 {% endblock %}
 
-{% block page_body %}
+{% block content_category_url %}
+    {% url "koocook_core:feedback" %}
+{% endblock %}
+
+{% block content_category %}
+    Feedback
+{% endblock %}
+
+{% block content_page_name %}
+{% endblock %}
+
+{% block breadcrumb_item_extension %}
+{% endblock %}
+
+{% block hero_title %}
+    Feedback Me!!!
+{% endblock %}
+
+{% block page_content %}
 <div>
     <form method="POST">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Send</button>
+        {% for field in form %}
+            {% if field.is_hidden %}
+                {{ field }}
+
+            {% else %}
+                <div class="form-group field is-horizontal">
+                    <div class="field-label is-normal">
+                        <label class="label">{{ field.label_tag }}</label>
+                    </div>
+                    <div class="field-body">
+                        <div class="field control"> {{ field|add_class:"input is-normal" }}
+                        </div>
+                        {% if field.errors %}
+                        {% for error in field.errors %}
+                        <div class="invalid-feedback">
+                            {{ error }}
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        <div class="columns">
+            <div class="column is-half is-offset-one-quarter">
+                <image-holder></image-holder>
+            </div>
+        </div>
+
+        <div class="field is-horizontal">
+            <div class="field-label">
+                <button type="submit" class="button">Send</button>
+            </div>
+            <div class="field-body"></div>
+        </div>
     </form>
 </div>
+
+<script>
+new Vue({
+    el: '#app'
+})
+</script>
 {% endblock %}

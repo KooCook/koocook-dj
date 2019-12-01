@@ -1,5 +1,5 @@
-
 from django import forms
+from django.forms.widgets import HiddenInput
 from ...models import Feedback
 
 
@@ -15,6 +15,7 @@ class FeedbackForm(forms.ModelForm):
         model = Feedback
         fields = '__all__'
         exclude = ('author', 'date_published')
+        widgets = {'image': HiddenInput(), 'video': HiddenInput()}
 
     @property
     def vanilla_fields(self):
