@@ -26,7 +26,11 @@ def handle_500(request, template_name='base/errors/500.html'):
 
 
 def serve_static() -> list:
-    return [re_path(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT})]
+    if len(settings.STATICFILES_DIRS) > 0:
+        settings_path = settings.STATICFILES_DIRS[0]
+    else:
+        settings_path = settings.STATIC_ROOT
+    return [re_path(r'^static/(?P<path>.*)$', serve, {'document_root': settings_path })]
 
 
 @require_http_methods(["GET", "POST", "DELETE"])

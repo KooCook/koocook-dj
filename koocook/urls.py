@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from django.conf.urls.static import static
-
+from django.conf import settings
 
 
 urlpatterns = [
@@ -24,9 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('koocook_auth.urls')),
     path('auth/social', include('social_django.urls', namespace='social')),
-]
-
-# ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) +
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 handler404 = 'koocook_core.views.handle_404'
 handler500 = 'koocook_core.views.handle_500'

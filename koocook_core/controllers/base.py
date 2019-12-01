@@ -79,6 +79,7 @@ class BaseController:
     def create(self) -> ControllerResponse:
         creation = self.model(**self.model_request_fields)
         creation.save()
+        creation = self.model.objects.get(pk=creation.id)
         return ControllerResponse(status_text='Created', obj=creation)
 
     @user_only
