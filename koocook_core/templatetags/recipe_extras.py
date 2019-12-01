@@ -22,7 +22,7 @@ def duration_in_words(duration: datetime.timedelta) -> str:
         (str) A timedelta duration in word representation
     """
     def plural(n):
-        return n, abs(n) != 1 and "s" or ""
+        return n, '' if abs(n) == 1 else 's'
     mm, ss = divmod(duration.seconds, 60)
     hh, mm = divmod(mm, 60)
     s = ''
