@@ -8,7 +8,7 @@ __all__ = ('KoocookUser', 'Author')
 
 
 def _default_preferences():
-    return dict
+    return dict()
 
 
 class KoocookUser(SerialisableModel, models.Model):
