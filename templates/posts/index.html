@@ -149,7 +149,7 @@
         </nav>
       </div>
       <div class="media-right">
-        <follow-widget v-show="!userPost.hidden" :followee-id="userPost.author.user.id" :followees="$refs.followees.followees"></follow-widget>
+        <follow-widget v-show="!userPost.hidden && currentAuthorId !== userPost.author.id" :followee-id="userPost.author.user.id" :followees="$refs.followees.followees"></follow-widget>
       </div>
     </article>
   </b-tab-item>
@@ -298,7 +298,9 @@
       });
       if (resp.ok) {
         const responseData = await resp.json();
-      this.posts = responseData.current;
+      if (responseData.current) { this.posts = responseData.current;
+      this.allPosts.push(responseData.current); }
+          else this.posts = [];
       }
       resp = await fetch(`{% url 'koocook_core:posts:ajax-all' %}`, {
         method: "GET", credentials: 'include', headers: {
