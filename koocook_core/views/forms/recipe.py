@@ -1,23 +1,13 @@
 from django import forms
-from django.forms.widgets import HiddenInput
 from ...models import Recipe
+from ...support import CustomisableForm
 
 
-class RecipeForm(forms.ModelForm):
-    customised_field = ['name', 'author']
+class RecipeForm(CustomisableForm):
+    customised_field = ('author', 'name')
     tags = forms.CharField(widget=forms.HiddenInput(attrs={'v-model': 'JSON.stringify(tags)'}))
-
-    def __init__(self, *args, **kwargs):
-        if 'user' in kwargs:
-            self.user = kwargs.pop('user', None)
-        super().__init__(*args, **kwargs)
-        # self.fields['author'].disabled = True
 
     class Meta:
         model = Recipe
         fields = '__all__'
-        exclude = ('aggregate_rating', 'author', 'date_published')
-
-    @property
-    def vanilla_fields(self):
-        return [field for field in self if not (field.name in self.customised_field or field.is_hidden)]
+        exclude = ('aggregate_rating', 'author', 'date_published', 'tag_set')

@@ -1,7 +1,6 @@
 {% extends 'base/index.html' %}
 {% load static %}
 {% block page_deps %}
-    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/2.5.94/css/materialdesignicons.min.css">
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
     <script src="https://unpkg.com/buefy/dist/buefy.min.js"></script>
@@ -57,29 +56,29 @@
               Stream
             </a>
 
-            <div class="navbar-item has-dropdown is-hoverable is-disabled">
+            <div class="navbar-item has-dropdown is-hoverable">
               <a class="navbar-link">
                 Browse
               </a>
 
               <div class="navbar-dropdown is-boxed">
-                <a class="navbar-item" title="Look at our suggested recipe">
+                <a class="navbar-item is-disabled" title="Look at our suggested recipe">
                   Featured recipes
                 </a>
-                <a class="navbar-item" title="Look at what other people are making">
+                <a class="navbar-item is-disabled" title="Look at what other people are making">
                   Popular recipes
                 </a>
-                <a class="navbar-item" title="Get personalised recipe recommendations">
+                <a href="{% url 'koocook_core:recipe-all' %}"class="navbar-item" title="Get personalised recipe recommendations">
                   Suggested recipes
                 </a>
-                <a class="navbar-item" title="Get a random recipe">
+                <a class="navbar-item is-disabled" title="Get a random recipe">
                   I'm feeling hungry!
                 </a>
                 <hr class="navbar-divider">
-                <a class="navbar-item" title="Can't find an ingredient? Look no further">
+                <a class="navbar-item is-disabled" title="Can't find an ingredient? Look no further">
                   Ingredients
                 </a>
-                <a class="navbar-item" title="Looking to get some new cookwares? We've got you covered">
+                <a class="navbar-item is-disabled" title="Looking to get some new cookwares? We've got you covered">
                   Cookware
                 </a>
               </div>
@@ -130,7 +129,7 @@
                      <div class="navbar-item">
                         <strong>{{ user.username }}</strong>
                      </div>
-                   <a class="navbar-item is-disabled" >
+                   <a class="navbar-item" href="{% url 'koocook_core:profile:info' %}">
                      Your profile
                    </a>
                    <a class="navbar-item is-disabled">
@@ -143,7 +142,7 @@
                    <a class="navbar-item is-disabled">
                      Help
                    </a>
-                   <a class="navbar-item is-disabled">
+                   <a href="{% url 'koocook_core:profile:pref' %}" class="navbar-item">
                      Settings
                    </a>
                    <a href="{% url "koocook_auth:logout" %}" class="navbar-item">

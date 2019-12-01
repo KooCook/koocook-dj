@@ -112,7 +112,7 @@
                      <div class="navbar-item">
                         <strong>{{ user.username }}</strong>
                      </div>
-                   <a class="navbar-item is-disabled">
+                   <a class="navbar-item" href="{% url 'koocook_core:profile:info' %}">
                      Your profile
                    </a>
                    <a class="navbar-item is-disabled">
@@ -125,7 +125,7 @@
                    <a class="navbar-item is-disabled">
                      Help
                    </a>
-                   <a class="navbar-item is-disabled">
+                    <a href="{% url 'koocook_core:profile:pref' %}" class="navbar-item">
                      Settings
                    </a>
                    <a href="{% url "koocook_auth:logout" %}" class="navbar-item">
