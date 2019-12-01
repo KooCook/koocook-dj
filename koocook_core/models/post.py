@@ -1,15 +1,14 @@
-import json
 from django.db import models
-from django.utils.html import mark_safe
 
-from .base import SerialisableModel
-from .review import AggregateRating
 from ..support import FormattedField
+from .base import SerialisableModel
+from .review import ReviewableModel
 
 __all__ = ('Post',)
 
 
-class Post(SerialisableModel, models.Model):
+class Post(SerialisableModel, ReviewableModel, models.Model):
+    include = ('rendered',)
     author = models.ForeignKey(
         'koocook_core.Author',
         on_delete=models.PROTECT,
@@ -21,18 +20,12 @@ class Post(SerialisableModel, models.Model):
         'koocook_core.AggregateRating',
         on_delete=models.PROTECT,
         blank=True,
-        default=AggregateRating.create_empty,
+        # default=create_empty_aggregate_rating,
     )
 
     @property
-    def processed_body(self):
+    def rendered(self):
         if hasattr(self.body, 'rendered'):
             return self.body.rendered
         else:
             return self.body
-
-    @property
-    def as_dict(self):
-        base_dict_repr = super().as_dict
-        base_dict_repr.update({'renderedBody': self.processed_body})
-        return base_dict_repr

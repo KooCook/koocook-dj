@@ -3,6 +3,7 @@
 {% block page_deps %}
     <link rel="stylesheet" href="https://cdn.materialdesignicons.com/2.5.94/css/materialdesignicons.min.css">
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
     <script src="https://unpkg.com/buefy/dist/buefy.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js"></script>
@@ -33,7 +34,7 @@
             </p>
                 </b-field>
               <span class="icon is-small is-left">
-                       <i class="fas fa-search"></i>
+                       <b-icon icon="magnify"></b-icon>
                      </span>
             </div>
           </div>
@@ -52,7 +53,7 @@
               Home
             </a>
 
-            <a class="navbar-item" href="{% url 'koocook_core:posts:all' %}">
+            <a class="navbar-item" href="{% url 'koocook_core:posts:view' %}">
               Stream
             </a>
 
@@ -112,7 +113,7 @@
             <div class="navbar-item">
               <div class="buttons">
                 <a href="{% url "social:begin" "google-oauth2" %}" class="button is-secondary">
-                  <strong>Sign in with <i class="fab fa-google"></i>oogle</strong>
+                  <strong>Sign in with <i class="fab fa-google"></i>Google</strong>
                 </a>
               </div>
 

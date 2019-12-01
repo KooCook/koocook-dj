@@ -12,7 +12,10 @@
 const REPLIES_ENDPOINTS = {
   GET: `/comments/{0}`,
   POST: `/comments/`,
-  PATCH: `/comments/{0}`
+  PATCH: `/comments/{0}`,
+  rate: {
+    POST: `/comments/{0}/rate`,
+  }
 };
 
 Vue.component("comments-widget", {
@@ -20,6 +23,7 @@ Vue.component("comments-widget", {
     return {
       comment_endpoints: COMMENTS_ENDPOINTS,
       replies: 0,
+      rateURL: REPLIES_ENDPOINTS.rate.POST,
       comments: [],
       comment: {
         body: ""
@@ -27,7 +31,7 @@ Vue.component("comments-widget", {
       pending: false
     };
   },
-  props: ["itemId", "itemName", "isReply", "customUrl"],
+  props: ["itemId", "itemName", "isReply", "customUrl", "authorId"],
   template:
     '<div style="display: block;"><article class="media" v-for="(comment, index) in comments" :key="index">\n' +
     '          <figure class="media-left">\n' +
@@ -38,12 +42,13 @@ Vue.component("comments-widget", {
     '          <div class="media-content">\n' +
     '            <div class="content">\n' +
     "              <p>\n" +
-    "                <strong>{{ comment.author.qualified_name }}</strong>\n" +
+    "                <strong>{{ comment.author.qualified_name }}</strong>" +
+      '<star-rating v-if="comment.id" :read-only="comment.author.id === authorId" :rate-url="rateURL.format(comment.id)" :item-id="comment.id" :initial="comment.aggregate_rating.rating_value"></star-rating>\n' +
     '                <span v-html="comment.rendered"></span>\n' +
     '                <small><!--<a>Like</a> ·--> <a @click="comment.showReplies = !comment.showReplies"><span v-if="!comment.showReplies"><span v-if="comment.replies">{{ comment.replies }} </span>Reply</span><span v-else>Hide replies</span></a> · {{ comment.date_published|time-passed }}</small>\n' +
     "              </p>\n" +
     "             </div>" +
-    '           <comments-widget @declare_replies="comment.replies = $event" v-show="comment.showReplies" is-reply="true" :item-id="comment.id" item-name="this comment"></comments-widget>\n' +
+    '           <comments-widget @declare_replies="comment.replies = $event" :author-id="authorId" v-show="comment.showReplies" is-reply="true" :item-id="comment.id" item-name="this comment"></comments-widget>\n' +
     "          </div>\n" +
     "        </article>" +
     '       <article class="media">\n' +
@@ -73,13 +78,11 @@ Vue.component("comments-widget", {
     "        </article>" +
     "</div>\n",
   mounted: async function() {
-    let comments = await this.prefetchData();
-    comments.forEach(function(v) {
-      v.showReplies = false;
-      v.replies = 0;
-    });
+    const comments = await this.prefetchData();
+    if (Array.isArray(comments)) {
+       comments.forEach(function(v) { v.showReplies = false; v.replies = 0; });
     if (this.isReply) this.$emit("declare_replies", comments.length);
-    this.comments = comments;
+    this.comments = comments; }
   },
   methods: {
     async prefetchData() {
@@ -90,7 +93,7 @@ Vue.component("comments-widget", {
         this.isReply || this.customUrl
           ? this.comment_endpoints.GET.format(this.itemId)
           : this.comment_endpoints.GET;
-      return JSON.parse((await (await fetch(endpoint)).json()).current);
+      return (await (await fetch(endpoint)).json()).current;
     },
     async postComment() {
       if (this.pending) return;
@@ -116,7 +119,7 @@ Vue.component("comments-widget", {
           message: "Successfully commented!",
           type: "is-success"
         });
-        this.comments.push(JSON.parse((await resp.json()).current));
+        this.comments.push((await resp.json()).current);
       } else {
         this.pending = false;
         this.$buefy.toast.open({

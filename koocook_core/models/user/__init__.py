@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.contrib.postgres import fields
 from django.db import models
 
-from .base import SerialisableModel
+from ..base import SerialisableModel
 
 __all__ = ['Author', 'KoocookUser']
 
@@ -20,6 +20,8 @@ class KoocookUser(SerialisableModel, models.Model):
     Notes:
         Automatically created when ``User`` is  created.
     """
+    exclude = ('user', 'preferences', 'user_settings')
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     preferences = fields.JSONField(default=_default_preferences)
     user_settings = fields.JSONField(default=_default_preferences)
@@ -36,6 +38,7 @@ class KoocookUser(SerialisableModel, models.Model):
     def unfollow(self, user: 'KoocookUser'):
         self.following.remove(user)
         user.followers.remove(self)
+        self.save()
 
     @property
     def name(self):
@@ -43,6 +46,10 @@ class KoocookUser(SerialisableModel, models.Model):
             return self.user.get_full_name()
         else:
             return self.user.username
+
+    @classmethod
+    def from_dj_user(cls, user: User):
+        return cls.objects.get(user=user)
 
     @property
     def full_name(self):
@@ -61,7 +68,8 @@ class Author(SerialisableModel, models.Model):
     Notes:
         Automatically created when ``User`` is  created.
     """
-    exclude = ('user',)
+    include = ('qualified_name',)
+    exclude = ()
 
     name = models.CharField(max_length=100)
     koocook_user = models.OneToOneField(

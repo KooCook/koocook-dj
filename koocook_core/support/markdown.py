@@ -46,13 +46,20 @@ class FormattedField(models.TextField):
 
         if value is None:
             return value
-
+        print(value)
         return MarkdownSource(value)
+
+    def get_db_prep_value(self, value, connection, prepared=False):
+        if isinstance(value, MarkdownSource):
+            return value.get_db_str()
+
+        if value is None:
+            return value
+        return MarkdownSource(value).get_db_str()
 
     def get_prep_value(self, value):
         if isinstance(value, MarkdownSource):
             return value.get_db_str()
-
         if value is None:
             return value
         return MarkdownSource(value).get_db_str()

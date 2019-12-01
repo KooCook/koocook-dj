@@ -13,7 +13,8 @@
 }
 
 .date-posted {
-  margin-left: 2ch;
+    margin-right: 2ch;
+    display: inline-block;
 }
 
 .fade-enter-active, .fade-leave-active {
@@ -53,10 +54,6 @@
     max-width: 50vw;
 }
 
-.date-posted {
-    margin-left: 2ch;
-}
-
 .fade-enter-active, .fade-leave-active {
     margin: 0;
     transition: opacity .4s ease;
@@ -91,7 +88,7 @@
     /* flex-direction: column; */
 }
 
-.is-disabled {
+.is-disabled:not(.rate) {
     pointer-events: none;
     opacity: .5;
 }

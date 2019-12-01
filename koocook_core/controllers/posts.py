@@ -1,77 +1,79 @@
 # Single view w/ Ajax
-from django.db.models import Model
-from django.contrib.auth.decorators import login_required
-from django.http import HttpRequest, HttpResponse, HttpResponseForbidden, JsonResponse, QueryDict
+from django.http import HttpRequest, HttpResponse, JsonResponse
 
-
+from .base import BaseHandler, ControllerResponse, ControllerResponseForbidden
+from .decorators import apply_author_from_session
+from .mixins import CommentControllerMixin
+from .rating import RatableController
 from ..models import Post, Author
 from ..views import GuestPostStreamView, UserPostStreamView
 
 
-def apply_author_from_session(func):
-    def wrapper(controller, request: HttpRequest, *args, **kwargs):
-        try:
-            request.author = Author.from_dj_user(request.user)
-        except Author.DoesNotExist:
-            return HttpResponseForbidden()
-
-        if (len(args) > 0 and args[0] is not None) or len(kwargs) > 0:
-            return func(controller, request, *args, **kwargs)
-        else:
-            return func(controller, request)
-    return wrapper
-
-
-class PostController:
+class PostController(RatableController, CommentControllerMixin):
+    item_reviewed_field = 'reviewed_post'
 
     def __init__(self):
-        self.model = Post
+        super().__init__(Post, {})
 
-    @property
-    def model_field_names(self) -> list:
-        return [field.name for field in self.model._meta.get_fields()]
-
-    def get_model_request_fields(self, request: HttpRequest) -> dict:
-        return {field_name: request.POST.get(field_name) for field_name in self.model_field_names}
-
-    def find_by_id(self, post_id: int) -> Post:
-        return self.model.objects.get(pk=post_id)
+    @classmethod
+    def default(cls):
+        return cls()
+    #
+    # def get_model_request_fields(self, request: HttpRequest) -> dict:
+    #     return {field_name: request.POST.get(field_name) for field_name in self.model_field_names}
 
     @apply_author_from_session
-    def create_post(self, request: HttpRequest) -> JsonResponse:
-        creation = self.model(**self.get_model_request_fields(request))
-        creation.author = request.author
-        creation.save()
-        return JsonResponse({'status': 'Post created', 'post': creation.as_json})
+    def create(self) -> ControllerResponse:
+        return super().create()
 
-    @staticmethod
-    def render_stream_view(request: HttpRequest) -> HttpResponse:
-        if request.user.is_authenticated:
-            return UserPostStreamView.as_view()(request)
+    def render_stream_view(self) -> HttpResponse:
+        if self.request.user.is_authenticated:
+            return UserPostStreamView.as_view()(self.request)
         else:
-            return GuestPostStreamView.as_view()(request)
+            return GuestPostStreamView.as_view()(self.request)
 
     @apply_author_from_session
-    def update_post(self, request: HttpRequest, post_id: int) -> JsonResponse:
-        found = self.find_by_id(post_id)
-        if found.author != request.author:
-            return JsonResponse({'status': 'Forbidden'}, status=403)
-        params = QueryDict(request.body).dict()
-        updated_fields = list(set(params.keys()).intersection(set(self.model_field_names)))
-        for field in updated_fields:
-            setattr(found, field, params[field])
-        found.save()
-        found = self.find_by_id(found.id)
-        return JsonResponse({'status': 'Post updated', 'post': found.as_json})
+    def retrieve_all(self) -> ControllerResponse:
+        all_items = super().retrieve_all().obj
+        for item in all_items:
+            if item.author == self.author:
+                item.hidden = True
+        return ControllerResponse(status_text='Retrieved', obj=all_items)
 
     @apply_author_from_session
-    def delete_post(self, request: HttpRequest, post_id: int) -> JsonResponse:
-        found = self.find_by_id(post_id)
-        if found.author != request.author:
-            return JsonResponse({'status': 'Forbidden'}, status=403)
-        found.delete()
-        return JsonResponse({'status': 'Post deleted'})
+    def retrieve_all_for_user(self) -> ControllerResponse:
+        """
+        Retrieves all posts of the current user
 
+            Returns:
+                ControllerResponse: A response and its result in ControllerResponse class
+        """
+        return ControllerResponse(status_text='Retrieved', obj=list(self.model.objects.filter(author=self.author)))
+
+    @apply_author_from_session
+    def retrieve_all_following(self) -> ControllerResponse:
+        posts = []
+        for followee in self.author.user.following.all():
+            posts.extend(Author.objects.get(user=followee).post_set.all())
+        return ControllerResponse(status_text='Retrieved posts from followees', obj=list(posts))
+
+    @apply_author_from_session
+    def update_post(self, pk: int) -> ControllerResponse:
+        obj = self.find_by_id(pk)
+        if obj.author == self.author:
+            return super().update(obj)
+        else:
+            return ControllerResponseForbidden()
+
+    @apply_author_from_session
+    def delete_post(self, pk: int) -> ControllerResponse:
+        obj = self.find_by_id(pk)
+        if obj.author == self.author:
+            return self.delete(obj)
+        else:
+            return ControllerResponseForbidden()
+
+    # TODO: Needs more implementation on this
     def upsert_post(self, request: HttpRequest, post_id: int) -> JsonResponse:
         found, created = self.model.objects.get_or_create(pk=post_id)
         if not created:
@@ -85,30 +87,37 @@ class PostController:
             return JsonResponse({'status': 'Post created'})
 
 
-class BaseHandler:
-    @staticmethod
-    def _get_handler_for_method(handler_map: dict, method):
-        if method.upper() in handler_map:
-            return handler_map[method]
-        else:
-            raise NotImplementedError
-
-
 class PostHandler(BaseHandler):
     def __init__(self):
-        self.controller = PostController()
-        self.plain_map = {
-            'GET': (self.controller.render_stream_view, False),
-            'POST': (self.controller.create_post, True),
+        super().__init__(PostController.default())
+        self.handler_map = {
+            'comment': {
+                'GET': 'get_all_comments_of_item_id',
+                'POST': 'comment'
+            },
+            'rate': {
+                'POST': 'rate'
+            },
+            'user': {
+                'GET': 'retrieve_all_for_user'
+            },
+            'all': {
+                'GET': 'retrieve_all'
+            },
+            'followed-post': {
+                'GET': 'retrieve_all_following'
+            },
+            'GET': 'render_stream_view',
+            'POST': 'create',
             # 'GET': None, Do we really need a single view of a post?
-            'DELETE': (self.controller.delete_post, True),
-            'PATCH': (self.controller.update_post, True)}
+            'DELETE': 'delete_post',
+            'PATCH': 'update_post'
+        }
 
     @classmethod
     def instance(cls):
         return cls()
-
-    def handle(self, request: HttpRequest, pk=None):
-        func, arg_pk = self._get_handler_for_method(self.plain_map, request.method)
-        return func(request, pk) if arg_pk else func(request)
-
+    #
+    # def handle(self, request: HttpRequest, pk=None):
+    #     func, arg_pk = self._get_handler_for_method(request.method)
+    #     return func(request, pk) if arg_pk else func(request)

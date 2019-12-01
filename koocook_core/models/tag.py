@@ -1,9 +1,11 @@
 from django.db import models
 
+from .base import SerialisableModel
+
 __all__ = ['Tag', 'TagLabel']
 
 
-class Tag(models.Model):
+class Tag(SerialisableModel, models.Model):
     """Represents a ``tag`` of recipes.
 
     Some examples of valid use cases:
@@ -28,8 +30,17 @@ class Tag(models.Model):
             raise ValueError(f'tag `name` and `label` together must be unique, '
                              f"another tag '{tag}' already exists")
 
+    @property
+    def as_dict(self) -> dict:
+        di = super().as_dict
+        di.update({'done': 'true'})
+        return di
 
-class TagLabel(models.Model):
+    def __str__(self):
+        return self.name
+
+
+class TagLabel(SerialisableModel, models.Model):
     """Represents a ``label`` (category) of tags.
 
     Some examples of valid use cases:
@@ -41,6 +52,7 @@ class TagLabel(models.Model):
         tag_set (RelatedManager): from ForeignKey in ``Tag``
     """
     name = models.CharField(max_length=50)
+    level = models.IntegerField(default=1)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
@@ -51,3 +63,7 @@ class TagLabel(models.Model):
         else:
             raise ValueError(f'label `name` must be unique, another label '
                              f"'{label}' already exists")
+    # tag_set from Tag's ForeignKey
+
+    def __str__(self):
+        return self.name
