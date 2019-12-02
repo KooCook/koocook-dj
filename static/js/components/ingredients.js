@@ -22,7 +22,7 @@ Vue.component("ingredient-chooser", {
     removeIngredient(ingredient) {
       ingredient.removed = true;
       const index = this.ingredients.findIndex(x => x === ingredient);
-      if (ingredient.added) this.ingredients.splice(index,1);
+      if (ingredient.added) this.ingredients.splice(index, 1);
       this.ingredients.push({});
       this.ingredients.pop();
     },

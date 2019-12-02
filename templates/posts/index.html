@@ -1,5 +1,6 @@
-{% extends 'base/content.html' %}
+{% extends 'base/mixins/formatted-md.html' %}
 {% load widget_tweaks %}
+{% load static %}
 {% block page_title %}Post Stream{% endblock %}
 {% block section_after_nav %}<section class="hero is-primary">
   <div class="hero-body">
@@ -13,8 +14,15 @@
 
   </div>
 </section>{% endblock %}
-
-
+{% block content_deps %}<script>
+    const COMMENTS_ENDPOINTS = {
+        GET: `{0}/comments`,
+        POST: `{0}/comments`,
+        PATCH: `{0}/comments`,
+    };
+</script>
+<script src="{% static 'js/components/comments.js' %}"></script>
+{% endblock %}
 {% block page_content %}
 <b-modal :active.sync="showModal" has-modal-card trap-focus aria-role="dialog" aria-modal>
   <div class="modal-card">
@@ -39,7 +47,8 @@
     <form method="post" class="box" @submit.prevent="createPost()">
       {% csrf_token %}
       <b-field label="What's on your mind?">
-        {{ form.body|attr:"v-model: currentPost.body"|add_class:'textarea' }}
+          <formatted-textarea-md v-model="currentPost.body" name="body" cols="40" rows="10"></formatted-textarea-md>
+{#        {{ form.body|attr:"v-model: currentPost.body"|add_class:'textarea' }}#}
       </b-field>
       <b-field>
         <div class="buttons">
@@ -67,7 +76,8 @@
               <form method="post" @submit.prevent="editPost(upIndex)">
                 {% csrf_token %}
                 <b-field>
-                  {{ form.body|attr:"v-model: userPost.body"|add_class:'textarea' }}
+                    <formatted-textarea-md v-model="userPost.body" cols="40" rows="10"></formatted-textarea-md>
+{#                  {{ form.body|attr:"v-model: userPost.body"|add_class:'textarea'|add_class:'md-enabled' }}#}
                 </b-field>
                 <b-field>
                   <div class="buttons">
@@ -76,15 +86,18 @@
                 </b-field>
               </form>
             </div>
-            <span v-else>{% templatetag openvariable %} userPost.body {% templatetag closevariable %}</span>
+            <span v-else v-html="userPost.renderedBody"></span>
           </p>
         </div>
         <nav class="level is-mobile">
           <div class="level-left">
             <a class="level-item" @click="showEdit(userPost)">
-              <span class="icon is-small"><i class="fas fa-pencil-alt"></i></span>
+              <span class="icon is-small"><b-icon icon="pencil" size="is-small"></b-icon></span>
             </a>
           </div>
+        </nav>
+          <nav class="level is-mobile">
+            <comments-widget class="level-item" item-name="this post" :item-id="userPost.id" custom-url="true"></comments-widget>
         </nav>
       </div>
       <div class="media-right">
@@ -124,12 +137,10 @@
         },
     methods: {
     async createPost() {
-      const formData = new FormData();
-      for (const prop in this.currentPost) {
-        formData.append(prop, this.currentPost[prop]);
-      }
+      const formBody = new FormData();
+        formBody.set("body", this.currentPost.body);
       const resp = await fetch(`/posts/`, {
-        body: "body=" + this.currentPost.body,
+        body: new URLSearchParams(formBody),
         method: "POST", credentials: 'include', headers: {
           'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'X-CSRFToken': getCookie('csrftoken')
         }
@@ -147,8 +158,10 @@
       }
     },
     async editPost(post_index) {
+        const formBody = new FormData();
+        formBody.set("body", this.posts[post_index].body);
       const resp = await fetch(`/posts/${this.posts[post_index].id}`, {
-        body: "body=" + this.posts[post_index].body,
+        body: new URLSearchParams(formBody),
         method: "PATCH", credentials: 'include', headers: {
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
             'X-CSRFToken': getCookie('csrftoken')
@@ -156,7 +169,7 @@
       });
       if (resp.ok) {
       this.posts[post_index].editing = false;
-        this.posts[post_index].body = JSON.parse((await resp.json()).post).body;
+        this.posts[post_index].renderedBody = JSON.parse((await resp.json()).post).renderedBody;
 
         this.$buefy.toast.open({
           message: 'Successfully edited the post!',

@@ -41,6 +41,7 @@ class KoocookUser(SerialisableModel, models.Model):
 
 
 class Author(SerialisableModel, models.Model):
+    exclude = ('user',)
     name = models.CharField(max_length=100)
     user = models.OneToOneField(
         'koocook_core.KoocookUser',

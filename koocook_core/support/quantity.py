@@ -13,7 +13,7 @@ class Quantity:
     __slots__ = ('amount', 'unit')
 
     def __init__(self,
-                 amount: Union[Fraction, int, float],
+                 amount: Union[Fraction, int],
                  unit: Union[unit_.Unit, str]):
         if isinstance(amount, Fraction):
             self.amount = amount
@@ -90,3 +90,4 @@ class QuantityField(models.CharField):
     def value_to_string(self, obj):
         value = self.value_from_object(obj)
         return self.get_prep_value(value)
+
