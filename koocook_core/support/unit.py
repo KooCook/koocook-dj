@@ -42,8 +42,7 @@ class Unit(enum.Enum):
     def plural(self) -> str:
         return self._plural
 
-    @property
-    def type(self) -> str:
+    def get_type(self) -> str:
         name = self.__class__.__name__
         return name[0].lower() + name[1:]
 
@@ -53,6 +52,14 @@ class Unit(enum.Enum):
             return self._conversion_factor
         raise AttributeError('\'{}\' are incompatible with conversion factor'
                              .format(self.__class__.__name__))
+
+    def as_dict(self):
+        try:
+            return {"unit": self.singular,
+                    "symbol": self.symbol,
+                    "value": self.conversion_factor}
+        except AttributeError:
+            return {"symbol": self.symbol, "unit": self.symbol, "value": "REQ_FUNC"}
 
 
 class LengthUnit(Unit):

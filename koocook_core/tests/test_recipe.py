@@ -1,8 +1,7 @@
 from datetime import timedelta
 from django.shortcuts import reverse
 from koocook_core.models.recipe import Recipe, RecipeVisit, get_client_ip
-from .base import create_dummy_recipe, AuthTestCase
-from django.test import TestCase, RequestFactory
+from django.test import RequestFactory
 from koocook_core.tests.base import AuthTestCase, create_dummy_recipe, create_dummy_recipe_body
 
 

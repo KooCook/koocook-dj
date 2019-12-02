@@ -17,6 +17,7 @@ urlpatterns = [
     path('comments/<int:pk>/rate', comment_handler.handle, name='comment-rate', kwargs={"alias": 'rate'}),
     path('profile/', include('koocook_core.urls.profile'), name='profile'),
     path('recipes/', views.PreferredRecipeStreamView.as_view(), name='recipe-all'),
+    path('recipes/unit_conv', recipe_handler.handle, name='recipe-unit-conv', kwargs={"alias": 'unit_conv'}),
     path('recipes/<int:recipe_id>', views.handle_recipe, name='recipe'),
     path('recipes/<int:item_id>/comments', recipe_handler.handle, name='recipe-comments', kwargs={"alias": 'comment'}),
     path('recipes/<int:pk>/edit', views.RecipeUpdateView.as_view(), name='recipe-edit'),
