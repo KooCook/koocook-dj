@@ -33,7 +33,7 @@ class RecipeController(RatableController, CommentControllerMixin):
 
     def convert(self):
         try:
-            if 'value ' not in self.request_fields:
+            if 'value' not in self.request_fields:
                 return ControllerResponse("None")
             value = float(self.request_fields["value"])
             type = self.request_fields["type"]

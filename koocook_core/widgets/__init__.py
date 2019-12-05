@@ -1,5 +1,5 @@
 from django.forms.widgets import Widget
-from koocook_core.support.quantity import parse_quantity
+from koocook_core.support.quantity import parse_quantity, Quantity
 
 class RecipeTagInput(Widget):
     template_name = 'widgets/recipe_tag_input.html'
@@ -23,6 +23,9 @@ class QuantityInput(Widget):
 
     def get_context(self, name, value, attrs):
         context = super().get_context(name, value, attrs)
-        context['widget']['value'] = parse_quantity(context['widget']['value'])
+        try:
+            context['widget']['value'] = parse_quantity(context['widget']['value'])
+        except AttributeError:
+            context['widget']['value'] = Quantity(1, 'serving')
         context['widget']['section'] = self.section
         return context
