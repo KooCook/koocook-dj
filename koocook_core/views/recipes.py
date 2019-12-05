@@ -170,3 +170,11 @@ class PreferredRecipeStreamView(AuthAuthorMixin, ListView):
             return Recipe.objects.filter(tag_set__name__in=converted_exact_tag_set_names)
         else:
             return Recipe.objects.all()
+
+
+class RecipeIngredientsView(ListView):
+    pass
+
+
+class RecipeEquipmentView(ListView):
+    pass

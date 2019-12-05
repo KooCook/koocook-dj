@@ -1,0 +1,4 @@
+<quantity-input {% include "django/forms/widgets/attrs.html" %}
+        name="{{ widget.name }}" section="{{ widget.section }}"
+        :initial="{amount:{{ widget.value.amount }}, unit:'{{ widget.value.unit.representation }}'}">
+</quantity-input>

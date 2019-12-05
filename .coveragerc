@@ -11,3 +11,10 @@ exclude_lines =
 ignore_errors = True
 omit =
     tests/*
+    manage.py
+    wsgi.py
+    **/tests/**
+    **/settings/**
+    test_*.py
+    *_test.py
+    venv/**

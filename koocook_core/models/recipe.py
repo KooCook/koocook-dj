@@ -29,6 +29,7 @@ class Recipe(ReviewableModel, models.Model):
     description = models.TextField()
     prep_time = models.DurationField(null=True, blank=True)
     cook_time = models.DurationField(null=True)
+    recipe_equipment = fields.ArrayField(models.TextField())
     recipe_instructions = fields.ArrayField(models.TextField())
     recipe_yield = koocookfields.QuantityField(null=True)
     tag_set = models.ManyToManyField('koocook_core.Tag', blank=True)

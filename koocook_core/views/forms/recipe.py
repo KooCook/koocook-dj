@@ -1,4 +1,5 @@
 from django import forms
+from ...widgets import QuantityInput
 from ...models import Recipe
 from ...support import CustomisableForm
 
@@ -11,3 +12,4 @@ class RecipeForm(CustomisableForm):
         model = Recipe
         fields = '__all__'
         exclude = ('aggregate_rating', 'author', 'date_published', 'tag_set')
+        widgets = {'recipe_yield': QuantityInput('serving')}

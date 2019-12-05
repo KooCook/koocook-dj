@@ -8,6 +8,7 @@
 <script src="{% static 'js/bundle.js' %}"></script>
 {% endblock %}
 {% block page_content %}
+    <quantity-input section="serving"></quantity-input>
     <recipe-tag-input :attached="true" v-model="tags" ellipsis icon="tag" placeholder="Add a tag"
     :allow-new="true" autocomplete maxtags="18" maxlength="24">
     <template v-slot:default="slotProps"></template>

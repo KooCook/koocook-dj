@@ -42,7 +42,18 @@ class Unit(enum.Enum):
     def plural(self) -> str:
         return self._plural
 
-    def get_type(self) -> str:
+    @property
+    def representation(self):
+        return self.get_repr()
+
+    def get_repr(self):
+        if self.singular:
+            return self.singular
+        else:
+            return self.symbol
+
+    @property
+    def type(self) -> str:
         name = self.__class__.__name__
         return name[0].lower() + name[1:]
 
@@ -55,11 +66,16 @@ class Unit(enum.Enum):
 
     def as_dict(self):
         try:
-            return {"unit": self.singular,
+            return {"unit": self.get_repr(),
+                    "singular": self.singular,
+                    "plural": self.plural,
                     "symbol": self.symbol,
                     "value": self.conversion_factor}
         except AttributeError:
-            return {"symbol": self.symbol, "unit": self.symbol, "value": "REQ_FUNC"}
+            if self.symbol:
+                return {"symbol": self.symbol, "unit": self.get_repr(), "value": "REQ_FUNC"}
+            else:
+                return {"symbol": self.singular, "unit": self.get_repr(), "value": None}
 
 
 class LengthUnit(Unit):
@@ -161,6 +177,14 @@ class SpecialUnit(Unit):
     IU = 'IU', None, 'International Units', 'International Unit'
     SERVING = None, None,
     PERSON = None, None, 'people'
+
+    def as_dict(self):
+        if self is SpecialUnit.NONE:
+            return {"unit": self.get_repr(),
+                    "symbol": '',
+                    "value": None}
+        else:
+            return super().as_dict()
 
 
 def get_unit(unit: Union[str, Unit]) -> Unit:
