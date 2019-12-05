@@ -2,6 +2,16 @@
 {% load widget_tweaks %}
 {% load static %}
 {% block page_title %}Post Stream{% endblock %}
+{% block content_deps %}
+    <script>
+    const COMMENTS_ENDPOINTS = {
+        GET: `{0}/comments`,
+        POST: `{0}/comments`,
+        PATCH: `{0}/comments`,
+    };
+    const RATE_URL = `{0}/rate/`;
+</script>
+<script src="{% static 'js/bundle.js' %}"></script>{% endblock %}
 {% block section_after_nav %}<section class="hero is-primary">
   <div class="hero-body">
     <div class="container">
@@ -14,15 +24,6 @@
 
   </div>
 </section>{% endblock %}
-{% block content_deps %}<script>
-    const COMMENTS_ENDPOINTS = {
-        GET: `{0}/comments`,
-        POST: `{0}/comments`,
-        PATCH: `{0}/comments`,
-    };
-</script>
-<script src="{% static 'js/components/comments.js' %}"></script>
-{% endblock %}
 {% block page_content %}
 <b-modal :active.sync="showModal" has-modal-card trap-focus aria-role="dialog" aria-modal>
   <div class="modal-card">
@@ -43,7 +44,7 @@
   </div>
 </b-modal>
 <b-tabs type="is-toggle" position="is-centered" class="is-fullwidth">
-  <b-tab-item label="My posts">
+  {% if request.user.is_authenticated %}<b-tab-item label="My posts">
     <form method="post" class="box" @submit.prevent="createPost()">
       {% csrf_token %}
       <b-field label="What's on your mind?">
@@ -70,7 +71,7 @@
             <strong>{% templatetag openvariable %} userPost.author.qualified_name
               {% templatetag closevariable %}</strong> <small>@{% templatetag openvariable %} userPost.author.name
               {% templatetag closevariable %}</small> <small>{% templatetag openvariable %} publicationElapsed[upIndex]
-              {% templatetag closevariable %}</small>
+              {% templatetag closevariable %}</small>  <star-rating :rate-url="rateURL.format(userPost.id)" :read-only="true" :item-id="userPost.id" :initial="userPost.aggregate_rating.rating_value"></star-rating>
             <br>
             <div v-if="userPost.editing">
               <form method="post" @submit.prevent="editPost(upIndex)">
@@ -86,7 +87,7 @@
                 </b-field>
               </form>
             </div>
-            <span v-else v-html="userPost.renderedBody"></span>
+            <span v-else v-html="userPost.rendered"></span>
           </p>
         </div>
         <nav class="level is-mobile">
@@ -97,7 +98,7 @@
           </div>
         </nav>
           <nav class="level is-mobile">
-            <comments-widget class="level-item" item-name="this post" :item-id="userPost.id" custom-url="true"></comments-widget>
+            <comments-widget class="level-item" item-name="this post" :item-id="userPost.id" :author-id="currentAuthorId" custom-url="true"></comments-widget>
         </nav>
       </div>
       <div class="media-right">
@@ -105,13 +106,99 @@
         <button v-show="userPost.hovered" class="delete" @click="deletePost(userPost)"></button>
       </div>
     </article>
+  </b-tab-item> {% endif %}
+  <b-tab-item label="All posts">
+      <article class="media" v-for="(userPost, upIndex) in allPosts" v-on:mouseover="$set(userPost, 'hovered', true)"
+      v-on:mouseleave="$set(userPost, 'hovered', false)">
+      <figure class="media-left">
+        <p class="image is-64x64">
+          <img src="https://bulma.io/images/placeholders/128x128.png">
+        </p>
+      </figure>
+      <div class="media-content">
+        <div class="content">
+            <strong>{% templatetag openvariable %} userPost.author.qualified_name
+              {% templatetag closevariable %}</strong> <small>@{% templatetag openvariable %} userPost.author.name
+              {% templatetag closevariable %}</small> <small>{% templatetag openvariable %} userPost.date_published |
+              time-passed
+              {% templatetag closevariable %}</small> <star-rating :rate-url="rateURL.format(userPost.id)"  :item-id="userPost.id" :read-only="userPost.author.id === currentAuthorId" :initial="userPost.aggregate_rating.rating_value"></star-rating>
+            <br>
+            <div v-if="userPost.editing">
+              <form method="post" @submit.prevent="editPost(upIndex)">
+                {% csrf_token %}
+                <b-field>
+                    <formatted-textarea-md v-model="userPost.body" cols="40" rows="10"></formatted-textarea-md>
+{#                  {{ form.body|attr:"v-model: userPost.body"|add_class:'textarea' }}#}
+                </b-field>
+                <b-field>
+                  <div class="buttons">
+                    <button type="submit" class="button is-primary is-small">Confirm edits</button>
+                  </div>
+                </b-field>
+              </form>
+            </div>
+            <span v-else v-html="userPost.rendered"></span>
+        </div>
+        <nav class="level is-mobile">
+          <div class="level-left">
+            <a class="level-item" @click="showEdit(userPost)">
+              <span class="icon is-small"><i class="fas fa-pencil-alt"></i></span>
+            </a>
+          </div>
+            <comments-widget class="level-item" item-name="this post" :item-id="userPost.id" :author-id="currentAuthorId" custom-url="true"></comments-widget>
+        </nav>
+      </div>
+      <div class="media-right">
+        <follow-widget v-show="!userPost.hidden && currentAuthorId !== userPost.author.id" :followee-id="userPost.author.user.id" :followees="$refs.followees.followees"></follow-widget>
+      </div>
+    </article>
   </b-tab-item>
-  <b-tab-item label="Trending"></b-tab-item>
-  <b-tab-item label="Following"></b-tab-item>
+  {% if request.user.is_authenticated %}<b-tab-item label="Following">
+    <article class="media" v-for="(userPost, upIndex) in followeePosts" v-on:mouseover="$set(userPost, 'hovered', true)"
+      v-on:mouseleave="$set(userPost, 'hovered', false)">
+      <figure class="media-left">
+        <p class="image is-64x64">
+          <img src="https://bulma.io/images/placeholders/128x128.png">
+        </p>
+      </figure>
+      <div class="media-content">
+        <div class="content">
+          <p>
+            <strong>{% templatetag openvariable %} userPost.author.qualified_name
+              {% templatetag closevariable %}</strong> <small>@{% templatetag openvariable %} userPost.author.name
+              {% templatetag closevariable %}</small> • <follow-widget :followee-id="userPost.author.user.id" :followees="$refs.followees.followees"></follow-widget>
+            <br>
+          </p>
+            <p>{% templatetag openvariable %} userPost.body {% templatetag closevariable %}</p>
+        </div>
+        <nav class="level is-mobile">
+            <comments-widget class="level-item" item-name="this post" :item-id="userPost.id" :author-id="currentAuthorId" custom-url="true"></comments-widget>
+          <div class="level-left">
+          </div>
+        </nav>
+      </div>
+      <div class="media-right">
+          <small>{% templatetag openvariable %} userPost.date_published | time-passed {% templatetag closevariable %}</small>
+      </div>
+    </article></b-tab-item>{% endif %}
 </b-tabs>
-
+    <followee-list ref="followees"></followee-list>
 <script>
-  new Vue({
+  Object.assign(GLOBAL_DATA, {
+    activeTab: 0,
+     currentAuthorId: {% if current_author.id %}{{ current_author.id }}{% else %}0{% endif %},
+    showModal: false,
+      rateURL: RATE_URL,
+    selectedPost: {},
+    posts: [],
+    followeePosts: [],
+    allPosts: [],
+    currentPost: {
+      body: ''
+    },
+  });
+
+  const app = new Vue({
     el: '#app',
     computed: {
       publicationElapsed() {
@@ -121,98 +208,122 @@
           return [];
       }
     },
-    data: {
-      searchName: '',
-      activeTab: 0,
-      showModal: false,
-      selectedPost: {},
-      posts: [
-        {% for user_post in user_posts %}
-                    {{ user_post.as_json | safe }},
-    {% endfor %}
-            ],
-    currentPost: {
-    body: ''
-  }
-        },
+    data: GLOBAL_DATA,
     methods: {
-    async createPost() {
-      const formBody = new FormData();
-        formBody.set("body", this.currentPost.body);
-      const resp = await fetch(`/posts/`, {
-        body: new URLSearchParams(formBody),
-        method: "POST", credentials: 'include', headers: {
+      async createPost() {
+        const formBody = new FormData();
+          formBody.set("body", this.currentPost.body);
+          // for (const prop in this.currentPost) {
+          //   formData.append(prop, this.currentPost[prop]);
+          // }
+        const resp = await fetch(`/posts/`, {
+          body: new URLSearchParams(formBody),
+          method: "POST", credentials: 'include', headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'X-CSRFToken': getCookie('csrftoken')
+          }
+        });
+        if (resp.ok) {
+          this.$buefy.toast.open({
+            message: 'Successfully posted!',
+            type: 'is-success'
+          }); this.posts.unshift((await resp.json()).current)
+        } else {
+          this.$buefy.toast.open({
+            message: 'Posting failed! Try again',
+            type: 'is-danger'
+          })
+        }
+      },
+      async editPost(post_index) {
+          const formBody = new FormData();
+          formBody.set("body", this.posts[post_index].body);
+        const resp = await fetch(`/posts/${this.posts[post_index].id}`, {
+          body: new URLSearchParams(formBody),
+          method: "PATCH", credentials: 'include', headers: {
+              'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+              'X-CSRFToken': getCookie('csrftoken')
+          }
+        });
+        if (resp.ok) {
+        this.posts[post_index].editing = false;
+          this.posts[post_index].rendered = (await resp.json()).current.rendered;
+
+          this.$buefy.toast.open({
+            message: 'Successfully edited the post!',
+            type: 'is-success'
+          });
+        } else {
+          this.$buefy.toast.open({
+            message: 'Failed to edit the post! Try again',
+            type: 'is-danger'
+          })
+        }
+      },
+      async deletePost(post) {
+        this.selectedPost = post;
+        this.showModal = true;
+      },
+      async confirmDeletion() {
+        const post = this.selectedPost;
+        const resp = await fetch(`/posts/${post.id}`, {
+          method: "DELETE", credentials: 'include', headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+          }
+        });
+        if (resp.ok) {
+          this.$buefy.toast.open({
+            message: 'Successfully deleted the post!',
+            type: 'is-success'
+          }); this.posts = this.posts.filter(p => p !== post);
+          this.showModal = false;
+        } else {
+          this.$buefy.toast.open({
+            message: 'Failed to delete the post! Try again',
+            type: 'is-danger'
+          })
+        }
+      },
+      async showEdit(post) {
+        this.$set(post, 'editing', true);
+      },
+      async hideEdit(post) {
+        this.$set(post, 'editing', false);
+      }
+    },
+    async created() {
+      let resp = await fetch(`{% url 'koocook_core:posts:user' %}`, {
+        method: "GET", credentials: 'include', headers: {
           'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'X-CSRFToken': getCookie('csrftoken')
         }
       });
       if (resp.ok) {
-        this.$buefy.toast.open({
-          message: 'Successfully posted!',
-          type: 'is-success'
-        }); this.posts.unshift(JSON.parse((await resp.json()).post))
-      } else {
-        this.$buefy.toast.open({
-          message: 'Posting failed! Try again',
-          type: 'is-danger'
-        })
+        const responseData = await resp.json();
+      if (responseData.current) { this.posts = responseData.current;
+      this.allPosts.push(responseData.current); }
+          else this.posts = [];
       }
-    },
-    async editPost(post_index) {
-        const formBody = new FormData();
-        formBody.set("body", this.posts[post_index].body);
-      const resp = await fetch(`/posts/${this.posts[post_index].id}`, {
-        body: new URLSearchParams(formBody),
-        method: "PATCH", credentials: 'include', headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-            'X-CSRFToken': getCookie('csrftoken')
+      resp = await fetch(`{% url 'koocook_core:posts:ajax-all' %}`, {
+        method: "GET", credentials: 'include', headers: {
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'X-CSRFToken': getCookie('csrftoken')
         }
       });
       if (resp.ok) {
-      this.posts[post_index].editing = false;
-        this.posts[post_index].renderedBody = JSON.parse((await resp.json()).post).renderedBody;
+        const responseData = await resp.json();
+        if (responseData.current) this.allPosts = responseData.current;
+      }
 
-        this.$buefy.toast.open({
-          message: 'Successfully edited the post!',
-          type: 'is-success'
-        });
-      } else {
-        this.$buefy.toast.open({
-          message: 'Failed to edit the post! Try again',
-          type: 'is-danger'
-        })
-      }
-    },
-    async deletePost(post) {
-      this.selectedPost = post;
-      this.showModal = true;
-    },
-    async confirmDeletion() {
-      const post = this.selectedPost;
-      const resp = await fetch(`/posts/${post.id}`, {
-        method: "DELETE", credentials: 'include', headers: {
-          'X-CSRFToken': getCookie('csrftoken')
+       resp = await fetch(`{% url 'koocook_core:posts:followee' %}`, {
+        method: "GET", credentials: 'include', headers: {
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'X-CSRFToken': getCookie('csrftoken')
         }
       });
       if (resp.ok) {
-        this.$buefy.toast.open({
-          message: 'Successfully deleted the post!',
-          type: 'is-success'
-        }); this.posts = this.posts.filter(p => p !== post);
-        this.showModal = false;
-      } else {
-        this.$buefy.toast.open({
-          message: 'Failed to delete the post! Try again',
-          type: 'is-danger'
-        })
+        const responseData = await resp.json();
+        if (responseData.current) this.followeePosts = responseData.current;
       }
-    },
-    async showEdit(post) {
-      this.$set(post, 'editing', true);
-    },
-    async hideEdit(post) {
-      this.$set(post, 'editing', false);
+
+
     }
-  }
       })
 </script>
 {% endblock %}

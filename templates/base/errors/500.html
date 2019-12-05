@@ -1,0 +1,13 @@
+{% extends 'base/errors/index.html' %}
+{% block error_mast %}
+    <h1 class="title is-1">500 - Server Error</h1>
+{% endblock %}
+{% block error_mast_message %}
+    KooCook! has gone kaput!
+{% endblock %}
+{% block error_msg %}
+    You have requested the path <code>{{ request.path }}</code>, but KooCook! could not make it!
+{% endblock %}
+{% block error_action %}
+<p><a href="{% url 'koocook_core:index' %}"><button class="button is-link">Back to home page</button></a></p>
+{% endblock %}

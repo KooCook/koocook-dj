@@ -1,4 +1,7 @@
 {% extends 'base/recipes.html' %}
+{% load static %}
+{% load recipe_extras %}
+{% block content_deps %}<script src="{% static 'js/components/star-rating.js' %}"></script>{% endblock %}
 {% block section_after_nav %}<section class="hero is-light">
   <div class="hero-body">
     <div class="container">
@@ -42,12 +45,13 @@
     <div class="column is-half">
     <div class="card">
          <div class="card-image">
-    <figure class="image is-2by1 is-bg-cover-centered" style="background-image: url({{ recipe.image|first }});">
-{#      <img src="{{ recipe.image }}" alt="Recipe image">#}
+    <figure class="image is-2by1 is-bg-cover-centered">
+      <img src="{{ recipe.image|first }}" alt="Recipe image">
     </figure>
   </div>
     <div class="card-content">
         <div class="media">
+            <star-rating recipe-name="{{ recipe.name }}" :item-id="{{ recipe.id }}" :initial="{{ recipe.aggregate_rating.rating_value }}" :read-only="true"></star-rating>
       <div class="media-content">
           <p class="title is-4"><a href="{% url 'koocook_core:recipe' recipe.id %}">{{ recipe.name }}</a> <span class="buttons is-inline-flex has-addons  is-small">
               <a href="{% url 'koocook_core:recipe-edit' recipe.id %}"><button class="button is-primary is-outlined is-small"><b-icon icon="pencil"></b-icon> </button></a>
@@ -55,6 +59,13 @@
         </span></p>
 
       </div>
+            <div class="media-bottom">
+                 <p class="subtitle has-text-grey is-6"><span class="date-posted"><b-icon icon="calendar" size="is-small"></b-icon>
+              {{ recipe.date_published }}</span> <span class="date-posted"><b-icon icon="clock" size="is-small"></b-icon> Ready in:
+              {{ recipe.total_time|timedel_to_words }}</span>
+            <span class="date-posted"><b-icon icon="eye" size="is-small"></b-icon> {{ recipe.view_count }}
+              view{{ recipe.view_count|pluralize }}</span></p>
+            </div>
     </div>
     </div>
     </div>

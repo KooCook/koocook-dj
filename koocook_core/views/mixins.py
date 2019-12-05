@@ -1,5 +1,4 @@
 import json
-from django.http import HttpResponse, HttpResponseForbidden, HttpRequest
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import reverse
 from django.views.generic.edit import FormMixin, ProcessFormView
@@ -13,16 +12,36 @@ class SignInRequiredMixin(LoginRequiredMixin):
     def login_url(self):
         return reverse('social:begin', args=['google-oauth2'])
 
+    def get_success_url(self):
+        return self.request.path
 
-class AuthAuthorMixin(SignInRequiredMixin):
+
+class PreferencesMixin(SignInRequiredMixin):
+    def form_valid(self, form):
+        self.object.formal_preferences.update_from_json(self.request.POST["preferences"])
+        response = super().form_valid(form)
+        return response
+
+
+class AuthAuthorMixin:
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            context['current_author'] = Author.objects.get(user__user=self.request.user)
+        else:
+            context['current_author'] = {'id': 0}
+        return context
+
+    def get_author(self) -> Author:
+        return Author.objects.get(user__user=self.request.user)
 
     def form_valid(self, form):
-        form.instance.author = Author.objects.get(user__user=self.request.user)
-        print(form.instance.author)
+        form.instance.author = self.get_author()
         return super().form_valid(form)
 
 
-class CommentWidgetMixin(FormMixin, AuthAuthorMixin):
+class CommentWidgetMixin(AuthAuthorMixin, FormMixin):
     form_class = CommentForm
     #
     # def post(self, request, *args, **kwargs):
@@ -44,9 +63,38 @@ class CommentWidgetMixin(FormMixin, AuthAuthorMixin):
         return context
 
 
-class RecipeViewMixin:
+class RecipeViewMixin(SignInRequiredMixin, AuthAuthorMixin):
+
+    # Messy
     def form_valid(self, form):
+        from ..models import Tag, TagLabel
         response = super().form_valid(form)
+        tags = json.loads(self.request.POST.get('tags'))
+        if tags:
+            for tag in tags:
+                tag_body: dict = {field: tag[field] for field in tag if field
+                                  in [f.name for f in Tag._meta.get_fields()]}
+                if 'deleted' in tag and tag['deleted']:
+                    form.instance.tag_set.remove(Tag.objects.get(pk=tag['id']))
+                    Tag.objects.get(pk=tag['id']).delete()
+                else:
+                    if tag['label'] != '':
+                        if 'id' in tag['label']:
+                            tag['label'].pop('id')
+                        tag_body['label'] = TagLabel.objects.create(**tag['label'])
+                    if 'id' not in tag_body:
+                        form.instance.tag_set.add(Tag.objects.create(**tag_body))
+                    else:
+                        try:
+                            obj = form.instance.tag_set.get(id=tag_body['id'])
+                            obj.name = tag_body['name']
+                            obj.save()
+                        except Tag.DoesNotExist:
+                            form.instance.tag_set.add(Tag.objects.get(pk=tag_body['id']))
+        else:
+            form.instance.tag_set.clear()
+        form.instance.save()
+
         ingredients = json.loads(self.request.POST.get('ingredients'))
         if ingredients:
             for ingredient in ingredients:
@@ -73,4 +121,3 @@ class RecipeViewMixin:
             return response
         else:
             return response
-

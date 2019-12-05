@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.contrib.postgres import fields
 from django.db import models
 
-from .base import SerialisableModel
+from ..base import SerialisableModel
 
 __all__ = ('KoocookUser', 'Author')
 
@@ -12,6 +12,7 @@ def _default_preferences():
 
 
 class KoocookUser(SerialisableModel, models.Model):
+    exclude = ('user', 'preferences', 'user_settings')
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     # author from Author's OneToOneField
     preferences = fields.JSONField(default=_default_preferences)
@@ -22,11 +23,18 @@ class KoocookUser(SerialisableModel, models.Model):
     class Meta:
         db_table = "koocook_user"
 
+    @property
+    def formal_preferences(self):
+        from ...support import PreferenceManager
+        return PreferenceManager.from_koocook_user(self)
+
     def follow(self, user: 'KoocookUser'):
-        pass
+        self.following.add(user)
+        self.save()
 
     def unfollow(self, user: 'KoocookUser'):
-        pass
+        self.following.remove(user)
+        self.save()
 
     @property
     def name(self):
@@ -35,13 +43,17 @@ class KoocookUser(SerialisableModel, models.Model):
         else:
             return self.user.username
 
+    @classmethod
+    def from_dj_user(cls, user: User):
+        return cls.objects.get(user=user)
+
     @property
     def full_name(self):
         return self.user.get_full_name()
 
 
 class Author(SerialisableModel, models.Model):
-    exclude = ('user',)
+    include = ('qualified_name',)
     name = models.CharField(max_length=100)
     user = models.OneToOneField(
         'koocook_core.KoocookUser',
