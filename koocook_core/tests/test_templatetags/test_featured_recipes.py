@@ -1,5 +1,4 @@
 import datetime
-from django.urls import reverse
 from django.test import TestCase
 from django.utils import timezone
 from koocook_core.models.recipe import Recipe
@@ -15,17 +14,19 @@ class FeaturedRecipesTest(TestCase):
         create_recipe(recipe_name='2st recipe', days=-2, rating=rating2)
         self.assertQuerysetEqual(
             top_latest_recipes(Recipe.objects.all()),
-            ['<Recipe: Recipe object (2)>', '<Recipe: Recipe object (1)>']
+            [f'<Recipe: Recipe object ({Recipe.objects.get(name="2st recipe").id})>',
+             f'<Recipe: Recipe object ({Recipe.objects.get(name="1st recipe").id})>']
         )
 
     def test_top_latest_with_same_date(self):
         rating1 = create_aggregate_rating(rating=2)
         rating2 = create_aggregate_rating(rating=5)
-        create_recipe(recipe_name='1st recipe', days=-1, rating=rating2)
-        create_recipe(recipe_name='2st recipe', days=-1, rating=rating1)
+        create_recipe(recipe_name='3st recipe', days=-1, rating=rating2)
+        create_recipe(recipe_name='4st recipe', days=-1, rating=rating1)
         self.assertQuerysetEqual(
             top_latest_recipes(Recipe.objects.all()),
-            ['<Recipe: Recipe object (3)>', '<Recipe: Recipe object (4)>']
+            [f'<Recipe: Recipe object ({Recipe.objects.get(name="3st recipe").id})>',
+             f'<Recipe: Recipe object ({Recipe.objects.get(name="4st recipe").id})>']
         )
 
     def test_empty_recipe(self):
