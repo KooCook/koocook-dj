@@ -76,7 +76,7 @@
                   I'm feeling hungry!
                 </a>
                 <hr class="navbar-divider">
-                <a class="navbar-item is-disabled" title="Can't find an ingredient? Look no further">
+                <a href="{% url 'koocook_core:ingredients' %}" class="navbar-item" title="Can't find an ingredient? Look no further">
                   Ingredients
                 </a>
                 <a class="navbar-item is-disabled" title="Looking to get some new cookwares? We've got you covered">
@@ -156,7 +156,8 @@
         </div>
         </div>
     </nav>{% block section_after_nav %}
-        {% block no_breadcrumb %}<div class="container"><nav class="breadcrumb breadcrumb-nav" aria-label="breadcrumbs">
+{% block nav_pane %}{% endblock %}
+        <div class="container">{% block no_breadcrumb %}<nav class="breadcrumb breadcrumb-nav" aria-label="breadcrumbs">
       <ul>
         <li><a href="{% url "koocook_core:index" %}">KooCook!</a></li>
         {% block breadcrumb_category %}
@@ -165,12 +166,13 @@
         {% endblock %}
         {% block breadcrumb_item_extension %}{% endblock %}
       </ul>
-    </nav></div>{% endblock %}{% block no_hero %}<section class="hero is-light">
+    </nav>{% endblock %}</div>{% block no_hero %}<section class="hero is-light">
         <div class="hero-body">
         <div class="container">
           <h1 class="title">
             {% block hero_title %}{% endblock %}
           </h1>
+            <h2 class="subtitle">{% block hero_subtitle %}{% endblock %}</h2>
         </div>
       </div>
     </section>{% endblock %}{% endblock %}

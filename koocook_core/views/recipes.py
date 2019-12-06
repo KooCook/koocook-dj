@@ -2,6 +2,7 @@ import json
 import django
 from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import QueryDict
 from django.shortcuts import reverse
 from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
@@ -12,6 +13,7 @@ from .forms import RecipeForm
 from .mixins import AuthAuthorMixin, CommentWidgetMixin, RecipeViewMixin, SignInRequiredMixin
 from ..models import Recipe, Author, KoocookUser, RecipeIngredient, MetaIngredient
 from ..models.base import ModelEncoder
+from ..support.query import QueryRuleset, IngredientRule, OrderingRule
 
 
 class RecipeSearchListView(AuthAuthorMixin, ListView):
@@ -19,29 +21,39 @@ class RecipeSearchListView(AuthAuthorMixin, ListView):
     model = Recipe
     paginate_by = 10
     context_object_name = 'recipes'
+    ordering = ['-date_published']
     template_name = 'search.html'
+    ruleset = QueryRuleset(IngredientRule, OrderingRule)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['section'] = 'search'
+        url_filters = QueryDict('', mutable=True)
+        url_filters.update(self.request.GET.dict())
+        if 'page' in url_filters:
+            url_filters.pop('page')
+        if len(url_filters) > 0:
+            context['url_filters'] = '&' + url_filters.urlencode()
+        else:
+            context['url_filters'] = ''
         if self.request.GET.get("popular"):
             context['search_filter'] = 'popular'
-        elif self.request.GET.get("name_asc"):
-            context['search_filter'] = 'name'
-        else:
-            context['search_filter'] = 'date'
+        elif self.request.GET.get("order"):
+            if 'name' in self.request.GET.get("order"):
+                context['search_filter'] = 'name'
+            else:
+                context['search_filter'] = 'date'
         return context
 
     def get_queryset(self):
+        queryset = super().get_queryset()
         popular = self.request.GET.get("popular")
         kw = self.request.GET.get("kw")
+        query_set = self.ruleset.apply_ruleset(self.request.GET, queryset)
         if kw:
             query_set = self.model.objects.filter(name__icontains=kw)
         else:
-            query_set = self.model.objects.all()
-        if self.request.GET.get("name_asc"):
-            query_set = query_set.order_by("name")
-        else:
-            query_set = query_set.order_by("-date_published")
+            query_set = query_set
         if popular:
             query_set = sorted(query_set,
                                key=lambda t: t.popularity_score,
@@ -52,7 +64,13 @@ class RecipeSearchListView(AuthAuthorMixin, ListView):
 class UserRecipeListView(SignInRequiredMixin, ListView):
     model = Recipe
     template_name = 'recipes/user.html'
+    paginate_by = 10
     context_object_name = "user_recipes"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['section'] = 'recipe-user'
+        return context
 
     def get_queryset(self):
         # try:
@@ -158,6 +176,7 @@ class PreferredRecipeStreamView(AuthAuthorMixin, ListView):
     def get_context_data(self, **kwargs):
         from koocook_core.models import Tag
         context = super().get_context_data(**kwargs)
+        context['section'] = 'suggested'
         context['tag_set'] = Tag.objects.filter(name__in=[tag["name"] for tag in self.preferred_tags.setting])
         return context
 
@@ -173,7 +192,8 @@ class PreferredRecipeStreamView(AuthAuthorMixin, ListView):
 
 
 class RecipeIngredientsView(ListView):
-    pass
+    model = RecipeIngredient
+    template_name = "ingredients.html"
 
 
 class RecipeEquipmentView(ListView):

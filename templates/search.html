@@ -93,13 +93,13 @@
   {% if page_obj.has_other_pages %}
   <nav class="pagination is-centered" role="navigation" aria-label="pagination">
     {% if page_obj.has_previous %}
-    <a href="?page={{ page_obj.previous_page_number }}" class="pagination-previous">
+    <a href="?page={{ page_obj.previous_page_number }}{{ url_filters }}" class="pagination-previous">
       <b-icon icon="arrow-left-bold" size="is-small">
       </b-icon> Previous
     </a>
     {% endif %}
     {% if page_obj.has_next %}
-    <a href="?page={{ page_obj.next_page_number }}" class="pagination-next">
+    <a href="?page={{ page_obj.next_page_number }}{{ url_filters }}" class="pagination-next">
       <b-icon icon="arrow-right-bold" size="is-small">
       </b-icon> Next
     </a>
@@ -109,7 +109,7 @@
       {% if page_obj.number == number %}
       <li><a class="pagination-link is-current" aria-label="Page {{ number }}" aria-current="page">{{ number }}</a></li>
       {% else %}
-      <li><a href="?page={{ number }}" class="pagination-link" aria-label="Go to page {{ number }}">{{ number }}</a>
+      <li><a href="?page={{ number }}{{ url_filters }}" class="pagination-link" aria-label="Go to page {{ number }}">{{ number }}</a>
       </li>
       {% endif %}
       {% endfor %}
@@ -127,23 +127,35 @@
     searchName: '{{ request.GET.kw }}',
     recipes: [ ]
         },
+      methods: {
+
+      },
   watch: {
     searchFilter: function (val) {
       const url = new URL(location.href);
-      if (url.searchParams.get('kw')) url.searchParams.set('kw', this.searchName);
+      let order = url.searchParams.get('order') ? url.searchParams.get('order').split(',') : [];
+      url.searchParams.delete('ordering');
+      if (this.searchName) url.searchParams.set('kw', this.searchName);
       else url.searchParams.delete('kw');
       switch (val) {
           case 'popular':
                url.searchParams.set('popular', '1');
                break;
           case 'name':
-              url.searchParams.set('name_asc', '1');
+              order = [];
+              order.push('name');
               url.searchParams.delete('popular');
               break;
           case 'date':
+              order = [];
+              order.push('date_published');
+              url.searchParams.set('ordering', 'desc');
               url.searchParams.delete('name_asc');
               url.searchParams.delete('popular');
               break;
+      }
+      if (order.length > 0) {
+          url.searchParams.set('order', [...new Set(order)].join());
       }
       location.href = url.href;
     }

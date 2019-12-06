@@ -1,8 +1,20 @@
 
 .search-bar {
+    color: #EDE7DE;
+    background-color: transparent;
   box-shadow: none;
   border-radius: 20em;
     max-width: 50vw;
+}
+
+.search-bar:focus
+{
+    border-color: #EDE7DE;
+}
+
+.search-bar::placeholder
+{
+    color: #EDE7DE;
 }
 
 .search-bar-section {
@@ -118,4 +130,63 @@
 .breadcrumb-nav {
     margin-top: 0.5em;
     margin-bottom: 0.5em;
+}
+
+.recipe-portal {
+    padding: 1em;
+    flex-grow: 1;
+    flex-shrink: 0;
+    background-color: #EDE7DE;
+}
+
+a {
+    color: #A78A7F;
+}
+
+.level-item strong {
+    color: #735751;
+}
+
+.navbar {
+    background-color: #735751;
+    box-shadow: rgba(245, 245, 245, 0.3) 0px 2px 0px 0px;
+}
+
+.navbar .navbar-item {
+
+}
+
+.navbar-link:not(.is-arrowless)::after {
+    border-color: #A78A7F;
+}
+
+.navbar-brand .navbar-item .title {
+    color: #EDE7DE;
+}
+@media screen and (min-width: 1024px) {
+.navbar-menu a.navbar-item {
+    color: #EDE7DE;
+}
+
+.navbar-menu a.navbar-item:hover {
+    color: #735751;
+}
+
+    .navbar-menu .navbar-link:not(:focus) {
+        color: #EDE7DE;
+    }
+
+     .navbar-menu .navbar-item.has-dropdown .navbar-link: {
+         color: #EDE7DE;
+    }
+
+    .navbar-menu .navbar-item:focus {
+        color: #735751;
+    }
+
+
+
+    .navbar-menu .navbar-item:hover {
+        color: #735751;
+    }
 }

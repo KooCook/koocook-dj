@@ -5,7 +5,7 @@ recipe_handler = RecipeAPIHandler.instance()
 
 app_name = 'recipes'
 urlpatterns = [
-    path('', views.PreferredRecipeStreamView.as_view(), name='all'),
+    path('', views.PreferredRecipeStreamView.as_view(), name='suggested'),
     path('<int:recipe_id>', views.handle_recipe, name='detail'),
     path('new', views.RecipeCreateView.as_view(), name='create'),
     path('yours', views.UserRecipeListView.as_view(), name='user'),
