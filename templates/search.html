@@ -1,10 +1,12 @@
-{% extends 'base/content.html' %}
+{% extends 'base/recipes.html' %}
 {% load static %}
 {% load recipe_extras %}
+{% block page_title %}Find a recipe{% endblock %}
+{% block content_page_name %}Find a recipe{% endblock %}
 {% block content_deps %}
 <script src="{% static 'js/bundle.js' %}"></script>
 {% endblock %}
-{% block section_after_nav %}
+{% block no_hero %}
 
 {% endblock %}
 
@@ -122,7 +124,7 @@
       currentAuthorId: {{ current_author.id }},
     firstRun: true,
     searchFilter: '{{ search_filter }}',
-    searchName: '',
+    searchName: '{{ request.GET.kw }}',
     recipes: [ ]
         },
   watch: {
