@@ -88,6 +88,19 @@ class IngredientRule(Rule):
             return queryset.filter(query)
 
 
+class CookwareRule(Rule):
+    key = "cookware"
+
+    def process(self, request_fields: QueryDict, queryset: QuerySet) -> QuerySet:
+        if not isinstance(self.rule_body, str):
+            return queryset
+        else:
+            terms = self.rule_body.split(",")
+            ingredient_terms = [Q(recipe_equipment__name__icontains=term) for term in terms]
+            query = reduce(operator.or_, ingredient_terms)
+            return queryset.filter(query)
+
+
 class TagJSONRulesetParser:
     json_str = ""
     registered_rules = (OrderingRule, ListContainsRule)
