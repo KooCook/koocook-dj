@@ -29,9 +29,9 @@ class Recipe(ReviewableModel, models.Model):
     description = models.TextField()
     prep_time = models.DurationField(null=True, blank=True)
     cook_time = models.DurationField(null=True)
-    recipe_equipment = fields.ArrayField(models.TextField())
     recipe_instructions = fields.ArrayField(models.TextField())
     recipe_yield = koocookfields.QuantityField(null=True)
+    recipe_equipment = models.ManyToManyField('koocook_core.RecipeEquipment', blank=True)
     tag_set = models.ManyToManyField('koocook_core.Tag', blank=True)
     aggregate_rating = models.OneToOneField(
         'koocook_core.AggregateRating',
@@ -104,3 +104,11 @@ class RecipeVisit(models.Model):
                                                    recipe=recipe)
         visit.save()
         return visit
+
+
+class RecipeEquipment(models.Model):
+    name = models.CharField(max_length=255, blank=False, unique=True)
+
+    def clean(self):
+        super().clean()
+        self.name = self.name.capitalize()

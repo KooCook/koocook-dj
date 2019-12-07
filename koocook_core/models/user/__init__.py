@@ -67,6 +67,10 @@ class Author(SerialisableModel, models.Model):
     # post_set from Post
 
     @property
+    def is_koocook_user(self):
+        return self.user and isinstance(self.user, KoocookUser)
+
+    @property
     def dj_user(self):
         return self.user.user
 
