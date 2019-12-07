@@ -341,8 +341,10 @@
                     </h3>
                     <div class="content">
                         <ul style="list-style-type: none">
+                            {# TODO: create pop-up to show ingredient #}
+                            {# TODO: link to ingredient page #}
                             {% for fact in object.nutrition %}
-                            <li>{{ fact }}</li>
+                                <li class="nutrient">{{ fact.nutrient }} {{ fact.quantity }}</li>
                             {% endfor %}
                         </ul>
                     </div>
