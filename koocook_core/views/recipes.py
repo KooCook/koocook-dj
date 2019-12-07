@@ -11,9 +11,9 @@ from django.views.generic.edit import UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import RecipeForm
 from .mixins import AuthAuthorMixin, CommentWidgetMixin, RecipeViewMixin, SignInRequiredMixin
-from ..models import Recipe, Author, KoocookUser, RecipeIngredient, MetaIngredient
+from ..models import Recipe, Author, KoocookUser, RecipeIngredient, RecipeEquipment
 from ..models.base import ModelEncoder
-from ..support.query import QueryRuleset, IngredientRule, OrderingRule
+from ..support.query import QueryRuleset, IngredientRule, CookwareRule, OrderingRule
 
 
 class RecipeSearchListView(AuthAuthorMixin, ListView):
@@ -23,7 +23,7 @@ class RecipeSearchListView(AuthAuthorMixin, ListView):
     context_object_name = 'recipes'
     ordering = ['-date_published']
     template_name = 'search.html'
-    ruleset = QueryRuleset(IngredientRule, OrderingRule)
+    ruleset = QueryRuleset(IngredientRule, CookwareRule, OrderingRule)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -197,4 +197,13 @@ class RecipeIngredientsView(ListView):
 
 
 class RecipeEquipmentView(ListView):
-    pass
+    model = RecipeEquipment
+    template_name = "equipment.html"
+
+
+class RecipeEquipmentDetailView(DetailView):
+    model = RecipeEquipment
+    template_name = 'equipment/index.html'
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(**kwargs)

@@ -18,7 +18,7 @@
         <template v-if="searchFilter == 'popular'">
           <span>Sort by&nbsp;&nbsp;<b-icon icon="star" size="is-small"></b-icon>&nbsp;Popularity</span>
         </template>
-          <template v-else-if="searchFilter == 'name'">
+        <template v-else-if="searchFilter == 'name'">
           <span>Sort by&nbsp;&nbsp;<b-icon icon="book" size="is-small"></b-icon>&nbsp;Recipe name</span>
         </template>
         <template v-else>
@@ -36,7 +36,7 @@
         </div>
       </b-dropdown-item>
 
-       <b-dropdown-item value="name" aria-role="listitem">
+      <b-dropdown-item value="name" aria-role="listitem">
         <div class="media">
           <b-icon class="media-left" icon="book" size="is-small"></b-icon>
           <div class="media-content">
@@ -74,13 +74,20 @@
               {{ recipe.name }}
             </a></h4>
           <p class="subtitle">
-            by {{ recipe.author }}
+            by {{ recipe.author }} {% if request.user.is_authenticated %}<follow-widget
+              :followee-id="{{ recipe.author.id }}" :followees="$refs.followees"></follow-widget>{% endif %}
           </p>
-          <p class="subtitle has-text-grey is-6"><span class="date-posted"><b-icon icon="calendar" size="is-small"></b-icon>
-              {{ recipe.date_published }}</span> <span class="date-posted"><b-icon icon="clock" size="is-small"></b-icon> Ready in:
-              {{ recipe.total_time|timedel_to_words }}</span>
-            <span class="date-posted"><b-icon icon="eye" size="is-small"></b-icon> {{ recipe.view_count }}
-              view{{ recipe.view_count|pluralize }}</span></p>
+          <p class="subtitle has-text-grey is-6"><span class="date-posted">
+              <b-icon icon="calendar" size="is-small"></b-icon>
+              {{ recipe.date_published }}
+            </span> <span class="date-posted">
+              <b-icon icon="clock" size="is-small"></b-icon> Ready in:
+              {{ recipe.total_time|timedel_to_words }}
+            </span>
+            <span class="date-posted">
+              <b-icon icon="eye" size="is-small"></b-icon> {{ recipe.view_count }}
+              view{{ recipe.view_count|pluralize }}
+            </span></p>
         </div>
       </div>
     </div>
@@ -109,57 +116,91 @@
       {% if page_obj.number == number %}
       <li><a class="pagination-link is-current" aria-label="Page {{ number }}" aria-current="page">{{ number }}</a></li>
       {% else %}
-      <li><a href="?page={{ number }}{{ url_filters }}" class="pagination-link" aria-label="Go to page {{ number }}">{{ number }}</a>
+      <li><a href="?page={{ number }}{{ url_filters }}" class="pagination-link"
+          aria-label="Go to page {{ number }}">{{ number }}</a>
       </li>
       {% endif %}
       {% endfor %}
     </ul>
   </nav>
   {% endif %}
+
 </div>
+<followee-list ref="flist"></followee-list>
 <script>
-  new Vue({
-    el: '#app',
-    data: {
-      currentAuthorId: {{ current_author.id }},
+  Object.assign(GLOBAL_DATA, {
+    currentAuthorId: {{ current_author.id }},
     firstRun: true,
     searchFilter: '{{ search_filter }}',
-    searchName: '{{ request.GET.kw }}',
-    recipes: [ ]
-        },
-      methods: {
-
-      },
-  watch: {
-    searchFilter: function (val) {
+    searchTerm: '{{ request.GET.kw }}',
+    followees: [],
+    recipes: [],
+    ingredients: [],
+    cookware: []
+    })
+  new Vue({
+    el: '#app',
+    data: GLOBAL_DATA,
+    mounted() {
       const url = new URL(location.href);
-      let order = url.searchParams.get('order') ? url.searchParams.get('order').split(',') : [];
-      url.searchParams.delete('ordering');
-      if (this.searchName) url.searchParams.set('kw', this.searchName);
-      else url.searchParams.delete('kw');
-      switch (val) {
+      this.ingredients = url.searchParams.get('ingredients') ? url.searchParams.get('ingredients').split(',') : [];
+      this.cookware = url.searchParams.get('cookware') ? url.searchParams.get('cookware').split(',') : [];
+    },
+    methods: {
+      triggerFilters(val) {
+        const url = new URL(location.href);
+        this.ingredients = url.searchParams.get('ingredients') ? url.searchParams.get('ingredients').split(',') : [];
+        let order = url.searchParams.get('order') ? url.searchParams.get('order').split(',') : [];
+        url.searchParams.delete('ordering');
+        if (this.searchTerm) url.searchParams.set('kw', this.searchTerm);
+        else url.searchParams.delete('kw');
+        switch (val) {
           case 'popular':
-               url.searchParams.set('popular', '1');
-               break;
+            url.searchParams.set('popular', '1');
+            break;
           case 'name':
-              order = [];
-              order.push('name');
-              url.searchParams.delete('popular');
-              break;
+            order = [];
+            order.push('name');
+            url.searchParams.delete('popular');
+            break;
           case 'date':
-              order = [];
-              order.push('date_published');
-              url.searchParams.set('ordering', 'desc');
-              url.searchParams.delete('name_asc');
-              url.searchParams.delete('popular');
-              break;
-      }
-      if (order.length > 0) {
+            order = [];
+            order.push('date_published');
+            url.searchParams.set('ordering', 'desc');
+            url.searchParams.delete('name_asc');
+            url.searchParams.delete('popular');
+            break;
+        }
+        if (order.length > 0) {
           url.searchParams.set('order', [...new Set(order)].join());
+        }
+        location.href = url.href;
+      },
+      insertFilter() {
+        let joined = this.ingredients.join()
+        const formBody = new FormData();
+        if (this.searchTerm) formBody.set("kw", this.searchTerm);
+        if (this.ingredients.length > 0) formBody.set("ingredients", joined);
+        joined = this.cookware.join()
+        if (this.cookware.length > 0) formBody.set("cookware", joined);
+        const searchParams = (new URLSearchParams(formBody)).toString();
+        if (searchParams) this.searchParams = '?' + searchParams;
       }
-      location.href = url.href;
+    },
+    watch: {
+      searchTerm: function (val) {
+        this.insertFilter();
+      },
+      searchFilter: function (val) {
+        this.triggerFilters(val);
+      },
+      ingredients: function (val) {
+        this.insertFilter();
+      },
+      cookware: function (val) {
+        this.insertFilter();
+      }
     }
-  }
-      })
+  })
 </script>
 {% endblock %}

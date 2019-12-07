@@ -24,7 +24,9 @@ const CONVERSION_UNITS = {
 };
 
 const GLOBAL_DATA = {
-  searchName: '',
+  searchTerm: '',
+  searchParams: '',
+  isFiltersOpen: false
 };
 
 String.prototype.format = function() {
