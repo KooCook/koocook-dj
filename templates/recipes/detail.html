@@ -1,33 +1,42 @@
 {% extends 'base/recipes.html' %}
+{% load static %}
+{% load recipe_extras %}
 {% block no_hero %}{% endblock %}
+{% block content_deps %}<script>
+    const COMMENTS_ENDPOINTS = {
+        GET: `{% url 'koocook_core:recipe-comments' object.id %}`,
+        POST: `{% url 'koocook_core:recipe-comments' object.id %}`,
+        PATCH: `{% url 'koocook_core:recipe-comments' object.id %}`,
+    };
+</script>
+    <script src="{% static 'js/bundle.js' %}"></script>{% endblock %}
 {% block content_page_name %}{{ object.name }}{% endblock %}
 {% block page_content %}
 {% load extra_tags %}
 <div style="padding: 0 3rem">
     <header class="section" style="padding-bottom: 1.5rem; margin-bottom: 1.5rem">
-      <div class="container">
-        <h1 class="title is-1">
-          {{ object.name }}
-        </h1>
-        <p class="subtitle is-4">
-          Recipe by <a href="">{{ object.author.name }}</a>
-        </p>
-          <div class="field is-grouped is-grouped-multiline">
-          {% for tag in object.tag_set.all %}
-            <div class="control">
-            <div class="tags has-addons">
-                    <span class="tag is-medium">{{ tag.name }}</span>
-                          {% if tag.label %}<span class="tag is-danger is-medium">
-                                {{ tag.label.name }}
-                              <button class="delete is-small"></button>
-                            </span>{% else %}
-                              <button class="delete is-small"></button>
-                              {% endif %}
+        <div class="container">
+            <h1 class="title is-1">
+                {{ object.name }}
+            </h1>
+            <p class="subtitle is-4">
+                Recipe by <a href="">{{ object.author.name }}</a>
+            </p>
+                <div class="field is-grouped is-grouped-multiline">
+                {% for tag in object.tag_set.all %}
+                    <div class="control">
+                        <div class="tags has-addons">
+                            <span class="tag is-medium">{{ tag.name }}</span>
+                            {% if tag.label %}
+                                <span class="tag {{ tag.label.level|tag_level }} is-medium">
+                                    {{ tag.label.name }}
+                                </span>
+                            {% endif %}
                         </div>
-             </div>
-          {% endfor %}
-          </div>
-      </div>
+                    </div>
+                {% endfor %}
+                </div>
+        </div>
     </header>
 
     <section class="section" style="padding-top: 0">
@@ -41,106 +50,64 @@
       </div>
     </section>
     <section class="section" style="padding-top: 0">
-        <div class="container">
-            <div class="columns is-multiline">
-                <div class="column is-half">
-                    <nav class="level is-mobile">
-                        <div class="level-item has-text-centered">
-                            <div>
-                                <p class="heading">Total Time</p>
-                            <p class="title">
-                               {% if object.total_time != '0:00:00' %}
-                                        {% if object.total_time.hours > 0 %}{{ object.total_time }} hour{% endif %}
-                                        {% if object.total_time.minutes > 0 %}{{ object.total_time.minutes }} min{% endif %}
-                                        {% if object.total_time.seconds > 0 %}{{ object.total_time.seconds }} second{{ object.prep_time.seconds|pluralize }}{% endif %}
-                                {% else %}
-                                    N/A
-                                {% endif %}
-                            </p>
-                            </div>
-                        </div>
-
-                        <div class="level-item has-text-centered">
-                            <div>
-                                <p class="heading">Prep Time</p>
-                            <p class="title">
-                                {% if object.prep_time != '0:00:00' %}
-
-                                        {% if object.prep_time.hours > 0 %}{{ object.prep_time }} hour{% endif %}
-                                        {% if object.prep_time.minutes > 0 %}{{ object.prep_time.minutes }} min{% endif %}
-                                        {% if object.prep_time.seconds > 0 %}{{ object.prep_time.seconds }} second{{ object.prep_time.seconds|pluralize }}{% endif %}
-                                {% else %}
-                                    N/A
-                                {% endif %}
-                            </p>
-                            </div>
-                        </div>
-                    </nav>
-                    <nav class="level is-mobile">
-                        <div class="level-item">
-                            <!-- times -->
-                            <progress
-                                    class="level-item progress is-success"
-                                    value="{{ recipe.total_time.seconds|time_bar }}"
-                                    max="6"
-                                    style="border-radius: 0; height: 0.2rem"
-                            ></progress>
-                        </div>
-                        <div class="level-item">
-                            <!-- skills -->
-                            <progress
-                                    class="level-item progress is-warning"
-                                    value="{{ object.prep_time.seconds|time_bar }}"
-                                    max="6"
-                                    style="border-radius: 0; height: 0.2rem"
-                            ></progress>
-                        </div>
-                    </nav>
+      <div class="container">
+        <div class="columns is-multiline">
+          <div class="column is-half">
+            <nav class="level is-mobile">
+              <div class="level-item has-text-centered">
+                <div>
+                  <p class="heading">Time</p>
+                  <p class="title">{{ object.total_time|timedel_to_words }}</p>
                 </div>
-                <div class="column is-half">
-                    <nav class="level is-mobile">
-                        <div class="level-item has-text-centered">
-                            <div>
-                                <p class="heading">Cook Time</p>
-                                 <p class="title">
-                                {% if object.cook_time != '0:00:00' %}
-                                        {% if object.cook_time.hours > 0 %}{{ object.cook_time }} hour{% endif %}
-                                        {% if object.cook_time.minutes > 0 %}{{ object.cook_time.minutes }} min{% endif %}
-                                        {% if object.cook_time.seconds > 0 %}{{ object.cook_time.seconds }} second{{ object.prep_time.seconds|pluralize }}{% endif %}
-                                {% else %}
-                                    N/A
-                                {% endif %}
-                            </p>
-                            </div>
-                        </div>
-
-                        <div class="level-item has-text-centered">
-                            <div>
-                                <p class="heading">Ratings</p>
-                                <p class="title">{{ recipe.aggregate_rating.rating_value|rating }}/5.0</p>
-                            </div>
-                        </div>
-                    </nav>
-                    <nav class="level is-mobile">
-                        <div class="level-item">
-                            <progress
-                                    class="progress is-danger"
-                                    value="{{ recipe.cook_time.seconds|time_bar }}"
-                                    max="6"
-                                    style="border-radius: 0; height: 0.2rem"
-                            ></progress>
-                        </div>
-                        <div class="level-item">
-                            <progress
-                                    class="progress is-info"
-                                    value="{{ recipe.aggregate_rating.rating_value|rating }}"
-                                    max="5"
-                                    style="border-radius: 0; height: 0.2rem"
-                            ></progress>
-                        </div>
-                    </nav>
+              </div>
+              <div class="level-item has-text-centered">
+                <div>
+                  <p class="heading">Difficulty</p>
+                  <p class="title">Simple</p>
                 </div>
-            </div>
+              </div>
+            </nav>
+            <nav class="level is-mobile">
+              <div class="level-item">
+                <progress class="level-item progress is-success" value="1" max="4"
+                          style="border-radius: 0; height: 0.2rem"></progress>
+              </div>
+              <div class="level-item">
+                <progress class="level-item progress is-success" value="1" max="3"
+                          style="border-radius: 0; height: 0.2rem"></progress>
+              </div>
+            </nav>
+          </div>
+          <div class="column is-half">
+            <nav class="level is-mobile">
+              <div class="level-item has-text-centered">
+                <div>
+                  <p class="heading">Views</p>
+                  <p class="title">{{ object.view_count }}</p>
+                </div>
+              </div>
+              <div class="level-item has-text-centered">
+                <div>
+                  <p class="heading">Ratings</p>
+                  {% if object.aggregate_rating.rating_count > 0%}
+                  <p class="title">{% templatetag openvariable %} rating {% templatetag closevariable %}/5.0</p>
+                  <small>from {{ object.aggregate_rating.rating_count }} rating{{ object.aggregate_rating.rating_count|pluralize }}</small>
+                  {% else %} <p class="title">No ratings yet.
+                  {% endif %}
+                </div>
+              </div>
+            </nav>
+            <nav class="level is-mobile">
+              <div class="level-item">
+                <progress class="progress is-hidden" value="0" max="100"
+                          style="border-radius: 0; height: 0.2rem"></progress>
+              </div>
+              <div class="level-item">
+                  <star-rating{% if not request.user.is_authenticated %} :read-only="true"{% else %} :read-only="{{ object.author.id }} === currentAuthorId"{% endif %} recipe-name="{{ object.name }}" :item-id="{{ object.id }}" :initial="rating"
+                  @change-score="rating = $event"></star-rating>
+              </div>
+            </nav>
+          </div>
         </div>
     </section>
 
@@ -348,138 +315,54 @@
                             {% endfor %}
                         </ul>
                     </div>
+              </div>
+            </div>
+            <div class="tile is-parent">
+              <div class="tile is-child">
+                <h3 class="title is-4">
+                  Instructions
+                </h3>
+                <div class="content" style="">
+                    <ol>{% for instruction in object.recipe_instructions %}
+                        <li>{{ instruction }}</li>
+                    {% endfor %}
+                    </ol>
                 </div>
             </div>
               </div>
               </div>
             </div>
           </div>
-        </section>
+        </div>
+      </div>
+    </section>
 
     <section class="section" style="padding-top: 0">
-        <div class="container">
-            <hr style="margin-top: 0"/>
-            <h2 class="title">
-                Comments
-            </h2>
+      <div class="container">
 
-            <article class="media">
-                <figure class="media-left">
-                    <p class="image is-64x64">
-                        <img src="../assets/img/placeholders/128x128.png"/>
-                    </p>
-                </figure>
-                <div class="media-content">
-                    <div class="content">
-                        <p>
-                            <strong>Barbara Middleton</strong>
-                            <br/>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis
-                            porta eros lacus, nec ultricies elit blandit non. Suspendisse
-                            pellentesque mauris sit amet dolor blandit rutrum.
-                            <s>Nunc in tempus turpis.</s>
-                            <br/>
-                            <small><a>Like</a> · <a>Reply</a> · 3 hrs</small>
-                        </p>
-                    </div>
+        <hr style="margin-top: 0">
+        <h2 class="title">
+          Comments
+        </h2>
+            {% if request.user.is_authenticated %}
+          <comments-widget :author-id="currentAuthorId" item-name="{{ object.name }}" :item-id="{{ object.id }}"></comments-widget>
+                {% else %}
+                <div class="notification">
+                    <p>Only KooCook users can view the comments of this recipe!</p>
+                    Please <a href="{% url "social:begin" "google-oauth2" %}"><strong>sign in</strong></a> to add or view comments
+                </div>
 
-                    <article class="media">
-                        <figure class="media-left">
-                            <p class="image is-48x48">
-                                <img src="../assets/img/placeholders/96x96.png"/>
-                            </p>
-                        </figure>
-                        <div class="media-content">
-                            <div class="content">
-                                <p>
-                                    <strong>Sean Brown</strong>
-                                    <br/>
-                                    Donec sollicitudin urna eget eros malesuada sagittis.
-                                    Pellentesque habitant morbi tristique senectus et netus et
-                                    malesuada fames ac turpis egestas. Aliquam blandit nisl a
-                                    nulla sagittis, a lobortis leo feugiat.
-                                </p>
-                                <blockquote>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis
-                                    porta eros lacus, nec ultricies elit blandit non.
-                                </blockquote>
-                                <p>
-                                    Morbi vitae diam et purus tincidunt porttitor vel vitae augue.
-                                    Praesent malesuada metus sed pharetra euismod. Cras tellus
-                                    odio, tincidunt iaculis diam non, porta aliquet tortor.
-                                    <br/>
-                                    <small>5 <a>Like</a> · <a>Reply</a> · 2 hrs</small>
-                                </p>
-                            </div>
-                        </div>
-                    </article>
-
-                    <article class="media">
-                        <figure class="media-left">
-                            <p class="image is-48x48">
-                                <img src="../assets/img/placeholders/96x96.png"/>
-                            </p>
-                        </figure>
-                        <div class="media-content">
-                            <div class="content">
-                                <p>
-                                    <strong>Kayli Eunice </strong>
-                                    <br/>
-                                    Sed convallis scelerisque mauris, non pulvinar nunc mattis
-                                    vel. Maecenas varius felis sit amet magna vestibulum euismod
-                                    malesuada cursus libero. Vestibulum ante ipsum primis in
-                                    faucibus orci luctus et ultrices posuere cubilia Curae;
-                                    Phasellus lacinia non nisl id feugiat.
-                                    <br/>
-                                    <small>12 <a>Like</a> · <a>Reply</a> · 2 hrs</small>
-                                </p>
-                            </div>
-                        </div>
-                    </article>
-                </div>
-            </article>
-            <article class="media">
-                <figure class="media-left">
-                    <p class="image is-64x64">
-                        <img src="../assets/img/placeholders/128x128.png"/>
-                    </p>
-                </figure>
-                <div class="media-content">
-                    <div class="content">
-                        <p>
-                            <strong>John Smith</strong>
-                            <br/>
-                            <strong>The pancakes were so <em>perfectly</em> fluffy!</strong> I
-                            put some <em>fresh</em> figs and blueberries on top.
-                            <br/>
-                            <small><a>Like</a> · <a>Reply</a> · 31 mins</small>
-                        </p>
-                    </div>
-                </div>
-            </article>
-            <article class="media">
-                <figure class="media-left">
-                    <p class="image is-64x64">
-                        <img src="../assets/img/placeholders/128x128.png"/>
-                    </p>
-                </figure>
-                <div class="media-content">
-                    <div class="field">
-                        <p class="control">
-              <textarea
-                      class="textarea"
-                      placeholder="Add a comment..."
-              ></textarea>
-                        </p>
-                    </div>
-                    <div class="field">
-                        <p class="control">
-                            <button class="button is-primary">Post comment</button>
-                        </p>
-                    </div>
-                </div>
-            </article>
-        </div>
+          {% endif %}
+      </div>
     </section>
-    {% endblock %}
-</div>
+<script>
+     new Vue({
+        el: '#app',
+        data: {
+            searchName: '',
+            ingredients: [],
+            rating: parseFloat({{ object.aggregate_rating.rating_value }}).toFixed(1),
+            currentAuthorId: {{ current_author.id }}
+        }});
+  </script>
+{% endblock %}

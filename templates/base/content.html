@@ -1,16 +1,13 @@
 {% extends 'base/index.html' %}
 {% load static %}
 {% block page_deps %}
-<link rel="stylesheet" href="https://cdn.materialdesignicons.com/2.5.94/css/materialdesignicons.min.css">
-{#    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha256-1XfFQxRfNvDJW3FdZ+xlo2SbodG2+rFArw6XsVzu3bc=" crossorigin="anonymous"></script>#}
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
 <script src="https://unpkg.com/buefy/dist/buefy.min.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/vue-popperjs@2.2.0/dist/vue-popper.css">
-    <script src="https://unpkg.com/vue-popperjs"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vee-validate@latest/dist/vee-validate.js"></script>
 <script src="{% static 'js/utils.js' %}"></script>
+{% block mixin_deps %}{% endblock %}
 {% block content_deps %}{% endblock %}
 {% endblock %}
 {% block page_body %}
@@ -27,11 +24,17 @@
                 </a>
 
                 <div class="navbar-item" style="flex-basis: 100%; flex-shrink: 1">
-                    <div class="control has-icons-left" style="flex-basis: 100%; flex-shrink: 1">
-                        <input v-model="searchName" class=" input search-bar" type="text"
-                            placeholder="Search our recipes!" value="">
+                    <div class="control has-icons-left search-bar-section" style="flex-basis: 100%; flex-shrink: 1">
+                        <b-field custom-class="">
+                            <b-input v-model="searchName" custom-class="search-bar" type="search"
+                                placeholder="Search our recipes!" expanded></b-input>
+                            <p class="control">
+                                <a :href="'{% url 'koocook_core:search' %}?kw=' + searchName"><button
+                                        class="button is-info">Search</button></a>
+                            </p>
+                        </b-field>
                         <span class="icon is-small is-left">
-                            <i class="fas fa-search"></i>
+                            <b-icon icon="magnify"></b-icon>
                         </span>
                     </div>
                 </div>
@@ -50,43 +53,45 @@
                         Home
                     </a>
 
-                    <a class="navbar-item" href="{% url 'koocook_core:posts:all' %}">
+                    <a class="navbar-item" href="{% url 'koocook_core:posts:view' %}">
                         Stream
                     </a>
 
-                    <div class="navbar-item has-dropdown is-hoverable is-disabled">
+
+
+                    <div class="navbar-item has-dropdown is-hoverable">
                         <a class="navbar-link">
                             Browse
                         </a>
 
                         <div class="navbar-dropdown is-boxed">
-                            <a class="navbar-item" title="Look at our suggested recipe">
+                            <a class="navbar-item is-disabled" title="Look at our suggested recipe">
                                 Featured recipes
                             </a>
-                            <a class="navbar-item" title="Look at what other people are making">
+                            <a class="navbar-item is-disabled" title="Look at what other people are making">
                                 Popular recipes
                             </a>
-                            <a class="navbar-item" title="Get personalised recipe recommendations">
+                            <a href="{% url 'koocook_core:recipe-all' %}" class="navbar-item"
+                                title="Get personalised recipe recommendations">
                                 Suggested recipes
                             </a>
-                            <a class="navbar-item" title="Get a random recipe">
+                            <a class="navbar-item is-disabled" title="Get a random recipe">
                                 I'm feeling hungry!
                             </a>
                             <hr class="navbar-divider">
-                            <a class="navbar-item" title="Can't find an ingredient? Look no further">
+                            <a class="navbar-item is-disabled" title="Can't find an ingredient? Look no further">
                                 Ingredients
                             </a>
-                            <a class="navbar-item" title="Looking to get some new cookwares? We've got you covered">
+                            <a class="navbar-item is-disabled"
+                                title="Looking to get some new cookwares? We've got you covered">
                                 Cookware
                             </a>
                         </div>
                     </div>
-
                     <div class="navbar-item has-dropdown is-hoverable is-disabled">
                         <a class="navbar-link">
                             More
                         </a>
-
                         <div class="navbar-dropdown is-boxed">
                             <a class="navbar-item">
                                 About
@@ -110,7 +115,7 @@
                     <div class="navbar-item">
                         <div class="buttons">
                             <a href="{% url "social:begin" "google-oauth2" %}" class="button is-secondary">
-                                <strong>Sign in with <i class="fab fa-google"></i>oogle</strong>
+                                <strong>Sign in with <i class="fab fa-google"></i> Google</strong>
                             </a>
                         </div>
 
@@ -128,7 +133,7 @@
                             <div class="navbar-item">
                                 <strong>{{ user.username }}</strong>
                             </div>
-                            <a class="navbar-item is-disabled">
+                            <a class="navbar-item" href="{% url 'koocook_core:profile:info' %}">
                                 Your profile
                             </a>
                             <a class="navbar-item is-disabled">
@@ -141,7 +146,7 @@
                             <a class="navbar-item is-disabled">
                                 Help
                             </a>
-                            <a class="navbar-item is-disabled">
+                            <a href="{% url 'koocook_core:profile:pref' %}" class="navbar-item">
                                 Settings
                             </a>
                             <a href="{% url "koocook_auth:logout" %}" class="navbar-item">
@@ -184,6 +189,6 @@
         </section>
     </div>
 </div>
+{% block javascript_parsing %}{% endblock %}
 <script src="{% static "js/navbar.js" %}"></script>
-</div>
 {% endblock %}

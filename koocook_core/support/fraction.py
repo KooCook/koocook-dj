@@ -1,8 +1,6 @@
-from __future__ import annotations
-
 import math
 import re
-from typing import Tuple, Union, Match
+from typing import Tuple, Union, Match, cast
 
 __all__ = ['NUMBER_PATTERN', 'Fraction', 'parse_str', 'parse_match',
            'parse_fraction', 'parse_vulgar_unicode', 'parse_numeral']
@@ -49,7 +47,7 @@ NUMERAL = {
 _parse_numeral_pattern = re.compile(r'(?P<m>{})\b'.format(
     '|'.join(
         '|'.join([k.lower(), k.upper(), k.title()])
-        for k in NUMERAL), re.IGNORECASE))
+        for k in NUMERAL)), re.IGNORECASE)
 
 
 def parse_numeral(s: str) -> str:
@@ -107,7 +105,7 @@ def parse_vulgar_unicode(s: str) -> str:
     return s
 
 
-def parse_fraction(s: str) -> Fraction:
+def parse_fraction(s: str) -> 'Fraction':
     """Converts a fraction string to Fraction.
     Args:
         s (str): positional only. string to parse
@@ -144,7 +142,7 @@ def parse_fraction(s: str) -> Fraction:
             raise ee from e
 
 
-def parse_match(m: Match) -> Fraction:
+def parse_match(m: Match) -> 'Fraction':
     number = 0
     if m.group('number'):
         number = int(m.group('number'))
@@ -157,7 +155,7 @@ def parse_match(m: Match) -> Fraction:
     return Fraction(number)
 
 
-def parse_str(s: str) -> Fraction:
+def parse_str(s: str) -> 'Fraction':
     """Converts a number string to Fraction.
     Also functions as an all-purpose converter to Fraction.
     Args:
@@ -192,6 +190,7 @@ def parse_str(s: str) -> Fraction:
         if isinstance(s, float):
             return Fraction(s)
         if s.__class__.__name__ == 'Match':
+            s = cast(Match, s)
             return parse_match(s)
         raise TypeError('Invalid type for fraction string \'{}\''
                         .format(s.__class__))
@@ -219,9 +218,9 @@ def parse_str(s: str) -> Fraction:
             # not even fraction
             n = ''.join(s.split(' '))
             return Fraction(float(n))
-    except ValueError as e:
+    except ValueError:
         raise ValueError('Invalid fraction string \'{}\''
-                         .format(s)) from e.__context__
+                         .format(s)) from None
 
 
 def type_error_msg_1(self, operand: str, other) -> str:
@@ -365,7 +364,7 @@ class Fraction:
             return math.nan
         return self.numerator / self.denominator
 
-    def __add__(self, other: Union[int, float, Fraction]) -> Union[Fraction, math.nan]:
+    def __add__(self, other: Union[int, float, 'Fraction']) -> Union['Fraction', 'math.nan']:
         """Return the sum of two fractions as a new fraction.
            Use the standard formula  a/b + c/d = (ad+bc)/(b*d)
         """
@@ -387,7 +386,7 @@ class Fraction:
         return Fraction(self.numerator * other.denominator + other.numerator * self.denominator,
                         self.denominator * other.denominator)
 
-    def __sub__(self, other: Union[int, float, Fraction]) -> Union[Fraction, math.nan]:
+    def __sub__(self, other: Union[int, float, 'Fraction']) -> Union['Fraction', 'math.nan']:
         if not isinstance(other, Fraction):
             if not isinstance(other, (int, float)):
                 raise TypeError(type_error_msg_1(self, '-', other))
@@ -395,7 +394,7 @@ class Fraction:
 
         return self + (-other)
 
-    def __mul__(self, other: Union[int, float, Fraction]) -> Union[Fraction, math.nan]:
+    def __mul__(self, other: Union[int, float, 'Fraction']) -> Union['Fraction', 'math.nan']:
         if not isinstance(other, Fraction):
             if not isinstance(other, (int, float)):
                 raise TypeError(type_error_msg_1(self, '*', other))
@@ -403,7 +402,7 @@ class Fraction:
 
         return Fraction(self.numerator * other.numerator, self.denominator * other.denominator)
 
-    def __truediv__(self, other: Union[int, float, Fraction]) -> Union[Fraction, math.nan]:
+    def __truediv__(self, other: Union[int, float, 'Fraction']) -> Union['Fraction', 'math.nan']:
         if not isinstance(other, Fraction):
             if not isinstance(other, (int, float)):
                 raise TypeError(type_error_msg_1(self, '/', other))
@@ -418,7 +417,7 @@ class Fraction:
                 return Fraction(-self.numerator * other.denominator, 0)
         return Fraction(self.numerator * other.denominator, self.denominator * other.numerator)
 
-    def __gt__(self, other: Fraction):
+    def __gt__(self, other: 'Fraction'):
         if not isinstance(other, Fraction):
             if not isinstance(other, (int, float)):
                 raise TypeError(type_error_msg_2(self, '>', other))
@@ -430,7 +429,7 @@ class Fraction:
         # avoids dividing because apparently multiplication is easier?
         return self.numerator * other.denominator > other.numerator * self.denominator
 
-    def __lt__(self, other: Fraction):
+    def __lt__(self, other: 'Fraction'):
         if not isinstance(other, Fraction):
             if not isinstance(other, (int, float)):
                 raise TypeError(type_error_msg_2(self, '<', other))
@@ -484,7 +483,6 @@ class Fraction:
 
 
 if __name__ == '__main__':
-    """Run the doctests in all methods."""
+    # Run the doctests in all methods.
     import doctest
-
     doctest.testmod()

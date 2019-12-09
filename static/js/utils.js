@@ -23,6 +23,18 @@ const CONVERSION_UNITS = {
   mg: "milligram"
 };
 
+const GLOBAL_DATA = {
+  searchName: '',
+};
+
+String.prototype.format = function() {
+  let str = this;
+  for (const arg in arguments) {
+    str = str.replace("{" + arg + "}", arguments[arg])
+  }
+  return str
+};
+
 function getCookie(name) {
   const re = new RegExp(name + "=([^;]+)");
   const value = re.exec(document.cookie);
