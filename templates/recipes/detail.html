@@ -1,15 +1,15 @@
-{% extends 'base/recipes.html' %}
+{% extends 'base/recipes/crud.html' %}
 {% load static %}
 {% load recipe_extras %}
 {% block no_hero %}{% endblock %}
-{% block content_deps %}<script>
+{% block crud_deps %}<script>
     const COMMENTS_ENDPOINTS = {
         GET: `{% url 'koocook_core:recipe-comments' object.id %}`,
         POST: `{% url 'koocook_core:recipe-comments' object.id %}`,
         PATCH: `{% url 'koocook_core:recipe-comments' object.id %}`,
     };
 </script>
-    <script src="{% static 'js/bundle.js' %}"></script>{% endblock %}
+    {% endblock %}
 {% block content_page_name %}{{ object.name }}{% endblock %}
 {% block page_content %}
 {% load extra_tags %}
@@ -260,7 +260,7 @@
     {#                        </sup>#}
     {#                      </li>#}
                             {% for ingredient in ingredients %}
-                          <li>{{ ingredient.quantity.number }} {{ ingredient.quantity.unit }} {{ ingredient.name }}</li>
+                          <li>{{ ingredient.repr }}</li>
                     {% endfor %}
                         </ul>
                       </div>
@@ -285,22 +285,6 @@
                   </div>
                 </div>
                 <div class="tile">
-                <div class="tile is-parent">
-                  <div class="tile is-child">
-                    <h3 class="title is-4">
-                      Instruction
-                    </h3>
-                    <div class="content" style="">
-                      <ol>
-                        {% for instruction in object.recipe_instructions %}
-                      <li>
-                        {{ instruction }}
-                      </li>
-                        {% endfor %}
-                        </ol>
-                    </div>
-                  </div>
-                </div>
                 <div class="tile is-parent" id="nutrition">
                 <div class="tile is-child">
                     <h3 class="title is-4">
@@ -355,6 +339,7 @@
           {% endif %}
       </div>
     </section>
+    <script src="{% static 'js/bundle.js' %}"></script>
 <script>
      new Vue({
         el: '#app',

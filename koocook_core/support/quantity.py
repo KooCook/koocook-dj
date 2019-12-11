@@ -21,6 +21,12 @@ class Quantity:
             self.amount = Fraction(amount)
         self.unit = unit_.get_unit(unit)
 
+    @property
+    def representation(self):
+        if self.amount == 1:
+            return '{} {}'.format(f"$${self.as_latex()}$$", self.unit.singular)
+        return '{} {}'.format(f"$${self.as_latex()}$$", self.unit.plural)
+
     def __str__(self):
         if self.amount == 1:
             return '{} {}'.format(self.amount, self.unit.singular)
@@ -44,6 +50,12 @@ class Quantity:
         if self.unit == other.unit:
             result = self.amount + other.amount
             return Quantity(result, self.unit)
+
+    def as_latex(self):
+        if self.amount.denominator > 1:
+            return f'\\frac{{{self.amount.numerator}}}{{{self.amount.denominator}}}'
+        else:
+            return str(self.amount.numerator)
 
 
 def parse_quantity(quantity_string: str) -> Quantity:

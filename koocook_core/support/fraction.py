@@ -71,6 +71,37 @@ def parse_numeral(s: str) -> str:
     return _parse_numeral_pattern.sub(repl, s)
 
 
+def parse_latex(s: str) -> str:
+    """Converts simple LaTeX representation of a fraction to the valid literal
+
+    Args:
+        s (str): A given string to parse
+
+    Returns:
+        (str) A resultant string
+
+    Examples:
+        >>> parse_latex('\\frac{1}{2}')
+        '1/2'
+        >>> parse_latex('\\frac{4}{8}')
+        '4/8'
+        >>> parse_latex('\\frac{0}{1}')
+        '0/1'
+        >>> parse_latex('\\frac{3}{\\placeholder{denominator}}')
+        '3'
+    """
+    pattern = re.compile('\frac{(.*?)}{(.*?)}')
+    match = pattern.match(s)
+    groups = list(match.groups())
+    for number in groups:
+        try:
+            float(number)
+        except ValueError:
+            groups.remove(number)
+    formatted = '{0}/{1}' if len(groups) > 1 else '{0}'
+    return formatted.format(*groups) if match else s
+
+
 def parse_vulgar_unicode(s: str) -> str:
     """Converts string containing vulgar fractions in unicode to literal.
     Args:
@@ -131,6 +162,7 @@ def parse_fraction(s: str) -> 'Fraction':
     except ValueError:
         pass
     s = parse_vulgar_unicode(s)
+    s = parse_latex(s)
     try:
         numerator, denominator = map(float, s.split('/'))
         return Fraction(numerator, denominator)

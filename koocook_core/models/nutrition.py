@@ -47,7 +47,9 @@ class RecipeIngredient(models.Model):
     @property
     def to_dict(self):
         return {'id': self.id, 'name': self.meta.name, 'type': self.quantity. unit.type,
-                'quantity': {'unit': self.quantity.unit.symbol, 'number': self.quantity.amount}}
+                'quantity': {'unit': self.quantity.unit.symbol, 'number': self.quantity.amount,
+                             'rendered': self.quantity.as_latex()},
+                'repr': f"{self.quantity.representation} of {self.meta.name}"}
 
     @property
     def to_json(self):
@@ -57,6 +59,7 @@ class RecipeIngredient(models.Model):
     def nutrition(self):
         nutrition_list = []
         for nutrient in self.meta.nutrient:
+            print(nutrient)
             if nutrient['nutrient'] not in list(map(lambda x: x['nutrient'], nutrition_list)):
                 nutrition_list.append(nutrient)
             else:
