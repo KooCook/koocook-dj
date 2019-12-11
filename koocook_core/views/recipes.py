@@ -55,11 +55,11 @@ class UserRecipeListView(SignInRequiredMixin, ListView):
     context_object_name = "user_recipes"
 
     def get_queryset(self):
-        try:
-            author = Author.objects.get(user__user=self.request.user)
-        except ObjectDoesNotExist:
-            author = Author(user=KoocookUser.objects.get(user=self.request.user))
-            author.save()
+        # try:
+        author = Author.objects.get(user__user=self.request.user)
+        # except ObjectDoesNotExist:
+        #     author = Author(user=KoocookUser.objects.get(user=self.request.user))
+        #     author.save()
         return Recipe.objects.filter(author=author).order_by('-date_published')
 
 

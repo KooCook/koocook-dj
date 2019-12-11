@@ -145,7 +145,6 @@ class PreferenceManager:
             pref_dict = user.preferences
         obj = cls()
         obj.preferences.update(pref_dict)
-        import copy
         obj.serialised_preferences = pref_dict
         return obj
 

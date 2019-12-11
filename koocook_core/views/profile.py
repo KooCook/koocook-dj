@@ -2,7 +2,7 @@ from django.views.generic import UpdateView
 from django.contrib.auth.models import User
 from django.shortcuts import reverse
 
-from .mixins import SignInRequiredMixin
+from .mixins import SignInRequiredMixin, PreferencesMixin
 from .forms import BasicProfileForm, ExtendedProfileForm
 from ..models import KoocookUser
 
@@ -24,9 +24,6 @@ class UserProfileInfoView(SignInRequiredMixin, UpdateView):
         context['section'] = 'info'
         return context
 
-    # def get_success_url(self):
-    #     return self.request.path
-
 
 class UserSettingsInfoView(PreferencesMixin, UpdateView):
     model = KoocookUser
@@ -37,6 +34,3 @@ class UserSettingsInfoView(PreferencesMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         context['section'] = 'pref'
         return context
-
-    # def get_success_url(self):
-    #     return self.request.path

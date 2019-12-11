@@ -11,17 +11,26 @@ def create_dummy_post(user: User) -> Post:
     return post
 
 
+def create_dummy_recipe_body(author: Author) -> dict:
+    recipe_body = {'name': 'dummy',
+                   'author': author,
+                   'image': '{"https://docs.djangoproject.com/en/2.2/ref/contrib/postgres/fields/#arrayfield"}',
+                   'date_published': '2019-11-05 04:04:07',
+                   'description': 'This is a description.',
+                   'prep_time': '00:00:03',
+                   'cook_time': '00:00:02',
+                   'recipe_instructions': '{"This is an instruction."}',
+                   'recipe_yield': '30 mL'}
+    return recipe_body
+
+
 def create_dummy_recipe(author: Author) -> Recipe:
-    recipe = Recipe(name='dummy', author=author)
-    recipe.image = '{"https://docs.djangoproject.com/en/2.2/ref/contrib/postgres/fields/#arrayfield"}'
-    recipe.date_published = '2019-11-05 04:04:07'
-    recipe.description = 'This is a description.'
-    recipe.prep_time = '00:00:03'
-    recipe.cook_time = '00:00:02'
-    recipe.recipe_instructions = '{"This is an instruction."}'
-    recipe.recipe_yield = '30 mL'
+    recipe = Recipe(**create_dummy_recipe_body(author))
     recipe.save()
     return recipe
+
+
+
 
 
 def create_dummy_comment_dict() -> Dict[str, Any]:
@@ -38,5 +47,8 @@ class AuthTestCase(TestCase):
         self.user = User.objects.create_user(self.username, password=password)
         self.user2 = User.objects.create_user("testuser2", password=self.password)
         self.client.login(username=self.username, password=password)
-        self.kc_user = KoocookUser.objects.get(user=self.user)
         self.author = Author.objects.get(user__user=self.user)
+
+    @property
+    def kc_user(self):
+        return KoocookUser.objects.get(user=self.user)
