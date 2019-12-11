@@ -9,8 +9,7 @@
         PATCH: `{% url 'koocook_core:recipe-comments' object.id %}`,
     };
 </script>
-    <script src="{% static 'js/components/comments.js' %}"></script>
-    <script src="{% static 'js/components/star-rating.js' %}"></script>{% endblock %}
+    <script src="{% static 'js/bundle.js' %}"></script>{% endblock %}
 {% block content_page_name %}{{ object.name }}{% endblock %}
 {% block page_content %}
 <div style="padding: 0 3rem">
@@ -57,7 +56,7 @@
               <div class="level-item has-text-centered">
                 <div>
                   <p class="heading">Time</p>
-                  <p class="title">20 min</p>
+                  <p class="title">{{ object.total_time|timedel_to_words }}</p>
                 </div>
               </div>
               <div class="level-item has-text-centered">
@@ -89,7 +88,7 @@
               <div class="level-item has-text-centered">
                 <div>
                   <p class="heading">Ratings</p>
-                  <p class="title">{{ object.aggregate_rating.rating_value }}/5</p>
+                  <p class="title">{% templatetag openvariable %} rating {% templatetag closevariable %}/5</p>
                 </div>
               </div>
 
@@ -114,7 +113,8 @@
                           style="border-radius: 0; height: 0.2rem"></progress>
               </div>
               <div class="level-item">
-                  <star-rating{% if not request.user.is_authenticated %} :read-only="true"{% else %} :read-only="{{ object.author.id }} === currentAuthorId"{% endif %} recipe-name="{{ object.name }}" :item-id="{{ object.id }}" :initial="{{ object.aggregate_rating.rating_value }}"></star-rating>
+                  <star-rating{% if not request.user.is_authenticated %} :read-only="true"{% else %} :read-only="{{ object.author.id }} === currentAuthorId"{% endif %} recipe-name="{{ object.name }}" :item-id="{{ object.id }}" :initial="rating"
+                  @change-score="rating = $event"></star-rating>
               </div>
             </nav>
           </div>
@@ -298,14 +298,13 @@
             <div class="tile is-parent">
               <div class="tile is-child">
                 <h3 class="title is-4">
-                  Instruction
+                  Instructions
                 </h3>
                 <div class="content" style="">
-                    {% for instruction in object.recipe_instructions %}
-                  <p>
-                    {{ instruction }}
-                  </p>
+                    <ol>{% for instruction in object.recipe_instructions %}
+                        <li>{{ instruction }}</li>
                     {% endfor %}
+                    </ol>
                 </div>
               </div>
             </div>
@@ -338,6 +337,7 @@
         data: {
             searchName: '',
             ingredients: [],
+            rating: parseFloat({{ object.aggregate_rating.rating_value }}).toFixed(1),
             currentAuthorId: {{ current_author.id }}
         }});
   </script>

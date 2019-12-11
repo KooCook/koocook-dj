@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.db.models import Model
-from django.http import JsonResponse, HttpRequest, HttpResponse
+from django.http import JsonResponse, HttpRequest, HttpResponse, QueryDict
 from typing import Type
 
 from ..models.base import ModelEncoder
@@ -79,6 +79,7 @@ class BaseController:
     def create(self) -> ControllerResponse:
         creation = self.model(**self.model_request_fields)
         creation.save()
+        creation = self.model.objects.get(pk=creation.id)
         return ControllerResponse(status_text='Created', obj=creation)
 
     @user_only
@@ -88,6 +89,7 @@ class BaseController:
         for field in updated_fields:
             setattr(found, field, self.request_fields[field])
         found.save()
+        found = self.model.objects.get(pk=found.id)
         return ControllerResponse(status_text='Updated', obj=found)
 
     def retrieve_one(self) -> ControllerResponse:
@@ -138,7 +140,10 @@ class BaseHandler:
 
     def restore_controller(self, request: HttpRequest):
         controller = self.controller.default()
-        controller.request_fields.update(request.POST.dict())
+        if request.method not in ['GET', 'POST']:
+            controller.request_fields.update(QueryDict(request.body).dict())
+        else:
+            controller.request_fields.update(request.POST.dict())
         controller.request_fields['user'] = request.user
         return controller
 
@@ -171,4 +176,7 @@ class JsonRequestHandler(BaseHandler):
 
     def handle(self, request: HttpRequest, alias: str = None, **kwargs) -> JsonResponse:
         res = self._internal_handle(request, alias, **kwargs)
-        return JsonResponse(res.as_dict(), status=self.get_status_code(res), encoder=ModelEncoder)
+        if hasattr(res, 'as_dict'):
+            return JsonResponse(res.as_dict(), status=self.get_status_code(res), encoder=ModelEncoder)
+        else:
+            return res

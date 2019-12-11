@@ -1,4 +1,5 @@
 {% extends 'base/index.html' %}
+{% load static %}
 {% block page_deps %}
     {{ block.super }}
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
@@ -29,31 +30,32 @@
            </div>
 
            <div id="navbarMain" class="navbar-menu">
-              <div class="navbar-center">
-                <a class="navbar-item is-active">
+              <div class="level navbar-center">
+              <div class="level-left">
+                <a class="level-item navbar-item is-active">
                   Home
                 </a>
 
-               <a class="navbar-item" href="{% url 'koocook_core:posts:view' %}">
+               <a class="level-item navbar-item" href="{% url 'koocook_core:posts:view' %}">
                  Stream
                </a>
 
-               <div class="navbar-item has-dropdown is-hoverable is-disabled">
+               <div class="level-item navbar-item has-dropdown is-hoverable">
                  <a class="navbar-link">
                    Browse
                  </a>
 
                  <div class="navbar-dropdown is-boxed">
-                   <a class="navbar-item" title="Look at our suggested recipe">
+                   <a class="navbar-item is-disabled" title="Look at our suggested recipe">
                      Featured recipes
                    </a>
-                   <a class="navbar-item" title="Look at what other people are making">
+                   <a class="navbar-item is-disabled" title="Look at what other people are making">
                      Popular recipes
                    </a>
-                   <a class="navbar-item" title="Get personalised recipe recommendations">
+                   <a class="navbar-item" href="{% url 'koocook_core:recipe-all' %}" title="Get personalised recipe recommendations">
                      Suggested recipes
                    </a>
-                   <a class="navbar-item" title="Get a random recipe">
+                   <a class="navbar-item is-disabled" title="Get a random recipe">
                      I'm feeling hungry!
                    </a>
                    <hr class="navbar-divider">
@@ -66,7 +68,7 @@
                  </div>
                </div>
 
-               <div class="navbar-item has-dropdown is-hoverable is-disabled">
+               <div class="level-item navbar-item has-dropdown is-hoverable is-disabled">
                  <a class="navbar-link">
                    More
                  </a>
@@ -89,7 +91,7 @@
                </div>
 
                 {% if not user.is_authenticated %}
-               <div class="navbar-item">
+               <div class="level-item navbar-item">
                  <div class="buttons">
 
 
@@ -101,7 +103,7 @@
 
                </div>
                 {% else %}
-               <div class="navbar-item has-dropdown is-hoverable">
+               <div class="level-item navbar-item has-dropdown is-hoverable">
                  <a class="navbar-link is-arrowless">
                    <div class="profile-pic-48">
                        <div class="has-text-grey-dark profile-initial-48">{{ user.username|title|slice:"0:1" }}</div>
@@ -112,7 +114,7 @@
                      <div class="navbar-item">
                         <strong>{{ user.username }}</strong>
                      </div>
-                   <a class="navbar-item is-disabled">
+                   <a class="navbar-item" href="{% url 'koocook_core:profile:info' %}">
                      Your profile
                    </a>
                    <a class="navbar-item is-disabled">
@@ -125,7 +127,7 @@
                    <a class="navbar-item is-disabled">
                      Help
                    </a>
-                   <a class="navbar-item is-disabled">
+                    <a href="{% url 'koocook_core:profile:pref' %}" class="navbar-item">
                      Settings
                    </a>
                    <a href="{% url "koocook_auth:logout" %}" class="navbar-item">
@@ -135,10 +137,11 @@
                </div>
                 {% endif %}
              </div>
+              </div>
+              </div>
            </div>
-         </div>
        </nav>
-            <div class="level">
+            <div class="level is-desktop">
                 <div class="level-item control has-icons-left search-bar-section">
 
                     <input v-model="searchTerm" class="level-item input search-bar" type="text" placeholder="Don't know how to cook a dish? Search KooCook!">
@@ -168,5 +171,6 @@
           }
       })
   </script>
+    <script src="{% static "js/navbar.js" %}"></script>
 {% endblock %}
 

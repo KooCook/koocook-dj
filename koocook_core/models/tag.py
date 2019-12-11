@@ -30,9 +30,8 @@ class Tag(SerialisableModel, models.Model):
             raise ValueError(f'tag `name` and `label` together must be unique, '
                              f"another tag '{tag}' already exists")
 
-    @property
     def as_dict(self) -> dict:
-        di = super().as_dict
+        di = super().as_dict()
         di.update({'done': 'true'})
         return di
 
