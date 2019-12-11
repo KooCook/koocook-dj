@@ -2,11 +2,11 @@ from typing import Iterable, List
 import random
 from decimal import Decimal
 
-import numpy as np
+# import numpy as np
 
 from koocook.settings.dirs import TEST_DATA_DIR
 
-np.random.seed(0)
+# np.random.seed(0)
 random.seed(0)
 
 cached_first_names = []
@@ -28,15 +28,16 @@ def gen_floats(a: float, b: float, n: int) -> List[float]:
         https://stackoverflow.com/questions/45394981/how-to-generate-list-of-unique-random-floats-in-python
     """
     assert a < b, "a must be smaller than b"
-    out = np.empty(n)
-    needed = n
-    while needed != 0:
-        arr = np.random.uniform(a, b, needed)
-        uniques = np.setdiff1d(np.unique(arr), out[:n-needed])
-        out[n-needed: n-needed+uniques.size] = uniques
-        needed -= uniques.size
-    np.random.shuffle(out)
-    return out.tolist()
+    # out = np.empty(n)
+    # needed = n
+    # while needed != 0:
+    #     arr = np.random.uniform(a, b, needed)
+    #     uniques = np.setdiff1d(np.unique(arr), out[:n-needed])
+    #     out[n-needed: n-needed+uniques.size] = uniques
+    #     needed -= uniques.size
+    # np.random.shuffle(out)
+    # return out.tolist()
+    return [random.uniform(a, b) for _ in range(n)]
 
 
 def gen_decimals(a: float, b: float, n: int) -> Iterable[Decimal]:
@@ -48,15 +49,15 @@ def gen_decimals(a: float, b: float, n: int) -> Iterable[Decimal]:
         https://stackoverflow.com/questions/45394981/how-to-generate-list-of-unique-random-floats-in-python
     """
     assert a < b, "a must be smaller than b"
-    out = np.empty(n)
-    needed = n
-    while needed != 0:
-        arr = np.random.uniform(a, b, needed)
-        uniques = np.setdiff1d(np.unique(arr), out[:n-needed])
-        out[n-needed: n-needed+uniques.size] = uniques
-        needed -= uniques.size
-    np.random.shuffle(out)
-    return map(Decimal, out)
+    # out = np.empty(n)
+    # needed = n
+    # while needed != 0:
+    #     arr = np.random.uniform(a, b, needed)
+    #     uniques = np.setdiff1d(np.unique(arr), out[:n-needed])
+    #     out[n-needed: n-needed+uniques.size] = uniques
+    #     needed -= uniques.size
+    # np.random.shuffle(out)
+    return map(Decimal, (random.uniform(a, b) for _ in range(n)))
 
 
 def gen_username(first_name: str, last_name: str = '') -> str:
