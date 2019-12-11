@@ -29,6 +29,23 @@ def _remove_rating(old_value: Decimal, old_count: int,
         return old_total - round(Decimal(new_rating), 1)
 
 
+class ReviewerModel:
+    """Mixin for models that can review ReviewableModels"""
+    @property
+    def item_reviewed(self):
+        return self.reviewed_recipe or self.reviewed_post or self.reviewed_comment
+
+    @item_reviewed.setter
+    def item_reviewed(self, value):
+        kwarg = parse_kwargs_item_reviewed({'item_reviewed': value})
+        count = 0
+        for k, v in kwarg.items():
+            setattr(self, k, v)
+            count += 1
+            if count > 1:
+                raise AssertionError
+
+
 class ReviewableModel:
     """This creates an AggregateRating only after reviewables are actually created
     and saved to a database; that is, it will be created once in need, not always.
@@ -46,7 +63,7 @@ class ReviewableModel:
         super().save(*args, **kwargs)  # Resolved at runtime
 
 
-class Comment(SerialisableModel, ReviewableModel, models.Model):
+class Comment(ReviewerModel, SerialisableModel, ReviewableModel, models.Model):
     include = ("rendered",)
     exclude = ('reviewed_comment', 'reviewed_recipe', 'reviewed_post')
     author = models.ForeignKey(
@@ -83,10 +100,6 @@ class Comment(SerialisableModel, ReviewableModel, models.Model):
         kwargs = parse_kwargs_item_reviewed(kwargs, strict=False)
         super().__init__(*args, **kwargs)
 
-    @property
-    def item_reviewed(self):
-        return self.reviewed_recipe or self.reviewed_post or self.reviewed_comment
-
     @classmethod
     def field_names(cls):
         return [f.name for f in cls._meta.fields]
@@ -104,7 +117,7 @@ class Comment(SerialisableModel, ReviewableModel, models.Model):
         super().save(*args, **kwargs)
 
 
-class Rating(models.Model):
+class Rating(ReviewerModel, models.Model):
     author = models.ForeignKey(
         'koocook_core.Author',
         on_delete=models.PROTECT,
@@ -143,10 +156,6 @@ class Rating(models.Model):
                                  '`worst_rating`')
         super().__init__(*args, **kwargs)
 
-    @property
-    def item_reviewed(self):
-        return self.reviewed_recipe or self.reviewed_post or self.reviewed_comment
-
     def save(self, *args, **kwargs):
         if self.item_reviewed is None:
             raise ValidationError(_('There must be at least 1 item reviewed'))
@@ -172,9 +181,6 @@ def parse_kwargs_item_reviewed(kwargs: Dict[str, Any], strict: bool = True) -> D
             raise TypeError(f'item_reviewed must be of the type Recipe, '
                             f"Post or Comment not '{type(item)}'")
     else:
-        # monkey patch
-        if kwargs == {}:
-            return {}
         count = list(k in kwargs for k in ('reviewed_recipe', 'reviewed_post',
                                            'reviewed_comment')).count(True)
         if count != 1:
