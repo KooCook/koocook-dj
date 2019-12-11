@@ -30,6 +30,3 @@ def to_koocook_user(func):
         else:
             return func(controller)
     return wrapper
-
-
-

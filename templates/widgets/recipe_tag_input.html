@@ -1,0 +1,9 @@
+<recipe-tag-input {% include "django/forms/widgets/attrs.html" %}
+
+        :attached="true" {% if widget.model %}v-model='{{ widget.model }}' {% else %} name="e"{% endif %} ellipsis icon="tag" placeholder="Add a tag"
+        :allow-new="true" autocomplete maxtags="18" maxlength="24">
+    <template v-slot:default="slotProps"></template>
+    <template slot="empty">
+        There are no existing tags, but you can create a new one.
+    </template>
+</recipe-tag-input>
