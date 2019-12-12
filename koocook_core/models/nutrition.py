@@ -1,4 +1,3 @@
-import enum
 import json
 
 from django.contrib.postgres import fields
@@ -7,12 +6,6 @@ from django.db import models
 from koocook_core import fields as koocookfields
 
 __all__ = ['MetaIngredient', 'RecipeIngredient']
-
-
-@enum.unique
-class NutrientType(enum.Enum):
-    CARBOHYDRATE = 'carbohydrates'
-    ...
 
 
 class MetaIngredient(models.Model):
@@ -34,6 +27,11 @@ class RecipeIngredient(models.Model):
     meta = models.ForeignKey(
         'koocook_core.MetaIngredient',
         on_delete=models.PROTECT,
+    )
+    description = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
     )
     substitute_set = models.ManyToManyField('self', blank=True)
     recipe = models.ForeignKey(

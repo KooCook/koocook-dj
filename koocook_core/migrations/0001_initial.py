@@ -125,6 +125,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('quantity', koocook_core.support.quantity.QuantityField()),
+                ('description', models.CharField(blank=True, max_length=255, null=True)),
                 ('meta', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='koocook_core.MetaIngredient')),
                 ('recipe', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='koocook_core.Recipe')),
                 ('substitute_set', models.ManyToManyField(blank=True, related_name='_recipeingredient_substitute_set_+', to='koocook_core.RecipeIngredient')),

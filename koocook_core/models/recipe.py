@@ -57,13 +57,25 @@ class Recipe(ReviewableModel, models.Model):
         """
         return self.recipevisit_set.count()
 
+    def update(self, dct: dict, save: bool = True) -> None:
+        for field, value in dct.items():
+            try:
+                setattr(self, field, value)
+            except TypeError:
+                getattr(self, field).set(value)
+        if save:
+            self.save()
+
     @property
     def popularity_score(self) -> float:
         return ((float(self.view_count)*1.9)+(float(self.aggregate_rating.rating_value)*3.1))/5
 
     @property
     def total_time(self):
-        return self.prep_time + self.cook_time
+        try:
+            return self.prep_time + self.cook_time
+        except TypeError:
+            return
 
     @property
     def nutrition(self):
