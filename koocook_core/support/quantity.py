@@ -22,6 +22,12 @@ class Quantity:
         self.unit = unit_.get_unit(unit)
 
     @property
+    def decimal(self):
+        if self.amount == 1:
+            return '{} {}'.format(f"{float(self.amount)}", self.unit.singular)
+        return '{} {}'.format(f"{float(self.amount)}", self.unit.plural)
+
+    @property
     def representation(self):
         if self.amount == 1:
             return '{} {}'.format(f"$${self.as_latex()}$$", self.unit.singular)

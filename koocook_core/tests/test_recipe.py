@@ -23,7 +23,7 @@ class RecipeTests(AuthTestCase):
 
     def test_recipe_ingredient(self):
         recipe = Recipe()
-        self.assertEqual(recipe.recipe_ingredients, recipe.recipeingredient_set.all())
+        self.assertEqual(list(recipe.recipe_ingredients), list(recipe.recipeingredient_set.all()))
 
     def test_recipe_create_view(self):
         with self.subTest("Authenticated user access"):
