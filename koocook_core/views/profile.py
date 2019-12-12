@@ -7,13 +7,6 @@ from .forms import BasicProfileForm, ExtendedProfileForm
 from ..models import KoocookUser
 
 
-class PreferencesMixin(SignInRequiredMixin):
-    def form_valid(self, form):
-        self.object.formal_preferences.update_from_json(self.request.POST["preferences"])
-        response = super().form_valid(form)
-        return response
-
-
 class UserProfileInfoView(SignInRequiredMixin, UpdateView):
     model = User
     form_class = BasicProfileForm
