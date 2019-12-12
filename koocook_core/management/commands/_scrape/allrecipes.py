@@ -113,8 +113,8 @@ def get_links(url: str) -> List[str]:
     return list(nums)
 
 
-def main(num):
-    response = requests.get(f'https://www.allrecipes.com/recipe/{num}/')
+def scrape(id):
+    response = requests.get(f'https://www.allrecipes.com/recipe/{id}/')
     soup = BeautifulSoup(response.text, 'html.parser')
     try:
         parse_detail_soup(soup)
@@ -122,3 +122,17 @@ def main(num):
         pass
     except TypeError:
         pass
+
+
+def main(num):
+    count = 0
+    i = 0
+    urls = get_links(f'https://www.allrecipes.com/{f"?page={i + 1}" if i else ""}')
+    while count < num:
+        try:
+            scrape(urls.pop(-1))
+        except IndexError:
+            i += 1
+            urls = get_links(f'https://www.allrecipes.com/{f"?page={i + 1}" if i else ""}')
+            scrape(urls.pop(-1))
+        count += 1
