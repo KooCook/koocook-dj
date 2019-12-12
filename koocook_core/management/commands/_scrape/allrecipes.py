@@ -112,9 +112,9 @@ def get_links(url: str) -> List[str]:
     return list(nums)
 
 
-def scrape(id):
+def scrape(id_):
     """ Scrape recipe with id ``id`` """
-    response = requests.get(f'https://www.allrecipes.com/recipe/{id}/')
+    response = requests.get(f'https://www.allrecipes.com/recipe/{id_}/')
     soup = BeautifulSoup(response.text, 'html.parser')
     try:
         parse_detail_soup(soup)
