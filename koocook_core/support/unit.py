@@ -37,11 +37,15 @@ class Unit(enum.Enum):
 
     @property
     def singular(self) -> str:
-        return self._singular
+        if self._singular:
+            return self._singular
+        return ''
 
     @property
     def plural(self) -> str:
-        return self._plural
+        if self._plural:
+            return self._plural
+        return ''
 
     @property
     def type(self) -> str:
