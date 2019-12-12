@@ -119,9 +119,12 @@ class RecipeUpdateView(RecipeViewMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['ingredients'] = json.dumps([ing.to_dict for ing in list(self.get_object().recipe_ingredients.all())],
+        obj = self.get_object()
+        context['ingredients'] = json.dumps([ing.to_dict for ing in list(obj.recipe_ingredients.all())],
                                             cls=FractionEncoder)
-        context['tags'] = json.dumps([ing.as_dict() for ing in list(self.get_object().tag_set.all())], cls=ModelEncoder)
+        context['equipment'] = json.dumps([e.to_dict() for e in list(obj.equipment_set.all())],
+                                            cls=FractionEncoder)
+        context['tags'] = json.dumps([ing.as_dict() for ing in list(obj.tag_set.all())], cls=ModelEncoder)
         return context
 
 

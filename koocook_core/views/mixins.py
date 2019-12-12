@@ -69,23 +69,21 @@ class RecipeViewMixin(SignInRequiredMixin, AuthAuthorMixin):
         equipment = self.request.POST.get('cookware_list')
         if equipment:
             equipment = json.loads(equipment)
+            created = False
             for cookware in equipment:
-                found, created = RecipeEquipment.objects.get_or_create(name=cookware)
-
+                form.instance.equipment_set.clear()
                 if 'id' in cookware:
-                    found = RecipeEquipment.objects.filter(pk=cookware['id'])
-                    if not found:
-                        this_equipment = RecipeEquipment(name=cookware)
-                        this_equipment.save()
-                        form.instance.equipment_set.add(this_equipment)
-                    else:
-                        if 'removed' in cookware and bool(cookware['removed']):
-                            form.instance.equipment_set.remove(found)
-                            found.delete()
-                        else:
-                            found.update(name=cookware)
+                    try:
+                        found = RecipeEquipment.objects.get(pk=cookware['id'])
+                        created = True
+                    except RecipeEquipment.DoesNotExist:
+                        pass
                 else:
-                    form.instance.equipment_set.add(found)
+                    found, created = RecipeEquipment.objects.get_or_create(name=cookware['name'])
+                if created:
+                    found.name = cookware['name']
+                    found.save()
+                form.instance.equipment_set.add(found)
 
     # Messy
     def form_valid(self, form):

@@ -4,6 +4,7 @@ from django.http import HttpRequest
 
 from koocook_core import fields as koocookfields
 
+from .base import SerialisableModel
 from .review import ReviewableModel
 
 __all__ = ['Recipe']
@@ -106,8 +107,13 @@ class RecipeVisit(models.Model):
         return visit
 
 
-class RecipeEquipment(models.Model):
+class RecipeEquipment(SerialisableModel, models.Model):
     name = models.CharField(max_length=255, blank=False, unique=True)
+
+    def to_dict(self):
+        repr_dict = super().as_dict()
+        repr_dict.update({'editing': False})
+        return repr_dict
 
     def clean(self):
         super().clean()
