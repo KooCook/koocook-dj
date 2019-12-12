@@ -232,16 +232,16 @@ class AggregateRating(models.Model):
         return str(self.rating_value)
 
     def __le__(self, other) -> bool:
-        return self.rating_value < other.rating_value
+        return self.rating_value <= other.rating_value
 
     def __eq__(self, other) -> bool:
         return self.rating_value == other.rating_value
 
     def __lt__(self, other) -> bool:
-        return self.rating_value <= other.rating_value
+        return self.rating_value < other.rating_value
 
     def __ge__(self, other) -> bool:
-        return self.rating_value > other.rating_value
+        return self.rating_value >= other.rating_value
 
     def __gt__(self, other) -> bool:
-        return self.rating_value >= other.rating_value
+        return self.rating_value > other.rating_value
