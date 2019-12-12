@@ -65,7 +65,10 @@ class Recipe(ReviewableModel, models.Model):
 
     @property
     def total_time(self):
-        return self.prep_time + self.cook_time
+        try:
+            return self.prep_time + self.cook_time
+        except TypeError:
+            return
 
     @property
     def nutrition(self):
