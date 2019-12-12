@@ -66,8 +66,9 @@ class CommentWidgetMixin(AuthAuthorMixin, FormMixin):
 class RecipeViewMixin(SignInRequiredMixin, AuthAuthorMixin):
 
     def process_equipment(self, form):
-        equipment = json.loads(self.request.POST.get('cookware_list'))
+        equipment = self.request.POST.get('cookware_list')
         if equipment:
+            equipment = json.loads(equipment)
             for cookware in equipment:
                 found, created = RecipeEquipment.objects.get_or_create(name=cookware)
 
