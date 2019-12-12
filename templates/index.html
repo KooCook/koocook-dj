@@ -158,39 +158,58 @@
             </div>
           </section>
 
-<div class="columns is-multiline">
-    {% for recipe in recipes|top_latest %}
-        <div class="column is-one-third-desktop is-two-thirds-mobile is-offset-4-desktop is-offset-2-mobile">
-            <div class="card">
-                <div class="card-image">
-                    <figure class="image is-2by1 is-bg-cover-centered">
-                        <img src="{{ recipe.image|first }}" alt="Recipe image">
-                    </figure>
-                </div>
-                <div class="card-content">
-                    <div class="media">
-                        <div class="media-left">
-                            <div class="profile-pic-48">
-                                <div class="has-text-grey-dark profile-initial-48">
-                                    {{ user.username|title|slice:"0:1" }}
+<div class="container">
+    <div class="columns is-multiline">
+        {% for recipe in recipes|top_latest %}
+            <div class="column is-one-third-desktop is-10-mobile is-offset-1-mobile">
+                <div class="card">
+                    <div class="card-image">
+                        <figure class="image is-2by1 is-bg-cover-centered">
+                            <img src="{{ recipe.image|first }}" alt="Recipe image">
+                        </figure>
+                    </div>
+                    <div class="card-content">
+                        <div class="media">
+                            <div class="media-left">
+                                <div class="profile-pic-48">
+                                    <div class="has-text-grey-dark profile-initial-48">
+                                        {{ user.username|title|slice:"0:1" }}
+                                    </div>
                                 </div>
+                            </div>
+
+                            <div class="media-content">
+                                <p class="title is-4 is-marginless">
+                                    <a href="{% url 'koocook_core:recipe' recipe.id %}" class="is-capitalized has-text-link">
+                                        {{ recipe.name }}
+                                    </a>
+                                </p>
+                                <p class="title is-5 is-marginless">@{{ recipe.author.name }}</p>
+                                {# <p><a href="#">profile</a></p> #}
                             </div>
                         </div>
 
-                        <div class="media-content">
-                            <p class="title is-4 is-marginless">
-                                <a href="{% url 'koocook_core:recipe' recipe.id %}" class="is-capitalized has-text-link">
-                                    {{ recipe.name }}
-                                </a>
-                            </p>
-                            <p class="title is-5 is-marginless">@{{ recipe.author.name }}</p>
-                            {# <p><a href="#">profile</a></p> #}
+                        <div class="content">
+                             <p class="subtitle has-text-grey is-6">
+                                 <span class="date-posted">
+                                    <i class="fas fa-calendar is-small"></i>
+                                    {{ recipe.date_published }}
+                                 </span>
+                                 <span class="date-posted">
+                                     <i class="fas fa-clock is-small"></i>
+                                     Ready in: {{ recipe.total_time|timedel_to_words }}
+                                 </span>
+                                <span class="date-posted">
+                                    <i class="fas fa-eye is-small"></i>
+                                    {{ recipe.view_count }} view{{ recipe.view_count|pluralize }}
+                                </span>
+                             </p>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    {% endfor %}
+        {% endfor %}
+    </div>
 </div>
 
      <script>
