@@ -14,15 +14,15 @@
     </template>
 </recipe-tag-input>
 {% for field in form %}
-                        {% for error in field.errors %}
-                        <p class="help is-danger">
-                            {{ field.name }}{{ error }}
-                        </p>
-                        {% endfor %}
-                        {% endfor %}
+{% for error in field.errors %}
+<p class="help is-danger">
+    {{ field.name }}{{ error }}
+</p>
+{% endfor %}
+{% endfor %}
 <form method="post" novalidate action="{{ request.path }}">
-  {% for hidden in form.hidden_fields %}
-        {{ hidden }}
+    {% for hidden in form.hidden_fields %}
+    {{ hidden }}
     {% endfor %}
     <div class="columns">
         <div class="column">
@@ -65,7 +65,7 @@
     </div>
 
 
-{#    <input name="ingredients" type="hidden" :value="JSON.stringify(ingredients)">#}
+    {#    <input name="ingredients" type="hidden" :value="JSON.stringify(ingredients)">#}
 
     <div class="form-group field is-horizontal">
         <div class="field-label is-medium">

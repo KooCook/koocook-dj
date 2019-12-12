@@ -292,10 +292,28 @@
                     </h3>
                     <div class="content">
                         <ul style="list-style-type: none">
-                            {# TODO: create pop-up to show ingredient #}
                             {# TODO: link to ingredient page #}
                             {% for fact in object.nutrition %}
-                                <li class="nutrient">{{ fact.nutrient }} {{ fact.quantity }}</li>
+
+                                <li class="nutrient">  <b-dropdown class="callout bottom" animation="slide-fade" aria-role="list">
+                                <span slot="trigger" role="button">
+                                        <b-button type="is-small nutrient-info" icon-right="information-outline" />
+                                </span>
+                                    <b-dropdown-item :focusable="false" :custom="true" aria-role="listitem">
+                                        <strong>Sourced from</strong>
+                                    <ul>
+                                        {%  for source in fact.sources %}
+                                            <li>
+
+                                                <span class="nutrient-name">{{ source.name|capfirst }}</span>
+                                            {{ source.quantity }}
+                                            {% if source.relative %}<progress value="{{ source.relative }}" max="100" class="progress is-success" style="border-radius: 0px; height: 0.2rem;"></progress>{% endif %}</li>
+                                            {% endfor %}
+                                    </ul>
+                                    </b-dropdown-item>
+                                </b-dropdown> {{ fact.nutrient }} {{ fact.quantity }}</li>
+                            {% empty %}
+                                Nutritional facts are not available.
                             {% endfor %}
                         </ul>
                     </div>
