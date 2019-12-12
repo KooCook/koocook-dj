@@ -1,13 +1,13 @@
-from typing import List
 import warnings
-
-from django.core.exceptions import ObjectDoesNotExist  # for .get()
-
-from koocook_core.support import utils, parse_quantity, Quantity
-from koocook_core.models import Recipe, AggregateRating, Author, MetaIngredient, RecipeIngredient, Tag
+from typing import List
 
 import requests
 from bs4 import BeautifulSoup
+
+from django.core.exceptions import ObjectDoesNotExist  # for .get()
+from koocook_core.models import (AggregateRating, Author, MetaIngredient,
+                                 Recipe, RecipeIngredient, Tag)
+from koocook_core.support import Quantity, parse_quantity, unit, utils
 
 
 def get_search_view(page: int = 1) -> str:
@@ -97,12 +97,18 @@ def strip_number(s: str) -> int:
 
 
 def get_yield(soup: BeautifulSoup) -> 'Quantity':
-    serving_str = soup.find(itemprop='recipeYield').string.strip()
+    serving_str: str = soup.find(itemprop='recipeYield').string.strip()
     '8 servings'
     'Makes about 60'
     try:
         return parse_quantity(serving_str)
     except ValueError:
+        if 'serving' in serving_str:
+            parts = serving_str.split(' ')
+            if '-' in parts[0]:
+                nums = parts[0].split('-')
+                avg = sum(map(int, nums)) / 2
+                return Quantity(avg, unit.SpecialUnit.SERVING)
         warnings.warn(f"cannot parse yield '{serving_str}', skipping")
 
 
