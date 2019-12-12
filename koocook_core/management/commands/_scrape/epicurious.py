@@ -110,6 +110,8 @@ def add_ingr(soup: BeautifulSoup, recipe: Recipe) -> None:
     for li in soup.find_all(itemprop='ingredients'):
         ingr_str = li.string
         '8 small sweet potatoes (about 3 lb. total), scrubbed, halved lengthwise'
+        if not ingr_str:
+            continue
         number, unit, description = utils.split_ingredient_str(ingr_str)
         quantity = Quantity(number, unit)
         try:
