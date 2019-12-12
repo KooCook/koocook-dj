@@ -1,10 +1,44 @@
 {% extends 'base/mixins/formatted-md.html' %}
-
+{% load static %}
 {% block content_category_url %}{% url 'koocook_core:recipe-all' %}{% endblock %}
 
 {% block content_category %}Recipes{% endblock %}
 
+{% block content_deps %}
+    <link rel="stylesheet" href="https://unpkg.com/mathlive/dist/mathlive.core.css">
+    <link rel="stylesheet" href="https://unpkg.com/mathlive/dist/mathlive.css">
+    <link rel="stylesheet" href="{% static 'css/recipe/crud.css'%} ">
+    {% block crud_deps %}{% endblock %}
+{% endblock %}
+
 {% block nav_pane %}
+    <b-collapse :open.sync="isFiltersOpen" position="is-bottom" aria-id="contentIdForA11y1">
+    <a slot="trigger" slot-scope="props" aria-controls="contentIdForA11y1">
+    </a>
+    <div class="recipe-portal">
+      <nav class="container level">
+        <!-- Left side -->
+        <div class="level-left">
+          <div class="level-item">
+            <p class="subtitle is-5">
+              Filters
+            </p>
+          </div>
+        </div>
+
+        <p class="level-item"> <b-taginput
+          icon="label"
+          v-model="ingredients"
+          placeholder="Include ingredients" expanded>
+      </b-taginput></p>
+        <p class="level-item"><b-taginput
+          icon="label"
+          v-model="cookware"
+          placeholder="Include cookware" expanded>
+      </b-taginput></p>
+      </nav>
+    </div>
+  </b-collapse>
     <nav class="level recipe-portal">
   <!-- Left side -->
   <div class="level-left">

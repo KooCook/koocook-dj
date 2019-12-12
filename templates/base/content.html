@@ -163,33 +163,6 @@
       </div>
     </div>
   </nav>
-  <b-collapse :open.sync="isFiltersOpen" position="is-bottom" aria-id="contentIdForA11y1">
-    <a slot="trigger" slot-scope="props" aria-controls="contentIdForA11y1">
-    </a>
-    <div class="recipe-portal">
-      <nav class="container level">
-        <!-- Left side -->
-        <div class="level-left">
-          <div class="level-item">
-            <p class="subtitle is-5">
-              Filters
-            </p>
-          </div>
-        </div>
-
-        <p class="level-item"> <b-taginput
-          icon="label"
-          v-model="ingredients"
-          placeholder="Include/Exclude ingredients" expanded>
-      </b-taginput></p>
-        <p class="level-item"><b-taginput
-          icon="label"
-          v-model="cookware"
-          placeholder="Include/Exclude cookware" expanded>
-      </b-taginput></p>
-      </nav>
-    </div>
-  </b-collapse>
   {% block section_after_nav %}
   {% block nav_pane %}{% endblock %}
   <div class="container">{% block no_breadcrumb %}<nav class="breadcrumb breadcrumb-nav" aria-label="breadcrumbs">
