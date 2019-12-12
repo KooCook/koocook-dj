@@ -7,6 +7,8 @@ from koocook_core.support.quantity import Quantity, parse_quantity
 
 from koocook_core import fields as koocookfields
 
+from typing import List
+
 __all__ = ['MetaIngredient', 'RecipeIngredient']
 
 
@@ -58,16 +60,21 @@ class RecipeIngredient(models.Model):
         nutrition_list = []
         for nutrient in self.meta.nutrient:
             if nutrient['nutrient'] not in list(map(lambda x: x['nutrient'], nutrition_list)):
+                # print(f"{nutrient['nutrient']=} {nutrient['quantity']=}")
+                nutrient['quantity'] = nutrient['quantity']
                 nutrition_list.append(nutrient)
             else:
-                for i in range(len(nutrition_list)):
-                    if nutrition_list[i]['nutrient'] == nutrient['nutrient']:
-                        nutrition_list[i]['quantity'] = str(RecipeIngredient.sum_nutrient(
+                i = nutrition_list.index(next(filter(
+                    lambda index: index.get('nutrient') == nutrient['nutrient'],
+                     nutrition_list
+                )))
+                nutrition_list[i]['quantity'] = str(RecipeIngredient.sum_nutrient(
                             nutrition_list[i]['quantity'], nutrient['quantity']
-                        ))
+                ))
+            # print(f"{nutrient['nutrient']=} {nutrient['quantity']=}")
         return nutrition_list
 
     @staticmethod
-    def sum_nutrient(first_nutrient: str, second_nutrient: str):
+    def sum_nutrient(first_nutrient: str, second_nutrient: str) -> Quantity:
         result = parse_quantity(first_nutrient) + parse_quantity(second_nutrient)
         return result

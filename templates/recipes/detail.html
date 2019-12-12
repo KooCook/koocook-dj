@@ -344,7 +344,7 @@
                             {# TODO: create pop-up to show ingredient #}
                             {# TODO: link to ingredient page #}
                             {% for fact in object.nutrition %}
-                                <li class="nutrient">{{ fact.nutrient }} {{ fact.quantity }}</li>
+                                <li class="nutrient">{{ fact.nutrient }} {{ fact.quantity|to_float }}</li>
                             {% endfor %}
                         </ul>
                     </div>

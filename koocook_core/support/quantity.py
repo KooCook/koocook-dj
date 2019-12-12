@@ -43,8 +43,16 @@ class Quantity:
     def __add__(self, other):
         if self.unit == other.unit:
             result = self.amount + other.amount
-            return Quantity(result, self.unit)
+        else:
+            result = self.amount + unit_.convert(value=other.amount, base_unit=self.unit, quote_unit=other.unit)
+        return Quantity(result, self.unit)
 
+    def __mul__(self, other):
+        if self.unit == other.unit:
+            result = self.amount * other.amount
+        else:
+            result = self.amount * unit_.convert(value=other.amount, base_unit=self.unit, quote_unit=other.unit)
+        return Quantity(result, self.unit)
 
 def parse_quantity(quantity_string: str) -> Quantity:
     amount, *unit = quantity_string.split(' ')
