@@ -58,8 +58,12 @@ class RecipeIngredient(models.Model):
     @property
     def nutrition(self):
         nutrition_list = []
-        for nutrient in self.meta.nutrient:
-            print(nutrient)
+        try:
+            nutrients = self.meta.nutrient[0]
+        except KeyError:
+            nutrients = self.meta.nutrient
+            return nutrition_list
+        for nutrient in nutrients:
             if nutrient['nutrient'] not in list(map(lambda x: x['nutrient'], nutrition_list)):
                 nutrition_list.append(nutrient)
             else:
@@ -71,6 +75,6 @@ class RecipeIngredient(models.Model):
         return nutrition_list
 
     @staticmethod
-    def sum_nutrient(first_nutrient: str, second_nutrient: str):
+    def sum_nutrient(first_nutrient: str, second_nutrient: str) -> Quantity:
         result = parse_quantity(first_nutrient) + parse_quantity(second_nutrient)
         return result

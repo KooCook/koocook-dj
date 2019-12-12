@@ -5,6 +5,7 @@ from django.http import HttpRequest
 from koocook_core import fields as koocookfields
 
 from .review import ReviewableModel
+from ..support import parse_quantity
 
 __all__ = ['Recipe']
 
@@ -57,16 +58,37 @@ class Recipe(ReviewableModel, models.Model):
     @property
     def nutrition(self):
         nutrition_list = []
-        # for ingredient in self.recipe_ingredients:
-        #     for nutrient in ingredient.nutrition:
-        #         if nutrient['nutrient'] not in list(map(lambda x: x['nutrient'], nutrition_list)):
-        #             nutrition_list.append(nutrient)
-        #         else:
-        #             for i in range(len(nutrition_list)):
-        #                 if nutrition_list[i]['nutrient'] == nutrient['nutrient']:
-        #                     nutrition_list[i]['quantity'] = str(self.recipe_ingredients[0].sum_nutrient(
-        #                         nutrition_list[i]['quantity'], nutrient['quantity']
-        #                     ))
+        for ingredient in self.recipe_ingredients:
+            for nutrient in ingredient.nutrition:
+                if nutrient['nutrient'] not in list(map(lambda x: x['nutrient'], nutrition_list)):
+                    nutrient['sources'] = []
+                    nutrient['sources'].append({'name': ingredient.meta.name, 'quantity': nutrient['quantity']})
+                    nutrition_list.append(nutrient)
+                else:
+                    for i in range(len(nutrition_list)):
+                        if nutrition_list[i]['nutrient'] == nutrient['nutrient']:
+                            aggregate_nutrient = self.recipe_ingredients[0].sum_nutrient(
+                                nutrition_list[i]['quantity'], nutrient['quantity']
+                            )
+                            nutrition_list[i]['quantity'] = str(aggregate_nutrient)
+                            if 'sources' not in nutrition_list[i]:
+                                nutrition_list[i]['sources'] = []
+                            else:
+                                nutrition_list[i]['sources'].append({'name': ingredient.meta.name,
+                                                                    'quantity': nutrient['quantity']
+                                                                     })
+        for nutrition in nutrition_list:
+            for source in nutrition['sources']:
+                aggregate = parse_quantity(nutrition['quantity']).amount
+                if len(nutrition['sources']) > 1:
+                    source['relative'] = int(
+                        float((parse_quantity(source['quantity']).amount / aggregate) * 100))
+                    source['quantity'] = parse_quantity(source['quantity']).decimal
+                else:
+                    source['quantity'] = parse_quantity(source['quantity']).decimal
+
+        for nutrition in nutrition_list:
+            nutrition['quantity'] = parse_quantity(nutrition['quantity']).decimal
         return nutrition_list
 
     @property
