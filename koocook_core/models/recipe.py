@@ -60,10 +60,6 @@ class Recipe(ReviewableModel, models.Model):
         return ((float(self.view_count)*1.9)+(float(self.aggregate_rating.rating_value)*3.1))/5
 
     @property
-    def popularity_score(self) -> float:
-        return ((float(self.view_count)*1.9)+(float(self.aggregate_rating.rating_value)*3.1))/5
-
-    @property
     def total_time(self):
         try:
             return self.prep_time + self.cook_time
