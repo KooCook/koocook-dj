@@ -73,3 +73,5 @@ class TestQuantity(unittest.TestCase):
                             quantity.parse_quantity(quantity.Quantity(amount, u).get_db_str())
                         except ValueError as e:
                             raise self.failureException(f'test raised {e.__class__.__name__} unexpectedly') from e
+
+    # TODO: Improve coverage in quantity.py

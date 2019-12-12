@@ -23,12 +23,12 @@ class Quantity:
 
     def __str__(self):
         if self.amount == 1:
-            return '{} {}'.format(self.amount, self.unit.singular)
-        return '{} {}'.format(self.amount, self.unit.plural)
+            return f'{self.amount} {self.unit.singular}'
+        return f'{self.amount} {self.unit.plural}'
 
     def get_db_str(self):
         if self.unit.symbol:
-            return '{} {}'.format(self.amount, self.unit.symbol)
+            return f'{self.amount} {self.unit.symbol}'
         return self.__str__()
 
     # Monkey patched

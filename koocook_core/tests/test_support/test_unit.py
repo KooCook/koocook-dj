@@ -54,3 +54,5 @@ class TestUnit(unittest.TestCase):
             with self.subTest(unit=u):
                 with self.assertRaises(ValueError):
                     unit.get_unit(u)
+
+    # TODO: Improve coverage by testing TemperatureUnit.convert()
