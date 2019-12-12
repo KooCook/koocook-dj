@@ -13,6 +13,7 @@ omit =
     tests/*
     manage.py
     wsgi.py
+    **/migrations/**
     **/tests/**
     **/settings/**
     test_*.py

@@ -59,12 +59,14 @@
                      I'm feeling hungry!
                    </a>
                    <hr class="navbar-divider">
-                   <a class="navbar-item" title="Can't find an ingredient? Look no further">
-                     Ingredients
-                   </a>
-                   <a class="navbar-item" title="Looking to get some new cookwares? We've got you covered">
-                     Cookware
-                   </a>
+                  <a href="{% url 'koocook_core:ingredients' %}" class="navbar-item"
+                title="Can't find an ingredient? Look no further">
+                Ingredients
+              </a>
+              <a href="{% url 'koocook_core:equipment-all' %}" class="navbar-item"
+                title="Looking to get some new cookwares? We've got you covered">
+                Cookware
+              </a>
                  </div>
                </div>
 
