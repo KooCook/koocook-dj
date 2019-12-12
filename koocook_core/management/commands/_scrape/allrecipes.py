@@ -4,7 +4,6 @@ import itertools
 
 from django.core.exceptions import ObjectDoesNotExist  # for .get()
 
-from koocook_core import models
 from koocook_core.support import utils, Quantity, unit
 
 from koocook_core.models import Recipe, AggregateRating, Author, MetaIngredient, RecipeIngredient
@@ -71,7 +70,7 @@ def add_ingr(soup: BeautifulSoup, recipe: Recipe) -> None:
         except ObjectDoesNotExist:
             meta = MetaIngredient.objects.create(name=description)
         # don't catch MultipleObjectsReturned
-        models.RecipeIngredient.objects.create(description=description, quantity=quantity, meta=meta, recipe=recipe)
+        RecipeIngredient.objects.create(description=description, quantity=quantity, meta=meta, recipe=recipe)
 
 
 def get_yield(soup: BeautifulSoup) -> Quantity:
@@ -79,7 +78,7 @@ def get_yield(soup: BeautifulSoup) -> Quantity:
     return Quantity(servings, unit.SpecialUnit.SERVING)
 
 
-def parse_detail_soup(soup: BeautifulSoup):
+def parse_detail_soup(soup: BeautifulSoup) -> None:
     recipe = Recipe()
     recipe.name = get_name(soup)
     recipe.aggregate_rating = get_aggr(soup)
@@ -114,6 +113,7 @@ def get_links(url: str) -> List[str]:
 
 
 def scrape(id):
+    """ Scrape recipe with id ``id`` """
     response = requests.get(f'https://www.allrecipes.com/recipe/{id}/')
     soup = BeautifulSoup(response.text, 'html.parser')
     try:
@@ -125,6 +125,7 @@ def scrape(id):
 
 
 def main(num):
+    """ Scrape ``num`` recipes from allrecipes.com """
     count = 0
     i = 0
     urls = get_links(f'https://www.allrecipes.com/{f"?page={i + 1}" if i else ""}')
