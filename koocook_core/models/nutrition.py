@@ -7,6 +7,8 @@ from koocook_core.support.quantity import Quantity, parse_quantity
 
 from koocook_core import fields as koocookfields
 
+from typing import List
+
 __all__ = ['MetaIngredient', 'RecipeIngredient']
 
 
@@ -46,7 +48,7 @@ class RecipeIngredient(models.Model):
 
     @property
     def to_dict(self):
-        return {'id': self.id, 'name': self.meta.name, 'type': self.quantity. unit.type,
+        return {'id': self.id, 'name': self.meta.name, 'type': self.quantity.unit.type,
                 'quantity': {'unit': self.quantity.unit.symbol, 'number': self.quantity.amount,
                              'rendered': self.quantity.as_latex()},
                 'repr': f"{self.quantity.representation} of {self.meta.name}"}
@@ -65,13 +67,17 @@ class RecipeIngredient(models.Model):
             return nutrition_list
         for nutrient in nutrients:
             if nutrient['nutrient'] not in list(map(lambda x: x['nutrient'], nutrition_list)):
+                nutrient['quantity'] = parse_quantity(nutrient['quantity']).mul_quantity(self.quantity)
                 nutrition_list.append(nutrient)
             else:
-                for i in range(len(nutrition_list)):
-                    if nutrition_list[i]['nutrient'] == nutrient['nutrient']:
-                        nutrition_list[i]['quantity'] = str(RecipeIngredient.sum_nutrient(
-                            nutrition_list[i]['quantity'], nutrient['quantity']
-                        ))
+                nutrient['quantity'] = parse_quantity(nutrient['quantity']).mul_quantity(self.quantity)
+                i = nutrition_list.index(next(filter(
+                    lambda index: index.get('nutrient') == nutrient['nutrient'],
+                    nutrition_list
+                )))
+                nutrition_list[i]['quantity'] = str(RecipeIngredient.sum_nutrient(
+                    nutrition_list[i]['quantity'], nutrient['quantity']
+                ))
         return nutrition_list
 
     @staticmethod
