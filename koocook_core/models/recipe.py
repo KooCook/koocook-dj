@@ -60,7 +60,6 @@ class Recipe(ReviewableModel, models.Model):
         nutrition_list = []
         for ingredient in self.recipe_ingredients:
             for nutrient in ingredient.nutrition:
-                # print(f"{nutrient['nutrient']=} {nutrient['quantity']=}")
                 if nutrient['nutrient'] not in list(map(lambda x: x['nutrient'], nutrition_list)):
                     nutrient['sources'] = []
                     nutrient['sources'].append({'name': ingredient.meta.name, 'quantity': nutrient['quantity']})
@@ -80,16 +79,16 @@ class Recipe(ReviewableModel, models.Model):
                                                                      })
         for nutrition in nutrition_list:
             for source in nutrition['sources']:
-                aggregate = parse_quantity(nutrition['quantity']).amount
+                aggregate = nutrition['quantity'].amount
                 if len(nutrition['sources']) > 1:
                     source['relative'] = int(
-                        float((parse_quantity(source['quantity']).amount / aggregate) * 100))
-                    source['quantity'] = parse_quantity(source['quantity']).decimal
+                        float((source['quantity'].amount / aggregate) * 100))
+                    source['quantity'] = source['quantity'].decimal
                 else:
-                    source['quantity'] = parse_quantity(source['quantity']).decimal
+                    source['quantity'] = source['quantity'].decimal
 
         for nutrition in nutrition_list:
-            nutrition['quantity'] = parse_quantity(nutrition['quantity']).decimal
+            nutrition['quantity'] = nutrition['quantity'].decimal
         return nutrition_list
 
     @property

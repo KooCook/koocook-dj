@@ -175,14 +175,14 @@ def get_unit(unit: Union[str, Unit]) -> Unit:
 
 
 def convert(value: Union[int, float, Fraction],
-     base_unit: Union[LengthUnit, VolumeUnit, MassUnit, EnergyUnit, str],
-     quote_unit: Union[LengthUnit, VolumeUnit, MassUnit, EnergyUnit, str]
-     ) -> Union[float, Fraction]:
+            base_unit: Union[LengthUnit, VolumeUnit, MassUnit, EnergyUnit, Unit, str],
+            quote_unit: Union[LengthUnit, VolumeUnit, MassUnit, EnergyUnit, Unit, str]
+            ) -> Union[float, Fraction]:
     """ Return converted value. 
-    
-    Args:
-        value (float): value that need to convert.
-        base_unit (LengthUnit, VolumeUnit, MassUnit, EnergyUnit, str): unit that need to convert to.
+
+        :param value: value that need to convert.
+        :param base_unit: unit that need to convert to.
+        :param quote_unit: current unit.
     """
     factor = get_unit(quote_unit).conversion_factor / get_unit(base_unit).conversion_factor
     return value * factor

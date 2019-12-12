@@ -65,12 +65,16 @@ class Quantity:
         else:
             result = self.amount * unit_.convert(value=other.amount, base_unit=self.unit, quote_unit=other.unit)
         return Quantity(result, self.unit)
-        
+
     def as_latex(self):
         if self.amount.denominator > 1:
             return f'\\frac{{{self.amount.numerator}}}{{{self.amount.denominator}}}'
         else:
             return str(self.amount.numerator)
+
+    def mul_quantity(self, quantity):
+        amount = self.amount * quantity.amount
+        return Quantity(amount, self.unit)
 
 
 def parse_quantity(quantity_string: str) -> Quantity:

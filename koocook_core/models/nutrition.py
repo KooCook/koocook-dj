@@ -48,7 +48,7 @@ class RecipeIngredient(models.Model):
 
     @property
     def to_dict(self):
-        return {'id': self.id, 'name': self.meta.name, 'type': self.quantity. unit.type,
+        return {'id': self.id, 'name': self.meta.name, 'type': self.quantity.unit.type,
                 'quantity': {'unit': self.quantity.unit.symbol, 'number': self.quantity.amount,
                              'rendered': self.quantity.as_latex()},
                 'repr': f"{self.quantity.representation} of {self.meta.name}"}
@@ -60,26 +60,24 @@ class RecipeIngredient(models.Model):
     @property
     def nutrition(self):
         nutrition_list = []
-        # try:
-        #     nutrients = self.meta.nutrient[0]
-        # except KeyError:
-        #     nutrients = self.meta.nutrient
-        #     return nutrition_list
-        nutrients = self.meta.nutrient
+        try:
+            nutrients = self.meta.nutrient[0]
+        except KeyError:
+            nutrients = self.meta.nutrient
+            return nutrition_list
         for nutrient in nutrients:
             if nutrient['nutrient'] not in list(map(lambda x: x['nutrient'], nutrition_list)):
-                # print(f"{nutrient['nutrient']=} {nutrient['quantity']=}")
-                # nutrient['quantity'] = nutrient['quantity']
+                nutrient['quantity'] = parse_quantity(nutrient['quantity']).mul_quantity(self.quantity)
                 nutrition_list.append(nutrient)
             else:
+                nutrient['quantity'] = parse_quantity(nutrient['quantity']).mul_quantity(self.quantity)
                 i = nutrition_list.index(next(filter(
                     lambda index: index.get('nutrient') == nutrient['nutrient'],
-                     nutrition_list
+                    nutrition_list
                 )))
                 nutrition_list[i]['quantity'] = str(RecipeIngredient.sum_nutrient(
-                            nutrition_list[i]['quantity'], nutrient['quantity']
+                    nutrition_list[i]['quantity'], nutrient['quantity']
                 ))
-            # print(f"{nutrient['nutrient']=} {nutrient['quantity']=}")
         return nutrition_list
 
     @staticmethod
