@@ -96,7 +96,7 @@ class CookwareRule(Rule):
             return queryset
         else:
             terms = self.rule_body.split(",")
-            ingredient_terms = [Q(recipe_equipment__name__icontains=term) for term in terms]
+            ingredient_terms = [Q(equipment_set__name__icontains=term) for term in terms]
             query = reduce(operator.or_, ingredient_terms)
             return queryset.filter(query)
 

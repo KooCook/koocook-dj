@@ -4,7 +4,7 @@ from django.shortcuts import reverse
 from django.views.generic.edit import FormMixin, ProcessFormView
 
 from .forms import CommentForm
-from ..models import Author, RecipeIngredient, MetaIngredient
+from ..models import Author, RecipeIngredient, RecipeEquipment, MetaIngredient
 
 
 class SignInRequiredMixin(LoginRequiredMixin):
@@ -65,10 +65,32 @@ class CommentWidgetMixin(AuthAuthorMixin, FormMixin):
 
 class RecipeViewMixin(SignInRequiredMixin, AuthAuthorMixin):
 
+    def process_equipment(self, form):
+        equipment = json.loads(self.request.POST.get('cookware_list'))
+        if equipment:
+            for cookware in equipment:
+                found, created = RecipeEquipment.objects.get_or_create(name=cookware)
+
+                if 'id' in cookware:
+                    found = RecipeEquipment.objects.filter(pk=cookware['id'])
+                    if not found:
+                        this_equipment = RecipeEquipment(name=cookware)
+                        this_equipment.save()
+                        form.instance.equipment_set.add(this_equipment)
+                    else:
+                        if 'removed' in cookware and bool(cookware['removed']):
+                            form.instance.equipment_set.remove(found)
+                            found.delete()
+                        else:
+                            found.update(name=cookware)
+                else:
+                    form.instance.equipment_set.add(found)
+
     # Messy
     def form_valid(self, form):
         from ..models import Tag, TagLabel
         response = super().form_valid(form)
+        self.process_equipment(form)
         tags = json.loads(self.request.POST.get('tags'))
         if tags:
             for tag in tags:

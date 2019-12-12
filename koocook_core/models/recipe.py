@@ -31,7 +31,7 @@ class Recipe(ReviewableModel, models.Model):
     cook_time = models.DurationField(null=True)
     recipe_instructions = fields.ArrayField(models.TextField())
     recipe_yield = koocookfields.QuantityField(null=True)
-    recipe_equipment = models.ManyToManyField('koocook_core.RecipeEquipment', blank=True)
+    equipment_set = models.ManyToManyField('koocook_core.RecipeEquipment', blank=True)
     tag_set = models.ManyToManyField('koocook_core.Tag', blank=True)
     aggregate_rating = models.OneToOneField(
         'koocook_core.AggregateRating',

@@ -11,5 +11,5 @@ class RecipeForm(CustomisableForm):
     class Meta:
         model = Recipe
         fields = '__all__'
-        exclude = ('aggregate_rating', 'author', 'date_published', 'tag_set')
+        exclude = ('aggregate_rating', 'author', 'date_published', 'equipment_set', 'tag_set')
         widgets = {'recipe_yield': QuantityInput('serving')}

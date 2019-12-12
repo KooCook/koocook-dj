@@ -3,9 +3,6 @@
 {% load static %}
 {% block page_title %}Suggested recipes{% endblock %}
 {% block content_page_name %}Suggested recipes{% endblock %}
-{% block content_deps %}
-    <script src="{% static 'js/bundle.js' %}"></script>
-{% endblock %}
 {% block hero_title %}Suggested recipes{% endblock %}
 {% block hero_subtitle %} {% if tag_set %}Preferred: <div class="field is-grouped is-grouped-multiline">
             {% for tag in tag_set %}
@@ -94,6 +91,7 @@
   </nav>
   {% endif %}
 </div>
+    <script src="{% static 'js/bundle.js' %}"></script>
      <script>
       new Vue({
         el: '#app',

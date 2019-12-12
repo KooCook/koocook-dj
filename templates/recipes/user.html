@@ -3,7 +3,7 @@
 {% load recipe_extras %}
 {% block page_title %}Your recipes{% endblock %}
 {% block content_page_name %}Your recipes{% endblock %}
-{% block content_deps %}<script src="{% static 'js/components/star-rating.js' %}"></script>{% endblock %}
+{% block crud_deps %}<script src="{% static 'js/components/star-rating.js' %}"></script>{% endblock %}
 {% block hero_title %}Your recipes{% endblock %}
 {% block hero_subtitle %}<a href="{% url 'koocook_core:recipe-create' %}"> <span class="buttons">
                 <button class="button is-primary is-outlined is-small">New</button>

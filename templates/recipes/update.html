@@ -4,7 +4,7 @@
 {% block page_title %}Edit a recipe{% endblock %}
 {% block content_page_name %}Edit a recipe{% endblock %}
 {% block hero_title %}Edit a recipe{% endblock %}
-{% block content_deps %}<script src="{% static 'js/components/ingredients.js' %}"></script>
+{% block crud_deps %}<script src="{% static 'js/components/ingredients.js' %}"></script>
 <script src="{% static 'js/bundle.js' %}"></script>{% endblock %}
 {% block page_content %}
         <recipe-tag-input :attached="true" v-model="tags" ellipsis icon="tag" placeholder="Add a tag"

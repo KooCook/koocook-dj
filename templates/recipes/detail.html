@@ -2,7 +2,7 @@
 {% load static %}
 {% load recipe_extras %}
 {% block no_hero %}{% endblock %}
-{% block content_deps %}<script>
+{% block crud_deps %}<script>
     const COMMENTS_ENDPOINTS = {
         GET: `{% url 'koocook_core:recipe-comments' object.id %}`,
         POST: `{% url 'koocook_core:recipe-comments' object.id %}`,
@@ -283,13 +283,13 @@
                     Equipment
                   </h3>
                   <div class="content">
+
                     <ul style="list-style-type: none">
-                      <li>Whisk</li>
-                      <li>Large bowl</li>
-                      <li>Medium bowl</li>
-                      <li>Griddle or large skillet</li>
-                      <li>Spatula</li>
-                      <li>Measuring cup</li>
+                        {% for equipment in object.equipment_set.all %}
+                            <li><a href="{% url 'koocook_core:equipment' equipment.id %}">{{ equipment.name }}</a></li>
+                            {% empty %}
+                            No cookware information provided
+                        {% endfor %}
                     </ul>
                   </div>
                 </div>
