@@ -4,7 +4,7 @@ from django.db import models
 
 from ..base import SerialisableModel
 
-__all__ = ('KoocookUser', 'Author')
+__all__ = ['Author', 'KoocookUser']
 
 
 def _default_preferences():
@@ -12,16 +12,24 @@ def _default_preferences():
 
 
 class KoocookUser(SerialisableModel, models.Model):
+    """
+
+    Attributes:
+        author (Author): from OneToOneField in ``Author``
+
+    Notes:
+        Automatically created when ``User`` is  created.
+    """
     exclude = ('user', 'preferences', 'user_settings')
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    # author from Author's OneToOneField
     preferences = fields.JSONField(default=_default_preferences)
     user_settings = fields.JSONField(default=_default_preferences)
     following = models.ManyToManyField('self')
     followers = models.ManyToManyField('self')
 
     class Meta:
-        db_table = "koocook_user"
+        db_table = 'koocook_core_koocook_user'
 
     @property
     def formal_preferences(self):
@@ -30,10 +38,11 @@ class KoocookUser(SerialisableModel, models.Model):
 
     def follow(self, user: 'KoocookUser'):
         self.following.add(user)
-        self.save()
+        user.followers.add(self)
 
     def unfollow(self, user: 'KoocookUser'):
         self.following.remove(user)
+        user.followers.remove(self)
         self.save()
 
     @property
@@ -53,7 +62,19 @@ class KoocookUser(SerialisableModel, models.Model):
 
 
 class Author(SerialisableModel, models.Model):
+    """
+
+    Attributes:
+        rating_set (RelatedManager): from ForeignKey in ``Rating``
+        comment_set (RelatedManager): from ForeignKey in ``Comment``
+        recipe_set (RelatedManager): from ForeignKey in ``Recipe``
+        post_set (RelatedManager): from ForeignKey in ``Post``
+
+    Notes:
+        Automatically created when ``User`` is  created.
+    """
     include = ('qualified_name',)
+    
     name = models.CharField(max_length=100)
     user = models.OneToOneField(
         'koocook_core.KoocookUser',
@@ -61,10 +82,6 @@ class Author(SerialisableModel, models.Model):
         null=True,
         blank=True,
     )
-    # rating_set from Rating
-    # comment_set from Comment
-    # recipe_set from Recipe
-    # post_set from Post
 
     @property
     def dj_user(self):
