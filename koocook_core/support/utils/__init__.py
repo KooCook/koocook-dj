@@ -47,10 +47,10 @@ def split_ingredient_str(string: str) -> List[str]:
                 number = datatrans.utils.parse_vulgar_fractions(part)
             except ValueError as e:
                 pass
-            try:
-                number = datatrans.utils.parse_numeral(part)
-            except ValueError as e:
-                pass
+            # try:
+            #     number = datatrans.utils.parse_numeral(part)
+            # except ValueError as e:
+            #     pass
             try:
                 number_part.append(number)
                 del number

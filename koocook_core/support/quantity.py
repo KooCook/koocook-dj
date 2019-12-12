@@ -13,13 +13,25 @@ class Quantity:
     __slots__ = ('amount', 'unit')
 
     def __init__(self,
-                 amount: Union[Fraction, int],
+                 amount: Union[Fraction, int, float],
                  unit: Union[unit_.Unit, str]):
         if isinstance(amount, Fraction):
             self.amount = amount
         else:
             self.amount = Fraction(amount)
         self.unit = unit_.get_unit(unit)
+
+    @property
+    def decimal(self):
+        if self.amount == 1:
+            return '{} {}'.format(f"{float(self.amount)}", self.unit.singular)
+        return '{} {}'.format(f"{float(self.amount)}", self.unit.plural)
+
+    @property
+    def representation(self):
+        if self.amount == 1:
+            return '{} {}'.format(f"$${self.as_latex()}$$", self.unit.singular)
+        return '{} {}'.format(f"$${self.as_latex()}$$", self.unit.plural)
 
     def __str__(self):
         if self.amount == 1:
@@ -53,6 +65,13 @@ class Quantity:
         else:
             result = self.amount * unit_.convert(value=other.amount, base_unit=self.unit, quote_unit=other.unit)
         return Quantity(result, self.unit)
+        
+    def as_latex(self):
+        if self.amount.denominator > 1:
+            return f'\\frac{{{self.amount.numerator}}}{{{self.amount.denominator}}}'
+        else:
+            return str(self.amount.numerator)
+
 
 def parse_quantity(quantity_string: str) -> Quantity:
     amount, *unit = quantity_string.split(' ')
