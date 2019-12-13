@@ -4,3 +4,6 @@ from .recipe import Recipe, RecipeEquipment
 from .review import AggregateRating, Comment, Rating
 from .tag import Tag, TagLabel
 from .user import Author, KoocookUser
+
+__all__ = ['MetaIngredient', 'RecipeIngredient', 'RecipeEquipment', 'Post', 'Recipe', 'AggregateRating', 'Comment', 'Rating', 'Tag',
+           'TagLabel', 'Author', 'KoocookUser']
