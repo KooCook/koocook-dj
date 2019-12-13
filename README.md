@@ -48,10 +48,14 @@ All other dependencies are specified in `requirements.txt`
 3.  Run <code>pip install -r [requirements.txt](requirements.txt)</code> first
     to install required packages for the project.
 
-4.  _Pending mock data import instructions_
-
-5.  If you first set up a repo of the application on a clean slate, migrate the
+4.  If you first set up a repo of the application on a clean slate, migrate the
     database as well by running the following Django command: <pre>python [manage.py](manage.py) migrate</pre>
+
+5.  To populate database with data from sites, run command 'scrape'
+    ```
+    python manage.py scrape
+    ``` 
+    with options according to your liking. (`--help` for more info)
 
 6.  Run <pre>python [manage.py](manage.py) runserver</pre> and, Voila!, the
     server should listen on the default port at <code>localhost:_default_port_</code>.
