@@ -29,7 +29,7 @@ class Rule:
 
 class QueryRuleset:
     def __init__(self, *args: Type[Rule]):
-        self.rules: Tuple[Type[Rule]] = args
+        self.rules: Tuple[Type[Rule], ...] = args
 
     def apply_ruleset(self, request_fields: QueryDict, queryset: QuerySet):
         for rule in self.rules:
