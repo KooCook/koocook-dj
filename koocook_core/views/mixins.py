@@ -1,4 +1,5 @@
 import json
+import logging
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import reverse
 from django.views.generic.edit import FormMixin, ProcessFormView
@@ -7,9 +8,13 @@ from .forms import CommentForm
 from ..models import Author, RecipeIngredient, MetaIngredient
 
 
+LOGGER = logging.getLogger(__name__)
+
+
 class SignInRequiredMixin(LoginRequiredMixin):
     @property
     def login_url(self):
+        LOGGER.info(f"An unauthenticated visitor attempted to access the authenticated page")
         return reverse('social:begin', args=['google-oauth2'])
 
     def get_success_url(self):
@@ -28,6 +33,7 @@ class AuthAuthorMixin:
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
+            LOGGER.info(f"{self.request.user.username} has requested an author view")
             context['current_author'] = Author.objects.get(user__user=self.request.user)
         else:
             context['current_author'] = {'id': 0}

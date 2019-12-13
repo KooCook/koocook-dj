@@ -1,12 +1,7 @@
-from django.shortcuts import render, reverse, redirect, get_object_or_404
-from django.http import JsonResponse, HttpResponseForbidden
-from django.views.decorators.http import require_http_methods
-from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required
+
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-
 from .comments import *
 from .posts import *
 from .recipes import *
@@ -24,3 +19,4 @@ def dispatch(sender, instance: User, created, **kwargs):
         kc_user.save()
         author = Author(name=kc_user.name, user=kc_user)
         author.save()
+

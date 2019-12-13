@@ -1,4 +1,4 @@
-# from django.views.defaults import page_not_found
+import logging
 from django.shortcuts import render, reverse, redirect, get_object_or_404
 from django.http import JsonResponse, HttpResponseForbidden
 from django.views.decorators.http import require_http_methods
@@ -10,6 +10,8 @@ from ..models import Recipe, KoocookUser, Tag
 from ..models.base import ModelEncoder
 from .recipes import RecipeDetailView
 from .decorators import allow_post_comments
+
+LOGGER = logging.getLogger(__name__)
 
 
 @require_http_methods(["GET"])
@@ -40,6 +42,7 @@ def handle_recipe(request, recipe_id):
         recipe = Recipe.objects.get(pk=recipe_id)
         if recipe.author.user == KoocookUser.objects.get(user=request.user):
             recipe.delete()
+            LOGGER.info(f"{recipe.author.user.name} has deleted their recipe named {recipe.name} [{recipe.id}]")
             return JsonResponse({'status': 'deleted'})
         else:
             return HttpResponseForbidden()
@@ -53,5 +56,9 @@ def handle_recipe(request, recipe_id):
 @require_http_methods(["GET"])
 def recipe_tags(request):
     name = request.GET.get("name")
+    if request.user.is_authenticated:
+        LOGGER.info(f"{request.user.username} has requested for all existing recipe tags")
+    else:
+        LOGGER.info("An anonymous user has requested for all existing recipe tags")
     tags = list(Tag.objects.filter(name__icontains=name))
     return JsonResponse({'current': tags}, encoder=ModelEncoder)

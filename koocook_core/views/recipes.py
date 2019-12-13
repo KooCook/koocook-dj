@@ -1,4 +1,5 @@
 import json
+import logging
 import django
 from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
@@ -12,6 +13,9 @@ from .forms import RecipeForm
 from .mixins import AuthAuthorMixin, CommentWidgetMixin, RecipeViewMixin, SignInRequiredMixin
 from ..models import Recipe, Author, KoocookUser, RecipeIngredient, MetaIngredient
 from ..models.base import ModelEncoder
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 class RecipeSearchListView(AuthAuthorMixin, ListView):
@@ -55,8 +59,10 @@ class UserRecipeListView(SignInRequiredMixin, ListView):
     context_object_name = "user_recipes"
 
     def get_queryset(self):
+
         # try:
         author = Author.objects.get(user__user=self.request.user)
+        LOGGER.info(f"Retrieving {author.name}'s recipes")
         # except ObjectDoesNotExist:
         #     author = Author(user=KoocookUser.objects.get(user=self.request.user))
         #     author.save()
@@ -94,6 +100,8 @@ class RecipeUpdateView(RecipeViewMixin, UpdateView):
     def dispatch(self, request, *args, **kwargs):
         if request.user != self.get_object().author.dj_user:
             return self.handle_no_permission()
+        else:
+            LOGGER.info(f"{request.user.username} requested the recipe editing view")
         return super().dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
