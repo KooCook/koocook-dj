@@ -70,7 +70,7 @@
           <star-rating :read-only="true" recipe-name="{{ recipe.name }}" :item-id="{{ recipe.id }}"
             :initial="{{ recipe.aggregate_rating.rating_value }}"></star-rating>
           {% if recipe.hot %}<p class="is-6 has-text-danger"><i class="fas fa-fire"></i> Trending</p>{% endif %}
-          <h4 class="title is-4"><a href="{% url 'koocook_core:recipe' recipe.id %}">
+          <h4 class="title is-4"><a href="{% url 'koocook_core:recipes:detail' recipe.id %}">
               {{ recipe.name }}
             </a></h4>
           <p class="subtitle">

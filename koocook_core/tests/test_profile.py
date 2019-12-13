@@ -34,7 +34,7 @@ class UserProfileTest(AuthTestCase):
     def test_user_preferred_recipes(self):
         self.kc_user.formal_preferences['preferred_tags'] = [{"name":"Meat","label":{"name":"","level":1}}]
         self.kc_user.preferences = self.kc_user.formal_preferences.serialised_preferences
-        response = self.client.get(reverse("koocook_core:recipe-all"))
+        response = self.client.get(reverse("koocook_core:recipes:suggested"))
         with self.subTest():
             self.assertEqual(response.status_code, 200)
 

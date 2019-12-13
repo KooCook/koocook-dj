@@ -4,9 +4,9 @@
 {% block no_hero %}{% endblock %}
 {% block crud_deps %}<script>
     const COMMENTS_ENDPOINTS = {
-        GET: `{% url 'koocook_core:recipe-comments' object.id %}`,
-        POST: `{% url 'koocook_core:recipe-comments' object.id %}`,
-        PATCH: `{% url 'koocook_core:recipe-comments' object.id %}`,
+        GET: `{% url 'koocook_core:recipes:comments' object.id %}`,
+        POST: `{% url 'koocook_core:recipes:comments' object.id %}`,
+        PATCH: `{% url 'koocook_core:recipes:comments' object.id %}`,
     };
 </script>
     <script src="{% static 'js/bundle.js' %}"></script>{% endblock %}

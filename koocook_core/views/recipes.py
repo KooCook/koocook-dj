@@ -91,7 +91,7 @@ class RecipeCreateView(RecipeViewMixin, CreateView):
         return context
 
     def get_success_url(self):
-        return reverse('koocook_core:recipe-user')
+        return reverse('koocook_core:recipes:user')
 
 
 class FractionEncoder(json.JSONEncoder):
@@ -115,7 +115,7 @@ class RecipeUpdateView(RecipeViewMixin, UpdateView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
-        return reverse('koocook_core:recipe-user')
+        return reverse('koocook_core:recipes:user')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

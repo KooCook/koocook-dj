@@ -75,7 +75,7 @@
               <a class="navbar-item is-disabled" title="Look at what other people are making">
                 Popular recipes
               </a>
-              <a href="{% url 'koocook_core:recipe-all' %}" class="navbar-item"
+              <a href="{% url 'koocook_core:recipes:suggested' %}" class="navbar-item"
                 title="Get personalised recipe recommendations">
                 Suggested recipes
               </a>
@@ -145,7 +145,7 @@
               <a class="navbar-item is-disabled">
                 Your subscriptions
               </a>
-              <a class="navbar-item" href="{% url 'koocook_core:recipe-user' %}">
+              <a class="navbar-item" href="{% url 'koocook_core:recipes:user' %}">
                 Your recipes
               </a>
               <hr class="navbar-divider">
