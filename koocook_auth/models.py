@@ -62,4 +62,7 @@ class KoocookUser(SerialisableModel, models.Model):
 
     @property
     def avatar_url(self):
-        return self.avatar['content']
+        if 'content' in self.avatar:
+            return self.avatar['content']
+        else:
+            return None

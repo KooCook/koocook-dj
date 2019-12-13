@@ -193,18 +193,18 @@ class TestAuthorModel(djangotest.TestCase):
     #                           first_name=user.first_name,
     #                           last_name=user.last_name,
     #                           username=user.username):
-    #             self.assertEqual(expected_str, str(user.koocookuser.author))
+    #             self.assertEqual(expected_str, str(user.koocook_user.author))
     #     for author in self.test_authors:
     #         with self.subTest('author without user', name=author.name):
     #             self.assertEqual(str(author), author.name)
 
     def test_dj_user(self):
-        self.assertEqual(self.test_users[0].koocookuser.author.dj_user,
+        self.assertEqual(self.test_users[0].koocook_user.author.dj_user,
                          self.test_users[0])
 
     def test_from_dj_user(self):
         self.assertEqual(Author.from_dj_user(self.test_users[0]),
-                         self.test_users[0].koocookuser.author)
+                         self.test_users[0].koocook_user.author)
         # Note for review:
         #   This function seems unnecessary
         #   (one dot away but doesn't need importing Author)
@@ -224,8 +224,8 @@ class TestAuthorModel(djangotest.TestCase):
         # TODO: Fix this test
         # with self.subTest('author with user'):
         #     self.assertEqual(
-        #         json.loads(self.test_user.koocookuser.author.as_json),
-        #         self.test_user.koocookuser.author.as_dict)
+        #         json.loads(self.test_user.koocook_user.author.as_json),
+        #         self.test_user.koocook_user.author.as_dict)
         # with self.subTest('author without user'):
         #     self.assertEqual(json.loads(self.test_author.as_json),
         #                      self.test_author.as_dict)
@@ -526,7 +526,7 @@ class TestRatingModel(djangotest.TestCase):
 class TestKoocookUserModel(djangotest.TestCase):
     def setUp(self) -> None:
         set_up_authors()
-        self.test_kc_users = [user.koocookuser for user in User.objects.all()]
+        self.test_kc_users = [user.koocook_user for user in User.objects.all()]
 
     def clean_up_followings(self):
         for kc in self.test_kc_users:
@@ -541,7 +541,7 @@ class TestKoocookUserModel(djangotest.TestCase):
 
     def test_db_table_name(self):
         kc = KoocookUser()
-        self.assertEqual(kc._meta.db_table, 'koocook_core_koocook_user')
+        self.assertEqual('koocook_auth_user', kc._meta.db_table)
 
     def test_follow(self):
         for follower, followee in zip(*itertools.tee(self.test_kc_users, 2)):
