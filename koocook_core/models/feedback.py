@@ -8,6 +8,7 @@ class Feedback(models.Model):
     author = models.ForeignKey(
         'koocook_core.Author',
         on_delete=models.PROTECT,
+        null=True
     )
     date_published = models.DateTimeField(auto_now_add=True)
     subject = models.CharField(max_length=100)

@@ -6,7 +6,7 @@ from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 
 from .forms import FeedbackForm
-from ..models import Feedback
+from ..models import Author
 
 
 # class UserFeedback(FormMixin, ListView):
@@ -25,12 +25,14 @@ from ..models import Feedback
 def post_feedback(request):
     if request.method == 'POST':
         form = FeedbackForm(request.POST)
-        form.save()
+        # form.author = user_id
+        # print(f'{form.author=}')
 
         if form.is_valid():
             post = form.save(commit=False)
+            post.author = Author.objects.get(pk=request.user.id)
             post.save()
-            return redirect('index')
+            return redirect('../')
     else:
         form = FeedbackForm()
     return render(request, 'feedback/index.html', {'form': form})
