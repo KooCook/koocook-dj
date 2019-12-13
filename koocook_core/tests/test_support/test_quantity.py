@@ -83,18 +83,17 @@ class TestQuantity(unittest.TestCase):
                             raise self.failureException(f'test raised {e.__class__.__name__} unexpectedly') from e
 
     def test_add_with_both_amount_are_fraction(self):
-        self.setUp()
         summation1 = self.quantity1 + self.quantity1
-        self.assertEqual(summation1, self.quantity2)
+        with self.subTest():
+            self.assertEqual(summation1, self.quantity2)
         summation2 = self.quantity1 + self.quantity2
-        self.assertEqual(summation2, self.quantity4)
+        with self.subTest():
+            self.assertEqual(summation2, self.quantity4)
 
     def test_add_with_both_amount_are_int(self):
-        self.setUp()
         summation = self.quantity3 + self.quantity4
         self.assertEqual(summation, self.quantity5)
 
     def test_add_fraction_with_int(self):
-        self.setUp()
         summation = self.quantity1 + self.quantity4
         self.assertEqual(summation, self.quantity6)
