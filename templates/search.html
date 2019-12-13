@@ -148,6 +148,7 @@
     },
     methods: {
       triggerFilters(val) {
+
         const url = new URL(location.href);
         this.ingredients = url.searchParams.get('ingredients') ? url.searchParams.get('ingredients').split(',') : [];
         let order = url.searchParams.get('order') ? url.searchParams.get('order').split(',') : [];
@@ -177,14 +178,17 @@
         location.href = url.href;
       },
       insertFilter() {
-        let joined = this.ingredients.join()
+        let joined = this.ingredients.join(',');
         const formBody = new FormData();
         if (this.searchTerm) formBody.set("kw", this.searchTerm);
         if (this.ingredients.length > 0) formBody.set("ingredients", joined);
-        joined = this.cookware.join()
+        else formBody.delete("ingredients");
+        joined = this.cookware.join(',');
         if (this.cookware.length > 0) formBody.set("cookware", joined);
+        else formBody.delete("cookware");
         const searchParams = (new URLSearchParams(formBody)).toString();
         if (searchParams) this.searchParams = '?' + searchParams;
+        else this.searchParams = '';
       }
     },
     watch: {

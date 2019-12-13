@@ -12,6 +12,7 @@
 {% endblock %}
 
 {% block nav_pane %}
+            {% if section == 'search' %}
     <b-collapse :open.sync="isFiltersOpen" position="is-bottom" aria-id="contentIdForA11y1">
     <a slot="trigger" slot-scope="props" aria-controls="contentIdForA11y1">
     </a>
@@ -27,11 +28,13 @@
         </div>
 
         <p class="level-item"> <b-taginput
+
           icon="label"
           v-model="ingredients"
           placeholder="Include ingredients" expanded>
       </b-taginput></p>
         <p class="level-item"><b-taginput
+
           icon="label"
           v-model="cookware"
           placeholder="Include cookware" expanded>
@@ -39,7 +42,9 @@
       </nav>
     </div>
   </b-collapse>
-    <nav class="level recipe-portal">
+    {% endif %}
+    <div class="recipe-portal">
+    <nav class="container level">
   <!-- Left side -->
   <div class="level-left">
     <div class="level-item">
@@ -54,4 +59,5 @@
     <p class="level-item">{% if section == 'search' %}<strong>{% else %}<a href="{% url 'koocook_core:search' %}">{% endif %}Search{% if not section == 'search' %}</a>{% else %}</strong>{% endif %}</p>
     <p class="level-item">{% if section == 'recipe-user' %}<strong>{% else %}<a href="{% url 'koocook_core:recipes:user' %}">{% endif %}Yours{% if not section == 'recipe-user' %}</a>{% else %}</strong>{% endif %}</p>
 </nav>
+    </div>
 {% endblock %}

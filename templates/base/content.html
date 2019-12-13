@@ -29,11 +29,13 @@
             <b-field>
               <b-input icon="magnify" v-model="searchTerm" custom-class="search-bar" type="search" placeholder="Search our recipes!"
                 expanded></b-input>
+                {% if section == 'search' %}
               <p class="control">
                 <b-button icon-left="filter" class="button is-outlined-primary" @click="isFiltersOpen = !isFiltersOpen">
                   Filters
                 </b-button>
               </p>
+                {% endif %}
               <p class="control">
                 <a :href="'{% url 'koocook_core:search' %}' + searchParams"><button
                     class="button is-info">Search</button></a>
