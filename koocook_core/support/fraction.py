@@ -497,9 +497,3 @@ class Fraction:
 
     def is_integer(self):
         return self.denominator == 1
-
-
-if __name__ == '__main__':
-    # Run the doctests in all methods.
-    import doctest
-    doctest.testmod()
