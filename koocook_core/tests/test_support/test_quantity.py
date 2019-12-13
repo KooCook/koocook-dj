@@ -97,3 +97,19 @@ class TestQuantity(unittest.TestCase):
     def test_add_fraction_with_int(self):
         summation = self.quantity1 + self.quantity4
         self.assertEqual(summation, self.quantity6)
+
+    def test_add_different_unit(self):
+        summation = quantity.parse_quantity('0.002 kg') + self.quantity4
+        self.assertEqual(summation, quantity.parse_quantity('0.003 kg'))
+
+    def test_same_quantity_many_times(self):
+        result = quantity.Quantity.mul_quantity(self.quantity1, self.quantity3)
+        self.assertEqual(result, self.quantity4)
+
+    def test_mul_same_unit(self):
+        result = self.quantity1 * self.quantity3
+        self.assertEqual(result, self.quantity4)
+
+    def test_mul_different_unit(self):
+        result = self.quantity4 * quantity.parse_quantity('3000 mg')
+        self.assertEqual(result, self.quantity3)
