@@ -1,5 +1,5 @@
 import datetime
-from typing import List
+from typing import List, Union
 import itertools
 
 from django.core.exceptions import ObjectDoesNotExist  # for .get()
@@ -112,7 +112,7 @@ def get_links(url: str) -> List[str]:
     return list(nums)
 
 
-def scrape(id_):
+def scrape(id_: Union[int, str]):
     """ Scrape recipe with id ``id`` """
     response = requests.get(f'https://www.allrecipes.com/recipe/{id_}/')
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -124,10 +124,10 @@ def scrape(id_):
         pass
 
 
-def main(num):
+def main(num: int, page: int = 1):
     """ Scrape ``num`` recipes from allrecipes.com """
     count = 0
-    i = 0
+    i = page - 1
     urls = get_links(f'https://www.allrecipes.com/{f"?page={i + 1}" if i else ""}')
     while count < num:
         try:
