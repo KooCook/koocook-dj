@@ -5,7 +5,7 @@
 {% block content_page_name %}Your recipes{% endblock %}
 {% block crud_deps %}<script src="{% static 'js/components/star-rating.js' %}"></script>{% endblock %}
 {% block hero_title %}Your recipes{% endblock %}
-{% block hero_subtitle %}<a href="{% url 'koocook_core:recipe-create' %}"> <span class="buttons">
+{% block hero_subtitle %}<a href="{% url 'koocook_core:recipes:create' %}"> <span class="buttons">
                 <button class="button is-primary is-outlined is-small">New</button>
             </span>
                 </a>
@@ -45,8 +45,8 @@
         <div class="media">
             <star-rating recipe-name="{{ recipe.name }}" :item-id="{{ recipe.id }}" :initial="{{ recipe.aggregate_rating.rating_value }}" :read-only="true"></star-rating>
       <div class="media-content">
-          <p class="title is-4"><a href="{% url 'koocook_core:recipe' recipe.id %}">{{ recipe.name }}</a> <span class="buttons is-inline-flex has-addons  is-small">
-              <a href="{% url 'koocook_core:recipe-edit' recipe.id %}"><button class="button is-primary is-outlined is-small"><b-icon icon="pencil"></b-icon> </button></a>
+          <p class="title is-4"><a href="{% url 'koocook_core:recipes:detail' recipe.id %}">{{ recipe.name }}</a> <span class="buttons is-inline-flex has-addons  is-small">
+              <a href="{% url 'koocook_core:recipes:edit' recipe.id %}"><button class="button is-primary is-outlined is-small"><b-icon icon="pencil"></b-icon> </button></a>
      <button class="button is-danger is-outlined is-small is-light" @click="showConfirmDeletion({{ recipe.id }})"><b-icon icon="close"></b-icon> </button>
         </span></p>
 

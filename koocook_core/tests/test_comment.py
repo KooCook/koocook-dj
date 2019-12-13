@@ -40,7 +40,7 @@ class CommentTest(AuthTestCase):
 
     def test_comment_recipe_reviewed(self):
         recipe = create_dummy_recipe(self.author)
-        response = self.client.post(reverse('koocook_core:recipe-comments', kwargs={'item_id': recipe.id}), {
+        response = self.client.post(reverse('koocook_core:recipes:comments', kwargs={'item_id': recipe.id}), {
             "body": self.comment_body
         })
         with self.subTest():
