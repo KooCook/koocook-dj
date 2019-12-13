@@ -56,14 +56,14 @@ class Quantity:
         if self.unit == other.unit:
             result = self.amount + other.amount
         else:
-            result = self.amount + unit_.convert(value=other.amount, base_unit=self.unit, quote_unit=other.unit)
+            result = self.amount + unit_.convert(value=other.amount, base_unit=other.unit, quote_unit=self.unit)
         return Quantity(result, self.unit)
 
     def __mul__(self, other):
         if self.unit == other.unit:
             result = self.amount * other.amount
         else:
-            result = self.amount * unit_.convert(value=other.amount, base_unit=self.unit, quote_unit=other.unit)
+            result = self.amount * unit_.convert(value=other.amount, base_unit=other.unit, quote_unit=self.unit)
         return Quantity(result, self.unit)
 
     def as_latex(self):
@@ -101,7 +101,7 @@ class QuantityField(models.CharField):
         return name, path, args, kwargs
 
     def from_db_value(self, value, expression, connection):
-        if value is None or value is '':
+        if value is None or value == '':
             return value
         return parse_quantity(value)
 

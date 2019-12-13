@@ -185,10 +185,10 @@ def convert(value: Union[int, float, Fraction],
     """ Return converted value. 
 
         :param value: value that need to convert.
-        :param base_unit: unit that need to convert to.
-        :param quote_unit: current unit.
+        :param base_unit: current unit.
+        :param quote_unit: unit that need to convert to.
     """
-    factor = get_unit(quote_unit).conversion_factor / get_unit(base_unit).conversion_factor
+    factor = get_unit(base_unit).conversion_factor / get_unit(quote_unit).conversion_factor
     return value * factor
 
 
