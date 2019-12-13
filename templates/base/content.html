@@ -1,6 +1,7 @@
 {% extends 'base/index.html' %}
 {% load static %}
 {% block page_deps %}
+    <script src="https://unpkg.com/mathjs@6.2.5/dist/math.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
     <script src="https://unpkg.com/buefy/dist/buefy.min.js"></script>
@@ -121,7 +122,11 @@
             <div class="navbar-item has-dropdown is-hoverable">
                  <a class="navbar-link is-arrowless">
                    <div class="profile-pic-48">
-                       <div class="has-text-grey-dark profile-initial-48">{{ user.username|title|slice:"0:1" }}</div>
+                       {% if user.koocook_user.avatar_url %} <figure class="image">
+               <img alt="profile picture" class="is-rounded" src="{{ user.koocook_user.avatar_url }}"
+                   style="max-height: unset">
+            </figure>
+                       {% else %}<div class="has-text-grey-dark profile-initial-48">{{ user.username|title|slice:"0:1" }}</div>{% endif %}
                    </div>
                  </a>
 
