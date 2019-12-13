@@ -73,8 +73,7 @@ All other dependencies are specified in `requirements.txt`
 ## Other Links
 
 - **Deployed app:**
-  - (Production) <https://koocook.appspot.com/> (_Inactive_)
-  - (**Development**) <https://koocook-deploy.appspot.com/> (**Active**, based on **dev** branch)
+  - (Production/**Development**) <https://koocook-deploy.appspot.com/> (**Active**, based on **dev** branch)
 - [Project folder (Drive)](https://drive.google.com/open?id=1GpXj0oaM3n29aJF2YNDhjJwkCqqHa-04)
   - This includes mockup screenshots and demo as well.
 - [Main app (GitHub)](https://github.com/KooCook/koocook/tree/dev)
