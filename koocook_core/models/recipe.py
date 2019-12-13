@@ -6,6 +6,7 @@ from koocook_core import fields as koocookfields
 
 from .review import ReviewableModel
 from ..support import parse_quantity
+import operator
 
 __all__ = ['Recipe']
 
@@ -76,6 +77,10 @@ class Recipe(ReviewableModel, models.Model):
         try:
             return self.prep_time + self.cook_time
         except TypeError:
+            if self.prep_time is not None:
+                return self.prep_time
+            elif self.cook_time is not None:
+                return self.cook_time
             return
 
     @property
@@ -83,7 +88,7 @@ class Recipe(ReviewableModel, models.Model):
         nutrition_list = []
         for ingredient in self.recipe_ingredients:
             for nutrient in ingredient.nutrition:
-                if nutrient['nutrient'] not in list(map(lambda x: x['nutrient'], nutrition_list)):
+                if nutrient['nutrient'] not in map(operator.itemgetter('nutrient'), nutrition_list):
                     nutrient['sources'] = []
                     nutrient['sources'].append({'name': ingredient.meta.name, 'quantity': nutrient['quantity']})
                     nutrition_list.append(nutrient)

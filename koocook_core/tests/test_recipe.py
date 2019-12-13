@@ -17,9 +17,17 @@ class RecipeTests(AuthTestCase):
         recipe = Recipe(prep_time=time, cook_time=time)
         self.assertEqual(recipe.total_time, timedelta(minutes=1))
 
-    def test_total_time_with_zero_prep_time(self):
-        recipe = Recipe(prep_time=timedelta(seconds=90), cook_time=timedelta(seconds=0))
-        self.assertEqual(recipe.total_time, timedelta(minutes=1, seconds=30))
+    def test_total_time_without_prep_time(self):
+        recipe = Recipe(cook_time=timedelta(seconds=90))
+        self.assertEqual(recipe.total_time, timedelta(seconds=90))
+
+    def test_total_time_without_cook_time(self):
+        recipe = Recipe(prep_time=timedelta(seconds=90))
+        self.assertEqual(recipe.total_time, timedelta(seconds=90))
+
+    def test_total_time_without_prep_time_and_cook_time(self):
+        recipe = Recipe()
+        self.assertIsNone(recipe.total_time)
 
     def test_recipe_ingredient(self):
         recipe = Recipe()

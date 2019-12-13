@@ -163,6 +163,7 @@ class SpecialUnit(Unit):
 
 def get_unit(unit: Union[str, Unit]) -> Unit:
     """Get Unit of Error from string
+
     Raises:
         ValueError: When `unit` is not a valid ``Unit``
     """
@@ -184,9 +185,10 @@ def convert(value: Union[int, float, Fraction],
             ) -> Union[float, Fraction]:
     """ Return converted value. 
 
-        :param value: value that need to convert.
-        :param base_unit: current unit.
-        :param quote_unit: unit that need to convert to.
+    Args:
+        value (int, float, Fraction): value that need to convert.
+        base_unit (LengthUnit, VolumeUnit, MassUnit, EnergyUnit, Unit, str): current unit.
+        quote_unit (LengthUnit, VolumeUnit, MassUnit, EnergyUnit, Unit, str): unit that need to convert to.
     """
     factor = get_unit(base_unit).conversion_factor / get_unit(quote_unit).conversion_factor
     return value * factor

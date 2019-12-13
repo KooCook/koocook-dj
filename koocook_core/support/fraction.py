@@ -52,8 +52,10 @@ _parse_numeral_pattern = re.compile(r'(?P<m>{})\b'.format(
 
 def parse_numeral(s: str) -> str:
     """Converts numeral under 13 in string to number.
+
     Args:
         s (str): positional only. string to parse
+
     Examples:
         >>> parse_numeral('One to two cups parmesan')
         '1 to 2 cups parmesan'
@@ -104,8 +106,10 @@ def parse_latex(s: str) -> str:
 
 def parse_vulgar_unicode(s: str) -> str:
     """Converts string containing vulgar fractions in unicode to literal.
+
     Args:
         s (str): positional only. string to parse
+
     Examples:
         >>> parse_vulgar_unicode('¾ cup (1½ sticks) cold unsalted butter, cut into ¼-inch pieces')
         '3/4 cup (1 1/2 sticks) cold unsalted butter, cut into ¼-inch pieces'
@@ -138,8 +142,10 @@ def parse_vulgar_unicode(s: str) -> str:
 
 def parse_fraction(s: str) -> 'Fraction':
     """Converts a fraction string to Fraction.
+
     Args:
         s (str): positional only. string to parse
+
     Examples:
         >>> parse_fraction('1/2') == Fraction(1, 2)
         True
@@ -162,7 +168,10 @@ def parse_fraction(s: str) -> 'Fraction':
     except ValueError:
         pass
     s = parse_vulgar_unicode(s)
-    s = parse_latex(s)
+    try:
+        s = parse_latex(s)
+    except AttributeError:
+        pass
     try:
         numerator, denominator = map(float, s.split('/'))
         return Fraction(numerator, denominator)
@@ -189,9 +198,12 @@ def parse_match(m: Match) -> 'Fraction':
 
 def parse_str(s: str) -> 'Fraction':
     """Converts a number string to Fraction.
+
     Also functions as an all-purpose converter to Fraction.
+
     Args:
         s (str): positional only. string to parse
+
     Examples;
         >>> parse_str('1/2') == Fraction(1, 2)
         True
@@ -269,6 +281,7 @@ def type_error_msg_2(self, operand: str, other) -> str:
 
 def to_proper(numerator: int, denominator: int) -> Tuple[int, int]:
     """Converts `numerator` and `denominator` to their simplest ratio.
+
     Examples:
         >>> to_proper(7, 28)
         (1, 4)
@@ -297,8 +310,10 @@ def to_proper(numerator: int, denominator: int) -> Tuple[int, int]:
 
 def to_ratio(x: Union[float, int]) -> Tuple[int, int]:
     """Converts number to a pair of integer ratio with positive denominator.
+
     Notes:
         Doesn't support recurring decimals yet
+
     Examples:
         >>> to_ratio(5.6)
         (28, 5)
@@ -343,11 +358,13 @@ def to_ratio(x: Union[float, int]) -> Tuple[int, int]:
 
 class Fraction:
     """A fraction with a numerator and denominator and arithmetic operations.
+
     Fractions are always stored in proper form, without common factors in
     numerator and denominator, and denominator >= 0.
     Since Fractions are stored in proper form, each value has a
     unique representation, e.g. 4/5, 24/30, and -20/-25 have the same
     internal representation.
+
     Attributes:
         numerator (int): the numerator of the fraction
         denominator (int): the denominator of the fraction
@@ -358,6 +375,7 @@ class Fraction:
     def __init__(self, numerator, denominator=1):
         """Initialize a new fraction with the given numerator
            and denominator (default 1).
+
         Args:
             - numerator[, denominator=1] Union[int, float]
             - fraction_str (str)
@@ -493,6 +511,7 @@ class Fraction:
 
     def is_infinite(self):
         """Returns True if limit of the fraction tends to infinity.
+
         Examples:
             >>> Fraction(1, 0).is_infinite()
             True
@@ -505,6 +524,7 @@ class Fraction:
 
     def isnan(self):
         """ Return True if fraction is a NaN (not a number), and False otherwise.
+
         Notes:
             named ``isnan`` to comply with the naming in the math module
         """

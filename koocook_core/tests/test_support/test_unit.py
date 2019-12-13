@@ -65,9 +65,7 @@ class TestUnit(unittest.TestCase):
         result = unit.convert(1, 'kg', 'g')
         self.assertEqual(result, 1000.)
 
-    # TODO: Improve coverage by testing TemperatureUnit.convert()
     def test_convert_temperature(self):
         """ convert °F to K"""
         result = f"{unit.TemperatureUnit.convert(0, '°F', 'K'):.3f}"
         self.assertEqual(result, '255.372')
-
