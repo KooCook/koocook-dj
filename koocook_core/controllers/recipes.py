@@ -38,7 +38,7 @@ class RecipeController(RatableController, CommentControllerMixin):
             value = float(self.request_fields["value"])
             kind = self.request_fields["type"]
             base = self.request_fields["base_unit"]
-            dest = self.request_fields["dest_unit"]
+            dest = self.request_fields["quote_unit"]
             if kind == 'temperatureUnit':
                 return ControllerResponse("Converted", obj=TemperatureUnit.convert(value, base, dest))
             else:

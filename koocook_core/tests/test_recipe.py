@@ -21,6 +21,16 @@ class RecipeTests(AuthTestCase):
         response = self.client.patch(reverse("koocook_core:recipes:detail", kwargs={'recipe_id': 1}))
         self.assertEqual(response.status_code, 405)
 
+    def test_unit_conversion(self):
+        response = self.client.get(reverse("koocook_core:recipes:unit-conv"))
+        with self.subTest("Get all conversion"):
+            self.assertEqual(200, response.status_code)
+        response = self.client.post(reverse("koocook_core:recipes:unit-conv"),
+                                    {'value': 0, 'type': 'temperatureUnit',
+                                     'base_unit': '°C', 'quote_unit': 'K'})
+        with self.subTest("0 °C to Kelvin"):
+            self.assertEqual(273.15, json.loads(response.content)['current'])
+
     def test_recipe_create_view(self):
         with self.subTest("Authenticated user access"):
             response = self.client.get(reverse("koocook_core:recipes:create"))
@@ -139,10 +149,30 @@ class RecipeTests(AuthTestCase):
         with self.subTest("Search by popularity alone"):
             self.assertEqual(response.context["object_list"][0].view_count, 1)
 
-        response = self.client.get(reverse("koocook_core:search"), {'name_asc': '1'})
-        self.client.get(reverse("koocook_core:recipes:detail", kwargs={'recipe_id': recipe.id}))
+        # response = self.client.get(reverse("koocook_core:search"), {'name_asc': '1'})
+        # self.client.get(reverse("koocook_core:recipes:detail", kwargs={'recipe_id': recipe.id}))
+        # with self.subTest("Sort by name"):
+        #     self.assertEqual(response.context["object_list"][0].id, recipe.id)
+
+        response = self.client.get(reverse("koocook_core:search") + '?order=athinmajig')
+        with self.subTest("Sort by non-existent field"):
+            self.assertEqual(response.context["object_list"][0].id, recipe.id)
+
+        response = self.client.get(reverse("koocook_core:search") + '?order=name')
         with self.subTest("Sort by name"):
             self.assertEqual(response.context["object_list"][0].id, recipe.id)
+
+        response = self.client.get(reverse("koocook_core:search") + '?order=name&ordering=desc')
+        with self.subTest("Sort by name in descending order"):
+            self.assertEqual(response.context["object_list"][0].id, recipe.id)
+
+        response = self.client.get(reverse("koocook_core:search") + '?ingredients=Pepper')
+        with self.subTest("Search by ingredient"):
+            self.assertQuerysetEqual(self.BLANK_QS, response.context["object_list"].all())
+
+        response = self.client.get(reverse("koocook_core:search") + '?cookware=Athinmajig')
+        with self.subTest("Search by cookware"):
+            self.assertQuerysetEqual(self.BLANK_QS, response.context["object_list"].all())
 
 
 class RecipeVisitTest(AuthTestCase):

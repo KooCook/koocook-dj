@@ -107,6 +107,6 @@ class TagJSONRulesetParser:
     pass
 
 
-class TagFilters:
-    def to_json(self):
-        pass
+# class TagFilters:
+#     def to_json(self):
+#         pass
