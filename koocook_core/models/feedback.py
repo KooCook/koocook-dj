@@ -37,12 +37,12 @@ class Feedback(models.Model):
     def video_tag(self):
         tag = u''
         if self.video is not None:
-            for vdo in self.video:
-                if vdo[0] == '[':
-                    vdo = vdo[1:]
-                if vdo[-1] == ']':
-                    vdo = vdo[:-1]
-                tag += u'<iframe src=%s width=80vw height=auto style="margin-bottom: 12px;"></iframe>' % vdo
+            vdo = self.video
+            if vdo[0] == '[':
+                vdo = vdo[1:]
+            if vdo[-1] == ']':
+                vdo = vdo[:-1]
+            tag += u'<iframe src=%s width=80vw height=auto style="margin-bottom: 12px;"></iframe>' % vdo
         return tag
 
     def __str__(self):
