@@ -52,3 +52,11 @@ class RecipeIngredient(models.Model):
     @property
     def nutrition(self):
         return
+
+    @property
+    def words_quantity(self):
+        return str(self.quantity)
+
+    @property
+    def words_name(self):
+        return " " + self.meta.name
