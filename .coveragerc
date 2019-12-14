@@ -13,7 +13,9 @@ omit =
     tests/*
     manage.py
     wsgi.py
+    */wsgi.py
     **/migrations/**
+    */tests/*
     **/tests/**
     **/settings/**
     test_*.py

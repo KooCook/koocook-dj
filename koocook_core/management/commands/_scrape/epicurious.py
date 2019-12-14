@@ -141,11 +141,10 @@ def add_tags(soup: BeautifulSoup, recipe: Recipe) -> None:
         recipe.tag_set.add(tag)
 
 
-def main(num):
+def main(num: int, page: int = 1):
     """ Scrape ``num`` recipes from epicurious.com """
     links = []
     count = 0
-    page = 1
     while count < num:
         try:
             link = links.pop(-1)
