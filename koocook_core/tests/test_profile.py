@@ -63,11 +63,11 @@ class UserProfileTest(AuthTestCase):
             self.assertEqual(response.status_code, 401)
 
         response = self.client.post(reverse('koocook_core:profile:follow'), {
-            'followee_id': self.user2.koocookuser.id
+            'followee_id': self.user2.koocook_user.id
         })
         with self.subTest("Following the other user"):
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.json()["current"]["id"], self.user2.koocookuser.id)
+            self.assertEqual(response.json()["current"]["id"], self.user2.koocook_user.id)
 
     def test_following(self):
         response = self.client.get(reverse('koocook_core:profile:follow'))
@@ -77,9 +77,9 @@ class UserProfileTest(AuthTestCase):
 
     def test_unfollow(self):
         response = self.client.post(reverse('koocook_core:profile:unfollow'), {
-            'followee_id': self.user2.koocookuser.id
+            'followee_id': self.user2.koocook_user.id
         })
         with self.subTest("Unfollowing the other user"):
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.json()["current"]["id"], self.user2.koocookuser.id)
+            self.assertEqual(response.json()["current"]["id"], self.user2.koocook_user.id)
 

@@ -4,6 +4,7 @@ from .recipe import Recipe, RecipeEquipment
 from .review import AggregateRating, Comment, Rating
 from .tag import Tag, TagLabel
 from .user import Author, KoocookUser
+from .base import get_client_ip
 
 __all__ = ['MetaIngredient', 'RecipeIngredient', 'RecipeEquipment', 'Post', 'Recipe', 'AggregateRating', 'Comment', 'Rating', 'Tag',
-           'TagLabel', 'Author', 'KoocookUser']
+           'TagLabel', 'Author', 'KoocookUser', 'get_client_ip']

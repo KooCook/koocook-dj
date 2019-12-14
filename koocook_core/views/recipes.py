@@ -1,4 +1,5 @@
 import json
+import logging
 import django
 from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
@@ -14,6 +15,9 @@ from .mixins import AuthAuthorMixin, CommentWidgetMixin, RecipeViewMixin, SignIn
 from ..models import Recipe, Author, KoocookUser, MetaIngredient, RecipeEquipment
 from ..models.base import ModelEncoder
 from ..support.query import QueryRuleset, IngredientRule, CookwareRule, OrderingRule, IngredientExclusionRule
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 class RecipeSearchListView(AuthAuthorMixin, ListView):
@@ -59,6 +63,7 @@ class RecipeSearchListView(AuthAuthorMixin, ListView):
             query_set = sorted(query_set,
                                key=lambda t: t.popularity_score,
                                reverse=True)
+        LOGGER.info(f"{self.get_visitor_name()} has searched for recipes with {self.request.GET.dict()}")
         return query_set
 
 
@@ -75,8 +80,10 @@ class UserRecipeListView(SignInRequiredMixin, ListView):
         return context
 
     def get_queryset(self):
+
         # try:
         author = Author.objects.get(user__user=self.request.user)
+        LOGGER.info(f"Retrieving {author.name}'s recipes")
         # except ObjectDoesNotExist:
         #     author = Author(user=KoocookUser.objects.get(user=self.request.user))
         #     author.save()
@@ -84,6 +91,7 @@ class UserRecipeListView(SignInRequiredMixin, ListView):
 
 
 class RecipeCreateView(RecipeViewMixin, CreateView):
+    ACTION = 'create'
     http_method_names = ['post', 'get']
     form_class = RecipeForm
     template_name = 'recipes/create.html'
@@ -106,6 +114,7 @@ class FractionEncoder(json.JSONEncoder):
 
 
 class RecipeUpdateView(RecipeViewMixin, UpdateView):
+    ACTION = 'update'
     form_class = RecipeForm
     model = Recipe
     # fields = '__all__'  # ['name']
@@ -114,6 +123,8 @@ class RecipeUpdateView(RecipeViewMixin, UpdateView):
     def dispatch(self, request, *args, **kwargs):
         if request.user != self.get_object().author.dj_user:
             return self.handle_no_permission()
+        else:
+            LOGGER.info(f"{request.user.username} requested the recipe editing view")
         return super().dispatch(request, *args, **kwargs)
 
     def get_success_url(self):

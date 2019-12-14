@@ -1,10 +1,13 @@
-
+import logging
 from typing import Type
 
 from .base import BaseController, ControllerResponse
 from .decorators import apply_author_from_session
 from ..models import Author, Comment
 from ..models.base import SerialisableModel
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 class AuthorControllerMixin(BaseController):
@@ -30,5 +33,6 @@ class CommentControllerMixin(AuthorControllerMixin):
         comment_fields.update({self.item_reviewed_field: self.model.objects.get(pk=item_id)})
         comment = self.comment_model(**comment_fields)
         comment.save()
+        LOGGER.info(f"{self.author.name} has commented on {self.item_reviewed_field}#{item_id} [ID #{comment.id}]")
         comment = Comment.objects.get(pk=comment.id)
         return ControllerResponse(status_text='Retrieved', obj=comment)

@@ -131,37 +131,41 @@
           </div>
           {% else %}
           <div class="navbar-item has-dropdown is-hoverable">
-            <a class="navbar-link is-arrowless">
-              <div class="profile-pic-48">
-                <div class="has-text-grey-dark profile-initial-48">{{ user.username|title|slice:"0:1" }}</div>
-              </div>
-            </a>
+               <a class="navbar-link is-arrowless">
+                 <div class="profile-pic-48">
+                     {% if user.koocook_user.avatar_url %} <figure class="image">
+             <img alt="profile picture" class="is-rounded" src="{{ user.koocook_user.avatar_url }}"
+                 style="max-height: unset">
+          </figure>
+                     {% else %}<div class="has-text-grey-dark profile-initial-48">{{ user.username|title|slice:"0:1" }}</div>{% endif %}
+                 </div>
+               </a>
 
-            <div class="navbar-dropdown is-right is-boxed">
-              <div class="navbar-item">
-                <strong>{{ user.username }}</strong>
-              </div>
-              <a class="navbar-item" href="{% url 'koocook_core:profile:info' %}">
-                Your profile
-              </a>
-              <a class="navbar-item is-disabled">
-                Your subscriptions
-              </a>
-              <a class="navbar-item" href="{% url 'koocook_core:recipes:user' %}">
-                Your recipes
-              </a>
-              <hr class="navbar-divider">
-              <a class="navbar-item is-disabled">
-                Help
-              </a>
-              <a href="{% url 'koocook_core:profile:pref' %}" class="navbar-item">
-                Settings
-              </a>
-              <a href="{% url "koocook_auth:logout" %}" class="navbar-item">
-                Sign out
-              </a>
-            </div>
-          </div>
+               <div class="navbar-dropdown is-right is-boxed">
+                   <div class="navbar-item">
+                      <strong>{{ user.username }}</strong>
+                   </div>
+                 <a class="navbar-item" href="{% url 'koocook_core:profile:info' %}">
+                   Your profile
+                 </a>
+                 <a class="navbar-item is-disabled">
+                   Your subscriptions
+                 </a>
+                 <a class="navbar-item" href="{% url 'koocook_core:recipes:user' %}">
+                   Your recipes
+                 </a>
+                 <hr class="navbar-divider">
+                 <a class="navbar-item is-disabled">
+                   Help
+                 </a>
+                 <a href="{% url 'koocook_core:profile:pref' %}" class="navbar-item">
+                   Settings
+                 </a>
+                 <a href="{% url "koocook_auth:logout" %}" class="navbar-item">
+                   Sign out
+                 </a>
+               </div>
+             </div>
           {% endif %}
         </div>
       </div>
