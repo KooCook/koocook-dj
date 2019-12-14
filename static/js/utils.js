@@ -23,11 +23,9 @@ const CONVERSION_UNITS = {
   mg: "milligram"
 };
 
-function getCookie(name) {
-  const re = new RegExp(name + "=([^;]+)");
-  const value = re.exec(document.cookie);
-  return value != null ? unescape(value[1]) : null;
-}
+const GLOBAL_DATA = {
+  searchName: '',
+};
 
 String.prototype.format = function() {
   let str = this;
@@ -36,6 +34,12 @@ String.prototype.format = function() {
   }
   return str
 };
+
+function getCookie(name) {
+  const re = new RegExp(name + "=([^;]+)");
+  const value = re.exec(document.cookie);
+  return value != null ? unescape(value[1]) : null;
+}
 
 Vue.filter("time-passed", function(date) {
   return moment(date).fromNow();

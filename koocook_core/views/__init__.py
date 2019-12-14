@@ -12,7 +12,8 @@ from .posts import *
 from .recipes import *
 from .handlers import *
 from .forms import RecipeForm, FeedbackForm
-from ..models import Author
+from .profile import UserProfileInfoView, UserSettingsInfoView
+from ..models import Author, Recipe
 from ..models.user import KoocookUser
 from .feedback import post_feedback
 
