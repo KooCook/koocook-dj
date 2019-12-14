@@ -6,8 +6,6 @@ from koocook_core.support.quantity import Quantity, parse_quantity
 
 from koocook_core import fields as koocookfields
 
-from typing import List
-
 __all__ = ['MetaIngredient', 'RecipeIngredient']
 
 

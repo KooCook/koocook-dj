@@ -183,7 +183,7 @@ def convert(value: Union[int, float, Fraction],
             base_unit: Union[LengthUnit, VolumeUnit, MassUnit, EnergyUnit, Unit, str],
             quote_unit: Union[LengthUnit, VolumeUnit, MassUnit, EnergyUnit, Unit, str]
             ) -> Union[float, Fraction]:
-    """ Return converted value. 
+    """Return converted value. 
 
     Args:
         value (int, float, Fraction): value that need to convert.
