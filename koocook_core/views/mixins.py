@@ -92,8 +92,10 @@ class RecipeViewMixin(SignInRequiredMixin, AuthAuthorMixin):
                         if 'id' in tag['label']:
                             tag['label'].pop('id')
                         tag_body['label'], created = TagLabel.objects.get_or_create(**tag['label'])
-                    tag, created = Tag.objects.get_or_create(**tag_body)
-                    # if 'id' not in tag_body:
+                    if 'id' not in tag_body:
+                        tag, created = Tag.objects.get_or_create(**tag_body)
+                    else:
+                        tag = Tag.objects.get(pk=tag_body['id'])
                     form.instance.tag_set.add(tag)
                     # else:
                     #     try:

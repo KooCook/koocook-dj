@@ -18,6 +18,10 @@ class PostController(RatableController, CommentControllerMixin):
     @classmethod
     def default(cls):
         return cls()
+
+    @property
+    def visitor_name(self) -> str:
+        return self.author.name
     #
     # def get_model_request_fields(self, request: HttpRequest) -> dict:
     #     return {field_name: request.POST.get(field_name) for field_name in self.model_field_names}

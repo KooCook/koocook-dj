@@ -33,6 +33,6 @@ class CommentControllerMixin(AuthorControllerMixin):
         comment_fields.update({self.item_reviewed_field: self.model.objects.get(pk=item_id)})
         comment = self.comment_model(**comment_fields)
         comment.save()
-        LOGGER.info(f"{self.author.name} has commented [{comment.id}] on {self.item_reviewed_field}#{item_id}")
+        LOGGER.info(f"{self.author.name} has commented on {self.item_reviewed_field}#{item_id} [ID #{comment.id}]")
         comment = Comment.objects.get(pk=comment.id)
         return ControllerResponse(status_text='Retrieved', obj=comment)

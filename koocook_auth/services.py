@@ -2,6 +2,7 @@ from enum import Enum
 from json import dumps, loads
 from typing import Type, Any
 
+from .models import KoocookUser
 from django.forms.widgets import Widget, CheckboxInput, Textarea, TextInput
 
 
@@ -118,9 +119,7 @@ class BasePreferenceManager:
         self.register_default_preferences()
 
     @classmethod
-    def from_koocook_user(cls, user):
-        from .models import KoocookUser
-        user: KoocookUser = user
+    def from_koocook_user(cls, user: 'KoocookUser'):
         if isinstance(user.preferences, str):
             pref_dict = loads(user.preferences)
         else:

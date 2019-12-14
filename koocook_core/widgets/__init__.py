@@ -1,6 +1,5 @@
 from django.forms.widgets import Widget, TextInput
 from koocook_core.support.quantity import parse_quantity, Quantity
-from django.utils.dateparse import parse_duration
 
 
 class DurationInput(TextInput):
