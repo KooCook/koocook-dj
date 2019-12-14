@@ -29,7 +29,7 @@ class RatingTest(AuthTestCase):
         rating = AggregateRating(rating_value=3)
         self.assertEqual(str(rating), str(rating.rating_value))
 
-    def test_rate_same_as_item_author(self):
+    def test_rate_item_of_oneself(self):
         self.client.login(username=self.user.username, password=self.password)
         response = self.client.post(self.recipe_rate_url, {'rating_score': 3})
         self.assertEqual(response.status_code, 403)

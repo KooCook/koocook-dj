@@ -7,7 +7,7 @@ from koocook_core import fields as koocookfields
 from .base import SerialisableModel
 from .review import ReviewableModel
 
-__all__ = ['Recipe']
+__all__ = ('Recipe', 'RecipeEquipment', 'RecipeVisit', 'get_client_ip')
 
 
 class Recipe(ReviewableModel, models.Model):
