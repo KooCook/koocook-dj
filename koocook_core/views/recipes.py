@@ -65,6 +65,7 @@ class UserRecipeListView(SignInRequiredMixin, ListView):
     model = Recipe
     template_name = 'recipes/user.html'
     paginate_by = 10
+    ordering = ['-date_published']
     context_object_name = "user_recipes"
 
     def get_context_data(self, **kwargs):
@@ -165,6 +166,7 @@ class PreferredRecipeStreamView(AuthAuthorMixin, ListView):
     model = Recipe
     queryset = Recipe.objects.prefetch_related('author')
     paginate_by = 10
+    ordering = ['-date_published']
     template_name = "recipes/suggested.html"
 
     @property
@@ -189,9 +191,9 @@ class PreferredRecipeStreamView(AuthAuthorMixin, ListView):
             converted_exact_tag_set_names = []
             for tag in tags.setting:
                 converted_exact_tag_set_names.append(tag["name"])
-            return Recipe.objects.filter(tag_set__name__in=converted_exact_tag_set_names)
+            return Recipe.objects.filter(tag_set__name__in=converted_exact_tag_set_names).order_by('-date_published')
         else:
-            return Recipe.objects.all()
+            return Recipe.objects.all().order_by('-date_published')
 
 
 class RecipeIngredientsView(ListView):
