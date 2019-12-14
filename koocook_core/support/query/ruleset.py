@@ -56,7 +56,7 @@ class OrderingRule(Rule):
             try:
                 list(queryset.order_by(key))
                 queryset = queryset.order_by(key)
-            except FieldError as f:
+            except FieldError:
                 return queryset
         return queryset
 

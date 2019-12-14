@@ -15,7 +15,7 @@ class RecipeController(RatableController, CommentControllerMixin):
         table = {}
         for unit_section in units:
             for unit in unit_section:
-                if not unit.type in table:
+                if unit.type not in table:
                     table[unit.type] = []
                 if not section == 'serving' and unit.as_dict()['value']:
                     table[unit.type].append(get_unit(unit))
@@ -36,10 +36,10 @@ class RecipeController(RatableController, CommentControllerMixin):
             if 'value' not in self.request_fields:
                 return ControllerResponse("None")
             value = float(self.request_fields["value"])
-            type = self.request_fields["type"]
+            kind = self.request_fields["type"]
             base = self.request_fields["base_unit"]
             dest = self.request_fields["dest_unit"]
-            if type == 'temperatureUnit':
+            if kind == 'temperatureUnit':
                 return ControllerResponse("Converted", obj=TemperatureUnit.convert(value, base, dest))
             else:
                 return ControllerResponse("None")
