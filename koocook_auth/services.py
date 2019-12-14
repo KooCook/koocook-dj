@@ -1,8 +1,8 @@
 from enum import Enum
-from json import dumps, loads, JSONEncoder
+from json import dumps, loads
 from typing import Type, Any
 
-from django.forms.widgets import Widget, CheckboxInput, Textarea, TextInput, HiddenInput
+from django.forms.widgets import Widget, CheckboxInput, Textarea, TextInput
 
 
 def str_to_bool(s: str) -> bool:
@@ -121,7 +121,7 @@ class BasePreferenceManager:
     def from_koocook_user(cls, user):
         from .models import KoocookUser
         user: KoocookUser = user
-        if type(user.preferences) is str:
+        if isinstance(user.preferences, str):
             pref_dict = loads(user.preferences)
         else:
             pref_dict = user.preferences
@@ -186,7 +186,7 @@ class BasePreferenceManager:
             return obj
 
     def __setitem__(self, key, value):
-        if type(value) is str:
+        if isinstance(value, str):
             pref = self.to_preference(key, value)
         else:
             pref = Preference(key, value, type(value))

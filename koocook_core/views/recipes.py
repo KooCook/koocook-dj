@@ -63,6 +63,7 @@ class RecipeSearchListView(AuthAuthorMixin, ListView):
             query_set = sorted(query_set,
                                key=lambda t: t.popularity_score,
                                reverse=True)
+        LOGGER.info(f"{self.get_visitor_name()} has searched for recipes with {self.request.GET.dict()}")
         return query_set
 
 
@@ -90,6 +91,7 @@ class UserRecipeListView(SignInRequiredMixin, ListView):
 
 
 class RecipeCreateView(RecipeViewMixin, CreateView):
+    ACTION = 'create'
     http_method_names = ['post', 'get']
     form_class = RecipeForm
     template_name = 'recipes/create.html'
@@ -112,6 +114,7 @@ class FractionEncoder(json.JSONEncoder):
 
 
 class RecipeUpdateView(RecipeViewMixin, UpdateView):
+    ACTION = 'update'
     form_class = RecipeForm
     model = Recipe
     # fields = '__all__'  # ['name']

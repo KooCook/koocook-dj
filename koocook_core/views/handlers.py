@@ -40,8 +40,9 @@ def handle_recipe(request, recipe_id):
     if request.method == 'DELETE' and request.user.is_authenticated:
         recipe = Recipe.objects.get(pk=recipe_id)
         if recipe.author.user == KoocookUser.objects.get(user=request.user):
+            recipe_id = recipe.id
             recipe.delete()
-            LOGGER.info(f"{recipe.author.user.name} has deleted their recipe named {recipe.name} [{recipe.id}]")
+            LOGGER.info(f"{recipe.author.user.name} has deleted their recipe named {recipe.name} [{recipe_id}]")
             return JsonResponse({'status': 'deleted'})
         else:
             return HttpResponseForbidden()

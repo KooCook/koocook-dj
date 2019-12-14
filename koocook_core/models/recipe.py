@@ -5,10 +5,10 @@ from django.http import HttpRequest
 
 from koocook_core import fields as koocookfields
 
-from .base import SerialisableModel
+from .base import SerialisableModel, get_client_ip
 from .review import ReviewableModel
 
-__all__ = ('Recipe', 'RecipeEquipment', 'RecipeVisit', 'get_client_ip')
+__all__ = ('Recipe', 'RecipeEquipment', 'RecipeVisit')
 
 LOGGER = logging.getLogger(__name__)
 
@@ -90,11 +90,6 @@ class Recipe(ReviewableModel, models.Model):
     def recipe_ingredients(self):
         """ Proxy property for consistency with Schema.org's standard """
         return self.recipeingredient_set.all()
-
-
-def get_client_ip(request: HttpRequest):
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    return x_forwarded_for.split(',')[0] if x_forwarded_for else request.META.get('REMOTE_ADDR')
 
 
 class RecipeVisit(models.Model):

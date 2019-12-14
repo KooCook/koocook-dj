@@ -5,10 +5,7 @@ from django.shortcuts import reverse
 from django.views.generic.edit import FormMixin, ProcessFormView
 
 from .forms import CommentForm
-from ..models import Author, RecipeIngredient, RecipeEquipment, MetaIngredient
-
-LOGGER = logging.getLogger(__name__)
-
+from ..models import Author, RecipeIngredient, RecipeEquipment, MetaIngredient, get_client_ip
 
 LOGGER = logging.getLogger(__name__)
 
@@ -44,6 +41,12 @@ class AuthAuthorMixin:
     def get_author(self) -> Author:
         return Author.objects.get(user__user=self.request.user)
 
+    def get_visitor_name(self) -> str:
+        if self.request.user.is_authenticated:
+            return f"{self.request.user.username} (User)"
+        else:
+            return f"Anonymous IP: {get_client_ip(self.request)}"
+
     def form_valid(self, form):
         form.instance.author = self.get_author()
         return super().form_valid(form)
@@ -72,6 +75,7 @@ class CommentWidgetMixin(AuthAuthorMixin, FormMixin):
 
 
 class RecipeViewMixin(SignInRequiredMixin, AuthAuthorMixin):
+    ACTION = 'mixin'
 
     def process_tags(self, form):
         from ..models import Tag, TagLabel
@@ -82,14 +86,15 @@ class RecipeViewMixin(SignInRequiredMixin, AuthAuthorMixin):
                                   in [f.name for f in Tag._meta.get_fields()]}
                 if 'deleted' in tag and tag['deleted']:
                     form.instance.tag_set.remove(Tag.objects.get(pk=tag['id']))
-                    Tag.objects.get(pk=tag['id']).delete()
+                    # Tag.objects.get(pk=tag['id']).delete()
                 else:
                     if tag['label'] != '':
                         if 'id' in tag['label']:
                             tag['label'].pop('id')
                         tag_body['label'], created = TagLabel.objects.get_or_create(**tag['label'])
-                    if 'id' not in tag_body:
-                        form.instance.tag_set.add(Tag.objects.create(**tag_body))
+                    tag, created = Tag.objects.get_or_create(**tag_body)
+                    # if 'id' not in tag_body:
+                    form.instance.tag_set.add(tag)
                     # else:
                     #     try:
                     #         obj = form.instance.tag_set.get(id=tag_body['id'])
@@ -123,6 +128,7 @@ class RecipeViewMixin(SignInRequiredMixin, AuthAuthorMixin):
     # Messy
     def form_valid(self, form):
         response = super().form_valid(form)
+        LOGGER.info(f"{self.get_visitor_name()} has {self.ACTION}d the recipe named {form.instance.name} #{form.instance.id}")
         self.process_equipment(form)
         self.process_tags(form)
         form.instance.save()
