@@ -127,22 +127,28 @@
 
 </div>
 <followee-list ref="flist"></followee-list>
+
+{% endblock %}
+ {% block vue_init %}
 <script>
   Object.assign(GLOBAL_DATA, {
     currentAuthorId: {{ current_author.id }},
     firstRun: true,
     searchFilter: '{{ search_filter }}',
     searchTerm: '{{ request.GET.kw }}',
+      searchParams: '',
     followees: [],
     recipes: [],
     ingredients: [],
-    cookware: []
-    })
+    cookware: [],
+      exclusions: []
+    });
   new Vue({
     el: '#app',
     data: GLOBAL_DATA,
     mounted() {
       const url = new URL(location.href);
+      this.exclusions = url.searchParams.get('exclude') ? url.searchParams.get('exclude').split(',') : [];
       this.ingredients = url.searchParams.get('ingredients') ? url.searchParams.get('ingredients').split(',') : [];
       this.cookware = url.searchParams.get('cookware') ? url.searchParams.get('cookware').split(',') : [];
     },
@@ -183,9 +189,14 @@
         if (this.searchTerm) formBody.set("kw", this.searchTerm);
         if (this.ingredients.length > 0) formBody.set("ingredients", joined);
         else formBody.delete("ingredients");
+
         joined = this.cookware.join(',');
         if (this.cookware.length > 0) formBody.set("cookware", joined);
         else formBody.delete("cookware");
+
+        joined = this.exclusions.join(',');
+        if (this.exclusions.length > 0) formBody.set("exclude", joined);
+        else formBody.delete("exclude");
         const searchParams = (new URLSearchParams(formBody)).toString();
         if (searchParams) this.searchParams = '?' + searchParams;
         else this.searchParams = '';
@@ -201,10 +212,13 @@
       ingredients: function (val) {
         this.insertFilter();
       },
+        exclusions: function (val) {
+        this.insertFilter();
+      },
       cookware: function (val) {
         this.insertFilter();
       }
     }
   })
 </script>
-{% endblock %}
+        {% endblock %}

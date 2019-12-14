@@ -6,6 +6,6 @@
 
 {% block page_content %}
     {% for ingredient in object_list %}
-        <p><a href="{% url 'koocook_core:ingredient' ingredient.id %}">{{ ingredient.meta.name }}</a></p>
+        <p><a href="{% url 'koocook_core:ingredient' ingredient.id %}">{{ ingredient.name }}</a></p>
     {% endfor %}
 {% endblock %}

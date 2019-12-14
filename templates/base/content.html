@@ -14,7 +14,7 @@
 {% block page_body %}
 <div id="app">
   <nav class="navbar" role="navigation" aria-label="main navigation"
-    style="padding: 1rem 2rem; box-shadow: 0 2px 0 0 #f5f5f5">
+    style="padding: 1rem 2rem; ">
     <div class="container">
       <div class="navbar-brand" style="flex-basis: 100%; flex-shrink: 1">
         <a class="navbar-item" href="{% url "koocook_core:index" %}">
@@ -37,7 +37,9 @@
               </p>
                 {% endif %}
               <p class="control">
-                <a :href="'{% url 'koocook_core:search' %}' + searchParams"><button
+                <a v-if="searchParams" :href="'{% url 'koocook_core:search' %}' + searchParams"><button
+                    class="button is-info">Search</button></a>
+                  <a v-else :href="'{% url 'koocook_core:search' %}?kw=' + searchTerm"><button
                     class="button is-info">Search</button></a>
               </p>
 
@@ -193,5 +195,6 @@
   </div>
 </div>
 {% block javascript_parsing %}{% endblock %}
+    {% block vue_init %}{% endblock %}
 <script src="{% static "js/navbar.js" %}"></script>
 {% endblock %}

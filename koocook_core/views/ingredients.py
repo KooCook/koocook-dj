@@ -1,10 +1,10 @@
 from django.views.generic import DetailView
 
-from koocook_core.models import RecipeIngredient
+from koocook_core.models import MetaIngredient
 
 
 class IngredientDetailView(DetailView):
-    model = RecipeIngredient
+    model = MetaIngredient
     template_name = 'ingredients/index.html'
 
     def get_context_data(self, **kwargs):

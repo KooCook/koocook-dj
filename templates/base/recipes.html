@@ -13,32 +13,22 @@
 
 {% block nav_pane %}
             {% if section == 'search' %}
-    <b-collapse :open.sync="isFiltersOpen" position="is-bottom" aria-id="contentIdForA11y1">
-    <a slot="trigger" slot-scope="props" aria-controls="contentIdForA11y1">
+    <b-collapse :open.sync="isFiltersOpen" position="is-bottom">
+    <a slot="trigger" slot-scope="props">
     </a>
-    <div class="recipe-portal">
-      <nav class="container level">
+    <div class="search-filters-bar">
+      <nav class="container">
         <!-- Left side -->
-        <div class="level-left">
-          <div class="level-item">
-            <p class="subtitle is-5">
-              Filters
-            </p>
-          </div>
+        <div class="columns">
+             <div class="column is-one-fifth"></div>
+            <div class="column">
+            <ingredient-input-searcher :ingredients="ingredients" :exclusions="exclusions"></ingredient-input-searcher>
+            <p><cookware-searcher :initial="cookware"></cookware-searcher></p>
         </div>
 
-        <p class="level-item"> <b-taginput
+        </div>
 
-          icon="label"
-          v-model="ingredients"
-          placeholder="Include ingredients" expanded>
-      </b-taginput></p>
-        <p class="level-item"><b-taginput
 
-          icon="label"
-          v-model="cookware"
-          placeholder="Include cookware" expanded>
-      </b-taginput></p>
       </nav>
     </div>
   </b-collapse>
@@ -60,4 +50,13 @@
     <p class="level-item">{% if section == 'recipe-user' %}<strong>{% else %}<a href="{% url 'koocook_core:recipes:user' %}">{% endif %}Yours{% if not section == 'recipe-user' %}</a>{% else %}</strong>{% endif %}</p>
 </nav>
     </div>
+{% endblock %}
+
+{% block vue_init %}
+    <script>
+    new Vue({
+    el: '#app',
+    data: GLOBAL_DATA,
+        })
+    </script>
 {% endblock %}

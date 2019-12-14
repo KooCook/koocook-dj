@@ -93,7 +93,10 @@
   </nav>
   {% endif %}
 </div>
-     <script>
+
+{% endblock %}
+{% block vue_init %}
+    <script>
       new Vue({
         el: '#app',
         data: {
@@ -102,7 +105,7 @@
                 name: ''
             },
           togglePopSearch: false,
-          searchName: '',
+          searchTerm: '',
           recipes: [
               {% for recipe in user_recipes %}
                   { id: {{ recipe.id }}, name: '{{ recipe.name }}' },

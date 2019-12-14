@@ -168,9 +168,23 @@ a {
     color: #EDE7DE;
 }
 
+    .navbar-menu .has-dropdown a.navbar-item {
+    color: #4a4a4a;
+}
+
+
 .navbar-menu a.navbar-item:hover {
     color: #735751;
 }
+
+.navbar-menu .navbar-item a.navbar-link:hover {
+    color: #735751;
+}
+
+.navbar-menu .navbar-item a.navbar-link:focus-within {
+    color: #735751;
+}
+
 
     .navbar-menu .navbar-link:not(:focus) {
         color: #EDE7DE;
@@ -189,4 +203,8 @@ a {
     .navbar-menu .navbar-item:hover {
         color: #735751;
     }
+}
+
+.button.is-info {
+
 }
