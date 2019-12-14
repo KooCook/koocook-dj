@@ -270,8 +270,8 @@
 {#                          <i class="fas fa-question fa-xs" aria-hidden="true"></i>#}
 {#                        </sup>#}
 {#                      </li>#}
-                        {% for ingredient in ingredients %}
-                            <li>{{ ingredient.quantity.number }} {{ ingredient.quantity.unit }} <a href="{% url 'koocook_core:ingredient' ingredient.id %}">{{ ingredient.name }}</a></li>
+                        {% for ingredient in object.recipe_ingredients %}
+                            <li><a href="{% url 'koocook_core:ingredient' ingredient.meta.id %}">{{ ingredient.words_name }}</a> {{ ingredient.words_quantity }}</li>
                         {% endfor %}
                     </ul>
                   </div>
