@@ -4,9 +4,10 @@
 {% block page_title %}Edit a recipe{% endblock %}
 {% block content_page_name %}Edit a recipe{% endblock %}
 {% block hero_title %}Edit a recipe{% endblock %}
-{% block content_deps %}<script src="{% static 'js/components/ingredients.js' %}"></script>
+{% block crud_deps %}<script src="{% static 'js/components/ingredients.js' %}"></script>
 <script src="{% static 'js/bundle.js' %}"></script>{% endblock %}
 {% block page_content %}
+
         <recipe-tag-input :attached="true" v-model="tags" ellipsis icon="tag" placeholder="Add a tag"
     :allow-new="true" :care-deleted="true" autocomplete maxtags="18" maxlength="24">
 <template v-slot:default="slotProps"></template>
@@ -15,6 +16,7 @@
     </template>
         </recipe-tag-input>
 <form method="post">{% csrf_token %}
+<cookware-list :initial="equipment"></cookware-list>
 <ingredient-chooser :selectable-units="selectableUnits"
 :initial="ingredients"></ingredient-chooser>
     <input name="tags" type="hidden" :value="JSON.stringify(tags)">
@@ -56,6 +58,7 @@
       new Vue({
         el: '#app',
         data: {
+            equipment: {{ equipment|safe }},
             searchName: '',
             tags: {{ tags|safe }},
             ingredients: {{ ingredients|safe }},

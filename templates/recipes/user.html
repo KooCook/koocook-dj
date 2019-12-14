@@ -1,23 +1,15 @@
 {% extends 'base/recipes.html' %}
 {% load static %}
 {% load recipe_extras %}
-{% block content_deps %}<script src="{% static 'js/components/star-rating.js' %}"></script>{% endblock %}
-{% block section_after_nav %}<section class="hero is-light">
-  <div class="hero-body">
-    <div class="container">
-      <h1 class="title">
-        Your recipes
-      </h1>
-        <h2 class="subtitle">
-            <a href="{% url 'koocook_core:recipe-create' %}"> <span class="buttons">
+{% block page_title %}Your recipes{% endblock %}
+{% block content_page_name %}Your recipes{% endblock %}
+{% block crud_deps %}<script src="{% static 'js/components/star-rating.js' %}"></script>{% endblock %}
+{% block hero_title %}Your recipes{% endblock %}
+{% block hero_subtitle %}<a href="{% url 'koocook_core:recipes:create' %}"> <span class="buttons">
                 <button class="button is-primary is-outlined is-small">New</button>
             </span>
                 </a>
-        </h2>
-
-    </div>
-  </div>
-</section>{% endblock %}
+{% endblock %}
 {% block page_content %}
 <div id="app" class="container">
   <b-modal :active.sync="showModal" has-modal-card trap-focus
@@ -53,8 +45,8 @@
         <div class="media">
             <star-rating recipe-name="{{ recipe.name }}" :item-id="{{ recipe.id }}" :initial="{{ recipe.aggregate_rating.rating_value }}" :read-only="true"></star-rating>
       <div class="media-content">
-          <p class="title is-4"><a href="{% url 'koocook_core:recipe' recipe.id %}">{{ recipe.name }}</a> <span class="buttons is-inline-flex has-addons  is-small">
-              <a href="{% url 'koocook_core:recipe-edit' recipe.id %}"><button class="button is-primary is-outlined is-small"><b-icon icon="pencil"></b-icon> </button></a>
+          <p class="title is-4"><a href="{% url 'koocook_core:recipes:detail' recipe.id %}">{{ recipe.name }}</a> <span class="buttons is-inline-flex has-addons  is-small">
+              <a href="{% url 'koocook_core:recipes:edit' recipe.id %}"><button class="button is-primary is-outlined is-small"><b-icon icon="pencil"></b-icon> </button></a>
      <button class="button is-danger is-outlined is-small is-light" @click="showConfirmDeletion({{ recipe.id }})"><b-icon icon="close"></b-icon> </button>
         </span></p>
 
@@ -74,8 +66,37 @@
     <li>You have not contributed any recipe with KooCook</li>
 {% endfor %}
 </div>
+{% if page_obj.has_other_pages %}
+  <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}" class="pagination-previous">
+      <b-icon icon="arrow-left-bold" size="is-small">
+      </b-icon> Previous
+    </a>
+    {% endif %}
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}" class="pagination-next">
+      <b-icon icon="arrow-right-bold" size="is-small">
+      </b-icon> Next
+    </a>
+    {% endif %}
+    <ul class="pagination-list">
+      {% for number in paginator.page_range %}
+      {% if page_obj.number == number %}
+      <li><a class="pagination-link is-current" aria-label="Page {{ number }}" aria-current="page">{{ number }}</a></li>
+      {% else %}
+      <li><a href="?page={{ number }}" class="pagination-link" aria-label="Go to page {{ number }}">{{ number }}</a>
+      </li>
+      {% endif %}
+      {% endfor %}
+    </ul>
+  </nav>
+  {% endif %}
 </div>
-     <script>
+
+{% endblock %}
+{% block vue_init %}
+    <script>
       new Vue({
         el: '#app',
         data: {
@@ -84,7 +105,7 @@
                 name: ''
             },
           togglePopSearch: false,
-          searchName: '',
+          searchTerm: '',
           recipes: [
               {% for recipe in user_recipes %}
                   { id: {{ recipe.id }}, name: '{{ recipe.name }}' },

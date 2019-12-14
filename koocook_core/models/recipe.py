@@ -4,9 +4,10 @@ from django.http import HttpRequest
 
 from koocook_core import fields as koocookfields
 
+from .base import SerialisableModel
 from .review import ReviewableModel
 
-__all__ = ['Recipe']
+__all__ = ('Recipe', 'RecipeEquipment', 'RecipeVisit', 'get_client_ip')
 
 
 class Recipe(ReviewableModel, models.Model):
@@ -42,6 +43,7 @@ class Recipe(ReviewableModel, models.Model):
     cook_time = models.DurationField(null=True)
     recipe_instructions = fields.ArrayField(models.TextField(), default=list)
     recipe_yield = koocookfields.QuantityField(null=True)
+    equipment_set = models.ManyToManyField('koocook_core.RecipeEquipment', blank=True)
     tag_set = models.ManyToManyField('koocook_core.Tag', blank=True)
     aggregate_rating = models.OneToOneField(
         'koocook_core.AggregateRating',
@@ -125,3 +127,16 @@ class RecipeVisit(models.Model):
                                                    recipe=recipe)
         visit.save()
         return visit
+
+
+class RecipeEquipment(SerialisableModel, models.Model):
+    name = models.CharField(max_length=255, blank=False, unique=True)
+
+    def to_dict(self):
+        repr_dict = super().as_dict()
+        repr_dict.update({'editing': False})
+        return repr_dict
+
+    def clean(self):
+        super().clean()
+        self.name = self.name.capitalize()

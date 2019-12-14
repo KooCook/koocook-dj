@@ -4,7 +4,7 @@
 {% block hero_title %}Create a recipe{% endblock %}
 {% block page_title %}Create a recipe{% endblock %}
 {% block content_page_name %}Create a recipe{% endblock %}
-{% block content_deps %}<script src="{% static 'js/components/ingredients.js' %}"></script>
+{% block crud_deps %}<script src="{% static 'js/components/ingredients.js' %}"></script>
 <script src="{% static 'js/bundle.js' %}"></script>
 {% endblock %}
 {% block page_content %}
@@ -20,6 +20,7 @@
     {% for hidden in form.hidden_fields %}
         {{ hidden }}
     {% endfor %}
+    <cookware-list></cookware-list>
     <ingredient-chooser :selectable-units="selectableUnits"></ingredient-chooser>
     <div class="form-group field is-horizontal">
         <div class="field-label is-medium">

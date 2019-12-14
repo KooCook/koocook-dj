@@ -23,6 +23,7 @@ class MetaIngredient(models.Model):
 
 
 class RecipeIngredient(models.Model):
+    exclude = ('recipe', )
     quantity = koocookfields.QuantityField()
     meta = models.ForeignKey(
         'koocook_core.MetaIngredient',
