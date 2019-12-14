@@ -2,12 +2,14 @@ import math
 import unittest
 import doctest
 
-from koocook_core.support.fraction import Fraction
 from koocook_core.support import fraction
+
+Fraction = fraction.Fraction
 
 
 def load_tests(loader, tests, ignore):
     tests.addTests(doctest.DocTestSuite(fraction))
+    # add doctests in fraction.py
     return tests
 
 

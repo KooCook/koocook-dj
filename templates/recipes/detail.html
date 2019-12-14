@@ -2,11 +2,11 @@
 {% load static %}
 {% load recipe_extras %}
 {% block no_hero %}{% endblock %}
-{% block content_deps %}<script>
+{% block crud_deps %}<script>
     const COMMENTS_ENDPOINTS = {
-        GET: `{% url 'koocook_core:recipe-comments' object.id %}`,
-        POST: `{% url 'koocook_core:recipe-comments' object.id %}`,
-        PATCH: `{% url 'koocook_core:recipe-comments' object.id %}`,
+        GET: `{% url 'koocook_core:recipes:comments' object.id %}`,
+        POST: `{% url 'koocook_core:recipes:comments' object.id %}`,
+        PATCH: `{% url 'koocook_core:recipes:comments' object.id %}`,
     };
 </script>
     <script src="{% static 'js/bundle.js' %}"></script>{% endblock %}
@@ -43,9 +43,9 @@
         <figure class="image is-4928x3264" style="margin-bottom: 1.5rem">
           <img src="{{ object.image|first }}" alt="{{ object.name }}">
         </figure>
-        <p class="subtitle is-6">
-          <strong>Image Credit:</strong> <a href="">Skitterphoto</a>
-        </p>
+{#        <p class="subtitle is-6">#}
+{#          <strong>Image Credit:</strong> <a href="">Skitterphoto</a>#}
+{#        </p>#}
       </div>
     </section>
     <section class="section" style="padding-top: 0">
@@ -55,25 +55,25 @@
             <nav class="level is-mobile">
               <div class="level-item has-text-centered">
                 <div>
-                  <p class="heading">Time</p>
+                  <p class="heading">Ready in</p>
                   <p class="title">{{ object.total_time|timedel_to_words }}</p>
                 </div>
               </div>
               <div class="level-item has-text-centered">
                 <div>
-                  <p class="heading">Difficulty</p>
-                  <p class="title">Simple</p>
+                  <p class="heading">Serving size</p>
+                  <p class="title">{{ object.recipe_yield }}</p>
                 </div>
               </div>
             </nav>
             <nav class="level is-mobile">
               <div class="level-item">
-                <progress class="level-item progress is-success" value="1" max="4"
-                          style="border-radius: 0; height: 0.2rem"></progress>
+{#                <progress class="level-item progress is-success" value="1" max="4"#}
+{#                          style="border-radius: 0; height: 0.2rem"></progress>#}
               </div>
               <div class="level-item">
-                <progress class="level-item progress is-success" value="1" max="3"
-                          style="border-radius: 0; height: 0.2rem"></progress>
+{#                <progress class="level-item progress is-success" value="1" max="3"#}
+{#                          style="border-radius: 0; height: 0.2rem"></progress>#}
               </div>
             </nav>
           </div>
@@ -270,9 +270,9 @@
 {#                          <i class="fas fa-question fa-xs" aria-hidden="true"></i>#}
 {#                        </sup>#}
 {#                      </li>#}
-                        {% for ingredient in ingredients %}
-                      <li>{{ ingredient.quantity.number }} {{ ingredient.quantity.unit }} {{ ingredient.name }}</li>
-                {% endfor %}
+                        {% for ingredient in object.recipe_ingredients %}
+                            <li><a href="{% url 'koocook_core:ingredient' ingredient.meta.id %}">{{ ingredient.words_name }}</a> {{ ingredient.words_quantity }}</li>
+                        {% endfor %}
                     </ul>
                   </div>
                 </div>
@@ -283,13 +283,13 @@
                     Equipment
                   </h3>
                   <div class="content">
+
                     <ul style="list-style-type: none">
-                      <li>Whisk</li>
-                      <li>Large bowl</li>
-                      <li>Medium bowl</li>
-                      <li>Griddle or large skillet</li>
-                      <li>Spatula</li>
-                      <li>Measuring cup</li>
+                        {% for equipment in object.equipment_set.all %}
+                            <li><a href="{% url 'koocook_core:equipment' equipment.id %}">{{ equipment.name }}</a></li>
+                            {% empty %}
+                            No cookware information provided
+                        {% endfor %}
                     </ul>
                   </div>
                 </div>
@@ -331,6 +331,8 @@
           {% endif %}
       </div>
     </section>
+{% endblock %}
+{% block vue_init %}
 <script>
      new Vue({
         el: '#app',

@@ -14,19 +14,21 @@ def split_ingredient_str(s: str) -> ('fraction.Fraction', 'unit.Unit', str):
 
     Examples:
         >>> split_ingredient_str('1 1/2 large onions, finely sliced')
-        (3/2, <SpecialUnit.NONE: ''>, 'large onions, finely sliced')
-        >>> split_ingredient_str('One 10-inch-long beef tenderloin roast cut from the heart of the tenderloin (2\\u00bd to 3 pounds), butterflied (see Note)')
-        (1, <SpecialUnit.NONE: ''>, '10-inch-long beef tenderloin roast cut from the heart of the tenderloin (2½ to 3 pounds), butterflied (see Note)')
+        (3/2, <SpecialUnit.NONE: 'None'>, 'large onions, finely sliced')
+
+        # >>> split_ingredient_str('One 10-inch-long beef tenderloin roast cut from the heart of the tenderloin (2\\u00bd to 3 pounds), butterflied (see Note)')
+        # (1, <SpecialUnit.NONE: 'None'>, '10-inch-long beef tenderloin roast cut from the heart of the tenderloin (2½ to 3 pounds), butterflied (see Note)')
+
         >>> split_ingredient_str('4 ounces thinly sliced salami, cut into \\u00bc-inch-wide matchsticks')
         (4, <MassUnit.OUNCE: 'oz'>, 'thinly sliced salami, cut into ¼-inch-wide matchsticks')
         >>> split_ingredient_str('2 garlic cloves, finely minced')
-        (2, <SpecialUnit.NONE: ''>, 'garlic cloves, finely minced')
+        (2, <SpecialUnit.NONE: 'None'>, 'garlic cloves, finely minced')
         >>> split_ingredient_str('One plus 3 tablespoons extra virgin olive oil')
         (4, <VolumeUnit.TABLESPOON: 'tbsp'>, 'extra virgin olive oil')
         >>> split_ingredient_str('8-9 ounces fresh spinach')
         (17/2, <MassUnit.OUNCE: 'oz'>, 'fresh spinach')
         >>> split_ingredient_str('1 to 2 canned chipotle chiles en adobo, stemmed and seeded')
-        (3/2, <SpecialUnit.NONE: ''>, 'canned chipotle chiles en adobo, stemmed and seeded')
+        (3/2, <SpecialUnit.NONE: 'None'>, 'canned chipotle chiles en adobo, stemmed and seeded')
         >>> split_ingredient_str('1 to 2 tablespoons chipotle canning sauce')
         (3/2, <VolumeUnit.TABLESPOON: 'tbsp'>, 'chipotle canning sauce')
     """

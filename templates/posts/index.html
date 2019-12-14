@@ -186,6 +186,8 @@
     </article></b-tab-item>{% endif %}
 </b-tabs>
     <followee-list ref="followees"></followee-list>
+{% endblock %}
+{% block vue_init %}
 <script>
   Object.assign(GLOBAL_DATA, {
     activeTab: 0,
@@ -329,4 +331,4 @@
     }
       })
 </script>
-{% endblock %}
+        {% endblock %}

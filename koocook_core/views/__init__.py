@@ -6,6 +6,7 @@ from .comments import *
 from .posts import *
 from .recipes import *
 from .handlers import *
+from .ingredients import *
 from .forms import RecipeForm
 from .profile import UserProfileInfoView, UserSettingsInfoView
 from ..models import Author, Recipe

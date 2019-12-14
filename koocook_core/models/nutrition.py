@@ -23,6 +23,7 @@ class MetaIngredient(models.Model):
 
 
 class RecipeIngredient(models.Model):
+    exclude = ('recipe', )
     quantity = koocookfields.QuantityField()
     meta = models.ForeignKey(
         'koocook_core.MetaIngredient',
@@ -51,3 +52,11 @@ class RecipeIngredient(models.Model):
     @property
     def nutrition(self):
         return
+
+    @property
+    def words_quantity(self):
+        return str(self.quantity)
+
+    @property
+    def words_name(self):
+        return " " + self.meta.name

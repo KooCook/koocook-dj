@@ -31,6 +31,10 @@ class Author(SerialisableModel, models.Model):
     )
 
     @property
+    def is_koocook_user(self):
+        return self.user and isinstance(self.user, KoocookUser)
+
+    @property
     def dj_user(self):
         return self.user.user
 

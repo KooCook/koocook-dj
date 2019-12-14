@@ -52,19 +52,21 @@
                    <a class="navbar-item is-disabled" title="Look at what other people are making">
                      Popular recipes
                    </a>
-                   <a class="navbar-item" href="{% url 'koocook_core:recipe-all' %}" title="Get personalised recipe recommendations">
+                   <a class="navbar-item" href="{% url 'koocook_core:recipes:suggested' %}" title="Get personalised recipe recommendations">
                      Suggested recipes
                    </a>
                    <a class="navbar-item is-disabled" title="Get a random recipe">
                      I'm feeling hungry!
                    </a>
                    <hr class="navbar-divider">
-                   <a class="navbar-item" title="Can't find an ingredient? Look no further">
-                     Ingredients
-                   </a>
-                   <a class="navbar-item" title="Looking to get some new cookwares? We've got you covered">
-                     Cookware
-                   </a>
+                  <a href="{% url 'koocook_core:ingredients' %}" class="navbar-item"
+                title="Can't find an ingredient? Look no further">
+                Ingredients
+              </a>
+              <a href="{% url 'koocook_core:equipment-all' %}" class="navbar-item"
+                title="Looking to get some new cookwares? We've got you covered">
+                Cookware
+              </a>
                  </div>
                </div>
 
@@ -120,7 +122,7 @@
                    <a class="navbar-item is-disabled">
                      Your subscriptions
                    </a>
-                   <a class="navbar-item" href="{% url 'koocook_core:recipe-user' %}">
+                   <a class="navbar-item" href="{% url 'koocook_core:recipes:user' %}">
                      Your recipes
                    </a>
                    <hr class="navbar-divider">

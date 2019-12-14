@@ -1,5 +1,62 @@
 {% extends 'base/mixins/formatted-md.html' %}
-
-{% block content_category_url %}{% url 'koocook_core:recipe-all' %}{% endblock %}
+{% load static %}
+{% block content_category_url %}{% url 'koocook_core:recipes:suggested' %}{% endblock %}
 
 {% block content_category %}Recipes{% endblock %}
+
+{% block content_deps %}
+    <link rel="stylesheet" href="https://unpkg.com/mathlive/dist/mathlive.core.css">
+    <link rel="stylesheet" href="https://unpkg.com/mathlive/dist/mathlive.css">
+    <link rel="stylesheet" href="{% static 'css/recipe/crud.css'%} ">
+    {% block crud_deps %}{% endblock %}
+{% endblock %}
+
+{% block nav_pane %}
+            {% if section == 'search' %}
+    <b-collapse :open.sync="isFiltersOpen" position="is-bottom">
+    <a slot="trigger" slot-scope="props">
+    </a>
+    <div class="search-filters-bar">
+      <nav class="container">
+        <!-- Left side -->
+        <div class="columns">
+             <div class="column is-one-fifth"></div>
+            <div class="column">
+            <ingredient-input-searcher :ingredients="ingredients" :exclusions="exclusions"></ingredient-input-searcher>
+            <p><cookware-searcher :initial="cookware"></cookware-searcher></p>
+        </div>
+
+        </div>
+
+
+      </nav>
+    </div>
+  </b-collapse>
+    {% endif %}
+    <div class="recipe-portal">
+    <nav class="container level">
+  <!-- Left side -->
+  <div class="level-left">
+    <div class="level-item">
+      <p class="subtitle is-5">
+        Recipe portal
+      </p>
+    </div>
+  </div>
+
+    <p class="level-item">{% if section == 'featured' %}<strong>{% else %}<a href="{% url 'koocook_core:recipes:suggested' %}">{% endif %}Featured{% if not section == 'featured' %}</a>{% else %}</strong>{% endif %}</p>
+    <p class="level-item">{% if section == 'suggested' %}<strong>{% else %}<a href="{% url 'koocook_core:recipes:suggested' %}">{% endif %}Suggested{% if not section == 'suggested' %}</a>{% else %}</strong>{% endif %}</p>
+    <p class="level-item">{% if section == 'search' %}<strong>{% else %}<a href="{% url 'koocook_core:search' %}">{% endif %}Search{% if not section == 'search' %}</a>{% else %}</strong>{% endif %}</p>
+    <p class="level-item">{% if section == 'recipe-user' %}<strong>{% else %}<a href="{% url 'koocook_core:recipes:user' %}">{% endif %}Yours{% if not section == 'recipe-user' %}</a>{% else %}</strong>{% endif %}</p>
+</nav>
+    </div>
+{% endblock %}
+
+{% block vue_init %}
+    <script>
+    new Vue({
+    el: '#app',
+    data: GLOBAL_DATA,
+        })
+    </script>
+{% endblock %}

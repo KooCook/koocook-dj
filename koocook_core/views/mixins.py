@@ -5,7 +5,9 @@ from django.shortcuts import reverse
 from django.views.generic.edit import FormMixin, ProcessFormView
 
 from .forms import CommentForm
-from ..models import Author, RecipeIngredient, MetaIngredient
+from ..models import Author, RecipeIngredient, RecipeEquipment, MetaIngredient
+
+LOGGER = logging.getLogger(__name__)
 
 
 LOGGER = logging.getLogger(__name__)
@@ -71,10 +73,8 @@ class CommentWidgetMixin(AuthAuthorMixin, FormMixin):
 
 class RecipeViewMixin(SignInRequiredMixin, AuthAuthorMixin):
 
-    # Messy
-    def form_valid(self, form):
+    def process_tags(self, form):
         from ..models import Tag, TagLabel
-        response = super().form_valid(form)
         tags = json.loads(self.request.POST.get('tags'))
         if tags:
             for tag in tags:
@@ -87,20 +87,45 @@ class RecipeViewMixin(SignInRequiredMixin, AuthAuthorMixin):
                     if tag['label'] != '':
                         if 'id' in tag['label']:
                             tag['label'].pop('id')
-                        tag_body['label'] = TagLabel.objects.create(**tag['label'])
+                        tag_body['label'], created = TagLabel.objects.get_or_create(**tag['label'])
                     if 'id' not in tag_body:
                         form.instance.tag_set.add(Tag.objects.create(**tag_body))
-                    else:
-                        try:
-                            obj = form.instance.tag_set.get(id=tag_body['id'])
-                            obj.name = tag_body['name']
-                            obj.save()
-                        except Tag.DoesNotExist:
-                            form.instance.tag_set.add(Tag.objects.get(pk=tag_body['id']))
+                    # else:
+                    #     try:
+                    #         obj = form.instance.tag_set.get(id=tag_body['id'])
+                    #         obj.name = tag_body['name']
+                    #         obj.save()
+                    #     except Tag.DoesNotExist:
+                    #         form.instance.tag_set.add(Tag.objects.get(pk=tag_body['id']))
         else:
             form.instance.tag_set.clear()
-        form.instance.save()
 
+    def process_equipment(self, form):
+        equipment = self.request.POST.get('cookware_list')
+        if equipment:
+            equipment = json.loads(equipment)
+            created = False
+            for cookware in equipment:
+                form.instance.equipment_set.clear()
+                if 'id' in cookware:
+                    try:
+                        found = RecipeEquipment.objects.get(pk=cookware['id'])
+                        created = True
+                    except RecipeEquipment.DoesNotExist:
+                        pass
+                else:
+                    found, created = RecipeEquipment.objects.get_or_create(name=cookware['name'])
+                if created:
+                    found.name = cookware['name']
+                    found.save()
+                form.instance.equipment_set.add(found)
+
+    # Messy
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        self.process_equipment(form)
+        self.process_tags(form)
+        form.instance.save()
         ingredients = json.loads(self.request.POST.get('ingredients'))
         if ingredients:
             for ingredient in ingredients:
@@ -114,12 +139,16 @@ class RecipeViewMixin(SignInRequiredMixin, AuthAuthorMixin):
                                            'quantity': f"{ingredient['quantity']['number']} "
                                                        f"{ingredient['quantity']['unit']}"}
                 if 'id' not in ingredient:
-                    RecipeIngredient(**ingredient_field_values).save()
+                    ing = RecipeIngredient(**ingredient_field_values)
+                    ing.save()
+                    LOGGER.info(f"The ingredient {meta.name} [{ing.id}] in {form.instance.name} has been created")
                 else:
                     found_ingredient = RecipeIngredient.objects.filter(pk=ingredient['id'])
                     if not found_ingredient:
                         RecipeIngredient(**ingredient_field_values).save()
                     else:
+                        LOGGER.info(f"The ingredient {meta.name} [{found_ingredient[0].id}] in {form.instance.name} "
+                                    f"has been altered")
                         if 'removed' in ingredient and bool(ingredient['removed']):
                             found_ingredient.delete()
                         else:

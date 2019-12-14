@@ -31,7 +31,10 @@ class SerialisableModel:
 class ModelEncoder(JSONEncoder):
     def default(self, obj: models.Model):
         if hasattr(obj, 'as_dict'):
+            # try:
             return obj.as_dict()
+            # except TypeError:
+            #     return obj.as_dict()
         else:
             if isinstance(obj, models.Model):
                 if isinstance(obj, SerialisableModel):
