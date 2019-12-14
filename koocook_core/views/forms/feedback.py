@@ -14,7 +14,7 @@ class FeedbackForm(forms.ModelForm):
     class Meta:
         model = Feedback
         fields = '__all__'
-        exclude = ('author', 'date_published')
+        exclude = ('author', 'date_published', 'status')
         widgets = {'image': HiddenInput(), 'video': HiddenInput()}
 
     @property

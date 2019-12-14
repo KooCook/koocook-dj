@@ -14,4 +14,31 @@ admin.site.register(AggregateRating)
 admin.site.register(Tag)
 admin.site.register(TagLabel)
 admin.site.register(Comment)
-admin.site.register(Feedback)
+
+
+class FeedbackAdmin(admin.ModelAdmin):
+    fieldsets = (
+        (None, {
+            'fields': ('subject', 'body', 'image_tag', 'video_tag')
+        }),
+        ('Advanced options', {
+            'classes': ('collapse',),
+            'fields': ('author', 'status'),
+        }),
+    )
+    list_display = ('subject', 'date_published', 'was_solve')
+    list_filter = ['date_published']
+    actions = ['solved', 'unsolved']
+    readonly_fields = ('image_tag', 'video_tag', )
+
+    def solved(self, request, queryset):
+        queryset.update(status=True)
+
+    def unsolved(self, request, queryset):
+        queryset.update(status=False)
+
+    solved.short_description = "Mark selected stories as solved"
+    unsolved.short_description = "Mark selected stories as unsolved"
+
+
+admin.site.register(Feedback, FeedbackAdmin)
