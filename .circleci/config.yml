@@ -13,17 +13,18 @@ jobs:
       - checkout
 
       - restore_cache:
-          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
+          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}-{{ checksum "test-requirements.txt" }}
       - run:
           name: Ensuring installed dependencies
           command: |
             pip install -r requirements.txt
+            pip install -r test-requirements.txt
             python3 -m venv --system-site-packages venv/
             . venv/bin/activate
       - save_cache:
          paths:
            - ./venv
-         key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
+         key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}-{{ checksum "test-requirements.txt" }}
 #      - run:
 #          name: Create database
 #          command: |

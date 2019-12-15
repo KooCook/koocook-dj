@@ -20,6 +20,9 @@ class Tag(SerialisableModel, models.Model):
     name = models.CharField(max_length=50)
     label = models.ForeignKey('koocook_core.TagLabel', null=True, blank=True, on_delete=models.SET_NULL)
 
+    class Meta:
+        unique_together = ('name', 'label')
+
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         try:

@@ -1,10 +1,12 @@
-{% extends 'base/content.html' %}
+{% extends 'base/recipes.html' %}
 {% load static %}
 {% load recipe_extras %}
+{% block page_title %}Find a recipe{% endblock %}
+{% block content_page_name %}Find a recipe{% endblock %}
 {% block content_deps %}
 <script src="{% static 'js/bundle.js' %}"></script>
 {% endblock %}
-{% block section_after_nav %}
+{% block no_hero %}
 
 {% endblock %}
 
@@ -39,7 +41,7 @@
           <b-icon class="media-left" icon="book" size="is-small"></b-icon>
           <div class="media-content">
             <h3>Recipe name</h3>
-            <small>Only show recipes with a similar name to search query</small>
+            <small>Order the filtered recipes alphabetically</small>
           </div>
         </div>
       </b-dropdown-item>
@@ -68,11 +70,12 @@
           <star-rating :read-only="true" recipe-name="{{ recipe.name }}" :item-id="{{ recipe.id }}"
             :initial="{{ recipe.aggregate_rating.rating_value }}"></star-rating>
           {% if recipe.hot %}<p class="is-6 has-text-danger"><i class="fas fa-fire"></i> Trending</p>{% endif %}
-          <h4 class="title is-4"><a href="{% url 'koocook_core:recipe' recipe.id %}">
+          <h4 class="title is-4"><a href="{% url 'koocook_core:recipes:detail' recipe.id %}">
               {{ recipe.name }}
             </a></h4>
           <p class="subtitle">
-            by {{ recipe.author }}
+            by {{ recipe.author }} {% if request.user.is_authenticated %}<follow-widget
+              :followee-id="{{ recipe.author.id }}" :followees="$refs.followees"></follow-widget>{% endif %}
           </p>
           <p class="subtitle has-text-grey is-6"><span class="date-posted">
               <b-icon icon="calendar" size="is-small"></b-icon>
@@ -97,13 +100,13 @@
   {% if page_obj.has_other_pages %}
   <nav class="pagination is-centered" role="navigation" aria-label="pagination">
     {% if page_obj.has_previous %}
-    <a href="?page={{ page_obj.previous_page_number }}" class="pagination-previous">
+    <a href="?page={{ page_obj.previous_page_number }}{{ url_filters }}" class="pagination-previous">
       <b-icon icon="arrow-left-bold" size="is-small">
       </b-icon> Previous
     </a>
     {% endif %}
     {% if page_obj.has_next %}
-    <a href="?page={{ page_obj.next_page_number }}" class="pagination-next">
+    <a href="?page={{ page_obj.next_page_number }}{{ url_filters }}" class="pagination-next">
       <b-icon icon="arrow-right-bold" size="is-small">
       </b-icon> Next
     </a>
@@ -113,45 +116,109 @@
       {% if page_obj.number == number %}
       <li><a class="pagination-link is-current" aria-label="Page {{ number }}" aria-current="page">{{ number }}</a></li>
       {% else %}
-      <li><a href="?page={{ number }}" class="pagination-link" aria-label="Go to page {{ number }}">{{ number }}</a>
+      <li><a href="?page={{ number }}{{ url_filters }}" class="pagination-link"
+          aria-label="Go to page {{ number }}">{{ number }}</a>
       </li>
       {% endif %}
       {% endfor %}
     </ul>
   </nav>
   {% endif %}
+
 </div>
+<followee-list ref="flist"></followee-list>
+
+{% endblock %}
+ {% block vue_init %}
 <script>
-  new Vue({
-    el: '#app',
-    data: {
-      currentAuthorId: {{ current_author.id }},
+  Object.assign(GLOBAL_DATA, {
+    currentAuthorId: {{ current_author.id }},
     firstRun: true,
     searchFilter: '{{ search_filter }}',
-    searchName: '',
-    recipes: []
-        },
-    watch: {
-    searchFilter: function (val) {
+    searchTerm: '{{ request.GET.kw }}',
+      searchParams: '',
+    followees: [],
+    recipes: [],
+    ingredients: [],
+    cookware: [],
+      exclusions: []
+    });
+  new Vue({
+    el: '#app',
+    data: GLOBAL_DATA,
+    mounted() {
       const url = new URL(location.href);
-      if (url.searchParams.get('kw')) url.searchParams.set('kw', this.searchName);
-      else url.searchParams.delete('kw');
-      switch (val) {
-        case 'popular':
-          url.searchParams.set('popular', '1');
-          break;
-        case 'name':
-          url.searchParams.set('name_asc', '1');
-          url.searchParams.delete('popular');
-          break;
-        case 'date':
-          url.searchParams.delete('name_asc');
-          url.searchParams.delete('popular');
-          break;
+      this.exclusions = url.searchParams.get('exclude') ? url.searchParams.get('exclude').split(',') : [];
+      this.ingredients = url.searchParams.get('ingredients') ? url.searchParams.get('ingredients').split(',') : [];
+      this.cookware = url.searchParams.get('cookware') ? url.searchParams.get('cookware').split(',') : [];
+    },
+    methods: {
+      triggerFilters(val) {
+
+        const url = new URL(location.href);
+        this.ingredients = url.searchParams.get('ingredients') ? url.searchParams.get('ingredients').split(',') : [];
+        let order = url.searchParams.get('order') ? url.searchParams.get('order').split(',') : [];
+        url.searchParams.delete('ordering');
+        if (this.searchTerm) url.searchParams.set('kw', this.searchTerm);
+        else url.searchParams.delete('kw');
+        switch (val) {
+          case 'popular':
+            url.searchParams.set('popular', '1');
+            break;
+          case 'name':
+            order = [];
+            order.push('name');
+            url.searchParams.delete('popular');
+            break;
+          case 'date':
+            order = [];
+            order.push('date_published');
+            url.searchParams.set('ordering', 'desc');
+            url.searchParams.delete('name_asc');
+            url.searchParams.delete('popular');
+            break;
+        }
+        if (order.length > 0) {
+          url.searchParams.set('order', [...new Set(order)].join());
+        }
+        location.href = url.href;
+      },
+      insertFilter() {
+        let joined = this.ingredients.join(',');
+        const formBody = new FormData();
+        if (this.searchTerm) formBody.set("kw", this.searchTerm);
+        if (this.ingredients.length > 0) formBody.set("ingredients", joined);
+        else formBody.delete("ingredients");
+
+        joined = this.cookware.join(',');
+        if (this.cookware.length > 0) formBody.set("cookware", joined);
+        else formBody.delete("cookware");
+
+        joined = this.exclusions.join(',');
+        if (this.exclusions.length > 0) formBody.set("exclude", joined);
+        else formBody.delete("exclude");
+        const searchParams = (new URLSearchParams(formBody)).toString();
+        if (searchParams) this.searchParams = '?' + searchParams;
+        else this.searchParams = '';
       }
-      location.href = url.href;
+    },
+    watch: {
+      searchTerm: function (val) {
+        this.insertFilter();
+      },
+      searchFilter: function (val) {
+        this.triggerFilters(val);
+      },
+      ingredients: function (val) {
+        this.insertFilter();
+      },
+        exclusions: function (val) {
+        this.insertFilter();
+      },
+      cookware: function (val) {
+        this.insertFilter();
+      }
     }
-  }
-      })
+  })
 </script>
-{% endblock %}
+        {% endblock %}

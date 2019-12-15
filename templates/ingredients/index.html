@@ -1,0 +1,18 @@
+{% extends 'base/recipes.html' %}
+
+{% block page_title %}Ingredient | {{ object.name }}{% endblock %}
+{% block hero_title %}{{ object.name|title }}{% endblock %}
+{% block content_page_name %}Ingredient: {{ object.name|title }}{% endblock %}
+
+{% block page_content %}
+    <a href="{% url 'koocook_core:search' %}?ingredients={{ object.name }}"><b-icon icon="magnify"></b-icon>Search for recipes with this ingredient</a>
+    <script>
+     var app = new Vue({
+         el: '#app',
+         data: {
+             togglePopSearch: false,
+             searchTerm: ''
+         }
+     })
+    </script>
+{% endblock %}

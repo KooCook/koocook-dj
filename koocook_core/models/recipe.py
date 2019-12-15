@@ -1,3 +1,4 @@
+import logging
 from django.contrib.postgres import fields
 from django.db import models
 from django.http import HttpRequest
@@ -5,10 +6,13 @@ from django.http import HttpRequest
 from koocook_core import fields as koocookfields
 from koocook_core.support.quantity import parse_quantity
 
+from .base import SerialisableModel, get_client_ip
 from .review import ReviewableModel
 import operator
 
-__all__ = ['Recipe']
+__all__ = ('Recipe', 'RecipeEquipment', 'RecipeVisit')
+
+LOGGER = logging.getLogger(__name__)
 
 
 class Recipe(ReviewableModel, models.Model):
@@ -44,6 +48,7 @@ class Recipe(ReviewableModel, models.Model):
     cook_time = models.DurationField(null=True)
     recipe_instructions = fields.ArrayField(models.TextField(), default=list)
     recipe_yield = koocookfields.QuantityField(null=True)
+    equipment_set = models.ManyToManyField('koocook_core.RecipeEquipment', blank=True)
     tag_set = models.ManyToManyField('koocook_core.Tag', blank=True)
     aggregate_rating = models.OneToOneField(
         'koocook_core.AggregateRating',
@@ -126,11 +131,6 @@ class Recipe(ReviewableModel, models.Model):
         return self.recipeingredient_set.all()
 
 
-def get_client_ip(request: HttpRequest):
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    return x_forwarded_for.split(',')[0] if x_forwarded_for else request.META.get('REMOTE_ADDR')
-
-
 class RecipeVisit(models.Model):
     """Represents the visit count of a Recipe
 
@@ -144,13 +144,14 @@ class RecipeVisit(models.Model):
 
     ip_address = models.CharField(max_length=45)
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
-    user = models.ForeignKey('koocook_core.KoocookUser', on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey('koocook_auth.KoocookUser', on_delete=models.SET_NULL, null=True)
     date_first_visited = models.DateTimeField(auto_now_add=True)
     date_last_visited = models.DateTimeField(auto_now=True)
 
     @classmethod
-    def associate_recipe_with_user(cls, user: 'koocook_core.KoocookUser', recipe: Recipe):
+    def associate_recipe_with_user(cls, user: 'koocook_auth.KoocookUser', recipe: Recipe):
         visit, created = cls.objects.get_or_create(user=user, recipe=recipe)
+        LOGGER.info(f"Incoming visit to {recipe.name} [{recipe.id}] from {user.name}")
         return visit
 
     def add_ip_address(self, request: HttpRequest, recipe: Recipe) -> str:
@@ -161,8 +162,23 @@ class RecipeVisit(models.Model):
 
     @classmethod
     def associate_recipe_with_ip_address(cls, request: HttpRequest, recipe: Recipe):
+        address = get_client_ip(request)
+        LOGGER.info(f"Incoming visit to {recipe.name} [{recipe.id}] from {address}")
         visit, created = cls.objects.get_or_create(user=None,
-                                                   ip_address=get_client_ip(request),
+                                                   ip_address=address,
                                                    recipe=recipe)
         visit.save()
         return visit
+
+
+class RecipeEquipment(SerialisableModel, models.Model):
+    name = models.CharField(max_length=255, blank=False, unique=True)
+
+    def to_dict(self):
+        repr_dict = super().as_dict()
+        repr_dict.update({'editing': False})
+        return repr_dict
+
+    def clean(self):
+        super().clean()
+        self.name = self.name.capitalize()
