@@ -27,30 +27,31 @@
         </div>
       </div>
     </div>
-  </div>
-</form>
-<script>
-  console.log({{ preferences.preferred_tags | safe }});
-  new Vue({
-    el: '#app',
-    data: {
-      searchName: "",
-      preferences: {{ object.formal_preferences.json | safe }},
-    tags: []
+         </form>
+
+{% endblock %}
+{% block vue_init %}
+    <script>
+      new Vue({
+          el: '#app',
+          data: {
+              searchName: "",
+              preferences: {{ object.formal_preferences.json|safe }},
+              tags: []
           },
-    computed: {
-    submission() {
-      return JSON.stringify(this.preferences);
-    },
-  },
-  mounted() {
-    this.tags = JSON.parse(this.preferences.preferred_tags);
-  },
-  watch: {
-    tags: function (newTags) {
-      this.preferences.preferred_tags = JSON.stringify(newTags);
-    }
-  }
+          computed: {
+              submission() {
+                  return JSON.stringify(this.preferences);
+              },
+          },
+          mounted() {
+              this.tags = JSON.parse(this.preferences.preferred_tags);
+          },
+          watch: {
+            tags: function (newTags) {
+              this.preferences.preferred_tags = JSON.stringify(newTags);
+            }
+          }
       });
-</script>
+    </script>
 {% endblock %}

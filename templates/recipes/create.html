@@ -4,6 +4,7 @@
 {% block hero_title %}Create a recipe{% endblock %}
 {% block page_title %}Create a recipe{% endblock %}
 {% block content_page_name %}Create a recipe{% endblock %}
+{% block crud_deps %}<script src="{% static 'js/bundle.js' %}"></script>{% endblock %}
 {% block page_content %}
 {#    <p>$$\frac{5}{6}$$</p>#}
 <recipe-tag-input :attached="true" v-model="tags" ellipsis icon="tag" placeholder="Add a tag" :allow-new="true"
@@ -13,13 +14,13 @@
         There are no existing tags, but you can create a new one.
     </template>
 </recipe-tag-input>
-{% for field in form %}
+<!-- {% for field in form %}
 {% for error in field.errors %}
 <p class="help is-danger">
     {{ field.name }}{{ error }}
 </p>
 {% endfor %}
-{% endfor %}
+{% endfor %} -->
 <form method="post" novalidate action="{{ request.path }}">
     {% for hidden in form.hidden_fields %}
     {{ hidden }}
@@ -53,6 +54,13 @@
     <div class="columns">
         <div class="column">
             <image-holder></image-holder>
+            {% if form.image.errors %}
+                        {% for error in form.image.errors %}
+                        <p class="help is-danger">
+                            {{ error }}
+                        </p>
+                        {% endfor %}
+                        {% endif %}
         </div>
         <div class="column">
             <b-tabs position="is-centered">
@@ -60,6 +68,9 @@
                     <ingredient-chooser :selectable-units="selectableUnits"></ingredient-chooser>
                 </b-tab-item>
                 <b-tab-item label="Instructions" icon="view-headline"></b-tab-item>
+                <b-tab-item label="Cookware" icon="view-headline">
+                    <cookware-list></cookware-list>
+                </b-tab-item>
             </b-tabs>
         </div>
     </div>
@@ -84,15 +95,9 @@
         </div>
     </div>
     {% csrf_token %}
-    {% for error in form.image.errors %}
-    <div class="invalid-feedback">
-        {{ error }}
-    </div>
-    {% endfor %}
     {% for field in form.vanilla_fields %}
     {% if field.is_hidden %}
     {{ field }}
-
     {% else %}
     <div class="form-group field is-horizontal">
         <div class="field-label is-normal">
@@ -126,11 +131,13 @@
             </div>
         </div>
     </div>
-</form>
-<script src="{% static 'js/bundle.js' %}"></script>
-<script>
+    </form>
 
-    const app = new Vue({
+{% endblock %}
+{% block vue_init %}
+    <script src="{% static 'js/bundle.js' %}"></script>
+     <script>
+      new Vue({
         el: '#app',
         data: {
             searchName: '',

@@ -18,6 +18,10 @@ class PostController(RatableController, CommentControllerMixin):
     @classmethod
     def default(cls):
         return cls()
+
+    @property
+    def visitor_name(self) -> str:
+        return self.author.name
     #
     # def get_model_request_fields(self, request: HttpRequest) -> dict:
     #     return {field_name: request.POST.get(field_name) for field_name in self.model_field_names}
@@ -72,17 +76,17 @@ class PostController(RatableController, CommentControllerMixin):
             return ControllerResponseForbidden()
 
     # TODO: Needs more implementation on this
-    def upsert_post(self, request: HttpRequest, post_id: int) -> JsonResponse:
-        found, created = self.model.objects.get_or_create(pk=post_id)
-        if not created:
-            if found.author != request.author:
-                return JsonResponse({'status': 'Forbidden'}, status=403)
-            for field in self.model_field_names:
-                setattr(found, field, request.POST.get(field))
-            found.save()
-            return JsonResponse({'status': 'Post updated'})
-        else:
-            return JsonResponse({'status': 'Post created'})
+    # def upsert_post(self, request: HttpRequest, post_id: int) -> JsonResponse:
+    #     found, created = self.model.objects.get_or_create(pk=post_id)
+    #     if not created:
+    #         if found.author != request.author:
+    #             return JsonResponse({'status': 'Forbidden'}, status=403)
+    #         for field in self.model_field_names:
+    #             setattr(found, field, request.POST.get(field))
+    #         found.save()
+    #         return JsonResponse({'status': 'Post updated'})
+    #     else:
+    #         return JsonResponse({'status': 'Post created'})
 
 
 class PostHandler(BaseHandler):

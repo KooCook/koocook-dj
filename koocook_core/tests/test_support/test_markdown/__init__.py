@@ -17,6 +17,10 @@ class TestMarkdownSource(unittest.TestCase):
     def setUp(self) -> None:
         self.text = "This is a no markdown text"
 
+    def test_markdown_text_length(self):
+        source = MarkdownSource(self.text)
+        self.assertEqual(len(self.text), len(source))
+
     def test_no_markdown_characters(self):
         char = "*"
         with self.subTest("Asterisk"):

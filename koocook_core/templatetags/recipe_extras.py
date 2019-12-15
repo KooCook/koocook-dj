@@ -23,15 +23,18 @@ def duration_in_words(duration: datetime.timedelta) -> str:
     """
     def plural(n):
         return n, '' if abs(n) == 1 else 's'
-    mm, ss = divmod(duration.seconds, 60)
-    hh, mm = divmod(mm, 60)
-    s = ''
-    if ss:
-        s = ("%d second%s " % plural(ss)) + s
-    if mm:
-        s = ("%d minute%s " % plural(mm)) + s
-    if hh:
-        s = ("%d hour%s " % plural(hh)) + s
-    if duration.days:
-        s = ("%d day%s " % plural(duration.days)) + s
-    return s.rstrip()
+    if not duration:
+        return "N/A"
+    else:
+        mm, ss = divmod(duration.seconds, 60)
+        hh, mm = divmod(mm, 60)
+        s = ''
+        if ss:
+            s = ("%d second%s " % plural(ss)) + s
+        if mm:
+            s = ("%d minute%s " % plural(mm)) + s
+        if hh:
+            s = ("%d hour%s " % plural(hh)) + s
+        if duration.days:
+            s = ("%d day%s " % plural(duration.days)) + s
+        return s.rstrip()

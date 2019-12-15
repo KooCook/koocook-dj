@@ -25,6 +25,7 @@ class MetaIngredient(models.Model):
 
 
 class RecipeIngredient(models.Model):
+    exclude = ('recipe', )
     quantity = koocookfields.QuantityField()
     meta = models.ForeignKey(
         'koocook_core.MetaIngredient',
@@ -59,17 +60,24 @@ class RecipeIngredient(models.Model):
             nutrients = self.meta.nutrient[0]
         except KeyError:
             nutrients = self.meta.nutrient
-            nutrients['quantity'] = parse_quantity(nutrients['quantity']).decimal
+            if 'quantity' in nutrients:
+                nutrients['quantity'] = parse_quantity(
+                    nutrients['quantity']).decimal
+            else:
+                return nutrition_list
             nutrition_list.append(nutrients)
             return nutrition_list
         for nutrient in nutrients:
             if nutrient['nutrient'] not in map(operator.itemgetter('nutrient'), nutrition_list):
-                nutrient['quantity'] = parse_quantity(nutrient['quantity']).mul_quantity(self.quantity).decimal
+                nutrient['quantity'] = parse_quantity(
+                    nutrient['quantity']).mul_quantity(self.quantity).decimal
                 nutrition_list.append(nutrient)
             else:
-                nutrient['quantity'] = parse_quantity(nutrient['quantity']).mul_quantity(self.quantity).decimal
+                nutrient['quantity'] = parse_quantity(
+                    nutrient['quantity']).mul_quantity(self.quantity).decimal
                 i = nutrition_list.index(next(filter(
-                    lambda index: index.get('nutrient') == nutrient['nutrient'],
+                    lambda index: index.get(
+                        'nutrient') == nutrient['nutrient'],
                     nutrition_list
                 )))
                 nutrition_list[i]['quantity'] = str(self.sum_nutrient(
@@ -79,5 +87,14 @@ class RecipeIngredient(models.Model):
 
     @staticmethod
     def sum_nutrient(first_nutrient: str, second_nutrient: str) -> Quantity:
-        result = parse_quantity(first_nutrient) + parse_quantity(second_nutrient)
+        result = parse_quantity(first_nutrient) + \
+            parse_quantity(second_nutrient)
         return result.decimal
+
+    @property
+    def words_quantity(self):
+        return str(self.quantity)
+
+    @property
+    def words_name(self):
+        return " " + self.meta.name

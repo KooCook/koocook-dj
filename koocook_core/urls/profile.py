@@ -1,7 +1,6 @@
 from django.urls import path
 
 from ..controllers import UserHandler
-from ..views import UserSettingsInfoView
 
 app_name = 'profile'
 handler = UserHandler.instance()

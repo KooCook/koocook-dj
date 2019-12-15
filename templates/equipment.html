@@ -1,0 +1,11 @@
+{% extends 'base/recipes.html' %}
+
+{% block page_title %}Equipment{% endblock %}
+{% block content_page_name %}Equipment{% endblock %}
+{% block hero_title %}Equipment{% endblock %}
+
+{% block page_content %}
+    {% for equipment_item in object_list %}
+        <p><a href="{% url 'koocook_core:equipment' equipment_item.id %}">{{ equipment_item.name }}</a></p>
+    {% endfor %}
+{% endblock %}
