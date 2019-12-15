@@ -56,8 +56,16 @@
             <nav class="level is-mobile">
               <div class="level-item has-text-centered">
                 <div>
-                  <p class="heading">Ready in</p>
+                    <p class="heading"><b-icon icon="clock" size="is-small"></b-icon> Ready in</p>
                   <p class="title">{{ object.total_time|timedel_to_words }}</p>
+<nav class="level">
+    <div class="level-item has-text-centered">
+        <div>
+                    <p class="is-size-7">Prep: {{ object.prep_time|timedel_to_words }}</p>
+                    <p class="is-size-7">Cook: {{ object.cook_time|timedel_to_words }}</p>
+        </div>
+        </div>
+    </nav>
                 </div>
               </div>
               <div class="level-item has-text-centered">
@@ -82,13 +90,13 @@
             <nav class="level is-mobile">
               <div class="level-item has-text-centered">
                 <div>
-                  <p class="heading">Views</p>
+                  <p class="heading"><b-icon icon="eye" size="is-small"></b-icon>  Views</p>
                   <p class="title">{{ object.view_count }}</p>
                 </div>
               </div>
               <div class="level-item has-text-centered">
                 <div>
-                  <p class="heading">Ratings</p>
+                  <p class="heading"><b-icon icon="star" size="is-small"></b-icon> Ratings</p>
                   {% if object.aggregate_rating.rating_count > 0%}
                   <p class="title">{% templatetag openvariable %} rating {% templatetag closevariable %}/5.0</p>
                   <small>from {{ object.aggregate_rating.rating_count }} rating{{ object.aggregate_rating.rating_count|pluralize }}</small>
@@ -117,7 +125,7 @@
             <div class="tile is-vertical">
               <div class="tile is-parent">
                 <div class="tile is-child">
-                  <h3 class="title is-4">
+                  <h3 class="title is-4"><b-icon icon="food-croissant"></b-icon>
                     Ingredients
                   </h3>
                   <div class="content">
@@ -317,7 +325,7 @@
             </div>
             <div class="tile is-parent">
               <div class="tile is-child">
-                <h3 class="title is-4">
+                <h3 class="title is-4"><b-icon icon="view-headline"></b-icon>
                   Instructions
                 </h3>
                 <div class="content" style="">
