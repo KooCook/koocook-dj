@@ -64,12 +64,6 @@ class OrderingRule(Rule):
 class NameRule(Rule):
     key = "name"
 
-
-class ListContainsRule(Rule):
-    key = "contains"
-    pass
-
-
 class TagNameContainsRule(Rule):
     key = "tags"
     pass
@@ -110,14 +104,31 @@ class CookwareRule(Rule):
         else:
             terms = self.rule_body.split(",")
             ingredient_terms = [Q(equipment_set__name__icontains=term) for term in terms]
-            query = reduce(operator.or_, ingredient_terms)
+            query = reduce(operator.and_, ingredient_terms)
             return queryset.filter(query)
 
 
-class TagJSONRulesetParser:
-    json_str = ""
-    registered_rules = (OrderingRule, ListContainsRule)
-    pass
+class AuthorNameRule(Rule):
+    key = "author"
+
+    def process(self, request_fields: QueryDict, queryset: QuerySet) -> QuerySet:
+        if not isinstance(self.rule_body, str):
+            return queryset
+        else:
+            terms = self.rule_body.split(",")
+            ingredient_terms = [Q(author__name__icontains=term) for term in terms]
+            query = reduce(operator.or_, ingredient_terms)
+            return queryset.filter(query)
+
+# class ListContainsRule(Rule):
+#     key = "contains"
+#     pass
+
+
+# class TagJSONRulesetParser:
+#     json_str = ""
+#     registered_rules = (OrderingRule, ListContainsRule)
+#     pass
 
 
 # class TagFilters:

@@ -17,8 +17,31 @@ class RecipeTests(AuthTestCase):
         recipe = Recipe(prep_time=time, cook_time=time)
         self.assertEqual(recipe.total_time, timedelta(minutes=1))
 
+    def test_total_time_with_prep_time_cook_time(self):
+        time = timedelta(seconds=30)
+        recipe = Recipe(prep_time=time, cook_time=time)
+        self.assertEqual(recipe.total_time, timedelta(minutes=1))
+
+    def test_total_time_without_prep_time(self):
+        recipe = Recipe(cook_time=timedelta(seconds=90))
+        self.assertEqual(recipe.total_time, timedelta(seconds=90))
+
+    def test_total_time_without_cook_time(self):
+        recipe = Recipe(prep_time=timedelta(seconds=90))
+        self.assertEqual(recipe.total_time, timedelta(seconds=90))
+
+    def test_total_time_without_prep_time_and_cook_time(self):
+        recipe = Recipe()
+        self.assertIsNone(recipe.total_time)
+
+    def test_recipe_ingredient(self):
+        recipe = Recipe()
+        self.assertEqual(list(recipe.recipe_ingredients),
+                         list(recipe.recipeingredient_set.all()))
+
     def test_recipe_method_not_allowed(self):
-        response = self.client.patch(reverse("koocook_core:recipes:detail", kwargs={'recipe_id': 1}))
+        response = self.client.patch(
+            reverse("koocook_core:recipes:detail", kwargs={'recipe_id': 1}))
         self.assertEqual(response.status_code, 405)
 
     def test_unit_conversion(self):
@@ -44,12 +67,14 @@ class RecipeTests(AuthTestCase):
 
     def test_recipe_detail_view_context(self):
         recipe = create_dummy_recipe(self.author)
-        response = self.client.get(reverse("koocook_core:recipes:detail", kwargs={'recipe_id': recipe.id}))
+        response = self.client.get(
+            reverse("koocook_core:recipes:detail", kwargs={'recipe_id': recipe.id}))
         self.assertEqual(response.context["ingredients"], [])
 
     def test_recipe_update_view(self):
         recipe = create_dummy_recipe(self.author)
-        response = self.client.get(reverse("koocook_core:recipes:edit", kwargs={'pk': recipe.id}))
+        response = self.client.get(
+            reverse("koocook_core:recipes:edit", kwargs={'pk': recipe.id}))
 
         with self.subTest("Empty ingredients"):
             self.assertEqual(response.context["ingredients"], '[]')
@@ -58,18 +83,23 @@ class RecipeTests(AuthTestCase):
             self.assertEqual(response.context["tags"], '[]')
 
         recipe_body = create_dummy_recipe_body(self.author)
-        recipe_body.update({'cookware_list': '[{"name": "Whisk"}, {"name": "Spatula"}]'})
-        recipe_body.update({'tags': '[{"name": "dummyTag", "label": {"name": "dummyLabel"}}]'})
-        recipe_body.update({'ingredients': '[{"quantity": {"number": "5", "unit": "tbsp"}, "name": "Pepper"}]'})
+        recipe_body.update(
+            {'cookware_list': '[{"name": "Whisk"}, {"name": "Spatula"}]'})
+        recipe_body.update(
+            {'tags': '[{"name": "dummyTag", "label": {"name": "dummyLabel"}}]'})
+        recipe_body.update(
+            {'ingredients': '[{"quantity": {"number": "5", "unit": "tbsp"}, "name": "Pepper"}]'})
         self.client.post(reverse("koocook_core:recipes:edit", kwargs={'pk': recipe.id}),
                          recipe_body)
-        response = self.client.get(reverse("koocook_core:recipes:edit", kwargs={'pk': recipe.id}))
+        response = self.client.get(
+            reverse("koocook_core:recipes:edit", kwargs={'pk': recipe.id}))
 
         with self.subTest("Posting a normal recipe with tags, cookware, and ingredients"):
             self.assertEqual(response.context["object"].name, 'dummy')
             self.assertListEqual(list(recipe.tag_set.all()),
                                  list(response.context["object"].tag_set.all()))
-            self.assertEqual("Spatula", list(response.context["object"].equipment_set.all())[0].name)
+            self.assertEqual("Spatula", list(
+                response.context["object"].equipment_set.all())[0].name)
             self.assertListEqual(list(recipe.recipe_ingredients),
                                  list(response.context["object"].recipe_ingredients))
 
@@ -89,18 +119,21 @@ class RecipeTests(AuthTestCase):
             }])
             self.client.post(reverse("koocook_core:recipes:edit", kwargs={'pk': recipe.id}),
                              recipe_body)
-            response = self.client.get(reverse("koocook_core:recipes:edit", kwargs={'pk': recipe.id}))
-            self.assertEqual('Salt', response.context["object"].recipe_ingredients[0].meta.name)
+            response = self.client.get(
+                reverse("koocook_core:recipes:edit", kwargs={'pk': recipe.id}))
+            self.assertEqual(
+                'Salt', response.context["object"].recipe_ingredients[0].meta.name)
 
         self.client.login(username=self.user2.username, password=self.password)
         with self.subTest("Posting with a different user"):
             response = self.client.post(reverse("koocook_core:recipes:edit", kwargs={'pk': recipe.id}),
-                             recipe_body)
+                                        recipe_body)
             self.assertEqual(response.status_code, 403)
 
     def test_delete_recipe(self):
         recipe = create_dummy_recipe(self.author)
-        response = self.client.delete(reverse("koocook_core:recipes:detail", kwargs={'recipe_id': recipe.id}), recipe)
+        response = self.client.delete(reverse("koocook_core:recipes:detail", kwargs={
+                                      'recipe_id': recipe.id}), recipe)
         with self.subTest():
             self.assertEqual(response.status_code, 200)
             with self.assertRaises(Recipe.DoesNotExist):
@@ -108,7 +141,8 @@ class RecipeTests(AuthTestCase):
 
         recipe = create_dummy_recipe(self.author)
         self.client.login(username=self.user2.username, password=self.password)
-        response = self.client.delete(reverse("koocook_core:recipes:detail", kwargs={'recipe_id': recipe.id}), recipe)
+        response = self.client.delete(reverse("koocook_core:recipes:detail", kwargs={
+                                      'recipe_id': recipe.id}), recipe)
         with self.subTest("That a non-author deletes the recipe should return a forbidden code"):
             self.assertEqual(response.status_code, 403)
 
@@ -127,25 +161,32 @@ class RecipeTests(AuthTestCase):
     def test_recipe_preferred(self):
         response = self.client.get(reverse("koocook_core:recipes:suggested"))
         with self.subTest("Empty tag_set"):
-            self.assertQuerysetEqual(self.BLANK_QS, response.context["tag_set"])
+            self.assertQuerysetEqual(
+                self.BLANK_QS, response.context["tag_set"])
 
     def test_recipe_tags(self):
-        response = self.client.get(reverse("koocook_core:recipes:tags"), {'name': ''})
+        response = self.client.get(
+            reverse("koocook_core:recipes:tags"), {'name': ''})
         self.assertEqual(response.json()["current"], [])
 
     def test_recipe_search_listview(self):
         response = self.client.get(reverse("koocook_core:search"))
 
         with self.subTest("Search view must display all recipes with no filters"):
-            self.assertQuerysetEqual(self.BLANK_QS, response.context["object_list"].all())
+            self.assertQuerysetEqual(
+                self.BLANK_QS, response.context["object_list"].all())
 
         recipe = create_dummy_recipe(self.author)
-        response = self.client.get(reverse("koocook_core:search"), {'kw': recipe.name})
+        response = self.client.get(
+            reverse("koocook_core:search"), {'kw': recipe.name})
         with self.subTest("Search view must display recipes containing search keywords"):
-            self.assertEqual(response.context["object_list"].all()[0].name, recipe.name)
+            self.assertEqual(response.context["object_list"].all()[
+                             0].name, recipe.name)
 
-        response = self.client.get(reverse("koocook_core:search"), {'popular': 'true'})
-        self.client.get(reverse("koocook_core:recipes:detail", kwargs={'recipe_id': recipe.id}))
+        response = self.client.get(
+            reverse("koocook_core:search"), {'popular': 'true'})
+        self.client.get(reverse("koocook_core:recipes:detail",
+                                kwargs={'recipe_id': recipe.id}))
         with self.subTest("Search by popularity alone"):
             self.assertEqual(response.context["object_list"][0].view_count, 1)
 
@@ -154,39 +195,49 @@ class RecipeTests(AuthTestCase):
         # with self.subTest("Sort by name"):
         #     self.assertEqual(response.context["object_list"][0].id, recipe.id)
 
-        response = self.client.get(reverse("koocook_core:search") + '?order=athinmajig')
+        response = self.client.get(
+            reverse("koocook_core:search") + '?order=athinmajig')
         with self.subTest("Sort by non-existent field"):
             self.assertEqual(response.context["object_list"][0].id, recipe.id)
 
-        response = self.client.get(reverse("koocook_core:search") + '?order=name')
+        response = self.client.get(
+            reverse("koocook_core:search") + '?order=name')
         with self.subTest("Sort by name"):
             self.assertEqual(response.context["object_list"][0].id, recipe.id)
 
-        response = self.client.get(reverse("koocook_core:search") + '?order=name&ordering=desc')
+        response = self.client.get(
+            reverse("koocook_core:search") + '?order=name&ordering=desc')
         with self.subTest("Sort by name in descending order"):
             self.assertEqual(response.context["object_list"][0].id, recipe.id)
 
-        response = self.client.get(reverse("koocook_core:search") + '?ingredients=Pepper')
+        response = self.client.get(
+            reverse("koocook_core:search") + '?ingredients=Pepper')
         with self.subTest("Search by ingredient"):
-            self.assertQuerysetEqual(self.BLANK_QS, response.context["object_list"].all())
+            self.assertQuerysetEqual(
+                self.BLANK_QS, response.context["object_list"].all())
 
-        response = self.client.get(reverse("koocook_core:search") + '?cookware=Athinmajig')
+        response = self.client.get(
+            reverse("koocook_core:search") + '?cookware=Athinmajig')
         with self.subTest("Search by cookware"):
-            self.assertQuerysetEqual(self.BLANK_QS, response.context["object_list"].all())
+            self.assertQuerysetEqual(
+                self.BLANK_QS, response.context["object_list"].all())
 
 
 class RecipeVisitTest(AuthTestCase):
     def setUp(self) -> None:
         super().setUp()
         self.recipe = create_dummy_recipe(self.author)
-        self.visit = RecipeVisit.associate_recipe_with_user(self.kc_user, self.recipe)
+        self.visit = RecipeVisit.associate_recipe_with_user(
+            self.kc_user, self.recipe)
 
     def test_unauthenticated_view(self):
         self.client.logout()
-        response = self.client.get(reverse("koocook_core:recipes:detail", kwargs={'recipe_id': self.recipe.id}))
+        response = self.client.get(
+            reverse("koocook_core:recipes:detail", kwargs={'recipe_id': self.recipe.id}))
         with self.subTest():
             self.assertEqual(response.context["object"].view_count, 2)
-        response = self.client.get(reverse("koocook_core:recipes:detail", kwargs={'recipe_id': self.recipe.id}))
+        response = self.client.get(
+            reverse("koocook_core:recipes:detail", kwargs={'recipe_id': self.recipe.id}))
         with self.subTest():
             self.assertEqual(response.context["object"].view_count, 2)
 
@@ -202,7 +253,8 @@ class RecipeVisitTest(AuthTestCase):
             self.assertEqual(1, RecipeVisit.objects.all().count())
 
     def test_associate_recipe_visit_with_user(self):
-        visit = RecipeVisit.associate_recipe_with_user(self.kc_user, self.recipe)
+        visit = RecipeVisit.associate_recipe_with_user(
+            self.kc_user, self.recipe)
         with self.subTest():
             self.assertEqual(1, RecipeVisit.objects.all().count())
 
@@ -214,9 +266,12 @@ class RecipeVisitTest(AuthTestCase):
         self.request = RequestFactory()
         self.request = self.request.get('/')
         with self.subTest():
-            self.assertEqual(get_client_ip(self.request), self.request.META.get('REMOTE_ADDR'))
+            self.assertEqual(get_client_ip(self.request),
+                             self.request.META.get('REMOTE_ADDR'))
 
-        visit = RecipeVisit.associate_recipe_with_ip_address(self.request, self.recipe)
+        visit = RecipeVisit.associate_recipe_with_ip_address(
+            self.request, self.recipe)
         with self.subTest():
-            self.assertEqual(visit.ip_address, self.request.META.get('REMOTE_ADDR'))
+            self.assertEqual(visit.ip_address,
+                             self.request.META.get('REMOTE_ADDR'))
             self.assertEqual(2, RecipeVisit.objects.all().count())

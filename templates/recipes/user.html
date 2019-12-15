@@ -50,21 +50,28 @@
      <button class="button is-danger is-outlined is-small is-light" @click="showConfirmDeletion({{ recipe.id }})"><b-icon icon="close"></b-icon> </button>
         </span></p>
 
-      </div>
-            <div class="media-bottom">
-                 <p class="subtitle has-text-grey is-6"><span class="date-posted"><b-icon icon="calendar" size="is-small"></b-icon>
-              {{ recipe.date_published }}</span> <span class="date-posted"><b-icon icon="clock" size="is-small"></b-icon> Ready in:
-              {{ recipe.total_time|timedel_to_words }}</span>
-            <span class="date-posted"><b-icon icon="eye" size="is-small"></b-icon> {{ recipe.view_count }}
-              view{{ recipe.view_count|pluralize }}</span></p>
+                        </div>
+                        <div class="media-bottom">
+                            <p class="subtitle has-text-grey is-6"><span class="date-posted">
+                                    <b-icon icon="calendar" size="is-small"></b-icon>
+                                    {{ recipe.date_published }}
+                                </span> <span class="date-posted">
+                                    <b-icon icon="clock" size="is-small"></b-icon> Ready in:
+                                    {{ recipe.total_time|timedel_to_words }}
+                                </span>
+                                <span class="date-posted">
+                                    <b-icon icon="eye" size="is-small"></b-icon> {{ recipe.view_count }}
+                                    view{{ recipe.view_count|pluralize }}
+                                </span></p>
+                        </div>
+                    </div>
+                </div>
             </div>
+        </div>
     </div>
-    </div>
-    </div>
-    </div>
-{% empty %}
+    {% empty %}
     <li>You have not contributed any recipe with KooCook</li>
-{% endfor %}
+    {% endfor %}
 </div>
 {% if page_obj.has_other_pages %}
   <nav class="pagination is-centered" role="navigation" aria-label="pagination">
@@ -112,26 +119,33 @@
               {% endfor %}
           ]
         },
-          methods: {
-            showConfirmDeletion(id) {
-                const obj = this.recipes.find(x => x.id === id);
-                this.currentRecipe.name = obj.name;
-                this.currentRecipe.id = obj.id;
-                this.showModal = true;
-            },
-          async confirmAction() {
-            const resp = await fetch(`/recipes/${this.currentRecipe.id}`, {method:"DELETE", credentials: 'include', headers: {'X-CSRFToken': getCookie('csrftoken')}});
-            if (resp.ok) { this.showModal = false; location.reload(); }
-          }
-          },
-        computed: {
-          getRecipesByName() {
-            return this.recipes.filter((item)=>{
-              if (this.togglePopSearch) return item.hot;
-              else return item.title.toLowerCase().includes(this.searchName.toLowerCase());
-            })
-          }
+        methods: {
+        showConfirmDeletion(id) {
+            const obj = this.recipes.find(x => x.id === id);
+            this.currentRecipe.name = obj.name;
+            this.currentRecipe.id = obj.id;
+            this.showModal = true;
+        },
+        async confirmAction() {
+            const resp = await fetch(`/recipes/${this.currentRecipe.id}`, {
+                method: "DELETE",
+                credentials: 'include',
+                headers: { 'X-CSRFToken': getCookie('csrftoken') }
+            });
+            if (resp.ok) {
+                this.showModal = false;
+                location.reload();
+            }
         }
-      })
-  </script>
+    },
+        computed: {
+        getRecipesByName() {
+            return this.recipes.filter((item) => {
+                if (this.togglePopSearch) return item.hot;
+                else return item.title.toLowerCase().includes(this.searchName.toLowerCase());
+            })
+        }
+    }
+    })
+</script>
 {% endblock %}

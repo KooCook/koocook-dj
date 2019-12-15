@@ -1,178 +1,181 @@
 {% extends 'base/index.html' %}
 {% load static %}
 {% block page_deps %}
-    {{ block.super }}
-    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+{{ block.super }}
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 {% endblock %}
 {% block page_title %}Home{% endblock %}
 {% block page_body %}
-      <section class="section" id="app">
-          <nav class="level">
+<section class="section" id="app">
+  <nav class="level">
 
-              <p class="level-item has-text-centered">
-                  <figure class="image is-48x48">
-{#                      <img alt="KooCook!" src="{% static "img/chicken_logo.svg" %}" style="max-height: unset">#}
-                    </figure>
-                    <span class="is-size-1 has-text-weight-bold">KooCook!</span>
-              </p>
-             <p class="level-item"></p>
-            </nav>
-            <nav class="navbar navbar-themed" role="navigation" aria-label="main navigation">
-         <div class="container">
-           <div class="navbar-brand">
+    <p class="level-item has-text-centered">
+      <figure class="image is-48x48">
+        {#                      <img alt="KooCook!" src="{% static "img/chicken_logo.svg" %}" style="max-height: unset">#}
+      </figure>
+      <span class="is-size-1 has-text-weight-bold">KooCook!</span>
+    </p>
+    <p class="level-item"></p>
+  </nav>
+  <nav class="navbar navbar-themed" role="navigation" aria-label="main navigation">
+    <div class="container">
+      <div class="navbar-brand">
 
-             <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
-                data-target="navbarMain">
-               <span aria-hidden="true"></span>
-               <span aria-hidden="true"></span>
-               <span aria-hidden="true"></span>
-             </a>
-           </div>
+        <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarMain">
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </a>
+      </div>
 
-           <div id="navbarMain" class="navbar-menu">
-              <div class="level navbar-center">
-              <div class="level-left">
-                <a class="level-item navbar-item is-active">
-                  Home
+      <div id="navbarMain" class="navbar-menu">
+        <div class="level navbar-center">
+          <div class="level-left">
+
+            <a class="level-item navbar-item is-active">
+              Home
+            </a>
+
+            <a class="level-item navbar-item" href="{% url 'koocook_core:posts:view' %}">
+              Stream
+            </a>
+
+            <div class="level-item navbar-item has-dropdown is-hoverable">
+              <a class="navbar-link">
+                Browse
+              </a>
+
+              <div class="navbar-dropdown is-boxed">
+                <a class="navbar-item is-disabled" title="Look at our suggested recipe">
+                  Featured recipes
+                </a>
+                <a class="navbar-item is-disabled" title="Look at what other people are making">
+                  Popular recipes
+                </a>
+                <a class="navbar-item" href="{% url 'koocook_core:recipes:suggested' %}" title="Get personalised recipe recommendations">
+                  Suggested recipes
+                </a>
+                <a class="navbar-item is-disabled" title="Get a random recipe">
+                  I'm feeling hungry!
+                </a>
+                <hr class="navbar-divider">
+               <a href="{% url 'koocook_core:ingredients' %}" class="navbar-item"
+             title="Can't find an ingredient? Look no further">
+             Ingredients
+           </a>
+           <a href="{% url 'koocook_core:equipment-all' %}" class="navbar-item"
+             title="Looking to get some new cookwares? We've got you covered">
+             Cookware
+           </a>
+              </div>
+            </div>
+
+            <div class="level-item navbar-item has-dropdown is-hoverable is-disabled">
+              <a class="navbar-link">
+                More
+              </a>
+
+              <div class="navbar-dropdown is-boxed">
+                <a class="navbar-item">
+                  About
+                </a>
+                <a class="navbar-item">
+                  Contact
+                </a>
+                <a class="navbar-item">
+                  Privacy Policy
+                </a>
+                <hr class="navbar-divider">
+                <a class="navbar-item">
+                  Report an issue
+                </a>
+              </div>
+            </div>
+
+            {% if not user.is_authenticated %}
+            <div class="level-item navbar-item">
+              <div class="buttons">
+
+
+                <a href="{% url "social:begin" "google-oauth2" %}" class="button is-secondary">
+                  <strong>Sign in with <i class="fab fa-google"></i> Google</strong>
                 </a>
 
-               <a class="level-item navbar-item" href="{% url 'koocook_core:posts:view' %}">
-                 Stream
-               </a>
-
-               <div class="level-item navbar-item has-dropdown is-hoverable">
-                 <a class="navbar-link">
-                   Browse
-                 </a>
-
-                 <div class="navbar-dropdown is-boxed">
-                   <a class="navbar-item is-disabled" title="Look at our suggested recipe">
-                     Featured recipes
-                   </a>
-                   <a class="navbar-item is-disabled" title="Look at what other people are making">
-                     Popular recipes
-                   </a>
-                   <a class="navbar-item" href="{% url 'koocook_core:recipes:suggested' %}" title="Get personalised recipe recommendations">
-                     Suggested recipes
-                   </a>
-                   <a class="navbar-item is-disabled" title="Get a random recipe">
-                     I'm feeling hungry!
-                   </a>
-                   <hr class="navbar-divider">
-                  <a href="{% url 'koocook_core:ingredients' %}" class="navbar-item"
-                title="Can't find an ingredient? Look no further">
-                Ingredients
-              </a>
-              <a href="{% url 'koocook_core:equipment-all' %}" class="navbar-item"
-                title="Looking to get some new cookwares? We've got you covered">
-                Cookware
-              </a>
-                 </div>
-               </div>
-
-               <div class="level-item navbar-item has-dropdown is-hoverable is-disabled">
-                 <a class="navbar-link">
-                   More
-                 </a>
-
-                 <div class="navbar-dropdown is-boxed">
-                   <a class="navbar-item">
-                     About
-                   </a>
-                   <a class="navbar-item">
-                     Contact
-                   </a>
-                   <a class="navbar-item">
-                     Privacy Policy
-                   </a>
-                   <hr class="navbar-divider">
-                   <a class="navbar-item">
-                     Report an issue
-                   </a>
-                 </div>
-               </div>
-
-                {% if not user.is_authenticated %}
-               <div class="level-item navbar-item">
-                 <div class="buttons">
-
-
-                          <a href="{% url "social:begin" "google-oauth2" %}" class="button is-secondary">
-                              <strong>Sign in with <i class="fab fa-google"></i>oogle</strong>
-                          </a>
-
-                 </div>
-
-               </div>
-                {% else %}
-               <div class="level-item navbar-item has-dropdown is-hoverable">
-                 <a class="navbar-link is-arrowless">
-                   <div class="profile-pic-48">
-                       <div class="has-text-grey-dark profile-initial-48">{{ user.username|title|slice:"0:1" }}</div>
-                   </div>
-                 </a>
-
-                 <div class="navbar-dropdown is-right is-boxed">
-                     <div class="navbar-item">
-                        <strong>{{ user.username }}</strong>
-                     </div>
-                   <a class="navbar-item" href="{% url 'koocook_core:profile:info' %}">
-                     Your profile
-                   </a>
-                   <a class="navbar-item is-disabled">
-                     Your subscriptions
-                   </a>
-                   <a class="navbar-item" href="{% url 'koocook_core:recipes:user' %}">
-                     Your recipes
-                   </a>
-                   <hr class="navbar-divider">
-                   <a class="navbar-item is-disabled">
-                     Help
-                   </a>
-                    <a href="{% url 'koocook_core:profile:pref' %}" class="navbar-item">
-                     Settings
-                   </a>
-                   <a href="{% url "koocook_auth:logout" %}" class="navbar-item">
-                     Sign out
-                   </a>
-                 </div>
-               </div>
-                {% endif %}
-             </div>
               </div>
-              </div>
-           </div>
-       </nav>
-            <div class="level is-desktop">
-                <div class="level-item control has-icons-left search-bar-section">
 
-                    <input v-model="searchTerm" class="level-item input search-bar" type="text" placeholder="Don't know how to cook a dish? Search KooCook!">
-                    <span class="icon is-small is-left">
-                        <i class="fas fa-search"></i>
-                      </span>
-                    </div>
             </div>
-            <div class="level">
-                    <div class="level-item">
-                      <a :href="'search/' + getSearchTerm"><button class="button is-link">Search</button></a>
-                    </div>
+
+
+          </div>
+          {% else %}
+          <div class="level-item navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link is-arrowless">
+              <div class="profile-pic-48">
+                <div class="has-text-grey-dark profile-initial-48">{{ user.username|title|slice:"0:1" }}</div>
+              </div>
+            </a>
+
+            <div class="navbar-dropdown is-right is-boxed">
+              <div class="navbar-item">
+                <strong>{{ user.username }}</strong>
+              </div>
+
+              <a class="navbar-item" href="{% url 'koocook_core:profile:info' %}">
+                Your profile
+              </a>
+              <a class="navbar-item is-disabled">
+                Your subscriptions
+              </a>
+              <a class="navbar-item" href="{% url 'koocook_core:recipes:user' %}">
+                Your recipes
+              </a>
+              <hr class="navbar-divider">
+              <a class="navbar-item is-disabled">
+                Help
+              </a>
+              <a href="{% url 'koocook_core:profile:pref' %}" class="navbar-item">
+                Settings
+              </a>
+              <a href="{% url "koocook_auth:logout" %}" class="navbar-item">
+                Sign out
+              </a>
             </div>
-          </section>
-     <script>
-      var app = new Vue({
-        el: '#app',
-        data: {
-          togglePopSearch: false,
-          searchTerm: ''
-        },
-          computed: {
-            getSearchTerm() {
-                if (this.searchTerm) return '?kw=' + this.searchTerm;
-                else return ''
-            }
-          }
-      })
-  </script>
-    <script src="{% static "js/navbar.js" %}"></script>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </nav>
+  <div class="level is-desktop">
+    <div class="level-item control has-icons-left search-bar-section">
+
+      <input v-model="searchTerm" class="level-item input search-bar" type="text"
+        placeholder="Don't know how to cook a dish? Search KooCook!">
+      <span class="icon is-small is-left">
+        <i class="fas fa-search"></i>
+      </span>
+    </div>
+  </div>
+  <div class="level">
+    <div class="level-item">
+      <a :href="'search/' + getSearchTerm"><button class="button is-link">Search</button></a>
+    </div>
+  </div>
+</section>
+<script>
+  var app = new Vue({
+    el: '#app',
+    data: {
+      togglePopSearch: false,
+      searchTerm: ''
+    },
+    computed: {
+      getSearchTerm() {
+        if (this.searchTerm) return '?kw=' + this.searchTerm;
+        else return ''
+      }
+    }
+  })
+</script>
+<script src="{% static "js/navbar.js" %}"></script>
 {% endblock %}
-

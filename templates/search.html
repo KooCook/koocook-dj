@@ -140,6 +140,7 @@
     followees: [],
     recipes: [],
     ingredients: [],
+      authors: [],
     cookware: [],
       exclusions: []
     });
@@ -151,6 +152,7 @@
       this.exclusions = url.searchParams.get('exclude') ? url.searchParams.get('exclude').split(',') : [];
       this.ingredients = url.searchParams.get('ingredients') ? url.searchParams.get('ingredients').split(',') : [];
       this.cookware = url.searchParams.get('cookware') ? url.searchParams.get('cookware').split(',') : [];
+      this.authors = url.searchParams.get('authors') ? url.searchParams.get('authors').split(',') : [];
     },
     methods: {
       triggerFilters(val) {
@@ -197,6 +199,10 @@
         joined = this.exclusions.join(',');
         if (this.exclusions.length > 0) formBody.set("exclude", joined);
         else formBody.delete("exclude");
+
+         joined = this.authors.join(',');
+        if (this.authors.length > 0) formBody.set("authors", joined);
+        else formBody.delete("authors");
         const searchParams = (new URLSearchParams(formBody)).toString();
         if (searchParams) this.searchParams = '?' + searchParams;
         else this.searchParams = '';
@@ -216,6 +222,9 @@
         this.insertFilter();
       },
       cookware: function (val) {
+        this.insertFilter();
+      },
+         authors: function (val) {
         this.insertFilter();
       }
     }

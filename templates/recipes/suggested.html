@@ -5,18 +5,19 @@
 {% block content_page_name %}Suggested recipes{% endblock %}
 {% block hero_title %}Suggested recipes{% endblock %}
 {% block hero_subtitle %} {% if tag_set %}Preferred: <div class="field is-grouped is-grouped-multiline">
-            {% for tag in tag_set %}
-                <div class="control">
-                        <div class="tags has-addons are-small">
-                            <span class="tag is-medium">{{ tag.name }}</span>
-                            {% if tag.label %}
-                                <span class="tag {{ tag.label.level|tag_level }} is-medium">
-                                    {{ tag.label.name }}
-                                </span>
-                            {% endif %}
-                        </div>
-                </div>
+            {% for tag in tag_set.all %}
+            <div class="control">
+              <div class="tags has-addons">
+                <span class="tag">{{ tag.name }}</span>
+                {% if tag.label %}
+                <span class="tag {{ tag.label.level|tag_level }}">
+                    {{ tag.label.name }}
+                </span>
+            {% endif %}
+              </div>
+            </div>
                 {% endfor %}
+              </div>
         </div>{% endif %}
        {% endblock %}
 {% block page_content %}
@@ -38,17 +39,21 @@
                     by {{ recipe.author }}
                 </p>
       <star-rating :read-only="true" recipe-name="{{ recipe.name }}" :item-id="{{ recipe.id }}" :initial="{{ recipe.aggregate_rating.rating_value }}"></star-rating>
-              {% for tag in recipe.tag_set.all %}
+      <div class="field is-grouped is-grouped-multiline">     
+      {% for tag in recipe.tag_set.all %}
 
-                        <div class="tags has-addons">
-                            <span class="tag is-medium">{{ tag.name }}</span>
-                            {% if tag.label %}
-                                <span class="tag {{ tag.label.level|tag_level }} is-medium">
-                                    {{ tag.label.name }}
-                                </span>
-                            {% endif %}
-                        </div>
+              <div class="control">
+                <div class="tags has-addons">
+                  <span class="tag">{{ tag.name }}</span>
+                  {% if tag.label %}
+                  <span class="tag {{ tag.label.level|tag_level }}">
+                      {{ tag.label.name }}
+                  </span>
+              {% endif %}
+                </div>
+              </div>
                 {% endfor %}
+              </div>   
        <p class="subtitle has-text-grey is-6"><span class="date-posted"><b-icon icon="calendar" size="is-small"></b-icon>
               {{ recipe.date_published }}</span> <span class="date-posted"><b-icon icon="clock" size="is-small"></b-icon> Ready in:
               {{ recipe.total_time|timedel_to_words }}</span>

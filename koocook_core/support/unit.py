@@ -1,5 +1,6 @@
 import enum
 from typing import Union, Optional, Iterable, Type
+from koocook_core.support.fraction import Fraction
 
 __all__ = ['Unit', 'units', 'LengthUnit', 'AreaUnit', 'VolumeUnit', 'MassUnit',
            'TemperatureUnit', 'SpecialUnit', 'get_unit']
@@ -207,6 +208,21 @@ def get_unit(unit: Union[str, Unit]) -> Unit:
                 pass
         else:
             raise ValueError('\'{}\' is not a valid Unit'.format(unit))
+
+
+def convert(value: Union[int, float, Fraction],
+            base_unit: Union[LengthUnit, VolumeUnit, MassUnit, EnergyUnit, Unit, str],
+            quote_unit: Union[LengthUnit, VolumeUnit, MassUnit, EnergyUnit, Unit, str]
+            ) -> Union[float, Fraction]:
+    """Return converted value. 
+
+    Args:
+        value (int, float, Fraction): value that need to convert.
+        base_unit (LengthUnit, VolumeUnit, MassUnit, EnergyUnit, Unit, str): current unit.
+        quote_unit (LengthUnit, VolumeUnit, MassUnit, EnergyUnit, Unit, str): unit that need to convert to.
+    """
+    factor = get_unit(base_unit).conversion_factor / get_unit(quote_unit).conversion_factor
+    return value * factor
 
 
 units: Iterable[Type[Unit]] = (LengthUnit, AreaUnit, VolumeUnit, MassUnit, TemperatureUnit, EnergyUnit, SpecialUnit)

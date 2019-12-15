@@ -1,11 +1,10 @@
-{% extends 'base/recipes.html' %}
+{% extends 'base/recipes/crud.html' %}
 {% load static %}
 {% load widget_tweaks %}
 {% block page_title %}Edit a recipe{% endblock %}
 {% block content_page_name %}Edit a recipe{% endblock %}
 {% block hero_title %}Edit a recipe{% endblock %}
-{% block crud_deps %}<script src="{% static 'js/components/ingredients.js' %}"></script>
-<script src="{% static 'js/bundle.js' %}"></script>{% endblock %}
+{#  {% block crud_deps %}<script src="{% static 'js/bundle.js' %}"></script>{% endblock %} #}
 {% block page_content %}
 
         <recipe-tag-input :attached="true" v-model="tags" ellipsis icon="tag" placeholder="Add a tag"
@@ -16,46 +15,50 @@
     </template>
         </recipe-tag-input>
 <form method="post">{% csrf_token %}
+ {% for hidden in form.hidden_fields %}
+        {{ hidden }}
+    {% endfor %}
 <cookware-list :initial="equipment"></cookware-list>
 <ingredient-chooser :selectable-units="selectableUnits"
 :initial="ingredients"></ingredient-chooser>
     <input name="tags" type="hidden" :value="JSON.stringify(tags)">
-    <input name="ingredients" type="hidden" :value="JSON.stringify(ingredients)">
+{#    <input name="ingredients" type="hidden" :value="JSON.stringify(ingredients)">#}
     {% for field in form.visible_fields %}
-       <div class="form-group field is-horizontal">
-       <div class="field-label is-normal">
-        <label class="label">{{ field.label_tag }}</label>
-       </div>
-       <div class="field-body">
-           <div class="field control"> {{ field|add_class:"input is-normal" }}
-           </div>
-         {% if field.errors %}
-            {% for error in field.errors %}
-              <div class="invalid-feedback">
-                {{ error }}
-              </div>
-            {% endfor %}
-          {% endif %}
-       </div>
-      </div>
-        {% endfor %}
-<div class="field is-horizontal">
-      <div class="field-label">
-        <!-- Left empty for spacing -->
-      </div>
-      <div class="field-body">
-        <div class="field">
-          <div class="control">
-            <button type="submit" class="button is-primary">
-                Confirm edits
-            </button>
-          </div>
+    <div class="form-group field is-horizontal">
+        <div class="field-label is-normal">
+            <label class="label">{{ field.label_tag }}</label>
         </div>
-      </div>
+        <div class="field-body">
+            <div class="field control"> {{ field|add_class:"input is-normal" }}
+            </div>
+            {% if field.errors %}
+            {% for error in field.errors %}
+            <div class="invalid-feedback">
+                {{ error }}
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+    <div class="field is-horizontal">
+        <div class="field-label">
+            <!-- Left empty for spacing -->
+        </div>
+        <div class="field-body">
+            <div class="field">
+                <div class="control">
+                    <button type="submit" class="button is-primary">
+                        Confirm edits
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </form>
 {% endblock %}
 {% block vue_init %}
+<script src="{% static 'js/bundle.js' %}"></script>
      <script>
       new Vue({
         el: '#app',

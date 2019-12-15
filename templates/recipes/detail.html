@@ -1,4 +1,4 @@
-{% extends 'base/recipes.html' %}
+{% extends 'base/recipes/crud.html' %}
 {% load static %}
 {% load recipe_extras %}
 {% block no_hero %}{% endblock %}
@@ -9,9 +9,10 @@
         PATCH: `{% url 'koocook_core:recipes:comments' object.id %}`,
     };
 </script>
-    <script src="{% static 'js/bundle.js' %}"></script>{% endblock %}
+    {% endblock %}
 {% block content_page_name %}{{ object.name }}{% endblock %}
 {% block page_content %}
+{% load extra_tags %}
 <div style="padding: 0 3rem">
     <header class="section" style="padding-bottom: 1.5rem; margin-bottom: 1.5rem">
         <div class="container">
@@ -88,24 +89,13 @@
               <div class="level-item has-text-centered">
                 <div>
                   <p class="heading">Ratings</p>
-                  <p class="title">{% templatetag openvariable %} rating {% templatetag closevariable %}/5</p>
+                  {% if object.aggregate_rating.rating_count > 0%}
+                  <p class="title">{% templatetag openvariable %} rating {% templatetag closevariable %}/5.0</p>
+                  <small>from {{ object.aggregate_rating.rating_count }} rating{{ object.aggregate_rating.rating_count|pluralize }}</small>
+                  {% else %} <p class="title">No ratings yet.
+                  {% endif %}
                 </div>
               </div>
-
-              <!--            <div class="level-item">-->
-              <!--              <div class="level-item has-text-centered">-->
-              <!--                <div>-->
-              <!--                  <p class="heading">Likes</p>-->
-              <!--                  <p class="title">7K</p>-->
-              <!--                </div>-->
-              <!--              </div>-->
-              <!--              <div class="level-item has-text-centered">-->
-              <!--                <div>-->
-              <!--                  <p class="heading">Dislikes</p>-->
-              <!--                  <p class="title">891</p>-->
-              <!--                </div>-->
-              <!--              </div>-->
-              <!--            </div>-->
             </nav>
             <nav class="level is-mobile">
               <div class="level-item">
@@ -119,14 +109,12 @@
             </nav>
           </div>
         </div>
-      </div>
     </section>
 
     <section class="section" style="padding-top: 0">
       <div class="container" style="padding: 0 5%">
         <div class="tile is-ancestor">
-          <div class="tile is-vertical">
-            <div class="tile">
+            <div class="tile is-vertical">
               <div class="tile is-parent">
                 <div class="tile is-child">
                   <h3 class="title is-4">
@@ -276,8 +264,6 @@
                     </ul>
                   </div>
                 </div>
-              </div>
-              <div class="tile is-parent">
                 <div class="tile is-child">
                   <h3 class="title is-4">
                     Equipment
@@ -294,6 +280,39 @@
                   </div>
                 </div>
               </div>
+                <div class="tile">
+                <div class="tile is-parent" id="nutrition">
+                <div class="tile is-child">
+                    <h3 class="title is-4">
+                        Nutrition
+                    </h3>
+                    <div class="content">
+                        <ul style="list-style-type: none">
+                            {# TODO: link to ingredient page #}
+                            {% for fact in object.nutrition %}
+                                <li class="nutrient">  <b-dropdown class="callout bottom" animation="slide-fade" aria-role="list">
+                                <span slot="trigger" role="button">
+                                        <b-button type="is-small nutrient-info" icon-right="information-outline" />
+                                </span>
+                                    <b-dropdown-item :focusable="false" :custom="true" aria-role="listitem">
+                                        <strong>Sourced from</strong>
+                                    <ul>
+                                        {%  for source in fact.sources %}
+                                            <li>
+
+                                                <span class="nutrient-name"><a href="{% url 'koocook_core:ingredient' source.id %}">{{ source.name|capfirst }}</a></span>
+                                            {{ source.quantity }}
+                                            {% if source.relative %}<progress value="{{ source.relative }}" max="100" class="progress is-success" style="border-radius: 0px; height: 0.2rem;"></progress>{% endif %}</li>
+                                            {% endfor %}
+                                    </ul>
+                                    </b-dropdown-item>
+                                </b-dropdown> {{ fact.nutrient }} {{ fact.quantity }}</li>
+                            {% empty %}
+                                Nutritional facts are not available.
+                            {% endfor %}
+                        </ul>
+                    </div>
+              </div>
             </div>
             <div class="tile is-parent">
               <div class="tile is-child">
@@ -306,9 +325,10 @@
                     {% endfor %}
                     </ol>
                 </div>
+            </div>
+              </div>
               </div>
             </div>
-          </div>
         </div>
       </div>
     </section>
@@ -333,6 +353,7 @@
     </section>
 {% endblock %}
 {% block vue_init %}
+<script src="{% static 'js/bundle.js' %}"></script>
 <script>
      new Vue({
         el: '#app',

@@ -14,7 +14,7 @@ from .forms import RecipeForm
 from .mixins import AuthAuthorMixin, CommentWidgetMixin, RecipeViewMixin, SignInRequiredMixin
 from ..models import Recipe, Author, KoocookUser, MetaIngredient, RecipeEquipment
 from ..models.base import ModelEncoder
-from ..support.query import QueryRuleset, IngredientRule, CookwareRule, OrderingRule, IngredientExclusionRule
+from ..support.query import QueryRuleset, IngredientRule, CookwareRule, OrderingRule, IngredientExclusionRule, AuthorNameRule
 
 
 LOGGER = logging.getLogger(__name__)
@@ -28,7 +28,7 @@ class RecipeSearchListView(AuthAuthorMixin, ListView):
     ordering = ['-date_published']
     template_name = 'search.html'
     ruleset = QueryRuleset(IngredientRule, CookwareRule, OrderingRule,
-                           IngredientExclusionRule)
+                           IngredientExclusionRule, AuthorNameRule)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
