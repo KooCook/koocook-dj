@@ -1,5 +1,6 @@
 import enum
 from typing import Union, Optional, Iterable, Type
+from koocook_core.support.fraction import Fraction
 
 __all__ = ['Unit', 'units', 'LengthUnit', 'AreaUnit', 'VolumeUnit', 'MassUnit',
            'TemperatureUnit', 'SpecialUnit', 'get_unit']
@@ -36,11 +37,25 @@ class Unit(enum.Enum):
 
     @property
     def singular(self) -> str:
-        return self._singular
+        if self._singular:
+            return self._singular
+        return ''
 
     @property
     def plural(self) -> str:
-        return self._plural
+        if self._plural:
+            return self._plural
+        return ''
+
+    @property
+    def representation(self):
+        return self.get_repr()
+
+    def get_repr(self):
+        if self.singular:
+            return self.singular
+        else:
+            return self.symbol
 
     @property
     def type(self) -> str:
@@ -53,6 +68,19 @@ class Unit(enum.Enum):
             return self._conversion_factor
         raise AttributeError('\'{}\' are incompatible with conversion factor'
                              .format(self.__class__.__name__))
+
+    def as_dict(self):
+        try:
+            return {"unit": self.get_repr(),
+                    "singular": self.singular,
+                    "plural": self.plural,
+                    "symbol": self.symbol,
+                    "value": self.conversion_factor}
+        except AttributeError:
+            if self.symbol:
+                return {"symbol": self.symbol, "unit": self.get_repr(), "value": "REQ_FUNC"}
+            else:
+                return {"symbol": self.singular, "unit": self.get_repr(), "value": None}
 
 
 class LengthUnit(Unit):
@@ -155,6 +183,14 @@ class SpecialUnit(Unit):
     SERVING = None, None,
     PERSON = None, None, 'people'
 
+    def as_dict(self):
+        if self is SpecialUnit.NONE:
+            return {"unit": self.get_repr(),
+                    "symbol": '',
+                    "value": None}
+        else:
+            return super().as_dict()
+
 
 def get_unit(unit: Union[str, Unit]) -> Unit:
     """Get Unit of Error from string
@@ -172,6 +208,21 @@ def get_unit(unit: Union[str, Unit]) -> Unit:
                 pass
         else:
             raise ValueError('\'{}\' is not a valid Unit'.format(unit))
+
+
+def convert(value: Union[int, float, Fraction],
+            base_unit: Union[LengthUnit, VolumeUnit, MassUnit, EnergyUnit, Unit, str],
+            quote_unit: Union[LengthUnit, VolumeUnit, MassUnit, EnergyUnit, Unit, str]
+            ) -> Union[float, Fraction]:
+    """Return converted value.
+
+    Args:
+        value (int, float, Fraction): value that need to convert.
+        base_unit (LengthUnit, VolumeUnit, MassUnit, EnergyUnit, Unit, str): current unit.
+        quote_unit (LengthUnit, VolumeUnit, MassUnit, EnergyUnit, Unit, str): unit that need to convert to.
+    """
+    factor = get_unit(base_unit).conversion_factor / get_unit(quote_unit).conversion_factor
+    return value * factor
 
 
 units: Iterable[Type[Unit]] = (LengthUnit, AreaUnit, VolumeUnit, MassUnit, TemperatureUnit, EnergyUnit, SpecialUnit)

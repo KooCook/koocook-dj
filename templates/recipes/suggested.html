@@ -1,39 +1,25 @@
 {% extends 'base/recipes.html' %}
 {% load recipe_extras %}
 {% load static %}
-{% block content_deps %}
-    <script src="{% static 'js/bundle.js' %}"></script>
-{% endblock %}
-{% block section_after_nav %}<section class="hero is-light">
-  <div class="hero-body">
-    <div class="container">
-      <h1 class="title">
-        Suggested recipes
-      </h1>
-        <h2 class="subtitle">
-        {% if tag_set %}Preferred: <div class="field is-grouped is-grouped-multiline">
-            {% for tag in tag_set %}
-                <div class="control">
-                        <div class="tags has-addons are-small">
-                            <span class="tag is-medium">{{ tag.name }}</span>
-                            {% if tag.label %}
-                                <span class="tag {{ tag.label.level|tag_level }} is-medium">
-                                    {{ tag.label.name }}
-                                </span>
-                            {% endif %}
-                        </div>
-                </div>
+{% block page_title %}Suggested recipes{% endblock %}
+{% block content_page_name %}Suggested recipes{% endblock %}
+{% block hero_title %}Suggested recipes{% endblock %}
+{% block hero_subtitle %} {% if tag_set %}Preferred: <div class="field is-grouped is-grouped-multiline">
+            {% for tag in tag_set.all %}
+            <div class="control">
+              <div class="tags has-addons">
+                <span class="tag">{{ tag.name }}</span>
+                {% if tag.label %}
+                <span class="tag {{ tag.label.level|tag_level }}">
+                    {{ tag.label.name }}
+                </span>
+            {% endif %}
+              </div>
+            </div>
                 {% endfor %}
+              </div>
         </div>{% endif %}
-            <a href="{% url 'koocook_core:recipe-user' %}"> <span class="buttons">
-                <button class="button is-primary is-outlined is-small">Your recipes</button>
-            </span>
-                </a>
-        </h2>
-
-    </div>
-  </div>
-</section>{% endblock %}
+       {% endblock %}
 {% block page_content %}
 <div id="app" class="container">
 <div class="columns is-2 is-multiline">
@@ -48,22 +34,26 @@
     <div class="card-content">
         <div class="media">
       <div class="media-content">
-          <p class="title is-4"><a href="{% url 'koocook_core:recipe' recipe.id %}">{{ recipe.name }}</a>
+          <p class="title is-4"><a href="{% url 'koocook_core:recipes:detail' recipe.id %}">{{ recipe.name }}</a>
           <p class="subtitle">
                     by {{ recipe.author }}
                 </p>
       <star-rating :read-only="true" recipe-name="{{ recipe.name }}" :item-id="{{ recipe.id }}" :initial="{{ recipe.aggregate_rating.rating_value }}"></star-rating>
-              {% for tag in recipe.tag_set.all %}
+      <div class="field is-grouped is-grouped-multiline">
+      {% for tag in recipe.tag_set.all %}
 
-                        <div class="tags has-addons">
-                            <span class="tag is-medium">{{ tag.name }}</span>
-                            {% if tag.label %}
-                                <span class="tag {{ tag.label.level|tag_level }} is-medium">
-                                    {{ tag.label.name }}
-                                </span>
-                            {% endif %}
-                        </div>
+              <div class="control">
+                <div class="tags has-addons">
+                  <span class="tag">{{ tag.name }}</span>
+                  {% if tag.label %}
+                  <span class="tag {{ tag.label.level|tag_level }}">
+                      {{ tag.label.name }}
+                  </span>
+              {% endif %}
+                </div>
+              </div>
                 {% endfor %}
+              </div>
        <p class="subtitle has-text-grey is-6"><span class="date-posted"><b-icon icon="calendar" size="is-small"></b-icon>
               {{ recipe.date_published }}</span> <span class="date-posted"><b-icon icon="clock" size="is-small"></b-icon> Ready in:
               {{ recipe.total_time|timedel_to_words }}</span>
@@ -79,7 +69,36 @@
     <li>Nothing here yet. Come back later!</li>
 {% endfor %}
 </div>
+{% if page_obj.has_other_pages %}
+  <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}" class="pagination-previous">
+      <b-icon icon="arrow-left-bold" size="is-small">
+      </b-icon> Previous
+    </a>
+    {% endif %}
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}" class="pagination-next">
+      <b-icon icon="arrow-right-bold" size="is-small">
+      </b-icon> Next
+    </a>
+    {% endif %}
+    <ul class="pagination-list">
+      {% for number in paginator.page_range %}
+      {% if page_obj.number == number %}
+      <li><a class="pagination-link is-current" aria-label="Page {{ number }}" aria-current="page">{{ number }}</a></li>
+      {% else %}
+      <li><a href="?page={{ number }}" class="pagination-link" aria-label="Go to page {{ number }}">{{ number }}</a>
+      </li>
+      {% endif %}
+      {% endfor %}
+    </ul>
+  </nav>
+  {% endif %}
 </div>
+    <script src="{% static 'js/bundle.js' %}"></script>
+    {% endblock %}
+{% block vue_init %}
      <script>
       new Vue({
         el: '#app',

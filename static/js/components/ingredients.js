@@ -59,8 +59,8 @@ Vue.component("ingredient-chooser", {
     '                    size="is-small">\n' +
     '                    <option v-for="(name, unit) in selectableUnits" :value="unit">{{ name }}</option>\n' +
     "        </b-select>\n" +
-    "    <button @click='removeIngredient(ingredient)'>-</button>" +
+    `    <button type="button" @click='removeIngredient(ingredient)'>-</button>` +
     "    </div>" +
-    '<button @click="addIngredient">Add an ingredient</button>' +
+    '<button type="button" @click="addIngredient">Add an ingredient</button>' +
     "</div>"
 });

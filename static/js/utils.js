@@ -24,7 +24,9 @@ const CONVERSION_UNITS = {
 };
 
 const GLOBAL_DATA = {
-  searchName: '',
+  searchTerm: '',
+  searchParams: '',
+  isFiltersOpen: false
 };
 
 String.prototype.format = function() {
@@ -51,4 +53,10 @@ String.prototype.format = function() {
 
 Vue.filter("time-passed", function(date) {
   return moment(date).fromNow();
+});
+
+Vue.filter("pluralize", function(unit, num) {
+  if (!unit.singular) unit.singular = unit.symbol;
+  if (!unit.plural) unit.plural = unit.symbol;
+  return `${num - 1 === 0 ? unit.singular : unit.plural }`
 });

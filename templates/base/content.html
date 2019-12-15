@@ -1,184 +1,204 @@
 {% extends 'base/index.html' %}
 {% load static %}
 {% block page_deps %}
-    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
-    <script src="https://unpkg.com/buefy/dist/buefy.min.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js"></script>
-    <script src="{% static 'js/utils.js' %}"></script>
-    {% block mixin_deps %}{% endblock %}
-    {% block content_deps %}{% endblock %}
+<script src="https://unpkg.com/mathjs@6.2.5/dist/math.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
+<script src="https://unpkg.com/buefy/dist/buefy.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js"></script>
+<script src="{% static 'js/utils.js' %}"></script>
+{% block mixin_deps %}{% endblock %}
+{% block content_deps %}{% endblock %}
 {% endblock %}
 {% block page_body %}
-    <div id="app">
-    <nav class="navbar" role="navigation" aria-label="main navigation"
-     style="padding: 1rem 2rem; box-shadow: 0 2px 0 0 #f5f5f5">
-      <div class="container">
-        <div class="navbar-brand" style="flex-basis: 100%; flex-shrink: 1">
+<div id="app">
+  <nav class="navbar" role="navigation" aria-label="main navigation"
+    style="padding: 1rem 2rem; ">
+    <div class="container">
+      <div class="navbar-brand" style="flex-basis: 100%; flex-shrink: 1">
+        <a class="navbar-item" href="{% url "koocook_core:index" %}">
+          {#            <figure class="image is-48x48">#}
+          {#              <img alt="KooCook!" src="../assets/img/emoji/discord/chicken.svg" style="max-height: unset">#}
+          {#            </figure>#}
+          <span class="title">KooCook!</span>
+        </a>
+
+        <div class="navbar-item" style="flex-basis: 100%; flex-shrink: 1">
+          <div class="search-bar-section" style="flex-basis: 100%; flex-shrink: 1">
+            <b-field>
+              <b-input icon="magnify" v-model="searchTerm" custom-class="search-bar" type="search" placeholder="Search our recipes!"
+                expanded></b-input>
+                {% if section == 'search' %}
+              <p class="control">
+                <b-button icon-left="filter" class="button is-outlined-primary" @click="isFiltersOpen = !isFiltersOpen">
+                  Filters
+                </b-button>
+              </p>
+                {% endif %}
+              <p class="control">
+                <a v-if="searchParams" :href="'{% url 'koocook_core:search' %}' + searchParams"><button
+                    class="button is-info">Search</button></a>
+                  <a v-else :href="'{% url 'koocook_core:search' %}?kw=' + searchTerm"><button
+                    class="button is-info">Search</button></a>
+              </p>
+
+            </b-field>
+
+          </div>
+        </div>
+
+        <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarMain">
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </a>
+      </div>
+
+      <div id="navbarMain" class="navbar-menu">
+        <div class="navbar-start">
           <a class="navbar-item" href="{% url "koocook_core:index" %}">
-{#            <figure class="image is-48x48">#}
-{#              <img alt="KooCook!" src="../assets/img/emoji/discord/chicken.svg" style="max-height: unset">#}
-{#            </figure>#}
-            <span class="title">KooCook!</span>
+            Home
           </a>
 
-          <div class="navbar-item" style="flex-basis: 100%; flex-shrink: 1">
-            <div class="control has-icons-left search-bar-section" style="flex-basis: 100%; flex-shrink: 1">
-                <b-field custom-class="">
-              <b-input v-model="searchName" custom-class="search-bar" type="search"
-                     placeholder="Search our recipes!" expanded></b-input>
-                <p class="control">
-                <a :href="'{% url 'koocook_core:search' %}?kw=' + searchName"><button class="button is-info">Search</button></a>
-            </p>
-                </b-field>
-              <span class="icon is-small is-left">
-                       <b-icon icon="magnify"></b-icon>
-                     </span>
+          <a class="navbar-item" href="{% url 'koocook_core:posts:view' %}">
+            Stream
+          </a>
+
+          <div class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link">
+              Browse
+            </a>
+
+            <div class="navbar-dropdown is-boxed">
+              <a class="navbar-item is-disabled" title="Look at our suggested recipe">
+                Featured recipes
+              </a>
+              <a class="navbar-item is-disabled" title="Look at what other people are making">
+                Popular recipes
+              </a>
+              <a href="{% url 'koocook_core:recipes:suggested' %}" class="navbar-item"
+                title="Get personalised recipe recommendations">
+                Suggested recipes
+              </a>
+              <a class="navbar-item is-disabled" title="Get a random recipe">
+                I'm feeling hungry!
+              </a>
+              <hr class="navbar-divider">
+              <a href="{% url 'koocook_core:ingredients' %}" class="navbar-item"
+                title="Can't find an ingredient? Look no further">
+                Ingredients
+              </a>
+              <a href="{% url 'koocook_core:equipment-all' %}" class="navbar-item"
+                title="Looking to get some new cookwares? We've got you covered">
+                Cookware
+              </a>
             </div>
           </div>
 
-          <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
-             data-target="navbarMain">
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-          </a>
+          <div class="navbar-item has-dropdown is-hoverable is-disabled">
+            <a class="navbar-link">
+              More
+            </a>
+
+            <div class="navbar-dropdown is-boxed">
+              <a class="navbar-item">
+                About
+              </a>
+              <a class="navbar-item">
+                Contact
+              </a>
+              <a class="navbar-item">
+                Privacy Policy
+              </a>
+              <hr class="navbar-divider">
+              <a class="navbar-item">
+                Report an issue
+              </a>
+            </div>
+          </div>
         </div>
 
-        <div id="navbarMain" class="navbar-menu">
-          <div class="navbar-start">
-            <a class="navbar-item" href="{% url "koocook_core:index" %}">
-              Home
-            </a>
-
-            <a class="navbar-item" href="{% url 'koocook_core:posts:view' %}">
-              Stream
-            </a>
-
-            <div class="navbar-item has-dropdown is-hoverable">
-              <a class="navbar-link">
-                Browse
+        <div class="navbar-end">
+          {% if not user.is_authenticated %}
+          <div class="navbar-item">
+            <div class="buttons">
+              <a href="{% url "social:begin" "google-oauth2" %}" class="button is-secondary">
+                <strong>Sign in with <i class="fab fa-google"></i>Google</strong>
               </a>
-
-              <div class="navbar-dropdown is-boxed">
-                <a class="navbar-item is-disabled" title="Look at our suggested recipe">
-                  Featured recipes
-                </a>
-                <a class="navbar-item is-disabled" title="Look at what other people are making">
-                  Popular recipes
-                </a>
-                <a href="{% url 'koocook_core:recipe-all' %}" class="navbar-item" title="Get personalised recipe recommendations">
-                  Suggested recipes
-                </a>
-                <a class="navbar-item is-disabled" title="Get a random recipe">
-                  I'm feeling hungry!
-                </a>
-                <hr class="navbar-divider">
-                <a class="navbar-item is-disabled" title="Can't find an ingredient? Look no further">
-                  Ingredients
-                </a>
-                <a class="navbar-item is-disabled" title="Looking to get some new cookwares? We've got you covered">
-                  Cookware
-                </a>
-              </div>
             </div>
 
-            <div class="navbar-item has-dropdown is-hoverable is-disabled">
-              <a class="navbar-link">
-                More
-              </a>
-
-              <div class="navbar-dropdown is-boxed">
-                <a class="navbar-item">
-                  About
-                </a>
-                <a class="navbar-item">
-                  Contact
-                </a>
-                <a class="navbar-item">
-                  Privacy Policy
-                </a>
-                <hr class="navbar-divider">
-                <a class="navbar-item">
-                  Report an issue
-                </a>
-              </div>
-            </div>
           </div>
-
-          <div class="navbar-end">
-              {% if not user.is_authenticated %}
-            <div class="navbar-item">
-              <div class="buttons">
-                <a href="{% url "social:begin" "google-oauth2" %}" class="button is-secondary">
-                  <strong>Sign in with <i class="fab fa-google"></i>Google</strong>
-                </a>
-              </div>
-
-            </div>
-            {% else %}
-            <div class="navbar-item has-dropdown is-hoverable">
-                 <a class="navbar-link is-arrowless">
-                   <div class="profile-pic-48">
-                       <div class="has-text-grey-dark profile-initial-48">{{ user.username|title|slice:"0:1" }}</div>
-                   </div>
-                 </a>
-
-                 <div class="navbar-dropdown is-right is-boxed">
-                     <div class="navbar-item">
-                        <strong>{{ user.username }}</strong>
-                     </div>
-                   <a class="navbar-item" href="{% url 'koocook_core:profile:info' %}">
-                     Your profile
-                   </a>
-                   <a class="navbar-item is-disabled">
-                     Your subscriptions
-                   </a>
-                   <a class="navbar-item" href="{% url 'koocook_core:recipe-user' %}">
-                     Your recipes
-                   </a>
-                   <hr class="navbar-divider">
-                   <a class="navbar-item is-disabled">
-                     Help
-                   </a>
-                   <a href="{% url 'koocook_core:profile:pref' %}" class="navbar-item">
-                     Settings
-                   </a>
-                   <a href="{% url "koocook_auth:logout" %}" class="navbar-item">
-                     Sign out
-                   </a>
+          {% else %}
+          <div class="navbar-item has-dropdown is-hoverable">
+               <a class="navbar-link is-arrowless">
+                 <div class="profile-pic-48">
+                     {% if user.koocook_user.avatar_url %} <figure class="image">
+             <img alt="profile picture" class="is-rounded" src="{{ user.koocook_user.avatar_url }}"
+                 style="max-height: unset">
+          </figure>
+                     {% else %}<div class="has-text-grey-dark profile-initial-48">{{ user.username|title|slice:"0:1" }}</div>{% endif %}
                  </div>
+               </a>
+
+               <div class="navbar-dropdown is-right is-boxed">
+                   <div class="navbar-item">
+                      <strong>{{ user.username }}</strong>
+                   </div>
+                 <a class="navbar-item" href="{% url 'koocook_core:profile:info' %}">
+                   Your profile
+                 </a>
+                 <a class="navbar-item is-disabled">
+                   Your subscriptions
+                 </a>
+                 <a class="navbar-item" href="{% url 'koocook_core:recipes:user' %}">
+                   Your recipes
+                 </a>
+                 <hr class="navbar-divider">
+                 <a class="navbar-item is-disabled">
+                   Help
+                 </a>
+                 <a href="{% url 'koocook_core:profile:pref' %}" class="navbar-item">
+                   Settings
+                 </a>
+                 <a href="{% url "koocook_auth:logout" %}" class="navbar-item">
+                   Sign out
+                 </a>
                </div>
-            {% endif %}
-          </div>
+             </div>
+          {% endif %}
         </div>
-        </div>
-    </nav>{% block section_after_nav %}
-        {% block no_breadcrumb %}<div class="container"><nav class="breadcrumb breadcrumb-nav" aria-label="breadcrumbs">
+      </div>
+    </div>
+  </nav>
+  {% block section_after_nav %}
+  {% block nav_pane %}{% endblock %}
+  <div class="container">{% block no_breadcrumb %}<nav class="breadcrumb breadcrumb-nav" aria-label="breadcrumbs">
       <ul>
         <li><a href="{% url "koocook_core:index" %}">KooCook!</a></li>
         {% block breadcrumb_category %}
-            <li><a href="{% block content_category_url %}{% endblock %}">{% block content_category %}{% endblock %}</a></li>
-            <li class="is-active"><a href="#" aria-current="page">{% block content_page_name %}{% endblock %}</a></li>
+        <li><a href="{% block content_category_url %}{% endblock %}">{% block content_category %}{% endblock %}</a></li>
+        <li class="is-active"><a href="#" aria-current="page">{% block content_page_name %}{% endblock %}</a></li>
         {% endblock %}
         {% block breadcrumb_item_extension %}{% endblock %}
       </ul>
-    </nav></div>{% endblock %}{% block no_hero %}<section class="hero is-light">
-        <div class="hero-body">
-        <div class="container">
-          <h1 class="title">
-            {% block hero_title %}{% endblock %}
-          </h1>
-        </div>
-      </div>
-    </section>{% endblock %}{% endblock %}
-     <div class="container">
-    <section class="section">
-        {% block page_content %}{% endblock %}
-    </section>
+    </nav>{% endblock %}</div>{% block no_hero %}<section class="hero is-light">
+    <div class="hero-body">
+      <div class="container">
+        <h1 class="title">
+          {% block hero_title %}{% endblock %}
+        </h1>
+        <h2 class="subtitle">{% block hero_subtitle %}{% endblock %}</h2>
       </div>
     </div>
-    {% block javascript_parsing %}{% endblock %}
-    <script src="{% static "js/navbar.js" %}"></script>
+  </section>{% endblock %}{% endblock %}
+  <div class="container">
+    <section class="section">
+      {% block page_content %}{% endblock %}
+    </section>
+  </div>
+</div>
+{% block javascript_parsing %}{% endblock %}
+{% block vue_init %}{% endblock %}
+<script src="{% static "js/navbar.js" %}"></script>
 {% endblock %}

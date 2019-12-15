@@ -1,18 +1,18 @@
-{% extends 'base/recipes.html' %}
+{% extends 'base/recipes/crud.html' %}
 {% load static %}
 {% load recipe_extras %}
 {% block no_hero %}{% endblock %}
-{% block content_deps %}<script>
+{% block crud_deps %}<script>
     const COMMENTS_ENDPOINTS = {
-        GET: `{% url 'koocook_core:recipe-comments' object.id %}`,
-        POST: `{% url 'koocook_core:recipe-comments' object.id %}`,
-        PATCH: `{% url 'koocook_core:recipe-comments' object.id %}`,
+        GET: `{% url 'koocook_core:recipes:comments' object.id %}`,
+        POST: `{% url 'koocook_core:recipes:comments' object.id %}`,
+        PATCH: `{% url 'koocook_core:recipes:comments' object.id %}`,
     };
 </script>
-    <script src="{% static 'js/bundle.js' %}"></script>{% endblock %}
+    {% endblock %}
 {% block content_page_name %}{{ object.name }}{% endblock %}
 {% block page_content %}
-
+{% load extra_tags %}
 <div style="padding: 0 3rem">
     <header class="section" style="padding-bottom: 1.5rem; margin-bottom: 1.5rem">
         <div class="container">
@@ -44,9 +44,9 @@
         <figure class="image is-4928x3264" style="margin-bottom: 1.5rem">
           <img src="{{ object.image|first }}" alt="{{ object.name }}">
         </figure>
-        <p class="subtitle is-6">
-          <strong>Image Credit:</strong> <a href="">Skitterphoto</a>
-        </p>
+{#        <p class="subtitle is-6">#}
+{#          <strong>Image Credit:</strong> <a href="">Skitterphoto</a>#}
+{#        </p>#}
       </div>
     </section>
     <section class="section" style="padding-top: 0">
@@ -56,25 +56,25 @@
             <nav class="level is-mobile">
               <div class="level-item has-text-centered">
                 <div>
-                  <p class="heading">Time</p>
+                  <p class="heading">Ready in</p>
                   <p class="title">{{ object.total_time|timedel_to_words }}</p>
                 </div>
               </div>
               <div class="level-item has-text-centered">
                 <div>
-                  <p class="heading">Difficulty</p>
-                  <p class="title">Simple</p>
+                  <p class="heading">Serving size</p>
+                  <p class="title">{{ object.recipe_yield }}</p>
                 </div>
               </div>
             </nav>
             <nav class="level is-mobile">
               <div class="level-item">
-                <progress class="level-item progress is-success" value="1" max="4"
-                          style="border-radius: 0; height: 0.2rem"></progress>
+{#                <progress class="level-item progress is-success" value="1" max="4"#}
+{#                          style="border-radius: 0; height: 0.2rem"></progress>#}
               </div>
               <div class="level-item">
-                <progress class="level-item progress is-success" value="1" max="3"
-                          style="border-radius: 0; height: 0.2rem"></progress>
+{#                <progress class="level-item progress is-success" value="1" max="3"#}
+{#                          style="border-radius: 0; height: 0.2rem"></progress>#}
               </div>
             </nav>
           </div>
@@ -89,24 +89,13 @@
               <div class="level-item has-text-centered">
                 <div>
                   <p class="heading">Ratings</p>
-                  <p class="title">{% templatetag openvariable %} rating {% templatetag closevariable %}/5</p>
+                  {% if object.aggregate_rating.rating_count > 0%}
+                  <p class="title">{% templatetag openvariable %} rating {% templatetag closevariable %}/5.0</p>
+                  <small>from {{ object.aggregate_rating.rating_count }} rating{{ object.aggregate_rating.rating_count|pluralize }}</small>
+                  {% else %} <p class="title">No ratings yet.
+                  {% endif %}
                 </div>
               </div>
-
-              <!--            <div class="level-item">-->
-              <!--              <div class="level-item has-text-centered">-->
-              <!--                <div>-->
-              <!--                  <p class="heading">Likes</p>-->
-              <!--                  <p class="title">7K</p>-->
-              <!--                </div>-->
-              <!--              </div>-->
-              <!--              <div class="level-item has-text-centered">-->
-              <!--                <div>-->
-              <!--                  <p class="heading">Dislikes</p>-->
-              <!--                  <p class="title">891</p>-->
-              <!--                </div>-->
-              <!--              </div>-->
-              <!--            </div>-->
             </nav>
             <nav class="level is-mobile">
               <div class="level-item">
@@ -120,14 +109,12 @@
             </nav>
           </div>
         </div>
-      </div>
     </section>
 
     <section class="section" style="padding-top: 0">
       <div class="container" style="padding: 0 5%">
         <div class="tile is-ancestor">
-          <div class="tile is-vertical">
-            <div class="tile">
+            <div class="tile is-vertical">
               <div class="tile is-parent">
                 <div class="tile is-child">
                   <h3 class="title is-4">
@@ -271,29 +258,60 @@
 {#                          <i class="fas fa-question fa-xs" aria-hidden="true"></i>#}
 {#                        </sup>#}
 {#                      </li>#}
-                        {% for ingredient in ingredients %}
-                      <li>{{ ingredient.quantity.number }} {{ ingredient.quantity.unit }} {{ ingredient.name }}</li>
-                {% endfor %}
+                        {% for ingredient in object.recipe_ingredients %}
+                            <li><a href="{% url 'koocook_core:ingredient' ingredient.meta.id %}">{{ ingredient.words_name }}</a> {{ ingredient.words_quantity }}</li>
+                        {% endfor %}
                     </ul>
                   </div>
                 </div>
-              </div>
-              <div class="tile is-parent">
                 <div class="tile is-child">
                   <h3 class="title is-4">
                     Equipment
                   </h3>
                   <div class="content">
+
                     <ul style="list-style-type: none">
-                      <li>Whisk</li>
-                      <li>Large bowl</li>
-                      <li>Medium bowl</li>
-                      <li>Griddle or large skillet</li>
-                      <li>Spatula</li>
-                      <li>Measuring cup</li>
+                        {% for equipment in object.equipment_set.all %}
+                            <li><a href="{% url 'koocook_core:equipment' equipment.id %}">{{ equipment.name }}</a></li>
+                            {% empty %}
+                            No cookware information provided
+                        {% endfor %}
                     </ul>
                   </div>
                 </div>
+              </div>
+                <div class="tile">
+                <div class="tile is-parent" id="nutrition">
+                <div class="tile is-child">
+                    <h3 class="title is-4">
+                        Nutrition
+                    </h3>
+                    <div class="content">
+                        <ul style="list-style-type: none">
+                            {# TODO: link to ingredient page #}
+                            {% for fact in object.nutrition %}
+                                <li class="nutrient">  <b-dropdown class="callout bottom" animation="slide-fade" aria-role="list">
+                                <span slot="trigger" role="button">
+                                        <b-button type="is-small nutrient-info" icon-right="information-outline" />
+                                </span>
+                                    <b-dropdown-item :focusable="false" :custom="true" aria-role="listitem">
+                                        <strong>Sourced from</strong>
+                                    <ul>
+                                        {%  for source in fact.sources %}
+                                            <li>
+
+                                                <span class="nutrient-name"><a href="{% url 'koocook_core:ingredient' source.id %}">{{ source.name|capfirst }}</a></span>
+                                            {{ source.quantity }}
+                                            {% if source.relative %}<progress value="{{ source.relative }}" max="100" class="progress is-success" style="border-radius: 0px; height: 0.2rem;"></progress>{% endif %}</li>
+                                            {% endfor %}
+                                    </ul>
+                                    </b-dropdown-item>
+                                </b-dropdown> {{ fact.nutrient }} {{ fact.quantity }}</li>
+                            {% empty %}
+                                Nutritional facts are not available.
+                            {% endfor %}
+                        </ul>
+                    </div>
               </div>
             </div>
             <div class="tile is-parent">
@@ -307,9 +325,10 @@
                     {% endfor %}
                     </ol>
                 </div>
+            </div>
+              </div>
               </div>
             </div>
-          </div>
         </div>
       </div>
     </section>
@@ -332,6 +351,9 @@
           {% endif %}
       </div>
     </section>
+{% endblock %}
+{% block vue_init %}
+<script src="{% static 'js/bundle.js' %}"></script>
 <script>
      new Vue({
         el: '#app',

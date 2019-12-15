@@ -2,7 +2,7 @@ from typing import Dict, Any
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from ..models import Author, KoocookUser, Post, Recipe
+from ..models import Author, KoocookUser, Post, Recipe, MetaIngredient
 
 
 def create_dummy_post(user: User) -> Post:
@@ -30,7 +30,15 @@ def create_dummy_recipe(author: Author) -> Recipe:
     return recipe
 
 
+def create_dummy_meta_ingredient() -> MetaIngredient:
+    ingredient = MetaIngredient.objects.create(name="test",
+                                               nutrient=[{"nutrient": "Carbohydrate", "quantity": "100 g"},
+                                                          {"nutrient": "Energy", "quantity": "300 kcal"},
+                                                          {"nutrient": "Sugars", "quantity": "0.1 kg"}]
 
+                                               )
+    ingredient.save()
+    return ingredient
 
 
 def create_dummy_comment_dict() -> Dict[str, Any]:
