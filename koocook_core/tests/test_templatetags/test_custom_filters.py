@@ -2,7 +2,6 @@ import datetime
 from django.test import TestCase
 from koocook_core.models.tag import TagLabel
 from koocook_core.templatetags.recipe_extras import tag_level, duration_in_words
-from koocook_core.templatetags.extra_tags import hours
 
 
 class CustomTagTests(TestCase):
