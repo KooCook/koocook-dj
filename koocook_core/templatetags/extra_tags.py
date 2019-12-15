@@ -1,4 +1,5 @@
 from django import template
+from koocook_core.support.quantity import parse_quantity
 
 register = template.Library()
 
@@ -66,3 +67,9 @@ def time_bar(second):
         return minute / 10
     else:
         return 6
+
+
+@register.filter
+def to_float(value, digits: int=2):
+    value = parse_quantity(value)
+    return f'{float(value.amount):.2} {value.unit.value}'

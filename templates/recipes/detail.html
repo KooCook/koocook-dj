@@ -1,372 +1,368 @@
-{% extends 'base/recipes.html' %}
+{% extends 'base/recipes/crud.html' %}
 {% load static %}
 {% load recipe_extras %}
 {% block no_hero %}{% endblock %}
-{% block content_deps %}
-<script>
-  const COMMENTS_ENDPOINTS = {
-    GET: `{% url 'koocook_core:recipe-comments' object.id %}`,
-    POST: `{% url 'koocook_core:recipe-comments' object.id %}`,
-    PATCH: `{% url 'koocook_core:recipe-comments' object.id %}`,
-  };
+{% block crud_deps %}<script>
+    const COMMENTS_ENDPOINTS = {
+        GET: `{% url 'koocook_core:recipes:comments' object.id %}`,
+        POST: `{% url 'koocook_core:recipes:comments' object.id %}`,
+        PATCH: `{% url 'koocook_core:recipes:comments' object.id %}`,
+    };
 </script>
-<script src="{% static 'js/bundle.js' %}"></script>{% endblock %}
+    {% endblock %}
 {% block content_page_name %}{{ object.name }}{% endblock %}
 {% block page_content %}
 {% load extra_tags %}
 <div style="padding: 0 3rem">
-  <header class="section" style="padding-bottom: 1.5rem; margin-bottom: 1.5rem">
-    <div class="container">
-      <h1 class="title is-1">
-        {{ object.name }}
-      </h1>
-      <p class="subtitle is-4">
-        Recipe by <a href="">{{ object.author.name }}</a>
-      </p>
-      <div class="field is-grouped is-grouped-multiline">
-        {% for tag in object.tag_set.all %}
-        <div class="control">
-          <div class="tags has-addons">
-            <span class="tag is-medium">{{ tag.name }}</span>
-            {% if tag.label %}
-            <span class="tag {{ tag.label.level|tag_level }} is-medium">
-              {{ tag.label.name }}
-            </span>
-            {% endif %}
-          </div>
+    <header class="section" style="padding-bottom: 1.5rem; margin-bottom: 1.5rem">
+        <div class="container">
+            <h1 class="title is-1">
+                {{ object.name }}
+            </h1>
+            <p class="subtitle is-4">
+                Recipe by <a href="">{{ object.author.name }}</a>
+            </p>
+                <div class="field is-grouped is-grouped-multiline">
+                {% for tag in object.tag_set.all %}
+                    <div class="control">
+                        <div class="tags has-addons">
+                            <span class="tag is-medium">{{ tag.name }}</span>
+                            {% if tag.label %}
+                                <span class="tag {{ tag.label.level|tag_level }} is-medium">
+                                    {{ tag.label.name }}
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+                </div>
         </div>
-        {% endfor %}
+    </header>
+
+    <section class="section" style="padding-top: 0">
+      <div class="container">
+        <figure class="image is-4928x3264" style="margin-bottom: 1.5rem">
+          <img src="{{ object.image|first }}" alt="{{ object.name }}">
+        </figure>
+{#        <p class="subtitle is-6">#}
+{#          <strong>Image Credit:</strong> <a href="">Skitterphoto</a>#}
+{#        </p>#}
       </div>
-    </div>
-  </header>
-
-  <section class="section" style="padding-top: 0">
-    <div class="container">
-      <figure class="image is-4928x3264" style="margin-bottom: 1.5rem">
-        <img src="{{ object.image|first }}" alt="{{ object.name }}">
-      </figure>
-      <p class="subtitle is-6">
-        <strong>Image Credit:</strong> <a href="">Skitterphoto</a>
-      </p>
-    </div>
-  </section>
-  <section class="section" style="padding-top: 0">
-    <div class="container">
-      <div class="columns is-multiline">
-        <div class="column is-half">
-          <nav class="level is-mobile">
-            <div class="level-item has-text-centered">
-              <div>
-                <p class="heading">Time</p>
-                <p class="title">{{ object.total_time|timedel_to_words }}</p>
+    </section>
+    <section class="section" style="padding-top: 0">
+      <div class="container">
+        <div class="columns is-multiline">
+          <div class="column is-half">
+            <nav class="level is-mobile">
+              <div class="level-item has-text-centered">
+                <div>
+                  <p class="heading">Ready in</p>
+                  <p class="title">{{ object.total_time|timedel_to_words }}</p>
+                </div>
               </div>
-            </div>
-            <div class="level-item has-text-centered">
-              <div>
-                <p class="heading">Prep Time</p>
-                <p class="title">{{ object.prep_time|timedel_to_words }}</p>
+              <div class="level-item has-text-centered">
+                <div>
+                  <p class="heading">Serving size</p>
+                  <p class="title">{{ object.recipe_yield }}</p>
+                </div>
               </div>
-            </div>
-          </nav>
-          <nav class="level is-mobile">
-            <div class="level-item">
-              <progress class="level-item progress is-success" value="1" max="4"
-                style="border-radius: 0; height: 0.2rem"></progress>
-            </div>
-            <div class="level-item">
-              <progress class="level-item progress is-success" value="1" max="3"
-                style="border-radius: 0; height: 0.2rem"></progress>
-            </div>
-          </nav>
-        </div>
-        <div class="column is-half">
-          <nav class="level is-mobile">
-            <div class="level-item has-text-centered">
-              <div>
-                <p class="heading">Views</p>
-                <p class="title">{{ object.view_count }}</p>
+            </nav>
+            <nav class="level is-mobile">
+              <div class="level-item">
+{#                <progress class="level-item progress is-success" value="1" max="4"#}
+{#                          style="border-radius: 0; height: 0.2rem"></progress>#}
               </div>
-            </div>
-            <div class="level-item has-text-centered">
-              <div>
-                <p class="heading">Cook Time</p>
-                <p class="title">
-                  {% if object.cook_time != '0:00:00' %}
-
-                  {{ object.prep_time|timedel_to_words }}
+              <div class="level-item">
+{#                <progress class="level-item progress is-success" value="1" max="3"#}
+{#                          style="border-radius: 0; height: 0.2rem"></progress>#}
+              </div>
+            </nav>
+          </div>
+          <div class="column is-half">
+            <nav class="level is-mobile">
+              <div class="level-item has-text-centered">
+                <div>
+                  <p class="heading">Views</p>
+                  <p class="title">{{ object.view_count }}</p>
+                </div>
+              </div>
+              <div class="level-item has-text-centered">
+                <div>
+                  <p class="heading">Ratings</p>
+                  {% if object.aggregate_rating.rating_count > 0%}
+                  <p class="title">{% templatetag openvariable %} rating {% templatetag closevariable %}/5.0</p>
+                  <small>from {{ object.aggregate_rating.rating_count }} rating{{ object.aggregate_rating.rating_count|pluralize }}</small>
+                  {% else %} <p class="title">No ratings yet.
                   {% endif %}
-                </p>
-              </div>
-            </div>
-
-            <div class="level-item has-text-centered">
-              <div>
-                <p class="heading">Ratings</p>
-                <p class="title">{% templatetag openvariable %} currentRating {% templatetag closevariable %} / 5.0</p>
-                <!--{{ object.aggregate_rating.rating_value|rating }}</p>-->
-              </div>
-            </div>
-          </nav>
-          <nav class="level is-mobile">
-            <div class="level-item">
-              <progress class="progress is-danger" value="{{ recipe.cook_time.seconds|time_bar }}" max="6"
-                style="border-radius: 0; height: 0.2rem"></progress>
-            </div>
-            <div class="level-item">
-              <star-rating{% if not request.user.is_authenticated %} :read-only="true" {% else %}
-                :read-only="{{ object.author.id }} === currentAuthorId" {% endif %} recipe-name="{{ object.name }}"
-                :item-id="{{ object.id }}" :initial="currentRating" @change-score="rating = $event">
-                </star-rating>
-            </div>
-          </nav>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" style="padding-top: 0">
-    <div class="container" style="padding: 0 5%">
-      <div class="tile is-ancestor">
-        <div class="tile is-vertical">
-          <div class="tile">
-            <div class="tile is-parent">
-              <div class="tile is-child">
-                <h3 class="title is-4">
-                  Ingredients
-                </h3>
-                <div class="content">
-                  <ul style="list-style-type: none">
-                    {#                      <li>1⅓#}
-                    {#                        <div class="dropdown">#}
-                    {#                          <div class="dropdown-trigger">#}
-                    {#                            <a aria-haspopup="true" aria-controls="dropdown-menu">#}
-                    {#                              <span class="ingredient-unit-text">cups</span>#}
-                    {#                              <span class="icon is-small">#}
-                    {#                                  <i class="fas fa-angle-down fa-xs" aria-hidden="true"></i>#}
-                    {#                                </span>#}
-                    {#                            </a>#}
-                    {#                          </div>#}
-                    {#                          <div class="dropdown-menu" id="dropdown-menu" role="menu">#}
-                    {#                            <div class="dropdown-content">#}
-                    {#                              <a class="dropdown-item">#}
-                    {#                                teaspoon#}
-                    {#                              </a>#}
-                    {#                              <a class="dropdown-item ">#}
-                    {#                                tablespoon#}
-                    {#                              </a>#}
-                    {#                              <a class="dropdown-item">#}
-                    {#                                fluid ounce#}
-                    {#                              </a>#}
-                    {#                              <a class="dropdown-item is-active">#}
-                    {#                                cup#}
-                    {#                              </a>#}
-                    {#                              <a class="dropdown-item">#}
-                    {#                                pint#}
-                    {#                              </a>#}
-                    {#                              <hr class="dropdown-divider">#}
-                    {#                              <a class="dropdown-item">#}
-                    {#                                millilitre#}
-                    {#                              </a>#}
-                    {#                              <a class="dropdown-item">#}
-                    {#                                litre#}
-                    {#                              </a>#}
-                    {#                              <hr class="dropdown-divider">#}
-                    {#                              <a class="dropdown-item">#}
-                    {#                                ounce#}
-                    {#                              </a>#}
-                    {#                              <a class="dropdown-item">#}
-                    {#                                pound#}
-                    {#                              </a>#}
-                    {#                              <hr class="dropdown-divider">#}
-                    {#                              <a class="dropdown-item">#}
-                    {#                                milligram#}
-                    {#                              </a>#}
-                    {#                              <a class="dropdown-item">#}
-                    {#                                gram#}
-                    {#                              </a>#}
-                    {#                              <a class="dropdown-item">#}
-                    {#                                kilogram#}
-                    {#                              </a>#}
-                    {#                            </div>#}
-                    {#                          </div>#}
-                    {#                        </div>#}
-                    {#                        all-purpose flour#}
-                    {#                      </li>#}
-                    {#                      <li>3#}
-                    {#                        <div class="dropdown">#}
-                    {#                          <div class="dropdown-trigger">#}
-                    {#                            <a aria-haspopup="true" aria-controls="dropdown-menu2">#}
-                    {#                              <span class="ingredient-unit-text">tablespoons</span>#}
-                    {#                              <span class="icon is-small">#}
-                    {#                                  <i class="fas fa-angle-down fa-xs" aria-hidden="true"></i>#}
-                    {#                                </span>#}
-                    {#                            </a>#}
-                    {#                          </div>#}
-                    {#                          <div class="dropdown-menu" id="dropdown-menu2" role="menu">#}
-                    {#                            <div class="dropdown-content">#}
-                    {#                              <a class="dropdown-item">#}
-                    {#                                teaspoon#}
-                    {#                              </a>#}
-                    {#                              <a class="dropdown-item is-active">#}
-                    {#                                tablespoon#}
-                    {#                              </a>#}
-                    {#                              <a class="dropdown-item">#}
-                    {#                                fluid ounce#}
-                    {#                              </a>#}
-                    {#                              <a class="dropdown-item">#}
-                    {#                                cup#}
-                    {#                              </a>#}
-                    {#                              <a class="dropdown-item">#}
-                    {#                                pint#}
-                    {#                              </a>#}
-                    {#                              <hr class="dropdown-divider">#}
-                    {#                              <a class="dropdown-item">#}
-                    {#                                millilitre#}
-                    {#                              </a>#}
-                    {#                              <a class="dropdown-item">#}
-                    {#                                litre#}
-                    {#                              </a>#}
-                    {#                              <hr class="dropdown-divider">#}
-                    {#                              <a class="dropdown-item">#}
-                    {#                                ounce#}
-                    {#                              </a>#}
-                    {#                              <a class="dropdown-item">#}
-                    {#                                pound#}
-                    {#                              </a>#}
-                    {#                              <hr class="dropdown-divider">#}
-                    {#                              <a class="dropdown-item">#}
-                    {#                                milligram#}
-                    {#                              </a>#}
-                    {#                              <a class="dropdown-item">#}
-                    {#                                gram#}
-                    {#                              </a>#}
-                    {#                              <a class="dropdown-item">#}
-                    {#                                kilogram#}
-                    {#                              </a>#}
-                    {#                            </div>#}
-                    {#                          </div>#}
-                    {#                        </div>#}
-                    {#                        sugar#}
-                    {#                      </li>#}
-                    {#                      <li>1 teaspoon#}
-                    {#                        <div class="dropdown is-up is-hoverable">#}
-                    {#                          <div class="dropdown-trigger">#}
-                    {#                            <a aria-haspopup="true" aria-controls="dropdown-menu3">#}
-                    {#                              <span class="ingredient-text">baking powder</span>#}
-                    {#                            </a>#}
-                    {#                          </div>#}
-                    {#                          <div class="dropdown-menu" id="dropdown-menu3" role="menu">#}
-                    {#                            <div class="dropdown-content">#}
-                    {#                              <a class="dropdown-item">#}
-                    {#                                Find ingredient#}
-                    {#                              </a>#}
-                    {#                              <a class="dropdown-item">#}
-                    {#                                Find substitute#}
-                    {#                              </a>#}
-                    {#                            </div>#}
-                    {#                          </div>#}
-                    {#                        </div>#}
-                    {#                        <sup class="icon is-small ingredient-help"#}
-                    {#                             title="Baking powder is a dry chemical leavening agent, a mixture of a carbonate or bicarbonate and a weak acid. The base and acid are prevented from reacting prematurely by the inclusion of a buffer such as cornstarch. Baking powder is used to increase the volume and lighten the texture of baked goods."#}
-                    {#                        >#}
-                    {#                          <i class="fas fa-question fa-xs" aria-hidden="true"></i>#}
-                    {#                        </sup>#}
-                    {#                      </li>#}
-                    {% for ingredient in ingredients %}
-                    <li>{{ ingredient.quantity.number }} {{ ingredient.quantity.unit }} {{ ingredient.name }}</li>
-                    {% endfor %}
-                  </ul>
                 </div>
               </div>
-            </div>
-            <div class="tile is-parent">
-              <div class="tile is-child">
-                <h3 class="title is-4">
-                  Equipment
-                </h3>
-                <div class="content">
-                  <ul style="list-style-type: none">
-                    <li>Whisk</li>
-                    <li>Large bowl</li>
-                    <li>Medium bowl</li>
-                    <li>Griddle or large skillet</li>
-                    <li>Spatula</li>
-                    <li>Measuring cup</li>
-                  </ul>
-                </div>
+            </nav>
+            <nav class="level is-mobile">
+              <div class="level-item">
+                <progress class="progress is-hidden" value="0" max="100"
+                          style="border-radius: 0; height: 0.2rem"></progress>
               </div>
-            </div>
+              <div class="level-item">
+                  <star-rating{% if not request.user.is_authenticated %} :read-only="true"{% else %} :read-only="{{ object.author.id }} === currentAuthorId"{% endif %} recipe-name="{{ object.name }}" :item-id="{{ object.id }}" :initial="rating"
+                  @change-score="rating = $event"></star-rating>
+              </div>
+            </nav>
           </div>
-          <div class="tile">
+        </div>
+    </section>
+
+    <section class="section" style="padding-top: 0">
+      <div class="container" style="padding: 0 5%">
+        <div class="tile is-ancestor">
+            <div class="tile is-vertical">
+              <div class="tile is-parent">
+                <div class="tile is-child">
+                  <h3 class="title is-4">
+                    Ingredients
+                  </h3>
+                  <div class="content">
+                    <ul style="list-style-type: none">
+{#                      <li>1⅓#}
+{#                        <div class="dropdown">#}
+{#                          <div class="dropdown-trigger">#}
+{#                            <a aria-haspopup="true" aria-controls="dropdown-menu">#}
+{#                              <span class="ingredient-unit-text">cups</span>#}
+{#                              <span class="icon is-small">#}
+{#                                  <i class="fas fa-angle-down fa-xs" aria-hidden="true"></i>#}
+{#                                </span>#}
+{#                            </a>#}
+{#                          </div>#}
+{#                          <div class="dropdown-menu" id="dropdown-menu" role="menu">#}
+{#                            <div class="dropdown-content">#}
+{#                              <a class="dropdown-item">#}
+{#                                teaspoon#}
+{#                              </a>#}
+{#                              <a class="dropdown-item ">#}
+{#                                tablespoon#}
+{#                              </a>#}
+{#                              <a class="dropdown-item">#}
+{#                                fluid ounce#}
+{#                              </a>#}
+{#                              <a class="dropdown-item is-active">#}
+{#                                cup#}
+{#                              </a>#}
+{#                              <a class="dropdown-item">#}
+{#                                pint#}
+{#                              </a>#}
+{#                              <hr class="dropdown-divider">#}
+{#                              <a class="dropdown-item">#}
+{#                                millilitre#}
+{#                              </a>#}
+{#                              <a class="dropdown-item">#}
+{#                                litre#}
+{#                              </a>#}
+{#                              <hr class="dropdown-divider">#}
+{#                              <a class="dropdown-item">#}
+{#                                ounce#}
+{#                              </a>#}
+{#                              <a class="dropdown-item">#}
+{#                                pound#}
+{#                              </a>#}
+{#                              <hr class="dropdown-divider">#}
+{#                              <a class="dropdown-item">#}
+{#                                milligram#}
+{#                              </a>#}
+{#                              <a class="dropdown-item">#}
+{#                                gram#}
+{#                              </a>#}
+{#                              <a class="dropdown-item">#}
+{#                                kilogram#}
+{#                              </a>#}
+{#                            </div>#}
+{#                          </div>#}
+{#                        </div>#}
+{#                        all-purpose flour#}
+{#                      </li>#}
+{#                      <li>3#}
+{#                        <div class="dropdown">#}
+{#                          <div class="dropdown-trigger">#}
+{#                            <a aria-haspopup="true" aria-controls="dropdown-menu2">#}
+{#                              <span class="ingredient-unit-text">tablespoons</span>#}
+{#                              <span class="icon is-small">#}
+{#                                  <i class="fas fa-angle-down fa-xs" aria-hidden="true"></i>#}
+{#                                </span>#}
+{#                            </a>#}
+{#                          </div>#}
+{#                          <div class="dropdown-menu" id="dropdown-menu2" role="menu">#}
+{#                            <div class="dropdown-content">#}
+{#                              <a class="dropdown-item">#}
+{#                                teaspoon#}
+{#                              </a>#}
+{#                              <a class="dropdown-item is-active">#}
+{#                                tablespoon#}
+{#                              </a>#}
+{#                              <a class="dropdown-item">#}
+{#                                fluid ounce#}
+{#                              </a>#}
+{#                              <a class="dropdown-item">#}
+{#                                cup#}
+{#                              </a>#}
+{#                              <a class="dropdown-item">#}
+{#                                pint#}
+{#                              </a>#}
+{#                              <hr class="dropdown-divider">#}
+{#                              <a class="dropdown-item">#}
+{#                                millilitre#}
+{#                              </a>#}
+{#                              <a class="dropdown-item">#}
+{#                                litre#}
+{#                              </a>#}
+{#                              <hr class="dropdown-divider">#}
+{#                              <a class="dropdown-item">#}
+{#                                ounce#}
+{#                              </a>#}
+{#                              <a class="dropdown-item">#}
+{#                                pound#}
+{#                              </a>#}
+{#                              <hr class="dropdown-divider">#}
+{#                              <a class="dropdown-item">#}
+{#                                milligram#}
+{#                              </a>#}
+{#                              <a class="dropdown-item">#}
+{#                                gram#}
+{#                              </a>#}
+{#                              <a class="dropdown-item">#}
+{#                                kilogram#}
+{#                              </a>#}
+{#                            </div>#}
+{#                          </div>#}
+{#                        </div>#}
+{#                        sugar#}
+{#                      </li>#}
+{#                      <li>1 teaspoon#}
+{#                        <div class="dropdown is-up is-hoverable">#}
+{#                          <div class="dropdown-trigger">#}
+{#                            <a aria-haspopup="true" aria-controls="dropdown-menu3">#}
+{#                              <span class="ingredient-text">baking powder</span>#}
+{#                            </a>#}
+{#                          </div>#}
+{#                          <div class="dropdown-menu" id="dropdown-menu3" role="menu">#}
+{#                            <div class="dropdown-content">#}
+{#                              <a class="dropdown-item">#}
+{#                                Find ingredient#}
+{#                              </a>#}
+{#                              <a class="dropdown-item">#}
+{#                                Find substitute#}
+{#                              </a>#}
+{#                            </div>#}
+{#                          </div>#}
+{#                        </div>#}
+{#                        <sup class="icon is-small ingredient-help"#}
+{#                             title="Baking powder is a dry chemical leavening agent, a mixture of a carbonate or bicarbonate and a weak acid. The base and acid are prevented from reacting prematurely by the inclusion of a buffer such as cornstarch. Baking powder is used to increase the volume and lighten the texture of baked goods."#}
+{#                        >#}
+{#                          <i class="fas fa-question fa-xs" aria-hidden="true"></i>#}
+{#                        </sup>#}
+{#                      </li>#}
+                        {% for ingredient in object.recipe_ingredients %}
+                            <quantity-field :initial='{{ ingredient.to_json|safe }}'></quantity-field>
+{#                            <li><a href="{% url 'koocook_core:ingredient' ingredient.meta.id %}">{{ ingredient.words_name }}</a> {{ ingredient.words_quantity }}</li>#}
+                        {% endfor %}
+                    </ul>
+                  </div>
+                </div>
+                <div class="tile is-child">
+                  <h3 class="title is-4"> <b-icon icon="pot-mix"></b-icon>
+                    Equipment
+                  </h3>
+                  <div class="content">
+
+                    <ul style="list-style-type: none">
+                        {% for equipment in object.equipment_set.all %}
+                            <li><a href="{% url 'koocook_core:equipment' equipment.id %}">{{ equipment.name }}</a></li>
+                            {% empty %}
+                            No cookware information provided
+                        {% endfor %}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+                <div class="tile">
+                <div class="tile is-parent" id="nutrition">
+                <div class="tile is-child">
+                    <h3 class="title is-4">
+                        Nutritional information
+                    </h3>
+                    <div class="content">
+                        <ul style="list-style-type: none">
+                            {# TODO: link to ingredient page #}
+                            {% for fact in object.nutrition %}
+                                <li class="nutrient">  <b-dropdown class="callout bottom" animation="slide-fade" aria-role="list">
+                                <span slot="trigger" role="button">
+                                        <b-button type="is-small nutrient-info" icon-right="information-outline" />
+                                </span>
+                                    <b-dropdown-item :focusable="false" :custom="true" aria-role="listitem">
+                                        <strong>Sourced from</strong>
+                                    <ul>
+                                        {%  for source in fact.sources %}
+                                            <li>
+
+                                                <span class="nutrient-name"><a href="{% url 'koocook_core:ingredient' source.id %}">{{ source.name|capfirst }}</a></span>
+                                            {{ source.quantity }}
+                                            {% if source.relative %}<progress value="{{ source.relative }}" max="100" class="progress is-success" style="border-radius: 0px; height: 0.2rem;"></progress>{% endif %}</li>
+                                            {% endfor %}
+                                    </ul>
+                                    </b-dropdown-item>
+                                </b-dropdown> {{ fact.nutrient }} {{ fact.quantity }}</li>
+                            {% empty %}
+                                Nutritional information is not available.
+                            {% endfor %}
+                        </ul>
+                    </div>
+              </div>
+            </div>
             <div class="tile is-parent">
               <div class="tile is-child">
                 <h3 class="title is-4">
                   Instructions
                 </h3>
                 <div class="content" style="">
-                  <ol>
-                    {% for instruction in object.recipe_instructions %}
-                    <li>
-                      {{ instruction }}
-                    </li>
+                    <ol>{% for instruction in object.recipe_instructions %}
+                        <li>{{ instruction }}</li>
                     {% endfor %}
-                  </ol>
+                    </ol>
                 </div>
+            </div>
+              </div>
               </div>
             </div>
-          </div>
-        </div>
-        <div class="tile is-parent">
-          <div class="tile is-child" id="nutrition">
-            <h3 class="title is-4">
-              Nutrition
-            </h3>
-            <div class="content">
-              <ul style="list-style-type: none">
-                {% for fact in object.nutrition %}
-                <li>{{ fact }}</li>
-                {% endfor %}
-              </ul>
-            </div>
-          </div>
         </div>
       </div>
-  </section>
+    </section>
 
-  <section class="section" style="padding-top: 0">
-    <div class="container">
+    <section class="section" style="padding-top: 0">
+      <div class="container">
 
-      <hr style="margin-top: 0">
-      <h2 class="title">
-        Comments
-      </h2>
-      {% if request.user.is_authenticated %}
-      <comments-widget :author-id="currentAuthorId" item-name="{{ object.name }}" :item-id="{{ object.id }}">
-      </comments-widget>
-      {% else %}
-      <div class="notification">
-        <p>Only KooCook users can view the comments of this recipe!</p>
-        Please <a href="{% url "social:begin" "google-oauth2" %}"><strong>sign in</strong></a> to add or view comments
+        <hr style="margin-top: 0">
+        <h2 class="title"><b-icon icon="comment"></b-icon>
+          Comments
+        </h2>
+            {% if request.user.is_authenticated %}
+          <comments-widget :author-id="currentAuthorId" item-name="{{ object.name }}" :item-id="{{ object.id }}"></comments-widget>
+                {% else %}
+                <div class="notification">
+                    <p>Only KooCook users can view the comments of this recipe!</p>
+                    Please <a href="{% url "social:begin" "google-oauth2" %}"><strong>sign in</strong></a> to add or view comments
+                </div>
+
+          {% endif %}
       </div>
-
-      {% endif %}
-    </div>
-  </section>
-  <script>
-    new Vue({
-      el: '#app',
-      data: {
-        searchName: '',
-        ingredients: [],
-        currentAuthorId: {{ current_author.id }},
-      currentRating: {{ object.aggregate_rating.rating_value }}.toFixed(1)
-                },
-      methods: {
-      changeRating(newRating) {
-        this.currentRating = newRating.toFixed(1)
-      }
-    }
-             });
+    </section>
+{% endblock %}
+{% block vue_init %}
+<script src="{% static 'js/bundle.js' %}"></script>
+<script>
+     new Vue({
+        el: '#app',
+        data: {
+            searchName: '',
+            ingredients: [],
+            rating: parseFloat({{ object.aggregate_rating.rating_value }}).toFixed(1),
+            currentAuthorId: {{ current_author.id }}
+        }});
   </script>
-  {% endblock %}
-</div>
+{% endblock %}

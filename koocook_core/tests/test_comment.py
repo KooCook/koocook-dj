@@ -11,8 +11,10 @@ class CommentTest(AuthTestCase):
         self.comment_body = MarkdownSource("This is a comment.")
 
     def test_comment_replies(self):
+        post = Post.objects.create(author=self.author)
         comment = Comment.objects.create(author=self.author,
-                                         body=self.comment_body)
+                                         body=self.comment_body,
+                                         item_reviewed=post)
         response = self.client.post(reverse('koocook_core:comments', kwargs={'item_id': comment.id}), {
             "author": self.author,
             "body": self.comment_body
@@ -40,7 +42,7 @@ class CommentTest(AuthTestCase):
 
     def test_comment_recipe_reviewed(self):
         recipe = create_dummy_recipe(self.author)
-        response = self.client.post(reverse('koocook_core:recipe-comments', kwargs={'item_id': recipe.id}), {
+        response = self.client.post(reverse('koocook_core:recipes:comments', kwargs={'item_id': recipe.id}), {
             "body": self.comment_body
         })
         with self.subTest():

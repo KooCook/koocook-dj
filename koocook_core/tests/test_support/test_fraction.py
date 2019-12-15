@@ -1,7 +1,16 @@
 import math
 import unittest
+import doctest
 
-from koocook_core.support.fraction import Fraction
+from koocook_core.support import fraction
+
+Fraction = fraction.Fraction
+
+
+def load_tests(loader, tests, ignore):
+    tests.addTests(doctest.DocTestSuite(fraction))
+    # add doctests in fraction.py
+    return tests
 
 
 class FractionTest(unittest.TestCase):
@@ -261,3 +270,5 @@ class FractionTest(unittest.TestCase):
         self.assertFalse(Fraction(-1, 0).isnan())
         self.assertFalse(Fraction(0).isnan())
         self.assertTrue(Fraction(0, 0).isnan())
+
+    # TODO: Improve coverage in fraction.py

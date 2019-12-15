@@ -54,3 +54,18 @@ class TestUnit(unittest.TestCase):
             with self.subTest(unit=u):
                 with self.assertRaises(ValueError):
                     unit.get_unit(u)
+
+    def test_convert_unit_from_small_to_big(self):
+        """ covert g to kg"""
+        result = unit.convert(1, 'g', 'kg')
+        self.assertEqual(result, 0.001)
+
+    def test_convert_unit_from_big_to_small(self):
+        """ covert kg to g"""
+        result = unit.convert(1, 'kg', 'g')
+        self.assertEqual(result, 1000.)
+
+    def test_convert_temperature(self):
+        """ convert °F to K"""
+        result = f"{unit.TemperatureUnit.convert(0, '°F', 'K'):.3f}"
+        self.assertEqual(result, '255.372')

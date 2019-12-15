@@ -1,28 +1,34 @@
-{% extends 'base/recipes.html' %}
+{% extends 'base/recipes/crud.html' %}
 {% load static %}
 {% load widget_tweaks %}
 {% block hero_title %}Create a recipe{% endblock %}
 {% block page_title %}Create a recipe{% endblock %}
 {% block content_page_name %}Create a recipe{% endblock %}
-{% block content_deps %}
-<script src="https://unpkg.com/vue-slicksort@latest/dist/vue-slicksort.min.js"></script>
-<link rel="stylesheet" href="{% static 'css/recipe/crud.css'%} ">
-{#<script src="{% static 'js/components/ingredients.js' %}"></script>#}
-<script src="{% static 'js/bundle.js' %}"></script>
-{% endblock %}
+{% block crud_deps %}<script src="{% static 'js/bundle.js' %}"></script>{% endblock %}
 {% block page_content %}
+
+<!-- {% for field in form %}
+{% for error in field.errors %}
+<p class="help is-danger">
+    {{ field.name }}{{ error }}
+</p>
+{% endfor %}
+{% endfor %} -->
 <form method="post" novalidate action="{{ request.path }}">
+    {% for hidden in form.hidden_fields %}
+    {{ hidden }}
+    {% endfor %}
     <div class="columns">
         <div class="column">
             <div class="form-group field is-horizontal recipe-underlined-input-field">
-                <recipe-tag-input :attached="true" v-model="tags" ellipsis icon="tag" placeholder="Add a tag"
-                    :allow-new="true" autocomplete maxtags="18" maxlength="24">
-                    <template v-slot:default="slotProps"></template>
-                    <template slot="empty">
-                        There are no existing tags, but you can create a new one.
-                    </template>
-                </recipe-tag-input>
-                <div class="field-label is-medium">
+{#        <recipe-tag-input :attached="true" v-model="tags" ellipsis icon="tag" placeholder="Add a tag" :allow-new="true"#}
+{#            autocomplete maxtags="18" maxlength="24">#}
+{#            <template v-slot:default="slotProps"></template>#}
+{#            <template slot="empty">#}
+{#                There are no existing tags, but you can create a new one.#}
+{#            </template>#}
+{#        </recipe-tag-input>                #}
+            <div class="field-label is-medium">
                     <label class="label">{{ form.name.label_tag }}</label>
                 </div>
                 <div class="field-body">
@@ -48,6 +54,13 @@
     <div class="columns">
         <div class="column">
             <image-holder></image-holder>
+            {% if form.image.errors %}
+                        {% for error in form.image.errors %}
+                        <p class="help is-danger">
+                            {{ error }}
+                        </p>
+                        {% endfor %}
+                        {% endif %}
         </div>
         <div class="column">
             <b-tabs position="is-centered">
@@ -56,6 +69,9 @@
                 </b-tab-item>
                 <b-tab-item label="Instructions" icon="view-headline">
                     <instruction-list></instruction-list>
+                </b-tab-item>
+                <b-tab-item label="Cookware" icon="pot-mix">
+                    <cookware-list></cookware-list>
                 </b-tab-item>
             </b-tabs>
         </div>
@@ -81,15 +97,9 @@
         </div>
     </div>
     {% csrf_token %}
-    {% for error in form.image.errors %}
-    <div class="invalid-feedback">
-        {{ error }}
-    </div>
-    {% endfor %}
     {% for field in form.vanilla_fields %}
     {% if field.is_hidden %}
     {{ field }}
-
     {% else %}
     <div class="form-group field is-horizontal">
         <div class="field-label is-normal">
@@ -109,6 +119,28 @@
     </div>
     {% endif %}
     {% endfor %}
+<div class="form-group field is-horizontal">
+        <div class="field-label is-normal">
+            <label class="label">Tags</label>
+        </div>
+        <div class="field-body">
+            <div class="field control"> <recipe-tag-input :attached="true" v-model="tags" ellipsis icon="tag" placeholder="Add a tag"
+    :allow-new="true" :care-deleted="true" autocomplete maxtags="18" maxlength="24">
+<template v-slot:default="slotProps"></template>
+<template slot="empty">
+    There are no existing tags, but you can create a new one.
+</template>
+    </recipe-tag-input>
+            </div>
+            {% if form.tag_set.errors %}
+            {% for error in form.tag_set.errors %}
+            <p class="help is-danger">
+                {{ error }}
+            </p>
+            {% endfor %}
+            {% endif %}
+        </div>
+    </div>
     <div class="field is-horizontal">
         <div class="field-label">
             <!-- Left empty for spacing -->
@@ -125,12 +157,16 @@
     </div>
 </form>
 
-<script>
-    new Vue({
+{% endblock %}
+{% block vue_init %}
+    <script src="{% static 'js/bundle.js' %}"></script>
+     <script>
+      new Vue({
         el: '#app',
         data: {
             searchName: '',
             ingredients: [],
+            formula: '',
             tags: [],
             unitConversionFactor: CONVERSION_FACTORS,
             selectableUnits: CONVERSION_UNITS

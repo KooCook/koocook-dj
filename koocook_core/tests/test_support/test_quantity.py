@@ -83,18 +83,46 @@ class TestQuantity(unittest.TestCase):
                             raise self.failureException(f'test raised {e.__class__.__name__} unexpectedly') from e
 
     def test_add_with_both_amount_are_fraction(self):
-        self.setUp()
         summation1 = self.quantity1 + self.quantity1
-        self.assertEqual(summation1, self.quantity2)
+        with self.subTest():
+            self.assertEqual(summation1, self.quantity2)
         summation2 = self.quantity1 + self.quantity2
-        self.assertEqual(summation2, self.quantity4)
+        with self.subTest():
+            self.assertEqual(summation2, self.quantity4)
 
     def test_add_with_both_amount_are_int(self):
-        self.setUp()
         summation = self.quantity3 + self.quantity4
         self.assertEqual(summation, self.quantity5)
 
     def test_add_fraction_with_int(self):
-        self.setUp()
         summation = self.quantity1 + self.quantity4
         self.assertEqual(summation, self.quantity6)
+
+    def test_add_with_different_unit(self):
+        summation = quantity.parse_quantity('0.002 kg') + self.quantity4
+        self.assertEqual(summation, quantity.parse_quantity('0.003 kg'))
+
+    def test_with_same_quantity_many_times(self):
+        result = quantity.Quantity.mul_quantity(self.quantity1, self.quantity3)
+        self.assertEqual(result, self.quantity4)
+
+    def test_with_mul_same_unit(self):
+        result = self.quantity1 * self.quantity3
+        self.assertEqual(result, self.quantity4)
+
+    def test_with_mul_different_unit(self):
+        result = self.quantity4 * quantity.parse_quantity('3000 mg')
+        self.assertEqual(result, self.quantity3)
+
+    def test_with_div_same_unit(self):
+        result = self.quantity6 / self.quantity3
+        self.assertEqual(result, quantity.parse_quantity('4/9 g'))
+
+    def test_with_div_different_unit(self):
+        result = self.quantity5 / quantity.parse_quantity('2000 mg')
+        self.assertEqual(result, quantity.parse_quantity('2 g'))
+
+    def test_change_quantity_to_decimal(self):
+        with self.subTest():
+            self.assertEqual(self.quantity4.decimal, '1.0 gram')
+            self.assertEqual(self.quantity3.decimal, '3.0 grams')

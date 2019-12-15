@@ -1,15 +1,19 @@
 import json
+import logging
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import reverse
 from django.views.generic.edit import FormMixin, ProcessFormView
 
 from .forms import CommentForm
-from ..models import Author, RecipeIngredient, MetaIngredient
+from ..models import Author, RecipeIngredient, RecipeEquipment, MetaIngredient, get_client_ip
+
+LOGGER = logging.getLogger(__name__)
 
 
 class SignInRequiredMixin(LoginRequiredMixin):
     @property
     def login_url(self):
+        LOGGER.info(f"An unauthenticated visitor attempted to access the authenticated page")
         return reverse('social:begin', args=['google-oauth2'])
 
     def get_success_url(self):
@@ -28,6 +32,7 @@ class AuthAuthorMixin:
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
+            LOGGER.info(f"{self.request.user.username} has requested an author view")
             context['current_author'] = Author.objects.get(user__user=self.request.user)
         else:
             context['current_author'] = {'id': 0}
@@ -35,6 +40,12 @@ class AuthAuthorMixin:
 
     def get_author(self) -> Author:
         return Author.objects.get(user__user=self.request.user)
+
+    def get_visitor_name(self) -> str:
+        if self.request.user.is_authenticated:
+            return f"{self.request.user.username} (User)"
+        else:
+            return f"Anonymous IP: {get_client_ip(self.request)}"
 
     def form_valid(self, form):
         form.instance.author = self.get_author()
@@ -64,20 +75,10 @@ class CommentWidgetMixin(AuthAuthorMixin, FormMixin):
 
 
 class RecipeViewMixin(SignInRequiredMixin, AuthAuthorMixin):
+    ACTION = 'mixin'
 
-    # Messy
-    def form_valid(self, form):
+    def process_tags(self, form):
         from ..models import Tag, TagLabel
-        response = super().form_valid(form)
-        images = json.loads(self.request.POST.get('image'))
-        if isinstance(images, list):
-            form.instance.image = images
-            form.instance.save()
-
-        recipe_instructions = json.loads(self.request.POST.get('recipe_instructions'))
-        if isinstance(recipe_instructions, list):
-            form.instance.recipe_instructions = recipe_instructions
-            form.instance.save()
         tags = json.loads(self.request.POST.get('tags'))
         if tags:
             for tag in tags:
@@ -85,25 +86,68 @@ class RecipeViewMixin(SignInRequiredMixin, AuthAuthorMixin):
                                   in [f.name for f in Tag._meta.get_fields()]}
                 if 'deleted' in tag and tag['deleted']:
                     form.instance.tag_set.remove(Tag.objects.get(pk=tag['id']))
-                    Tag.objects.get(pk=tag['id']).delete()
+                    # Tag.objects.get(pk=tag['id']).delete()
                 else:
                     if tag['label'] != '':
                         if 'id' in tag['label']:
                             tag['label'].pop('id')
-                        tag_body['label'] = TagLabel.objects.create(**tag['label'])
+                        tag_body['label'], created = TagLabel.objects.get_or_create(**tag['label'])
                     if 'id' not in tag_body:
-                        form.instance.tag_set.add(Tag.objects.create(**tag_body))
+                        tag, created = Tag.objects.get_or_create(**tag_body)
                     else:
-                        try:
-                            obj = form.instance.tag_set.get(id=tag_body['id'])
-                            obj.name = tag_body['name']
-                            obj.save()
-                        except Tag.DoesNotExist:
-                            form.instance.tag_set.add(Tag.objects.get(pk=tag_body['id']))
+                        tag = Tag.objects.get(pk=tag_body['id'])
+                    form.instance.tag_set.add(tag)
+                    # else:
+                    #     try:
+                    #         obj = form.instance.tag_set.get(id=tag_body['id'])
+                    #         obj.name = tag_body['name']
+                    #         obj.save()
+                    #     except Tag.DoesNotExist:
+                    #         form.instance.tag_set.add(Tag.objects.get(pk=tag_body['id']))
         else:
             form.instance.tag_set.clear()
-        form.instance.save()
 
+    def process_equipment(self, form):
+        equipment = self.request.POST.get('cookware_list')
+        if equipment:
+            equipment = json.loads(equipment)
+            created = False
+            for cookware in equipment:
+                form.instance.equipment_set.clear()
+                if 'id' in cookware:
+                    try:
+                        found = RecipeEquipment.objects.get(pk=cookware['id'])
+                        created = True
+                    except RecipeEquipment.DoesNotExist:
+                        pass
+                else:
+                    found, created = RecipeEquipment.objects.get_or_create(name=cookware['name'])
+                if created:
+                    found.name = cookware['name']
+                    found.save()
+                form.instance.equipment_set.add(found)
+
+    def process_instructions(self, form):
+        recipe_instructions = json.loads(self.request.POST.get('recipe_instructions'))
+        if isinstance(recipe_instructions, list):
+            form.instance.recipe_instructions = recipe_instructions
+            form.instance.save()
+
+    def process_media(self, form):
+        images = json.loads(self.request.POST.get('image'))
+        if isinstance(images, list):
+            form.instance.image = images
+            form.instance.save()
+
+    # Messy
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        LOGGER.info(f"{self.get_visitor_name()} has {self.ACTION}d the recipe named {form.instance.name} #{form.instance.id}")
+        self.process_instructions(form)
+        self.process_equipment(form)
+        self.process_tags(form)
+        self.process_media(form)
+        form.instance.save()
         ingredients = json.loads(self.request.POST.get('ingredients'))
         if ingredients:
             for ingredient in ingredients:
@@ -117,12 +161,16 @@ class RecipeViewMixin(SignInRequiredMixin, AuthAuthorMixin):
                                            'quantity': f"{ingredient['quantity']['number']} "
                                                        f"{ingredient['quantity']['unit']}"}
                 if 'id' not in ingredient:
-                    RecipeIngredient(**ingredient_field_values).save()
+                    ing = RecipeIngredient(**ingredient_field_values)
+                    ing.save()
+                    LOGGER.info(f"The ingredient {meta.name} [{ing.id}] in {form.instance.name} has been created")
                 else:
                     found_ingredient = RecipeIngredient.objects.filter(pk=ingredient['id'])
                     if not found_ingredient:
                         RecipeIngredient(**ingredient_field_values).save()
                     else:
+                        LOGGER.info(f"The ingredient {meta.name} [{found_ingredient[0].id}] in {form.instance.name} "
+                                    f"has been altered")
                         if 'removed' in ingredient and bool(ingredient['removed']):
                             found_ingredient.delete()
                         else:

@@ -62,7 +62,8 @@
       v-on:mouseleave="$set(userPost, 'hovered', false)">
       <figure class="media-left">
         <p class="image is-64x64">
-          <img src="https://bulma.io/images/placeholders/128x128.png">
+           <img v-if="userPost.author.user.avatar" :src="userPost.author.user.avatar.content">
+          <img v-else src="https://bulma.io/images/placeholders/128x128.png">
         </p>
       </figure>
       <div class="media-content">
@@ -117,7 +118,8 @@
       v-on:mouseleave="$set(userPost, 'hovered', false)">
       <figure class="media-left">
         <p class="image is-64x64">
-          <img src="https://bulma.io/images/placeholders/128x128.png">
+            <img v-if="userPost.author.user.avatar" :src="userPost.author.user.avatar.content">
+          <img v-else src="https://bulma.io/images/placeholders/128x128.png">
         </p>
       </figure>
       <div class="media-content">
@@ -168,7 +170,8 @@
       v-on:mouseleave="$set(userPost, 'hovered', false)">
       <figure class="media-left">
         <p class="image is-64x64">
-          <img src="https://bulma.io/images/placeholders/128x128.png">
+           <img v-if="userPost.author.user.avatar" :src="userPost.author.user.avatar.content">
+          <img v-else src="https://bulma.io/images/placeholders/128x128.png">
         </p>
       </figure>
       <div class="media-content">
@@ -196,7 +199,9 @@
     </article>
   </b-tab-item>{% endif %}
 </b-tabs>
-<followee-list ref="followees"></followee-list>
+    <followee-list ref="followees"></followee-list>
+{% endblock %}
+{% block vue_init %}
 <script>
   Object.assign(GLOBAL_DATA, {
     activeTab: 0,

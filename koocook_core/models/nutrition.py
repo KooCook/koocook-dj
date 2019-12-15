@@ -1,19 +1,15 @@
-import enum
 import json
 
 from django.contrib.postgres import fields
 from django.db import models
+from django.shortcuts import reverse
 from koocook_core.support.quantity import Quantity, parse_quantity
 
+import operator
+from .base import ModelEncoder
 from koocook_core import fields as koocookfields
 
 __all__ = ['MetaIngredient', 'RecipeIngredient']
-
-
-@enum.unique
-class NutrientType(enum.Enum):
-    CARBOHYDRATE = 'carbohydrates'
-    ...
 
 
 class MetaIngredient(models.Model):
@@ -31,12 +27,16 @@ class MetaIngredient(models.Model):
 
 
 class RecipeIngredient(models.Model):
-    quantity = koocookfields.QuantityField(
-        max_length=50,
-    )
+    exclude = ('recipe', )
+    quantity = koocookfields.QuantityField()
     meta = models.ForeignKey(
         'koocook_core.MetaIngredient',
         on_delete=models.PROTECT,
+    )
+    description = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
     )
     substitute_set = models.ManyToManyField('self', blank=True)
     recipe = models.ForeignKey(
@@ -46,28 +46,58 @@ class RecipeIngredient(models.Model):
 
     @property
     def to_dict(self):
-        return {'id': self.id, 'name': self.meta.name, 'type': self.quantity. unit.type,
-                'quantity': {'unit': self.quantity.unit.symbol, 'number': self.quantity.amount}}
+        return {'id': self.id, 'name': self.meta.name, 'type': self.quantity.unit.type,
+                'url': reverse('koocook_core:ingredient', args=[self.meta.id]),
+                'quantity': {'unit': self.quantity.unit.singular, 'number': self.quantity.amount,
+                             'rendered': self.quantity.as_latex()},
+                'repr': f"{self.quantity.representation} of {self.meta.name}"}
 
     @property
     def to_json(self):
-        return json.dumps(self.to_dict)
+        return json.dumps(self.to_dict, cls=ModelEncoder)
 
     @property
     def nutrition(self):
         nutrition_list = []
-        for nutrient in self.meta.nutrient:
-            if nutrient['nutrient'] not in list(map(lambda x: x['nutrient'], nutrition_list)):
+        # try:
+        nutrients = self.meta.nutrient
+        # except KeyError:
+        #     # nutrients = self.meta.nutrient
+        #     # if 'quantity' in nutrients:
+        #     #     nutrients['quantity'] = parse_quantity(
+        #     #         nutrients['quantity']).decimal
+        #     # else:
+        #     #     return nutrition_list
+        #     # nutrition_list.append(nutrients)
+        #     return nutrition_list
+        for nutrient in nutrients:
+            if nutrient['nutrient'] not in map(operator.itemgetter('nutrient'), nutrition_list):
+                nutrient['quantity'] = parse_quantity(
+                    nutrient['quantity']).mul_quantity(self.quantity).decimal
                 nutrition_list.append(nutrient)
             else:
-                for i in range(len(nutrition_list)):
-                    if nutrition_list[i]['nutrient'] == nutrient['nutrient']:
-                        nutrition_list[i]['quantity'] = str(RecipeIngredient.sum_nutrient(
-                            nutrition_list[i]['quantity'], nutrient['quantity']
-                        ))
+                nutrient['quantity'] = parse_quantity(
+                    nutrient['quantity']).mul_quantity(self.quantity).decimal
+                i = nutrition_list.index(next(filter(
+                    lambda index: index.get(
+                        'nutrient') == nutrient['nutrient'],
+                    nutrition_list
+                )))
+                nutrition_list[i]['quantity'] = str(self.sum_nutrient(
+                    nutrition_list[i]['quantity'], nutrient['quantity']
+                ))
         return nutrition_list
 
     @staticmethod
-    def sum_nutrient(first_nutrient: str, second_nutrient: str):
-        result = parse_quantity(first_nutrient) + parse_quantity(second_nutrient)
-        return result
+    def sum_nutrient(first_nutrient: str, second_nutrient: str) -> Quantity:
+        result = parse_quantity(first_nutrient) + \
+            parse_quantity(second_nutrient)
+        return result.decimal
+
+    @property
+    def words_quantity(self):
+        return str(self.quantity.representation)
+
+    @property
+    def words_name(self):
+        return " " + self.meta.name

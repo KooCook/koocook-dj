@@ -2,69 +2,37 @@ from django.contrib.auth.models import User
 from django.contrib.postgres import fields
 from django.db import models
 
+from koocook_auth.models import KoocookUser
 from ..base import SerialisableModel
 
-__all__ = ('KoocookUser', 'Author')
-
-
-def _default_preferences():
-    return dict()
-
-
-class KoocookUser(SerialisableModel, models.Model):
-    exclude = ('user', 'preferences', 'user_settings')
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    # author from Author's OneToOneField
-    preferences = fields.JSONField(default=_default_preferences)
-    user_settings = fields.JSONField(default=_default_preferences)
-    following = models.ManyToManyField('self')
-    followers = models.ManyToManyField('self')
-
-    class Meta:
-        db_table = "koocook_user"
-
-    @property
-    def formal_preferences(self):
-        from ...support import PreferenceManager
-        return PreferenceManager.from_koocook_user(self)
-
-    def follow(self, user: 'KoocookUser'):
-        self.following.add(user)
-        self.save()
-
-    def unfollow(self, user: 'KoocookUser'):
-        self.following.remove(user)
-        self.save()
-
-    @property
-    def name(self):
-        if self.user.get_full_name():
-            return self.user.get_full_name()
-        else:
-            return self.user.username
-
-    @classmethod
-    def from_dj_user(cls, user: User):
-        return cls.objects.get(user=user)
-
-    @property
-    def full_name(self):
-        return self.user.get_full_name()
+__all__ = ['Author', 'KoocookUser']
 
 
 class Author(SerialisableModel, models.Model):
+    """
+
+    Attributes:
+        rating_set (RelatedManager): from ForeignKey in ``Rating``
+        comment_set (RelatedManager): from ForeignKey in ``Comment``
+        recipe_set (RelatedManager): from ForeignKey in ``Recipe``
+        post_set (RelatedManager): from ForeignKey in ``Post``
+
+    Notes:
+        Automatically created when ``User`` is  created.
+    """
     include = ('qualified_name',)
+    
     name = models.CharField(max_length=100)
     user = models.OneToOneField(
-        'koocook_core.KoocookUser',
+        'koocook_auth.KoocookUser',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
     )
-    # rating_set from Rating
-    # comment_set from Comment
-    # recipe_set from Recipe
-    # post_set from Post
+
+    @property
+    def is_koocook_user(self):
+        return self.user and isinstance(self.user, KoocookUser)
 
     @property
     def dj_user(self):

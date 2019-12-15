@@ -24,7 +24,9 @@ const CONVERSION_UNITS = {
 };
 
 const GLOBAL_DATA = {
-  searchName: '',
+  searchTerm: '',
+  searchParams: '',
+  isFiltersOpen: false
 };
 
 String.prototype.format = function() {
@@ -43,4 +45,13 @@ function getCookie(name) {
 
 Vue.filter("time-passed", function(date) {
   return moment(date).fromNow();
+});
+
+Vue.filter("pluralize", function(unit, num) {
+  num = num.toString().replace('/1','');
+
+  if (!unit.singular) unit.singular = unit.symbol;
+  if (!unit.plural) unit.plural = unit.symbol;
+  console.log(num + `${parseInt(num) - 1 === 0 ? unit.plural : unit.plural }`);
+  return `${parseInt(num) - 1 === 0 ? unit.singular : unit.plural }`
 });
