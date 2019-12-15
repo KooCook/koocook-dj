@@ -37,6 +37,7 @@ class RecipeTests(AuthTestCase):
     def test_recipe_ingredient(self):
         recipe = Recipe()
         self.assertEqual(list(recipe.recipe_ingredients), list(recipe.recipeingredient_set.all()))
+        
     def test_recipe_method_not_allowed(self):
         response = self.client.patch(reverse("koocook_core:recipes:detail", kwargs={'recipe_id': 1}))
         self.assertEqual(response.status_code, 405)
