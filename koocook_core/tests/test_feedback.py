@@ -22,6 +22,7 @@ class FeedbackTest(AuthTestCase):
                                   subject='test', body="It's a testing.")
         with self.subTest():
             self.assertEqual(self.model.objects.get(subject='test').body, "It's a testing.")
+            self.assertFalse(self.model.objects.get(subject='test').status)
             self.assertIsNone(self.model.objects.get(subject='test').image)
             self.assertIsNone(self.model.objects.get(subject='test').video)
 
@@ -55,9 +56,11 @@ class FeedbackTest(AuthTestCase):
         self.model.objects.create(author=Author.objects.get(user__user=self.user),
                                   subject='test', body="It's a testing.",
                                   video="https://testing.com/testing-link.jpg")
-        self.assertEqual(self.model.objects.get(subject='test').video_tag(),
-                         u'<iframe src=%s width=80vw height=auto style="margin-bottom: 12px;"></iframe>'
-                         % self.model.objects.get(subject='test').video)
+        with self.subTest():
+            self.assertEqual(self.model.objects.get(subject='test').video_tag(),
+                             u'<iframe src=%s width=80vw height=auto style="margin-bottom: 12px;"></iframe>'
+                             % self.model.objects.get(subject='test').video)
+            self.assertURLEqual(self.model.objects.get(subject='test').video, "https://testing.com/testing-link.jpg")
 
     def test_finished_form(self):
         data = {'author': self.user, 'subject': 'test',
