@@ -39,8 +39,12 @@ def create_aggregate_rating(rating):
     return AggregateRating.objects.create(rating_value=rating, rating_count=1)
 
 
-def create_recipe(recipe_name, days=0, rating=AggregateRating.objects.create(rating_value=1, rating_count=1)):
+def create_recipe(recipe_name, days=0, rating=None):
     """ Create recipe model with given recipe_name, days, and rating"""
+    if rating is None:
+        rating = AggregateRating.objects.create(rating_value=1, rating_count=1)
+    else:
+        rating = rating
     time = timezone.now() + datetime.timedelta(days=days)
     time.strftime('%d.%m.%Y %H:%M:%S')
     return Recipe.objects.create(name=recipe_name, date_published=time,
