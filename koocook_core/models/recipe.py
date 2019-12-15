@@ -3,6 +3,7 @@ from django.db import models
 from django.http import HttpRequest
 
 from koocook_core import fields as koocookfields
+from koocook_core.support.quantity import parse_quantity
 
 from .review import ReviewableModel
 import operator
@@ -69,7 +70,7 @@ class Recipe(ReviewableModel, models.Model):
 
     @property
     def popularity_score(self) -> float:
-        return ((float(self.view_count)*1.9)+(float(self.aggregate_rating.rating_value)*3.1))/5
+        return ((float(self.view_count) * 1.9) + (float(self.aggregate_rating.rating_value) * 3.1)) / 5
 
     @property
     def total_time(self):
@@ -102,20 +103,21 @@ class Recipe(ReviewableModel, models.Model):
                                 nutrition['sources'] = []
                             else:
                                 nutrition['sources'].append({'name': ingredient.meta.name,
-                                                                    'quantity': nutrient['quantity']
-                                                                     })
+                                                             'quantity': nutrient['quantity']
+                                                             })
         for nutrition in nutrition_list:
             for source in nutrition['sources']:
-                aggregate = nutrition['quantity'].amount
                 if len(nutrition['sources']) > 1:
+                    ratio = parse_quantity(source['quantity']) / parse_quantity(nutrition['quantity'])
                     source['relative'] = int(
-                        float((source['quantity'].amount / aggregate) * 100))
-                    source['quantity'] = source['quantity'].decimal
+                        float(ratio.amount * 100)
+                    )
+                    source['quantity'] = parse_quantity(source['quantity']).decimal
                 else:
-                    source['quantity'] = source['quantity'].decimal
+                    source['quantity'] = parse_quantity(source['quantity']).decimal
 
         for nutrition in nutrition_list:
-            nutrition['quantity'] = nutrition['quantity'].decimal
+            nutrition['quantity'] = parse_quantity(nutrition['quantity']).decimal
         return nutrition_list
 
     @property
@@ -134,10 +136,12 @@ class RecipeVisit(models.Model):
 
        It is uniquely identified by ip_address, recipe, or user.
     """
+
     class Meta:
         db_table = 'koocook_core_recipe_visit'
         verbose_name = 'Recipe visit count'
         unique_together = (('ip_address', 'user', 'recipe'), ('user', 'recipe'))
+
     ip_address = models.CharField(max_length=45)
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     user = models.ForeignKey('koocook_core.KoocookUser', on_delete=models.SET_NULL, null=True)

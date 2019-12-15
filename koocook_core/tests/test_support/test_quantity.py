@@ -98,18 +98,31 @@ class TestQuantity(unittest.TestCase):
         summation = self.quantity1 + self.quantity4
         self.assertEqual(summation, self.quantity6)
 
-    def test_add_different_unit(self):
+    def test_add_with_different_unit(self):
         summation = quantity.parse_quantity('0.002 kg') + self.quantity4
         self.assertEqual(summation, quantity.parse_quantity('0.003 kg'))
 
-    def test_same_quantity_many_times(self):
+    def test_with_same_quantity_many_times(self):
         result = quantity.Quantity.mul_quantity(self.quantity1, self.quantity3)
         self.assertEqual(result, self.quantity4)
 
-    def test_mul_same_unit(self):
+    def test_with_mul_same_unit(self):
         result = self.quantity1 * self.quantity3
         self.assertEqual(result, self.quantity4)
 
-    def test_mul_different_unit(self):
+    def test_with_mul_different_unit(self):
         result = self.quantity4 * quantity.parse_quantity('3000 mg')
         self.assertEqual(result, self.quantity3)
+
+    def test_with_div_same_unit(self):
+        result = self.quantity6 / self.quantity3
+        self.assertEqual(result, quantity.parse_quantity('4/9 g'))
+
+    def test_with_div_different_unit(self):
+        result = self.quantity5 / quantity.parse_quantity('2000 mg')
+        self.assertEqual(result, quantity.parse_quantity('2 g'))
+
+    def test_change_quantity_to_decimal(self):
+        with self.subTest():
+            self.assertEqual(self.quantity4.decimal, '1.0 gram')
+            self.assertEqual(self.quantity3.decimal, '3.0 grams')

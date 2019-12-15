@@ -66,6 +66,13 @@ class Quantity:
             result = self.amount * unit_.convert(value=other.amount, base_unit=other.unit, quote_unit=self.unit)
         return Quantity(result, self.unit)
 
+    def __truediv__(self, other):
+        if self.unit == other.unit:
+            result = self.amount / other.amount
+        else:
+            result = self.amount / unit_.convert(value=other.amount, base_unit=other.unit, quote_unit=self.unit)
+        return Quantity(result, self.unit)
+
     def as_latex(self):
         if self.amount.denominator > 1:
             return f'\\frac{{{self.amount.numerator}}}{{{self.amount.denominator}}}'
