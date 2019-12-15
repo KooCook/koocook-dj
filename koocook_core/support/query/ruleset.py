@@ -109,7 +109,7 @@ class CookwareRule(Rule):
 
 
 class AuthorNameRule(Rule):
-    key = "author"
+    key = "authors"
 
     def process(self, request_fields: QueryDict, queryset: QuerySet) -> QuerySet:
         if not isinstance(self.rule_body, str):

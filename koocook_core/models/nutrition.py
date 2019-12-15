@@ -93,7 +93,7 @@ class RecipeIngredient(models.Model):
 
     @property
     def words_quantity(self):
-        return str(self.quantity)
+        return str(self.quantity.representation)
 
     @property
     def words_name(self):
