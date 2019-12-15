@@ -2,6 +2,7 @@ import datetime
 from django.test import TestCase
 from koocook_core.models.tag import TagLabel
 from koocook_core.templatetags.recipe_extras import tag_level, duration_in_words
+from koocook_core.templatetags.extra_tags import hours
 
 
 class CustomTagTests(TestCase):
@@ -17,6 +18,8 @@ class CustomTagTests(TestCase):
 class DurationWordsTests(TestCase):
     def test_mixed(self):
         duration = datetime.timedelta(days=2, hours=1, minutes=1)
+        with self.subTest():
+            self.assertEqual(duration_in_words(None), "N/A")
         with self.subTest():
             self.assertEqual(duration_in_words(duration), "2 days 1 hour 1 minute")
         duration = datetime.timedelta(hours=3, minutes=1, seconds=2)

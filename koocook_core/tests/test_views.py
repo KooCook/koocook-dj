@@ -8,3 +8,9 @@ class BasicViewTest(TestCase):
         with self.subTest():
             self.assertEqual(response.status_code, 200)
             self.assertTemplateUsed(response, "index.html")
+
+    def test_404_view(self):
+        response = self.client.get('/nothing_here')
+        with self.subTest():
+            self.assertEqual(response.status_code, 404)
+            self.assertTemplateUsed(response, "base/errors/404.html")

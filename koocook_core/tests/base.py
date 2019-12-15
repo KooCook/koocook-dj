@@ -56,6 +56,7 @@ class AuthTestCase(TestCase):
         self.user2 = User.objects.create_user("testuser2", password=self.password)
         self.client.login(username=self.username, password=password)
         self.author = Author.objects.get(user__user=self.user)
+        self.author2 = Author.objects.get(user__user=self.user2)
 
     @property
     def kc_user(self):

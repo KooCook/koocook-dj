@@ -167,10 +167,25 @@ class RecipeTests(AuthTestCase):
             self.assertQuerysetEqual(
                 self.BLANK_QS, response.context["tag_set"])
 
-    def test_recipe_tags(self):
+    def test_recipe_tags_empty(self):
         response = self.client.get(
             reverse("koocook_core:recipes:tags"), {'name': ''})
         self.assertEqual(response.json()["current"], [])
+
+    def test_recipe_ingredients_empty(self):
+        response = self.client.get(
+            reverse("koocook_core:recipes:ingredients"), {'name': ''})
+        self.assertEqual(response.json()["current"], [])
+
+    def test_recipe_equipment_empty(self):
+        response = self.client.get(
+            reverse("koocook_core:recipes:equipment"), {'name': ''})
+        self.assertEqual(response.json()["current"], [])
+
+    def test_recipe_authors_ajax(self):
+        response = self.client.get(
+            reverse("koocook_core:recipes:authors"), {'name': ''})
+        self.assertEqual(response.json()["current"], [self.author.name, self.author2.name])
 
     def test_recipe_search_listview(self):
         response = self.client.get(reverse("koocook_core:search"))

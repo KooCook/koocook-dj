@@ -31,10 +31,10 @@ class PostController(RatableController, CommentControllerMixin):
         return super().create()
 
     def render_stream_view(self) -> HttpResponse:
-        if self.request.user.is_authenticated:
-            return UserPostStreamView.as_view()(self.request)
-        else:
-            return GuestPostStreamView.as_view()(self.request)
+        # if self.request.user.is_authenticated:
+        return UserPostStreamView.as_view()(self.request)
+        # else:
+        #     return GuestPostStreamView.as_view()(self.request)
 
     @apply_author_from_session
     def retrieve_all(self) -> ControllerResponse:
