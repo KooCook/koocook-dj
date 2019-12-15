@@ -1,6 +1,6 @@
 {% extends 'base/index.html' %}
-{% load static %}
 {% load recipe_extras %}
+{% load static %}
 {% block page_deps %}
 {{ block.super }}
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
@@ -178,7 +178,7 @@
                           <div class="media-content">
                               <star-rating recipe-name="{{ recipe.name }}" :item-id="{{ recipe.id }}" :initial="{{ recipe.aggregate_rating.rating_value }}" :read-only="true"></star-rating>
                               <p class="title is-4 is-marginless">
-                                  <a href="{% url 'koocook_core:recipe' recipe.id %}" class="is-capitalized has-text-link">
+                                  <a href="{% url 'koocook_core:recipes:detail' recipe.id %}" class="is-capitalized has-text-link">
                                       {{ recipe.name }}
                                   </a>
                               </p>

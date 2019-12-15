@@ -14,8 +14,8 @@ class FeaturedRecipesTest(TestCase):
         create_recipe(recipe_name='2st recipe', days=-2, rating=rating2)
         self.assertQuerysetEqual(
             top_latest_recipes(Recipe.objects.all()),
-            [f'<Recipe: Recipe object ({Recipe.objects.get(name="2st recipe").id})>',
-             f'<Recipe: Recipe object ({Recipe.objects.get(name="1st recipe").id})>']
+            [f'<Recipe: Recipe object ({Recipe.objects.get(name="1st recipe").id})>',
+             f'<Recipe: Recipe object ({Recipe.objects.get(name="2st recipe").id})>']
         )
 
     def test_top_latest_with_same_date(self):
