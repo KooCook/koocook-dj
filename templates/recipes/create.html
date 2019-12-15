@@ -9,9 +9,9 @@
 
 <!-- {% for field in form %}
 {% for error in field.errors %}
-<p class="help is-danger">
+
     {{ field.name }}{{ error }}
-</p>
+
 {% endfor %}
 {% endfor %} -->
 <form method="post" novalidate action="{{ request.path }}">
@@ -98,9 +98,9 @@
     </div>
     {% csrf_token %}
     {% for field in form.vanilla_fields %}
-    {% if field.is_hidden %}
-    {{ field }}
-    {% else %}
+{#    {% if field.is_hidden %}#}
+{#    {{ field }}#}
+{#    {% else %}#}
     <div class="form-group field is-horizontal">
         <div class="field-label is-normal">
             <label class="label">{{ field.label_tag }}</label>
@@ -117,7 +117,7 @@
             {% endif %}
         </div>
     </div>
-    {% endif %}
+{#    {% endif %}#}
     {% endfor %}
 <div class="form-group field is-horizontal">
         <div class="field-label is-normal">

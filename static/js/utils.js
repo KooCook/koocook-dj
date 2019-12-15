@@ -13,7 +13,8 @@ const CONVERSION_FACTORS = {
   ]
 };
 
-const CONVERSION_FUNCTIONS = {};
+const glob = { FOLLOWING: [] };
+Vue.prototype.$glob = glob;
 
 const CONVERSION_UNITS = {
   tbsp: "US tablespoon",
@@ -60,6 +61,6 @@ Vue.filter("pluralize", function(unit, num) {
 
   if (!unit.singular) unit.singular = unit.symbol;
   if (!unit.plural) unit.plural = unit.symbol;
-  console.log(num + `${parseInt(num) - 1 === 0 ? unit.plural : unit.plural }`);
+  // console.log(num + `${parseInt(num) - 1 === 0 ? unit.plural : unit.plural }`);
   return `${parseInt(num) - 1 === 0 ? unit.singular : unit.plural }`
 });

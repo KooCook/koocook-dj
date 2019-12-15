@@ -75,7 +75,8 @@
             </a></h4>
           <p class="subtitle">
             by {{ recipe.author }} {% if request.user.is_authenticated %}<follow-widget
-              :followee-id="{{ recipe.author.id }}" :followees="$refs.followees"></follow-widget>{% endif %}
+            {% if recipe.author.user %}v-show="currentAuthorId !== {{ recipe.author.user.id }}"
+              :followee-id="{{ recipe.author.user.id }}"{% endif %} :followees="followees"></follow-widget>{% endif %}
           </p>
         <div class="field is-grouped is-grouped-multiline">
       {% for tag in recipe.tag_set.all %}
@@ -141,7 +142,7 @@
   {% endif %}
 
 </div>
-<followee-list ref="flist"></followee-list>
+    <followee-list @change="followees = $event" :following="followees"></followee-list>
 
 {% endblock %}
  {% block vue_init %}
@@ -152,7 +153,7 @@
     searchFilter: '{{ search_filter }}',
     searchTerm: '{{ request.GET.kw }}',
       searchParams: '',
-    followees: [],
+    followees: glob.FOLLOWING,
     recipes: [],
     ingredients: [],
       authors: [],

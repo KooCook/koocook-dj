@@ -210,12 +210,17 @@ class PreferredRecipeStreamView(AuthAuthorMixin, ListView):
         return context
 
     def get_queryset(self):
-        tags = self.preferred_tags
-        if len(tags.setting) > 0:
-            converted_exact_tag_set_names = []
-            for tag in tags.setting:
-                converted_exact_tag_set_names.append(tag["name"])
-            return Recipe.objects.filter(tag_set__name__in=converted_exact_tag_set_names).order_by('-date_published')
+        if self.request.user.is_authenticated:
+            qs = Recipe.objects.filter(author__user__in=self.get_author().user.following.all())
+
+            tags = self.preferred_tags
+            if len(tags.setting) > 0:
+                converted_exact_tag_set_names = []
+                for tag in tags.setting:
+                    converted_exact_tag_set_names.append(tag["name"])
+                return qs.union(Recipe.objects.filter(tag_set__name__in=converted_exact_tag_set_names).order_by('-date_published'))
+            else:
+                return qs.union(Recipe.objects.all().order_by('-date_published'))
         else:
             return Recipe.objects.all().order_by('-date_published')
 

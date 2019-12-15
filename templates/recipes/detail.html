@@ -92,7 +92,7 @@
                   {% if object.aggregate_rating.rating_count > 0%}
                   <p class="title">{% templatetag openvariable %} rating {% templatetag closevariable %}/5.0</p>
                   <small>from {{ object.aggregate_rating.rating_count }} rating{{ object.aggregate_rating.rating_count|pluralize }}</small>
-                  {% else %} <p class="title">No ratings yet.
+                  {% else %} <p class="title">No ratings yet
                   {% endif %}
                 </div>
               </div>

@@ -1,3 +1,5 @@
+from django.db.models import Q
+
 from .base import BaseController, ControllerResponseUnauthorised, JsonRequestHandler, ControllerResponse
 from ..models import KoocookUser
 from ..views import UserProfileInfoView, UserSettingsInfoView

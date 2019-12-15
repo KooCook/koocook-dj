@@ -45,7 +45,7 @@
     </div>
   </div>
 
-    <p class="level-item">{% if section == 'featured' %}<strong>{% else %}<a href="{% url 'koocook_core:recipes:suggested' %}">{% endif %}Featured{% if not section == 'featured' %}</a>{% else %}</strong>{% endif %}</p>
+    <p class="level-item">{% if section == 'featured' %}<strong>{% else %}<a href="{% url 'koocook_core:index' %}">{% endif %}Featured{% if not section == 'featured' %}</a>{% else %}</strong>{% endif %}</p>
     <p class="level-item">{% if section == 'suggested' %}<strong>{% else %}<a href="{% url 'koocook_core:recipes:suggested' %}">{% endif %}Suggested{% if not section == 'suggested' %}</a>{% else %}</strong>{% endif %}</p>
     <p class="level-item">{% if section == 'search' %}<strong>{% else %}<a href="{% url 'koocook_core:search' %}">{% endif %}Search{% if not section == 'search' %}</a>{% else %}</strong>{% endif %}</p>
     <p class="level-item">{% if section == 'recipe-user' %}<strong>{% else %}<a href="{% url 'koocook_core:recipes:user' %}">{% endif %}Yours{% if not section == 'recipe-user' %}</a>{% else %}</strong>{% endif %}</p>

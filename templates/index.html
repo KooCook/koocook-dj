@@ -12,7 +12,7 @@
 
     <p class="level-item has-text-centered">
       <figure class="image is-48x48">
-        {#                      <img alt="KooCook!" src="{% static "img/chicken_logo.svg" %}" style="max-height: unset">#}
+                              <img alt="KooCook!" src="{% static "img/chicken_logo.svg" %}" style="max-height: unset">
       </figure>
       <span class="is-size-1 has-text-weight-bold">KooCook!</span>
     </p>
@@ -46,19 +46,19 @@
                 </a>
 
                 <div class="navbar-dropdown is-boxed">
-                  <a class="navbar-item is-disabled" title="Look at our suggested recipe">
-                    Featured recipes
-                  </a>
-                  <a class="navbar-item is-disabled" title="Look at what other people are making">
-                    Popular recipes
-                  </a>
+                  <a href="{% url 'koocook_core:index' %}" class="navbar-item" title="Look at our suggested recipe">
+                Featured recipes
+              </a>
+              <a href="{% url 'koocook_core:search' %}?popular=1" class="navbar-item" title="Look at what other people are making">
+                Popular recipes
+              </a>
                   <a class="navbar-item" href="{% url 'koocook_core:recipes:suggested' %}"
                     title="Get personalised recipe recommendations">
                     Suggested recipes
                   </a>
-                  <a class="navbar-item is-disabled" title="Get a random recipe">
-                    I'm feeling hungry!
-                  </a>
+{#                  <a class="navbar-item is-disabled" title="Get a random recipe">#}
+{#                    I'm feeling hungry!#}
+{#                  </a>#}
                   <hr class="navbar-divider">
                   <a href="{% url 'koocook_core:ingredients' %}" class="navbar-item"
                     title="Can't find an ingredient? Look no further">
@@ -71,27 +71,27 @@
                 </div>
               </div>
 
-              <div class="level-item navbar-item has-dropdown is-hoverable is-disabled">
-                <a class="navbar-link">
-                  More
-                </a>
-
-                <div class="navbar-dropdown is-boxed">
-                  <a class="navbar-item">
-                    About
-                  </a>
-                  <a class="navbar-item">
-                    Contact
-                  </a>
-                  <a class="navbar-item">
-                    Privacy Policy
-                  </a>
-                  <hr class="navbar-divider">
-                  <a class="navbar-item">
-                    Report an issue
-                  </a>
-                </div>
-              </div>
+{#              <div class="level-item navbar-item has-dropdown is-hoverable is-disabled">#}
+{#                <a class="navbar-link">#}
+{#                  More#}
+{#                </a>#}
+{##}
+{#                <div class="navbar-dropdown is-boxed">#}
+{#                  <a class="navbar-item">#}
+{#                    About#}
+{#                  </a>#}
+{#                  <a class="navbar-item">#}
+{#                    Contact#}
+{#                  </a>#}
+{#                  <a class="navbar-item">#}
+{#                    Privacy Policy#}
+{#                  </a>#}
+{#                  <hr class="navbar-divider">#}
+{#                  <a class="navbar-item">#}
+{#                    Report an issue#}
+{#                  </a>#}
+{#                </div>#}
+{#              </div>#}
 
               {% if not user.is_authenticated %}
               <div class="level-item navbar-item">
@@ -182,7 +182,7 @@
                                       {{ recipe.name }}
                                   </a>
                               </p>
-                              <p class="title is-5 is-marginless">by {{ recipe.author.name }}</p>
+                              <p class="title is-5 is-marginless">by {{ recipe.author }}</p>
                               {# <p><a href="#">profile</a></p> #}
                           </div>
                       </div>
