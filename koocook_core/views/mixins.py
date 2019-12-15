@@ -127,12 +127,26 @@ class RecipeViewMixin(SignInRequiredMixin, AuthAuthorMixin):
                     found.save()
                 form.instance.equipment_set.add(found)
 
+    def process_instructions(self, form):
+        recipe_instructions = json.loads(self.request.POST.get('recipe_instructions'))
+        if isinstance(recipe_instructions, list):
+            form.instance.recipe_instructions = recipe_instructions
+            form.instance.save()
+
+    def process_media(self, form):
+        images = json.loads(self.request.POST.get('image'))
+        if isinstance(images, list):
+            form.instance.image = images
+            form.instance.save()
+
     # Messy
     def form_valid(self, form):
         response = super().form_valid(form)
         LOGGER.info(f"{self.get_visitor_name()} has {self.ACTION}d the recipe named {form.instance.name} #{form.instance.id}")
+        self.process_instructions(form)
         self.process_equipment(form)
         self.process_tags(form)
+        self.process_media(form)
         form.instance.save()
         ingredients = json.loads(self.request.POST.get('ingredients'))
         if ingredients:

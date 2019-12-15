@@ -56,7 +56,10 @@ Vue.filter("time-passed", function(date) {
 });
 
 Vue.filter("pluralize", function(unit, num) {
+  num = num.toString().replace('/1','');
+
   if (!unit.singular) unit.singular = unit.symbol;
   if (!unit.plural) unit.plural = unit.symbol;
-  return `${num - 1 === 0 ? unit.singular : unit.plural }`
+  console.log(num + `${parseInt(num) - 1 === 0 ? unit.plural : unit.plural }`);
+  return `${parseInt(num) - 1 === 0 ? unit.singular : unit.plural }`
 });

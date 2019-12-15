@@ -126,7 +126,7 @@ class RecipeUpdateView(RecipeViewMixin, UpdateView):
     ACTION = 'update'
     form_class = RecipeForm
     model = Recipe
-    # fields = '__all__'  # ['name']
+    form_class = RecipeForm
     template_name = 'recipes/update.html'
 
     def dispatch(self, request, *args, **kwargs):
@@ -142,8 +142,11 @@ class RecipeUpdateView(RecipeViewMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         obj = self.get_object()
+        context['images'] = json.dumps(self.get_object().image)
         context['ingredients'] = json.dumps([ing.to_dict for ing in list(obj.recipe_ingredients.all())],
                                             cls=FractionEncoder)
+        context['instructions'] = json.dumps([{'text': ing, 'editing': False}
+                                              for ing in list(self.get_object().recipe_instructions)])
         context['equipment'] = json.dumps([e.to_dict() for e in list(obj.equipment_set.all())],
                                             cls=FractionEncoder)
         context['tags'] = json.dumps([ing.as_dict() for ing in list(obj.tag_set.all())], cls=ModelEncoder)

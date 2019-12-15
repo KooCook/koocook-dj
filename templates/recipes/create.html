@@ -6,14 +6,7 @@
 {% block content_page_name %}Create a recipe{% endblock %}
 {% block crud_deps %}<script src="{% static 'js/bundle.js' %}"></script>{% endblock %}
 {% block page_content %}
-{#    <p>$$\frac{5}{6}$$</p>#}
-<recipe-tag-input :attached="true" v-model="tags" ellipsis icon="tag" placeholder="Add a tag" :allow-new="true"
-    autocomplete maxtags="18" maxlength="24">
-    <template v-slot:default="slotProps"></template>
-    <template slot="empty">
-        There are no existing tags, but you can create a new one.
-    </template>
-</recipe-tag-input>
+
 <!-- {% for field in form %}
 {% for error in field.errors %}
 <p class="help is-danger">
@@ -28,7 +21,14 @@
     <div class="columns">
         <div class="column">
             <div class="form-group field is-horizontal recipe-underlined-input-field">
-                <div class="field-label is-medium">
+{#        <recipe-tag-input :attached="true" v-model="tags" ellipsis icon="tag" placeholder="Add a tag" :allow-new="true"#}
+{#            autocomplete maxtags="18" maxlength="24">#}
+{#            <template v-slot:default="slotProps"></template>#}
+{#            <template slot="empty">#}
+{#                There are no existing tags, but you can create a new one.#}
+{#            </template>#}
+{#        </recipe-tag-input>                #}
+            <div class="field-label is-medium">
                     <label class="label">{{ form.name.label_tag }}</label>
                 </div>
                 <div class="field-body">
@@ -67,8 +67,10 @@
                 <b-tab-item label="Ingredients" icon="food-croissant">
                     <ingredient-chooser :selectable-units="selectableUnits"></ingredient-chooser>
                 </b-tab-item>
-                <b-tab-item label="Instructions" icon="view-headline"></b-tab-item>
-                <b-tab-item label="Cookware" icon="view-headline">
+                <b-tab-item label="Instructions" icon="view-headline">
+                    <instruction-list></instruction-list>
+                </b-tab-item>
+                <b-tab-item label="Cookware" icon="pot-mix">
                     <cookware-list></cookware-list>
                 </b-tab-item>
             </b-tabs>
@@ -117,6 +119,28 @@
     </div>
     {% endif %}
     {% endfor %}
+<div class="form-group field is-horizontal">
+        <div class="field-label is-normal">
+            <label class="label">Tags</label>
+        </div>
+        <div class="field-body">
+            <div class="field control"> <recipe-tag-input :attached="true" v-model="tags" ellipsis icon="tag" placeholder="Add a tag"
+    :allow-new="true" :care-deleted="true" autocomplete maxtags="18" maxlength="24">
+<template v-slot:default="slotProps"></template>
+<template slot="empty">
+    There are no existing tags, but you can create a new one.
+</template>
+    </recipe-tag-input>
+            </div>
+            {% if form.tag_set.errors %}
+            {% for error in form.tag_set.errors %}
+            <p class="help is-danger">
+                {{ error }}
+            </p>
+            {% endfor %}
+            {% endif %}
+        </div>
+    </div>
     <div class="field is-horizontal">
         <div class="field-label">
             <!-- Left empty for spacing -->
@@ -131,7 +155,7 @@
             </div>
         </div>
     </div>
-    </form>
+</form>
 
 {% endblock %}
 {% block vue_init %}
@@ -149,5 +173,4 @@
         }
     })
 </script>
-
 {% endblock %}

@@ -77,6 +77,21 @@
             by {{ recipe.author }} {% if request.user.is_authenticated %}<follow-widget
               :followee-id="{{ recipe.author.id }}" :followees="$refs.followees"></follow-widget>{% endif %}
           </p>
+        <div class="field is-grouped is-grouped-multiline">
+      {% for tag in recipe.tag_set.all %}
+
+              <div class="control">
+                <div class="tags has-addons">
+                  <span class="tag">{{ tag.name }}</span>
+                  {% if tag.label %}
+                  <span class="tag {{ tag.label.level|tag_level }}">
+                      {{ tag.label.name }}
+                  </span>
+              {% endif %}
+                </div>
+              </div>
+                {% endfor %}
+              </div>
           <p class="subtitle has-text-grey is-6"><span class="date-posted">
               <b-icon icon="calendar" size="is-small"></b-icon>
               {{ recipe.date_published }}

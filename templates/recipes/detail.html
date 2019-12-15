@@ -259,13 +259,14 @@
 {#                        </sup>#}
 {#                      </li>#}
                         {% for ingredient in object.recipe_ingredients %}
-                            <li><a href="{% url 'koocook_core:ingredient' ingredient.meta.id %}">{{ ingredient.words_name }}</a> {{ ingredient.words_quantity }}</li>
+                            <quantity-field :initial='{{ ingredient.to_json|safe }}'></quantity-field>
+{#                            <li><a href="{% url 'koocook_core:ingredient' ingredient.meta.id %}">{{ ingredient.words_name }}</a> {{ ingredient.words_quantity }}</li>#}
                         {% endfor %}
                     </ul>
                   </div>
                 </div>
                 <div class="tile is-child">
-                  <h3 class="title is-4">
+                  <h3 class="title is-4"> <b-icon icon="pot-mix"></b-icon>
                     Equipment
                   </h3>
                   <div class="content">
@@ -284,7 +285,7 @@
                 <div class="tile is-parent" id="nutrition">
                 <div class="tile is-child">
                     <h3 class="title is-4">
-                        Nutrition
+                        Nutritional information
                     </h3>
                     <div class="content">
                         <ul style="list-style-type: none">
@@ -308,7 +309,7 @@
                                     </b-dropdown-item>
                                 </b-dropdown> {{ fact.nutrient }} {{ fact.quantity }}</li>
                             {% empty %}
-                                Nutritional facts are not available.
+                                Nutritional information is not available.
                             {% endfor %}
                         </ul>
                     </div>
@@ -337,7 +338,7 @@
       <div class="container">
 
         <hr style="margin-top: 0">
-        <h2 class="title">
+        <h2 class="title"><b-icon icon="comment"></b-icon>
           Comments
         </h2>
             {% if request.user.is_authenticated %}

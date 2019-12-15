@@ -32,79 +32,79 @@
       <div id="navbarMain" class="navbar-menu">
         <div class="level navbar-center">
           <div class="level-left">
-
-            <a class="level-item navbar-item is-active">
-              Home
-            </a>
-
-            <a class="level-item navbar-item" href="{% url 'koocook_core:posts:view' %}">
-              Stream
-            </a>
-
-            <div class="level-item navbar-item has-dropdown is-hoverable">
-              <a class="navbar-link">
-                Browse
+              <a class="level-item navbar-item is-active">
+                Home
               </a>
 
-              <div class="navbar-dropdown is-boxed">
-                <a class="navbar-item is-disabled" title="Look at our suggested recipe">
-                  Featured recipes
-                </a>
-                <a class="navbar-item is-disabled" title="Look at what other people are making">
-                  Popular recipes
-                </a>
-                <a class="navbar-item" href="{% url 'koocook_core:recipes:suggested' %}" title="Get personalised recipe recommendations">
-                  Suggested recipes
-                </a>
-                <a class="navbar-item is-disabled" title="Get a random recipe">
-                  I'm feeling hungry!
-                </a>
-                <hr class="navbar-divider">
-               <a href="{% url 'koocook_core:ingredients' %}" class="navbar-item"
-             title="Can't find an ingredient? Look no further">
-             Ingredients
-           </a>
-           <a href="{% url 'koocook_core:equipment-all' %}" class="navbar-item"
-             title="Looking to get some new cookwares? We've got you covered">
-             Cookware
-           </a>
-              </div>
-            </div>
-
-            <div class="level-item navbar-item has-dropdown is-hoverable is-disabled">
-              <a class="navbar-link">
-                More
+              <a class="level-item navbar-item" href="{% url 'koocook_core:posts:view' %}">
+                Stream
               </a>
 
-              <div class="navbar-dropdown is-boxed">
-                <a class="navbar-item">
-                  About
+              <div class="level-item navbar-item has-dropdown is-hoverable">
+                <a class="navbar-link">
+                  Browse
                 </a>
-                <a class="navbar-item">
-                  Contact
-                </a>
-                <a class="navbar-item">
-                  Privacy Policy
-                </a>
-                <hr class="navbar-divider">
-                <a class="navbar-item">
-                  Report an issue
-                </a>
+
+                <div class="navbar-dropdown is-boxed">
+                  <a class="navbar-item is-disabled" title="Look at our suggested recipe">
+                    Featured recipes
+                  </a>
+                  <a class="navbar-item is-disabled" title="Look at what other people are making">
+                    Popular recipes
+                  </a>
+                  <a class="navbar-item" href="{% url 'koocook_core:recipes:suggested' %}"
+                    title="Get personalised recipe recommendations">
+                    Suggested recipes
+                  </a>
+                  <a class="navbar-item is-disabled" title="Get a random recipe">
+                    I'm feeling hungry!
+                  </a>
+                  <hr class="navbar-divider">
+                  <a href="{% url 'koocook_core:ingredients' %}" class="navbar-item"
+                    title="Can't find an ingredient? Look no further">
+                    Ingredients
+                  </a>
+                  <a href="{% url 'koocook_core:equipment-all' %}" class="navbar-item"
+                    title="Looking to get some new cookwares? We've got you covered">
+                    Cookware
+                  </a>
+                </div>
               </div>
-            </div>
 
-            {% if not user.is_authenticated %}
-            <div class="level-item navbar-item">
-              <div class="buttons">
-
-
-                <a href="{% url "social:begin" "google-oauth2" %}" class="button is-secondary">
-                  <strong>Sign in with <i class="fab fa-google"></i> Google</strong>
+              <div class="level-item navbar-item has-dropdown is-hoverable is-disabled">
+                <a class="navbar-link">
+                  More
                 </a>
 
+                <div class="navbar-dropdown is-boxed">
+                  <a class="navbar-item">
+                    About
+                  </a>
+                  <a class="navbar-item">
+                    Contact
+                  </a>
+                  <a class="navbar-item">
+                    Privacy Policy
+                  </a>
+                  <hr class="navbar-divider">
+                  <a class="navbar-item">
+                    Report an issue
+                  </a>
+                </div>
               </div>
 
-            </div>
+              {% if not user.is_authenticated %}
+              <div class="level-item navbar-item">
+                <div class="buttons">
+
+
+                  <a href="{% url "social:begin" "google-oauth2" %}" class="button is-secondary">
+                    <strong>Sign in with <i class="fab fa-google"></i> Google</strong>
+                  </a>
+
+                </div>
+
+              </div>
 
 
           </div>

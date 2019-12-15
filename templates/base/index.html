@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -10,6 +11,7 @@
     {% block page_deps %}<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css">{% endblock %}
     <link rel="stylesheet" href="{% static "css/style.css" %}">
 </head>
+
 <body>{% block page_body %} {% endblock %}
 <footer class="footer">
   <div class="content has-text-centered">
@@ -18,8 +20,9 @@
     </p>
       <p>Our partners: <a href="https://github.com/NutthanichN/Quizer">Quizer</a></p>
       <p>The source code is licensed
-      under BSD 3-clause.</p>
-  </div>
-</footer>
+        under BSD 3-clause.</p>
+    </div>
+  </footer>
 </body>
+
 </html>

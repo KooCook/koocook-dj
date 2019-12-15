@@ -56,6 +56,11 @@ class Recipe(ReviewableModel, models.Model):
         blank=True
     )
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # if not hasattr(self, 'aggregate_rating'):
+        #     self.aggregate_rating = create_empty_aggregate_rating()
+
     @property
     def view_count(self) -> int:
         """
