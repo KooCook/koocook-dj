@@ -128,16 +128,26 @@ class RecipeViewMixin(SignInRequiredMixin, AuthAuthorMixin):
                 form.instance.equipment_set.add(found)
 
     def process_instructions(self, form):
-        recipe_instructions = json.loads(self.request.POST.get('recipe_instructions'))
-        if isinstance(recipe_instructions, list):
-            form.instance.recipe_instructions = recipe_instructions
-            form.instance.save()
+        recipe_instructions = self.request.POST.get('recipe_instructions')
+        if recipe_instructions:
+            try:
+                recipe_instructions = json.loads(recipe_instructions)
+                if isinstance(recipe_instructions, list):
+                    form.instance.recipe_instructions = recipe_instructions
+                    form.instance.save()
+            except json.JSONDecodeError:
+                pass
 
     def process_media(self, form):
-        images = json.loads(self.request.POST.get('image'))
-        if isinstance(images, list):
-            form.instance.image = images
-            form.instance.save()
+        images = self.request.POST.get('image')
+        if images:
+            try:
+                images = json.loads(images)
+                if isinstance(images, list):
+                    form.instance.image = images
+                    form.instance.save()
+            except json.JSONDecodeError:
+                pass
 
     # Messy
     def form_valid(self, form):

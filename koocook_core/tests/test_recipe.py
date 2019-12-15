@@ -90,6 +90,8 @@ class RecipeTests(AuthTestCase):
             {'tags': '[{"name": "dummyTag", "label": {"name": "dummyLabel"}}]'})
         recipe_body.update(
             {'ingredients': '[{"quantity": {"number": "5", "unit": "tbsp"}, "name": "Pepper"}]'})
+        recipe_body.update(
+            {'recipe_instructions': '{}'})
         self.client.post(reverse("koocook_core:recipes:edit", kwargs={'pk': recipe.id}),
                          recipe_body)
         response = self.client.get(
