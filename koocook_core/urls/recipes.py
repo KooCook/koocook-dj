@@ -16,4 +16,5 @@ urlpatterns = [
     path('unit_conv', recipe_handler.handle, name='unit-conv', kwargs={"alias": 'unit_conv'}),
     path('ingredients', views.recipe_ingredients, name='ingredients'),
     path('equipment', views.recipe_equipment, name='equipment'),
+    path('authors', views.recipe_authors, name = 'authors'),
 ]

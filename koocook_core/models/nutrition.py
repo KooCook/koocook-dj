@@ -57,7 +57,7 @@ class RecipeIngredient(models.Model):
     def nutrition(self):
         nutrition_list = []
         try:
-            nutrients = self.meta.nutrient[0]
+            nutrients = self.meta.nutrient
         except KeyError:
             nutrients = self.meta.nutrient
             if 'quantity' in nutrients:

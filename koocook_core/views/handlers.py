@@ -6,7 +6,7 @@ from django.views.static import serve
 from django.conf import settings
 from django.urls import re_path
 
-from ..models import Recipe, KoocookUser, Tag, MetaIngredient, RecipeEquipment
+from ..models import Recipe, KoocookUser, Tag, MetaIngredient, RecipeEquipment, Author
 from ..models.base import ModelEncoder
 from .recipes import RecipeDetailView
 # from .decorators import allow_post_comments
@@ -75,4 +75,11 @@ def recipe_ingredients(request):
 def recipe_equipment(request):
     name = request.GET.get("name")
     e = list(map(lambda x: x.name, RecipeEquipment.objects.filter(name__icontains=name)))
+    return JsonResponse({'current': e}, encoder=ModelEncoder)
+
+
+@require_http_methods(["GET"])
+def recipe_authors(request):
+    name = request.GET.get("name")
+    e = list(map(lambda x: x.name, Author.objects.filter(name__icontains=name)))
     return JsonResponse({'current': e}, encoder=ModelEncoder)

@@ -95,7 +95,8 @@ class Recipe(ReviewableModel, models.Model):
             for nutrient in ingredient.nutrition:
                 if nutrient['nutrient'] not in map(operator.itemgetter('nutrient'), nutrition_list):
                     nutrient['sources'] = []
-                    nutrient['sources'].append({'name': ingredient.meta.name, 'quantity': nutrient['quantity']})
+                    nutrient['sources'].append({'name': ingredient.meta.name, 'quantity': nutrient['quantity'],
+                                                'id': ingredient.meta.id})
                     nutrition_list.append(nutrient)
                 else:
                     for nutrition in nutrition_list:
@@ -108,7 +109,8 @@ class Recipe(ReviewableModel, models.Model):
                                 nutrition['sources'] = []
                             else:
                                 nutrition['sources'].append({'name': ingredient.meta.name,
-                                                             'quantity': nutrient['quantity']
+                                                             'quantity': nutrient['quantity'],
+                                                             'id': ingredient.meta.id
                                                              })
         for nutrition in nutrition_list:
             for source in nutrition['sources']:
