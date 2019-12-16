@@ -425,3 +425,7 @@ a.navbar-burger.burger {
 .hero.is-light, .footer {
    background-color: #f9f3ea;
 }
+
+.tile.is-child {
+    margin-bottom: 24px !important;
+}

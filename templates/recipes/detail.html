@@ -53,36 +53,34 @@
       <div class="container">
         <div class="columns is-multiline">
           <div class="column is-half">
-            <nav class="level is-mobile">
+            <nav class="level is-mobile" >
               <div class="level-item has-text-centered">
                 <div>
-                    <p class="heading"><b-icon icon="clock" size="is-small"></b-icon> Ready in</p>
-                  <p class="title">{{ object.total_time|timedel_to_words }}</p>
-<nav class="level">
-    <div class="level-item has-text-centered">
-        <div>
-                    <p class="is-size-7">Prep: {{ object.prep_time|timedel_to_words }}</p>
-                    <p class="is-size-7">Cook: {{ object.cook_time|timedel_to_words }}</p>
-        </div>
-        </div>
-    </nav>
+                        <p class="heading"><b-icon icon="clock" size="is-small"></b-icon> Ready in</p>
+                      <p class="title" style="max-width: 180px; word-break: break-word;">{{ object.total_time|timedel_to_words }}</p>
+                    <div class="level">
+
+                    </div>
                 </div>
               </div>
-              <div class="level-item has-text-centered">
+              <div class="level-item has-text-centered" style="vertical-align: top;">
                 <div>
-                  <p class="heading">Serving size</p>
+                  <p class="heading"><b-icon icon="select-group" size="is-small"></b-icon> Serving size</p>
                   <p class="title">{{ object.recipe_yield }}</p>
                 </div>
               </div>
             </nav>
-            <nav class="level is-mobile">
-              <div class="level-item">
-{#                <progress class="level-item progress is-success" value="1" max="4"#}
-{#                          style="border-radius: 0; height: 0.2rem"></progress>#}
+               <nav class="level is-mobile">
+              <div class="level-item  has-text-centered">
+
+                            <div>
+                                        <p class="is-size-7">Prep: {{ object.prep_time|timedel_to_words }}</p>
+                                        <p class="is-size-7">Cook: {{ object.cook_time|timedel_to_words }}</p>
+                            </div>
+
               </div>
-              <div class="level-item">
-{#                <progress class="level-item progress is-success" value="1" max="3"#}
-{#                          style="border-radius: 0; height: 0.2rem"></progress>#}
+              <div class="level-item" style="width: 100px;">
+
               </div>
             </nav>
           </div>
