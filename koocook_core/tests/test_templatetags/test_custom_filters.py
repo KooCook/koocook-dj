@@ -18,6 +18,8 @@ class DurationWordsTests(TestCase):
     def test_mixed(self):
         duration = datetime.timedelta(days=2, hours=1, minutes=1)
         with self.subTest():
+            self.assertEqual(duration_in_words(None), "N/A")
+        with self.subTest():
             self.assertEqual(duration_in_words(duration), "2 days 1 hour 1 minute")
         duration = datetime.timedelta(hours=3, minutes=1, seconds=2)
         with self.subTest():

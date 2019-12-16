@@ -54,7 +54,7 @@ All other dependencies are specified in `requirements.txt`
 5.  To populate database with data from sites, run command 'scrape'
     ```
     python manage.py scrape
-    ``` 
+    ```
     with options according to your liking. (`--help` for more info)
 
 6.  Run <pre>python [manage.py](manage.py) runserver</pre> and, Voila!, the

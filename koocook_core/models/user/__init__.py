@@ -10,18 +10,16 @@ __all__ = ['Author', 'KoocookUser']
 
 class Author(SerialisableModel, models.Model):
     """
-
     Attributes:
         rating_set (RelatedManager): from ForeignKey in ``Rating``
         comment_set (RelatedManager): from ForeignKey in ``Comment``
         recipe_set (RelatedManager): from ForeignKey in ``Recipe``
         post_set (RelatedManager): from ForeignKey in ``Post``
-
     Notes:
         Automatically created when ``User`` is  created.
     """
     include = ('qualified_name',)
-    
+
     name = models.CharField(max_length=100)
     user = models.OneToOneField(
         'koocook_auth.KoocookUser',

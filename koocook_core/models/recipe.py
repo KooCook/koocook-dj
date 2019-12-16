@@ -53,8 +53,13 @@ class Recipe(ReviewableModel, models.Model):
     aggregate_rating = models.OneToOneField(
         'koocook_core.AggregateRating',
         on_delete=models.PROTECT,
-        blank=True,
+        blank=True
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # if not hasattr(self, 'aggregate_rating'):
+        #     self.aggregate_rating = create_empty_aggregate_rating()
 
     @property
     def view_count(self) -> int:
@@ -138,7 +143,6 @@ class RecipeVisit(models.Model):
 
        It is uniquely identified by ip_address, recipe, or user.
     """
-
     class Meta:
         db_table = 'koocook_core_recipe_visit'
         verbose_name = 'Recipe visit count'

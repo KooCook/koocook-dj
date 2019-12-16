@@ -16,6 +16,7 @@ class RecipeForm(CustomisableForm):
         exclude = ('aggregate_rating', 'author',
                    'date_published', 'equipment_set', 'tag_set')
         widgets = {'image': HiddenInput(), 'video': HiddenInput(),
-                   'recipe_yield': QuantityInput('serving'),
+                   'recipe_instructions': forms.HiddenInput(),
+                   'recipe_yield': QuantityInput('specialUnit'),
                    'prep_time': DurationInput(model='prep_time'),
                    'cook_time': DurationInput(model='cook_time')}

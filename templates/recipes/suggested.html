@@ -22,8 +22,8 @@
        {% endblock %}
 {% block page_content %}
 <div id="app" class="container">
-<div class="columns is-2 is-multiline">
-{% for recipe in object_list %}
+  <div class="columns is-2 is-multiline">
+    {% for recipe in object_list %}
     <div class="column is-half">
     <div class="card">
          <div class="card-image">
@@ -39,7 +39,7 @@
                     by {{ recipe.author }}
                 </p>
       <star-rating :read-only="true" recipe-name="{{ recipe.name }}" :item-id="{{ recipe.id }}" :initial="{{ recipe.aggregate_rating.rating_value }}"></star-rating>
-      <div class="field is-grouped is-grouped-multiline">     
+      <div class="field is-grouped is-grouped-multiline">
       {% for tag in recipe.tag_set.all %}
 
               <div class="control">
@@ -53,19 +53,19 @@
                 </div>
               </div>
                 {% endfor %}
-              </div>   
+              </div>
        <p class="subtitle has-text-grey is-6"><span class="date-posted"><b-icon icon="calendar" size="is-small"></b-icon>
               {{ recipe.date_published }}</span> <span class="date-posted"><b-icon icon="clock" size="is-small"></b-icon> Ready in:
               {{ recipe.total_time|timedel_to_words }}</span>
             <span class="date-posted"><b-icon icon="eye" size="is-small"></b-icon> {{ recipe.view_count }}
               view{{ recipe.view_count|pluralize }}</span></p>
 
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-    </div>
-    </div>
-    </div>
-{% empty %}
+    {% empty %}
     <li>Nothing here yet. Come back later!</li>
 {% endfor %}
 </div>
@@ -100,6 +100,7 @@
     {% endblock %}
 {% block vue_init %}
      <script>
+
       new Vue({
         el: '#app',
         data: {
@@ -108,33 +109,33 @@
                 name: ''
             },
           togglePopSearch: false,
-          searchName: '',
+          searchTerm: '',
           recipes: [
               {% for recipe in user_recipes %}
                   { id: {{ recipe.id }}, name: '{{ recipe.name }}' },
-              {% endfor %}
+    {% endfor %}
           ]
         },
-          methods: {
-            showConfirmDeletion(id) {
-                const obj = this.recipes.find(x => x.id === id);
-                this.currentRecipe.name = obj.name;
-                this.currentRecipe.id = obj.id;
-                this.showModal = true;
-            },
-          async confirmAction() {
-            const resp = await fetch(`/recipes/${this.currentRecipe.id}`, {method:"DELETE", credentials: 'include', headers: {'X-CSRFToken': getCookie('csrftoken')}});
-            if (resp.ok) { this.showModal = false; location.reload(); }
-          }
-          },
-        computed: {
-          getRecipesByName() {
-            return this.recipes.filter((item)=>{
-              if (this.togglePopSearch) return item.hot;
-              else return item.title.toLowerCase().includes(this.searchName.toLowerCase());
-            })
-          }
-        }
+    methods: {
+    showConfirmDeletion(id) {
+      const obj = this.recipes.find(x => x.id === id);
+      this.currentRecipe.name = obj.name;
+      this.currentRecipe.id = obj.id;
+      this.showModal = true;
+    },
+    async confirmAction() {
+      const resp = await fetch(`/recipes/${this.currentRecipe.id}`, { method: "DELETE", credentials: 'include', headers: { 'X-CSRFToken': getCookie('csrftoken') } });
+      if (resp.ok) { this.showModal = false; location.reload(); }
+    }
+  },
+    computed: {
+    getRecipesByName() {
+      return this.recipes.filter((item) => {
+        if (this.togglePopSearch) return item.hot;
+        else return item.title.toLowerCase().includes(this.searchName.toLowerCase());
       })
-  </script>
+    }
+  }
+      })
+</script>
 {% endblock %}

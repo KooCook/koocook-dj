@@ -113,11 +113,20 @@ class FractionEncoder(json.JSONEncoder):
             return str(obj)
 
 
+class FractionEncoder(json.JSONEncoder):
+
+    def default(self, obj):
+        if hasattr(obj, 'as_dict'):
+            return obj.as_dict
+        else:
+            return str(obj)
+
+
 class RecipeUpdateView(RecipeViewMixin, UpdateView):
     ACTION = 'update'
     form_class = RecipeForm
     model = Recipe
-    # fields = '__all__'  # ['name']
+    form_class = RecipeForm
     template_name = 'recipes/update.html'
 
     def dispatch(self, request, *args, **kwargs):
@@ -133,8 +142,11 @@ class RecipeUpdateView(RecipeViewMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         obj = self.get_object()
+        context['images'] = json.dumps(self.get_object().image)
         context['ingredients'] = json.dumps([ing.to_dict for ing in list(obj.recipe_ingredients.all())],
                                             cls=FractionEncoder)
+        context['instructions'] = json.dumps([{'text': ing, 'editing': False}
+                                              for ing in list(self.get_object().recipe_instructions)])
         context['equipment'] = json.dumps([e.to_dict() for e in list(obj.equipment_set.all())],
                                             cls=FractionEncoder)
         context['tags'] = json.dumps([ing.as_dict() for ing in list(obj.tag_set.all())], cls=ModelEncoder)
@@ -198,12 +210,17 @@ class PreferredRecipeStreamView(AuthAuthorMixin, ListView):
         return context
 
     def get_queryset(self):
-        tags = self.preferred_tags
-        if len(tags.setting) > 0:
-            converted_exact_tag_set_names = []
-            for tag in tags.setting:
-                converted_exact_tag_set_names.append(tag["name"])
-            return Recipe.objects.filter(tag_set__name__in=converted_exact_tag_set_names).order_by('-date_published')
+        if self.request.user.is_authenticated:
+            qs = Recipe.objects.filter(author__user__in=self.get_author().user.following.all())
+
+            tags = self.preferred_tags
+            if len(tags.setting) > 0:
+                converted_exact_tag_set_names = []
+                for tag in tags.setting:
+                    converted_exact_tag_set_names.append(tag["name"])
+                return qs.union(Recipe.objects.filter(tag_set__name__in=converted_exact_tag_set_names).order_by('-date_published'))
+            else:
+                return qs.union(Recipe.objects.all().order_by('-date_published'))
         else:
             return Recipe.objects.all().order_by('-date_published')
 

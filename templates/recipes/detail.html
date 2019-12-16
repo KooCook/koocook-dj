@@ -53,28 +53,34 @@
       <div class="container">
         <div class="columns is-multiline">
           <div class="column is-half">
-            <nav class="level is-mobile">
+            <nav class="level is-mobile" >
               <div class="level-item has-text-centered">
                 <div>
-                  <p class="heading">Ready in</p>
-                  <p class="title">{{ object.total_time|timedel_to_words }}</p>
+                        <p class="heading"><b-icon icon="clock" size="is-small"></b-icon> Ready in</p>
+                      <p class="title" style="max-width: 180px; word-break: break-word;">{{ object.total_time|timedel_to_words }}</p>
+                    <div class="level">
+
+                    </div>
                 </div>
               </div>
-              <div class="level-item has-text-centered">
+              <div class="level-item has-text-centered" style="vertical-align: top;">
                 <div>
-                  <p class="heading">Serving size</p>
+                  <p class="heading"><b-icon icon="select-group" size="is-small"></b-icon> Serving size</p>
                   <p class="title">{{ object.recipe_yield }}</p>
                 </div>
               </div>
             </nav>
-            <nav class="level is-mobile">
-              <div class="level-item">
-{#                <progress class="level-item progress is-success" value="1" max="4"#}
-{#                          style="border-radius: 0; height: 0.2rem"></progress>#}
+               <nav class="level is-mobile">
+              <div class="level-item  has-text-centered">
+
+                            <div>
+                                        <p class="is-size-7">Prep: {{ object.prep_time|timedel_to_words }}</p>
+                                        <p class="is-size-7">Cook: {{ object.cook_time|timedel_to_words }}</p>
+                            </div>
+
               </div>
-              <div class="level-item">
-{#                <progress class="level-item progress is-success" value="1" max="3"#}
-{#                          style="border-radius: 0; height: 0.2rem"></progress>#}
+              <div class="level-item" style="width: 100px;">
+
               </div>
             </nav>
           </div>
@@ -82,17 +88,17 @@
             <nav class="level is-mobile">
               <div class="level-item has-text-centered">
                 <div>
-                  <p class="heading">Views</p>
+                  <p class="heading"><b-icon icon="eye" size="is-small"></b-icon>  Views</p>
                   <p class="title">{{ object.view_count }}</p>
                 </div>
               </div>
               <div class="level-item has-text-centered">
                 <div>
-                  <p class="heading">Ratings</p>
+                  <p class="heading"><b-icon icon="star" size="is-small"></b-icon> Ratings</p>
                   {% if object.aggregate_rating.rating_count > 0%}
                   <p class="title">{% templatetag openvariable %} rating {% templatetag closevariable %}/5.0</p>
                   <small>from {{ object.aggregate_rating.rating_count }} rating{{ object.aggregate_rating.rating_count|pluralize }}</small>
-                  {% else %} <p class="title">No ratings yet.
+                  {% else %} <p class="title">No ratings yet
                   {% endif %}
                 </div>
               </div>
@@ -117,7 +123,7 @@
             <div class="tile is-vertical">
               <div class="tile is-parent">
                 <div class="tile is-child">
-                  <h3 class="title is-4">
+                  <h3 class="title is-4"><b-icon icon="food-croissant"></b-icon>
                     Ingredients
                   </h3>
                   <div class="content">
@@ -259,13 +265,14 @@
 {#                        </sup>#}
 {#                      </li>#}
                         {% for ingredient in object.recipe_ingredients %}
-                            <li><a href="{% url 'koocook_core:ingredient' ingredient.meta.id %}">{{ ingredient.words_name }}</a> {{ ingredient.words_quantity }}</li>
+                            <quantity-field :initial='{{ ingredient.to_json|safe }}'></quantity-field>
+{#                            <li><a href="{% url 'koocook_core:ingredient' ingredient.meta.id %}">{{ ingredient.words_name }}</a> {{ ingredient.words_quantity }}</li>#}
                         {% endfor %}
                     </ul>
                   </div>
                 </div>
                 <div class="tile is-child">
-                  <h3 class="title is-4">
+                  <h3 class="title is-4"> <b-icon icon="pot-mix"></b-icon>
                     Equipment
                   </h3>
                   <div class="content">
@@ -284,7 +291,7 @@
                 <div class="tile is-parent" id="nutrition">
                 <div class="tile is-child">
                     <h3 class="title is-4">
-                        Nutrition
+                        Nutritional information
                     </h3>
                     <div class="content">
                         <ul style="list-style-type: none">
@@ -308,7 +315,7 @@
                                     </b-dropdown-item>
                                 </b-dropdown> {{ fact.nutrient }} {{ fact.quantity }}</li>
                             {% empty %}
-                                Nutritional facts are not available.
+                                Nutritional information is not available.
                             {% endfor %}
                         </ul>
                     </div>
@@ -316,7 +323,7 @@
             </div>
             <div class="tile is-parent">
               <div class="tile is-child">
-                <h3 class="title is-4">
+                <h3 class="title is-4"><b-icon icon="view-headline"></b-icon>
                   Instructions
                 </h3>
                 <div class="content" style="">
@@ -337,7 +344,7 @@
       <div class="container">
 
         <hr style="margin-top: 0">
-        <h2 class="title">
+        <h2 class="title"><b-icon icon="comment"></b-icon>
           Comments
         </h2>
             {% if request.user.is_authenticated %}

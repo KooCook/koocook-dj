@@ -4,7 +4,6 @@ from decimal import Decimal, DivisionByZero
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-
 from ..support import FormattedField
 from .base import SerialisableModel
 
@@ -190,6 +189,11 @@ def parse_kwargs_item_reviewed(kwargs: Dict[str, Any], strict: bool = True) -> D
     return kwargs
 
 
+def create_empty_aggregate_rating(**kwargs) -> 'AggregateRating':
+    """Creates an empty aggregate rating"""
+    return AggregateRating.objects.create(rating_value=0, rating_count=0, **kwargs)
+
+
 class AggregateRating(models.Model):
     rating_value = models.DecimalField(
         decimal_places=10,
@@ -282,3 +286,18 @@ class AggregateRating(models.Model):
 
     def __str__(self) -> str:
         return str(self.rating_value)
+
+    def __le__(self, other) -> bool:
+        return self.rating_value <= other.rating_value
+
+    def __eq__(self, other) -> bool:
+        return self.rating_value == other.rating_value
+
+    def __lt__(self, other) -> bool:
+        return self.rating_value < other.rating_value
+
+    def __ge__(self, other) -> bool:
+        return self.rating_value >= other.rating_value
+
+    def __gt__(self, other) -> bool:
+        return self.rating_value > other.rating_value

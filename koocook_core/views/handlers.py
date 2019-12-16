@@ -16,7 +16,7 @@ LOGGER = logging.getLogger(__name__)
 
 @require_http_methods(["GET"])
 def index(request):
-    return render(request, 'index.html')
+    return render(request, 'index.html', {'recipes': Recipe.objects.all()})
 
 
 def handle_404(request, exception=None, template_name='base/errors/404.html'):

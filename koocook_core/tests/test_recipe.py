@@ -1,12 +1,13 @@
+from koocook_core.models.base import ModelEncoder
+from django.test import RequestFactory
+from django.db.models import QuerySet
+from koocook_core.tests.base import AuthTestCase, create_dummy_recipe, create_dummy_recipe_body
+from django.test import TestCase, RequestFactory
+from .base import create_dummy_recipe, AuthTestCase
+from koocook_core.models.recipe import Recipe, RecipeVisit, get_client_ip
+from django.shortcuts import reverse
 import json
 from datetime import timedelta
-from django.db.models import QuerySet
-from django.shortcuts import reverse
-from django.test import RequestFactory
-
-from koocook_core.models.base import ModelEncoder
-from koocook_core.models.recipe import Recipe, RecipeVisit, get_client_ip
-from koocook_core.tests.base import AuthTestCase, create_dummy_recipe, create_dummy_recipe_body
 
 
 class RecipeTests(AuthTestCase):
@@ -89,6 +90,8 @@ class RecipeTests(AuthTestCase):
             {'tags': '[{"name": "dummyTag", "label": {"name": "dummyLabel"}}]'})
         recipe_body.update(
             {'ingredients': '[{"quantity": {"number": "5", "unit": "tbsp"}, "name": "Pepper"}]'})
+        recipe_body.update(
+            {'recipe_instructions': '{}'})
         self.client.post(reverse("koocook_core:recipes:edit", kwargs={'pk': recipe.id}),
                          recipe_body)
         response = self.client.get(
@@ -164,10 +167,25 @@ class RecipeTests(AuthTestCase):
             self.assertQuerysetEqual(
                 self.BLANK_QS, response.context["tag_set"])
 
-    def test_recipe_tags(self):
+    def test_recipe_tags_empty(self):
         response = self.client.get(
             reverse("koocook_core:recipes:tags"), {'name': ''})
         self.assertEqual(response.json()["current"], [])
+
+    def test_recipe_ingredients_empty(self):
+        response = self.client.get(
+            reverse("koocook_core:recipes:ingredients"), {'name': ''})
+        self.assertEqual(response.json()["current"], [])
+
+    def test_recipe_equipment_empty(self):
+        response = self.client.get(
+            reverse("koocook_core:recipes:equipment"), {'name': ''})
+        self.assertEqual(response.json()["current"], [])
+
+    def test_recipe_authors_ajax(self):
+        response = self.client.get(
+            reverse("koocook_core:recipes:authors"), {'name': ''})
+        self.assertEqual(response.json()["current"], [self.author.name, self.author2.name])
 
     def test_recipe_search_listview(self):
         response = self.client.get(reverse("koocook_core:search"))
