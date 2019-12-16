@@ -56,12 +56,12 @@ class TestUnit(unittest.TestCase):
                     unit.get_unit(u)
 
     def test_convert_unit_from_small_to_big(self):
-        """ covert g to kg"""
+        """ convert g to kg"""
         result = unit.convert(1, 'g', 'kg')
         self.assertEqual(result, 0.001)
 
     def test_convert_unit_from_big_to_small(self):
-        """ covert kg to g"""
+        """ convert kg to g"""
         result = unit.convert(1, 'kg', 'g')
         self.assertEqual(result, 1000.)
 

@@ -3,9 +3,11 @@ import logging
 
 from django.contrib.postgres import fields
 from django.db import models
+from django.shortcuts import reverse
 from koocook_core.support.quantity import Quantity, parse_quantity
 
 import operator
+from .base import ModelEncoder
 from koocook_core import fields as koocookfields
 
 __all__ = ['MetaIngredient', 'RecipeIngredient']
@@ -60,13 +62,14 @@ class RecipeIngredient(models.Model):
     @property
     def to_dict(self):
         return {'id': self.id, 'name': self.meta.name, 'type': self.quantity.unit.type,
-                'quantity': {'unit': self.quantity.unit.symbol, 'number': self.quantity.amount,
+                'url': reverse('koocook_core:ingredient', args=[self.meta.id]),
+                'quantity': {'unit': self.quantity.unit.singular, 'number': self.quantity.amount,
                              'rendered': self.quantity.as_latex()},
                 'repr': f"{self.quantity.representation} of {self.meta.name}"}
 
     @property
     def to_json(self):
-        return json.dumps(self.to_dict)
+        return json.dumps(self.to_dict, cls=ModelEncoder)
 
     @property
     def nutrition(self):

@@ -3,9 +3,10 @@ from django.views.generic.edit import FormMixin
 
 from .forms import PostForm
 from ..models import Author, Post
+from .mixins import SignInRequiredMixin
 
 
-class UserPostStreamView(FormMixin, ListView):
+class UserPostStreamView(SignInRequiredMixin, FormMixin, ListView):
     form_class = PostForm
     model = Post
     template_name = 'posts/index.html'

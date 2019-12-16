@@ -54,7 +54,7 @@ All other dependencies are specified in `requirements.txt`
 5.  To populate database with data from sites, run command 'scrape'
     ```
     python manage.py scrape
-    ``` 
+    ```
     with options according to your liking. (`--help` for more info)
 
 6.  Run <pre>python [manage.py](manage.py) runserver</pre> and, Voila!, the
@@ -69,6 +69,7 @@ All other dependencies are specified in `requirements.txt`
 - Static mockup
   - Screenshots & Demo: [Google Drive](https://drive.google.com/drive/folders/1oRqvuTPX0Nw1hI52laHMkh5T0WVMhhqI)
   - Source code: [GitHub](https://github.com/KooCook/koocook-static-mockup)
+- [Slides](https://docs.google.com/presentation/d/1UHWP5blqmxKJMnJh_MEOiisaI_55eP6pj58An8Ij5Z8/)
 
 ## Other Links
 

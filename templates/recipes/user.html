@@ -32,9 +32,9 @@
         </footer>
     </div>
   </b-modal>
-<div class="columns is-2 is-multiline">
+<div class="columns is-multiline">
 {% for recipe in user_recipes %}
-    <div class="column is-half">
+    <div class="column is-half ">
     <div class="card">
          <div class="card-image">
     <figure class="image is-2by1 is-bg-cover-centered">
@@ -43,15 +43,29 @@
   </div>
     <div class="card-content">
         <div class="media">
-            <star-rating recipe-name="{{ recipe.name }}" :item-id="{{ recipe.id }}" :initial="{{ recipe.aggregate_rating.rating_value }}" :read-only="true"></star-rating>
+
       <div class="media-content">
+          <star-rating recipe-name="{{ recipe.name }}" :item-id="{{ recipe.id }}" :initial="{{ recipe.aggregate_rating.rating_value }}" :read-only="true"></star-rating>
           <p class="title is-4"><a href="{% url 'koocook_core:recipes:detail' recipe.id %}">{{ recipe.name }}</a> <span class="buttons is-inline-flex has-addons  is-small">
               <a href="{% url 'koocook_core:recipes:edit' recipe.id %}"><button class="button is-primary is-outlined is-small"><b-icon icon="pencil"></b-icon> </button></a>
      <button class="button is-danger is-outlined is-small is-light" @click="showConfirmDeletion({{ recipe.id }})"><b-icon icon="close"></b-icon> </button>
         </span></p>
+<div class="field is-grouped is-grouped-multiline">
+      {% for tag in recipe.tag_set.all %}
 
-                        </div>
-                        <div class="media-bottom">
+              <div class="control">
+                <div class="tags has-addons">
+                  <span class="tag">{{ tag.name }}</span>
+                  {% if tag.label %}
+                  <span class="tag {{ tag.label.level|tag_level }}">
+                      {{ tag.label.name }}
+                  </span>
+              {% endif %}
+                </div>
+              </div>
+                {% endfor %}
+              </div>
+
                             <p class="subtitle has-text-grey is-6"><span class="date-posted">
                                     <b-icon icon="calendar" size="is-small"></b-icon>
                                     {{ recipe.date_published }}
@@ -63,15 +77,17 @@
                                     <b-icon icon="eye" size="is-small"></b-icon> {{ recipe.view_count }}
                                     view{{ recipe.view_count|pluralize }}
                                 </span></p>
-                        </div>
+
+      </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+
     {% empty %}
     <li>You have not contributed any recipe with KooCook</li>
     {% endfor %}
+</div>
 </div>
 {% if page_obj.has_other_pages %}
   <nav class="pagination is-centered" role="navigation" aria-label="pagination">

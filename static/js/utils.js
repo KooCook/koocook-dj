@@ -13,7 +13,8 @@ const CONVERSION_FACTORS = {
   ]
 };
 
-const CONVERSION_FUNCTIONS = {};
+const glob = { FOLLOWING: [] };
+Vue.prototype.$glob = glob;
 
 const CONVERSION_UNITS = {
   tbsp: "US tablespoon",
@@ -43,12 +44,23 @@ function getCookie(name) {
   return value != null ? unescape(value[1]) : null;
 }
 
+String.prototype.format = function() {
+  let str = this;
+  for (const arg in arguments) {
+    str = str.replace("{" + arg + "}", arguments[arg])
+  }
+  return str
+};
+
 Vue.filter("time-passed", function(date) {
   return moment(date).fromNow();
 });
 
 Vue.filter("pluralize", function(unit, num) {
+  num = num.toString().replace('/1','');
+
   if (!unit.singular) unit.singular = unit.symbol;
   if (!unit.plural) unit.plural = unit.symbol;
-  return `${num - 1 === 0 ? unit.singular : unit.plural }`
+  // console.log(num + `${parseInt(num) - 1 === 0 ? unit.plural : unit.plural }`);
+  return `${parseInt(num) - 1 === 0 ? unit.singular : unit.plural }`
 });

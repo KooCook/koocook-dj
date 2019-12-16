@@ -18,4 +18,3 @@ class ExtendedProfileForm(CustomisableForm):
         widgets = {'preferences': HiddenInput(attrs={'v-model': 'submission'})}
 
     customised_field = ('user',)
-

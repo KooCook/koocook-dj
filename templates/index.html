@@ -1,8 +1,10 @@
 {% extends 'base/index.html' %}
+{% load recipe_extras %}
 {% load static %}
 {% block page_deps %}
 {{ block.super }}
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <link rel="stylesheet" href="{% static "css/style.css" %}">
 {% endblock %}
 {% block page_title %}Home{% endblock %}
 {% block page_body %}
@@ -11,7 +13,7 @@
 
     <p class="level-item has-text-centered">
       <figure class="image is-48x48">
-        {#                      <img alt="KooCook!" src="{% static "img/chicken_logo.svg" %}" style="max-height: unset">#}
+                              <img alt="KooCook!" src="{% static "img/chicken_logo.svg" %}" style="max-height: unset">
       </figure>
       <span class="is-size-1 has-text-weight-bold">KooCook!</span>
     </p>
@@ -31,79 +33,79 @@
       <div id="navbarMain" class="navbar-menu">
         <div class="level navbar-center">
           <div class="level-left">
-
-            <a class="level-item navbar-item is-active">
-              Home
-            </a>
-
-            <a class="level-item navbar-item" href="{% url 'koocook_core:posts:view' %}">
-              Stream
-            </a>
-
-            <div class="level-item navbar-item has-dropdown is-hoverable">
-              <a class="navbar-link">
-                Browse
+              <a class="level-item navbar-item is-active">
+                Home
               </a>
 
-              <div class="navbar-dropdown is-boxed">
-                <a class="navbar-item is-disabled" title="Look at our suggested recipe">
-                  Featured recipes
-                </a>
-                <a class="navbar-item is-disabled" title="Look at what other people are making">
-                  Popular recipes
-                </a>
-                <a class="navbar-item" href="{% url 'koocook_core:recipes:suggested' %}" title="Get personalised recipe recommendations">
-                  Suggested recipes
-                </a>
-                <a class="navbar-item is-disabled" title="Get a random recipe">
-                  I'm feeling hungry!
-                </a>
-                <hr class="navbar-divider">
-               <a href="{% url 'koocook_core:ingredients' %}" class="navbar-item"
-             title="Can't find an ingredient? Look no further">
-             Ingredients
-           </a>
-           <a href="{% url 'koocook_core:equipment-all' %}" class="navbar-item"
-             title="Looking to get some new cookwares? We've got you covered">
-             Cookware
-           </a>
-              </div>
-            </div>
-
-            <div class="level-item navbar-item has-dropdown is-hoverable is-disabled">
-              <a class="navbar-link">
-                More
+              <a class="level-item navbar-item" href="{% url 'koocook_core:posts:view' %}">
+                Stream
               </a>
 
-              <div class="navbar-dropdown is-boxed">
-                <a class="navbar-item">
-                  About
+              <div class="level-item navbar-item has-dropdown is-hoverable">
+                <a class="navbar-link">
+                  Browse
                 </a>
-                <a class="navbar-item">
-                  Contact
-                </a>
-                <a class="navbar-item">
-                  Privacy Policy
-                </a>
-                <hr class="navbar-divider">
-                <a class="navbar-item">
-                  Report an issue
-                </a>
+
+                <div class="navbar-dropdown is-boxed">
+                  <a href="{% url 'koocook_core:index' %}" class="navbar-item" title="Look at our suggested recipe">
+                Featured recipes
+              </a>
+              <a href="{% url 'koocook_core:search' %}?popular=1" class="navbar-item" title="Look at what other people are making">
+                Popular recipes
+              </a>
+                  <a class="navbar-item" href="{% url 'koocook_core:recipes:suggested' %}"
+                    title="Get personalised recipe recommendations">
+                    Suggested recipes
+                  </a>
+{#                  <a class="navbar-item is-disabled" title="Get a random recipe">#}
+{#                    I'm feeling hungry!#}
+{#                  </a>#}
+                  <hr class="navbar-divider">
+                  <a href="{% url 'koocook_core:ingredients' %}" class="navbar-item"
+                    title="Can't find an ingredient? Look no further">
+                    Ingredients
+                  </a>
+                  <a href="{% url 'koocook_core:equipment-all' %}" class="navbar-item"
+                    title="Looking to get some new cookwares? We've got you covered">
+                    Cookware
+                  </a>
+                </div>
               </div>
-            </div>
 
-            {% if not user.is_authenticated %}
-            <div class="level-item navbar-item">
-              <div class="buttons">
+{#              <div class="level-item navbar-item has-dropdown is-hoverable is-disabled">#}
+{#                <a class="navbar-link">#}
+{#                  More#}
+{#                </a>#}
+{##}
+{#                <div class="navbar-dropdown is-boxed">#}
+{#                  <a class="navbar-item">#}
+{#                    About#}
+{#                  </a>#}
+{#                  <a class="navbar-item">#}
+{#                    Contact#}
+{#                  </a>#}
+{#                  <a class="navbar-item">#}
+{#                    Privacy Policy#}
+{#                  </a>#}
+{#                  <hr class="navbar-divider">#}
+{#                  <a class="navbar-item">#}
+{#                    Report an issue#}
+{#                  </a>#}
+{#                </div>#}
+{#              </div>#}
+
+              {% if not user.is_authenticated %}
+              <div class="level-item navbar-item">
+                <div class="buttons">
 
 
-                <a href="{% url "social:begin" "google-oauth2" %}" class="button is-secondary">
-                  <strong>Sign in with <i class="fab fa-google"></i> Google</strong>
-                </a>
+                  <a href="{% url "social:begin" "google-oauth2" %}" class="button is-secondary">
+                    <strong>Sign in with <i class="fab fa-google"></i> Google</strong>
+                  </a>
+
+                </div>
 
               </div>
-
-            </div>
 
 
           </div>
@@ -162,6 +164,52 @@
     </div>
   </div>
 </section>
+<div class="container">
+  <div class="columns is-multiline">
+      {% for recipe in recipes|top_latest %}
+          <div class="column is-one-third is-10-mobile is-offset-1-mobile">
+              <div class="card">
+                  <div class="card-image">
+                      <figure class="image is-2by1 is-bg-cover-centered">
+                          <img src="{{ recipe.image|first }}" alt="Recipe image">
+                      </figure>
+                  </div>
+                  <div class="card-content">
+                      <div class="media">
+                          <div class="media-content">
+                              <star-rating recipe-name="{{ recipe.name }}" :item-id="{{ recipe.id }}" :initial="{{ recipe.aggregate_rating.rating_value }}" :read-only="true"></star-rating>
+                              <p class="title is-4 is-marginless">
+                                  <a href="{% url 'koocook_core:recipes:detail' recipe.id %}" class="is-capitalized has-text-link">
+                                      {{ recipe.name }}
+                                  </a>
+                              </p>
+                              <p class="title is-5 is-marginless">by {{ recipe.author }}</p>
+                              {# <p><a href="#">profile</a></p> #}
+                          </div>
+                      </div>
+
+                      <div class="content">
+                           <p class="subtitle has-text-grey is-6">
+                               <span class="date-posted">
+                                  <i class="fas fa-calendar is-small"></i>
+                                  {{ recipe.date_published }}
+                               </span>
+                               <span class="date-posted">
+                                   <i class="fas fa-clock is-small"></i>
+                                   Ready in: {{ recipe.total_time|timedel_to_words }}
+                               </span>
+                              <span class="date-posted">
+                                  <i class="fas fa-eye is-small"></i>
+                                  {{ recipe.view_count }} view{{ recipe.view_count|pluralize }}
+                              </span>
+                           </p>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      {% endfor %}
+  </div>
+</div>
 <script>
   var app = new Vue({
     el: '#app',

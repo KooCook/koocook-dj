@@ -17,11 +17,17 @@ class RecipeController(RatableController, CommentControllerMixin):
             for unit in unit_section:
                 if unit.type not in table:
                     table[unit.type] = []
-                if not section == 'serving' and unit.as_dict()['value']:
-                    table[unit.type].append(get_unit(unit))
-                else:
-                    if unit_section is SpecialUnit:
+                if section:
+                    if section == 'all':
                         table[unit.type].append(get_unit(unit))
+                    elif unit.type == section:
+                        table[unit.type].append(get_unit(unit))
+                else:
+                    if unit.as_dict()['value']:
+                        table[unit.type].append(get_unit(unit))
+                    else:
+                        if unit_section is SpecialUnit:
+                            table[unit.type].append(get_unit(unit))
         return ControllerResponse("Retrieved", obj=table)
 
     def determine_section(self):
