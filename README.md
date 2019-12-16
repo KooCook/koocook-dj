@@ -69,6 +69,7 @@ All other dependencies are specified in `requirements.txt`
 - Static mockup
   - Screenshots & Demo: [Google Drive](https://drive.google.com/drive/folders/1oRqvuTPX0Nw1hI52laHMkh5T0WVMhhqI)
   - Source code: [GitHub](https://github.com/KooCook/koocook-static-mockup)
+- [Slides](https://docs.google.com/presentation/d/1UHWP5blqmxKJMnJh_MEOiisaI_55eP6pj58An8Ij5Z8/)
 
 ## Other Links
 
