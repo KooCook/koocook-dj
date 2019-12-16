@@ -2,17 +2,18 @@
 {% load widget_tweaks %}
 {% load static %}
 
+{% block content_deps %}
+    <link rel="stylesheet" href="https://unpkg.com/vue-popperjs@2.2.0/dist/vue-popper.css">
+    <script src="https://unpkg.com/vue-popperjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vee-validate@latest/dist/vee-validate.js"></script>
+    <script src="https://unpkg.com/vue-slicksort@latest/dist/vue-slicksort.min.js"></script>
+    <script src="{% static 'js/bundle.js' %}"></script>
+{% endblock %}
+
 {% block page_title %}
     Feedback
 {% endblock %}
 
-{% block content_deps %}
-    <link rel="stylesheet" href="https://unpkg.com/vue-popperjs@2.2.0/dist/vue-popper.css">
-    <script src="https://unpkg.com/vue-popperjs"></script>
-<script src="https://cdn.jsdelivr.net/npm/vee-validate@latest/dist/vee-validate.js"></script>
-    <script src="https://unpkg.com/vue-slicksort@latest/dist/vue-slicksort.min.js"></script>
-    <script src="{% static 'js/bundle.js' %}"></script>
-{% endblock %}
 
 {% block content_category_url %}
     {% url "koocook_core:feedback" %}
@@ -75,9 +76,22 @@
     </form>
 </div>
 
+{% endblock %}
+{% block vue_init %}
+
 <script>
-new Vue({
-    el: '#app'
-})
+var app = new Vue({
+    el: '#app',
+    data: {
+      togglePopSearch: false,
+      searchTerm: ''
+    },
+    computed: {
+      getSearchTerm() {
+        if (this.searchTerm) return '?kw=' + this.searchTerm;
+        else return ''
+      }
+    }
+  })
 </script>
 {% endblock %}

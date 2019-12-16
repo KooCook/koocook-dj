@@ -3,21 +3,21 @@
 {% block no_hero %}{% endblock %}
 {% block no_breadcrumb %}{% endblock %}
 {% block page_content %}
-     <nav class="level">
-     <div class="level-item has-text-centered">
+<nav class="level">
+  <div class="level-item has-text-centered">
     <div>
-     {% block error_mast %}{% endblock %}
+      {% block error_mast %}{% endblock %}
     </div>
   </div>
-     </nav>
-   <nav class="level">
+</nav>
+<nav class="level">
   <div class="level-item has-text-centered">
     <div>
       <p class="title">{% block error_mast_message %}{% endblock %}</p>
     </div>
   </div>
 </nav>
-     <nav class="level">
+<nav class="level">
   <div class="level-item has-text-centered">
     <div>
       <p>{% block error_msg %}{% endblock %}</p>
@@ -26,15 +26,17 @@
 
   </div>
 </nav>
+<<<<<<< HEAD
     <div class="level level-item">
       {% block error_action %}{% endblock %}
   </div>
-<script>
-     new Vue({
-        el: '#app',
-        data: {
-            searchName: '',
-            ingredients: []
-        }});
-  </script>
+  new Vue({
+    el: '#app',
+    data: {
+      searchName: '',
+      ingredients: []
+    }
+  });
+</script>
+>>>>>>> dev
 {% endblock %}

@@ -3,6 +3,12 @@ from json import JSONEncoder
 
 from django.db import models
 from django.db.models import Field
+from django.http import HttpRequest
+
+
+def get_client_ip(request: HttpRequest):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    return x_forwarded_for.split(',')[0] if x_forwarded_for else request.META.get('REMOTE_ADDR')
 
 
 def transform_to_field(key):

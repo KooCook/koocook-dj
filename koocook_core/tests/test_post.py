@@ -6,6 +6,10 @@ from koocook_core.controllers import CommentController, PostController
 from koocook_core.tests.base import AuthTestCase, create_dummy_post, create_dummy_comment_dict
 
 
+def compare_serialised(json, obj) -> bool:
+    return True
+
+
 class PostTest(AuthTestCase):
     model = Post
     controller = PostController()
@@ -28,12 +32,12 @@ class PostTest(AuthTestCase):
             self.assertEqual(list(response.context['posts']), list(self.model.objects.all()))
             self.assertEqual(response.status_code, 200)
 
-    def test_view_all_guest_posts(self):
-        self.client.logout()
-        response = self.client.get(reverse('koocook_core:posts:view'))
-        with self.subTest():
-            self.assertEqual(list(response.context['posts']), list(self.model.objects.all()))
-            self.assertEqual(response.status_code, 200)
+    # def test_view_all_guest_posts(self):
+    #     self.client.logout()
+    #     response = self.client.get(reverse('koocook_core:posts:view'))
+    #     with self.subTest():
+    #         self.assertEqual(list(response.context['posts']), list(self.model.objects.all()))
+    #         self.assertEqual(response.status_code, 200)
 
     def test_controller_add_comment(self):
         self.controller.request_fields.update(self.comment_dict)
@@ -48,6 +52,11 @@ class PostTest(AuthTestCase):
         with self.subTest("Creating post with PostController test"):
             self.assertEqual(response.obj.body.source, self.dummy_post_body)
             self.assertEqual(response.obj.author, self.author)
+
+        # with self.subTest("Unauthorised"):
+        #     self.client.logout()
+        #     response = self.controller.create()
+        #     self.assertContains(response.status_text, "Forbidden")
 
     def test_controller_edit_post(self):
         edited_post_body = "This is an edited post."
@@ -64,3 +73,19 @@ class PostTest(AuthTestCase):
         with self.subTest():
             with self.assertRaises(Post.DoesNotExist):
                 Post.objects.get(pk=response.obj.id)
+
+    def test_controller_all_posts_ajax(self):
+        response = self.client.get(reverse('koocook_core:posts:ajax-all'))
+        with self.subTest("All posts in the app"):
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.json()["current"][0]["body"], self.post.body)
+        response = self.client.get(reverse('koocook_core:posts:user'))
+        with self.subTest("User's posts"):
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.json()["current"][0]["id"], self.post.id)
+
+    def test_controller_get_following_posts(self):
+        response = self.client.get(reverse('koocook_core:posts:followee'))
+        with self.subTest("User's following posts"):
+            self.assertEqual(response.status_code, 200)
+            self.assertFalse('current' in response.json())

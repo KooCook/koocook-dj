@@ -58,6 +58,6 @@ class Command(BaseCommand):
                 name = food_.description
                 if food_.common_names:
                     name = food_.common_names
-                m = models.MetaIngredient(name=name, nutrients=nutrients)
+                m = models.MetaIngredient(name=name, nutrient=nutrients)
                 m.save()
                 self.stdout.write(f'saved {m}')

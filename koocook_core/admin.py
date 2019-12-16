@@ -42,3 +42,4 @@ class FeedbackAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Feedback, FeedbackAdmin)
+admin.site.register(RecipeEquipment)

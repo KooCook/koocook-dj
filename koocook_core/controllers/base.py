@@ -1,9 +1,12 @@
+import logging
 from django.contrib.auth.models import User
 from django.db.models import Model
 from django.http import JsonResponse, HttpRequest, HttpResponse, QueryDict
 from typing import Type
 
-from ..models.base import ModelEncoder
+from ..models.base import ModelEncoder, get_client_ip
+
+LOGGER = logging.getLogger(__name__)
 
 
 def user_only(func):
@@ -59,6 +62,10 @@ class BaseController:
     def user(self) -> User:
         return self.request_fields['user']
 
+    @property
+    def visitor_name(self) -> str:
+        return self.request_fields['visitor_name']
+
     @classmethod
     def default(cls):
         return cls(Model, {})
@@ -80,6 +87,7 @@ class BaseController:
         creation = self.model(**self.model_request_fields)
         creation.save()
         creation = self.model.objects.get(pk=creation.id)
+        LOGGER.info(f'{self.visitor_name} has created a {self.model.__name__} with id #{creation.id}')
         return ControllerResponse(status_text='Created', obj=creation)
 
     @user_only
@@ -89,6 +97,7 @@ class BaseController:
         for field in updated_fields:
             setattr(found, field, self.request_fields[field])
         found.save()
+        LOGGER.info(f'{self.visitor_name} has created a {self.model.__name__} with id #{found.id}')
         found = self.model.objects.get(pk=found.id)
         return ControllerResponse(status_text='Updated', obj=found)
 
@@ -100,7 +109,9 @@ class BaseController:
 
     @user_only
     def delete(self, found) -> ControllerResponse:
+        found_id = found.id
         found.delete()
+        LOGGER.info(f'{self.visitor_name} has deleted a {self.model.__name__} with id #{found_id}')
         return ControllerResponse(status_text='Deleted', obj=found)
 
 
@@ -139,12 +150,19 @@ class BaseHandler:
         return ControllerResponseNotAllowed()
 
     def restore_controller(self, request: HttpRequest):
+        def get_visitor_name(request: HttpRequest) -> str:
+            if request.user.is_authenticated:
+                return f"{request.user.username} (User)"
+            else:
+                return f"Anonymous IP: {get_client_ip(request)}"
+
         controller = self.controller.default()
         if request.method not in ['GET', 'POST']:
             controller.request_fields.update(QueryDict(request.body).dict())
         else:
             controller.request_fields.update(request.POST.dict())
         controller.request_fields['user'] = request.user
+        controller.request_fields['visitor_name'] = get_visitor_name(request)
         return controller
 
     def _internal_handle(self, request: HttpRequest, alias: str = None, **kwargs) -> ControllerResponse:

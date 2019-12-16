@@ -21,6 +21,18 @@ class Quantity:
             self.amount = Fraction(amount)
         self.unit = unit_.get_unit(unit)
 
+    @property
+    def decimal(self):
+        if self.amount == 1:
+            return '{} {}'.format(f"{float(self.amount)}", self.unit.singular)
+        return '{} {}'.format(f"{float(self.amount)}", self.unit.plural)
+
+    @property
+    def representation(self):
+        if self.amount == 1:
+            return '{} {}'.format(f"$${self.as_latex()}$$", self.unit.singular)
+        return '{} {}'.format(f"$${self.as_latex()}$$", self.unit.plural)
+
     def __str__(self):
         if self.amount == 1:
             return f'{self.amount} {self.unit.singular}'
@@ -39,6 +51,37 @@ class Quantity:
         if not isinstance(other, self.__class__):
             return False
         return other.amount == self.amount and other.unit == self.unit
+
+    def __add__(self, other):
+        if self.unit == other.unit:
+            result = self.amount + other.amount
+        else:
+            result = self.amount + unit_.convert(value=other.amount, base_unit=other.unit, quote_unit=self.unit)
+        return Quantity(result, self.unit)
+
+    def __mul__(self, other):
+        if self.unit == other.unit:
+            result = self.amount * other.amount
+        else:
+            result = self.amount * unit_.convert(value=other.amount, base_unit=other.unit, quote_unit=self.unit)
+        return Quantity(result, self.unit)
+
+    def __truediv__(self, other):
+        if self.unit == other.unit:
+            result = self.amount / other.amount
+        else:
+            result = self.amount / unit_.convert(value=other.amount, base_unit=other.unit, quote_unit=self.unit)
+        return Quantity(result, self.unit)
+
+    def as_latex(self):
+        if self.amount.denominator > 1:
+            return f'\\frac{{{self.amount.numerator}}}{{{self.amount.denominator}}}'
+        else:
+            return str(self.amount.numerator)
+
+    def mul_quantity(self, quantity):
+        amount = self.amount * quantity.amount
+        return Quantity(amount, self.unit)
 
 
 def parse_quantity(quantity_string: str) -> Quantity:
@@ -65,7 +108,7 @@ class QuantityField(models.CharField):
         return name, path, args, kwargs
 
     def from_db_value(self, value, expression, connection):
-        if value is None or value is '':
+        if value is None or value == '':
             return value
         return parse_quantity(value)
 
@@ -90,3 +133,4 @@ class QuantityField(models.CharField):
     def value_to_string(self, obj):
         value = self.value_from_object(obj)
         return self.get_prep_value(value)
+

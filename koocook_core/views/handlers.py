@@ -1,20 +1,22 @@
-# from django.views.defaults import page_not_found
+import logging
 from django.shortcuts import render, reverse, redirect, get_object_or_404
-from django.http import JsonResponse, HttpResponseForbidden
+from django.http import JsonResponse, HttpResponseForbidden, HttpResponseNotAllowed
 from django.views.decorators.http import require_http_methods
 from django.views.static import serve
 from django.conf import settings
 from django.urls import re_path
 
-from ..models import Recipe, KoocookUser, Tag
+from ..models import Recipe, KoocookUser, Tag, MetaIngredient, RecipeEquipment, Author
 from ..models.base import ModelEncoder
 from .recipes import RecipeDetailView
-from .decorators import allow_post_comments
+# from .decorators import allow_post_comments
+
+LOGGER = logging.getLogger(__name__)
 
 
 @require_http_methods(["GET"])
 def index(request):
-    return render(request, 'index.html')
+    return render(request, 'index.html', {'recipes': Recipe.objects.all()})
 
 
 def handle_404(request, exception=None, template_name='base/errors/404.html'):
@@ -34,12 +36,13 @@ def serve_static() -> list:
 
 
 @require_http_methods(["GET", "POST", "DELETE"])
-@allow_post_comments(Recipe, 'recipe_id')
 def handle_recipe(request, recipe_id):
     if request.method == 'DELETE' and request.user.is_authenticated:
         recipe = Recipe.objects.get(pk=recipe_id)
         if recipe.author.user == KoocookUser.objects.get(user=request.user):
+            recipe_id = recipe.id
             recipe.delete()
+            LOGGER.info(f"{recipe.author.user.name} has deleted their recipe named {recipe.name} [{recipe_id}]")
             return JsonResponse({'status': 'deleted'})
         else:
             return HttpResponseForbidden()
@@ -47,11 +50,36 @@ def handle_recipe(request, recipe_id):
         response = RecipeDetailView.as_view()
         return response(request, pk=recipe_id)
     else:
-        return HttpResponseForbidden()
+        return HttpResponseNotAllowed(["GET", "POST", "DELETE"])
 
 
 @require_http_methods(["GET"])
 def recipe_tags(request):
     name = request.GET.get("name")
+    if request.user.is_authenticated:
+        LOGGER.info(f"{request.user.username} has requested for all existing recipe tags")
+    else:
+        LOGGER.info("An anonymous user has requested for all existing recipe tags")
     tags = list(Tag.objects.filter(name__icontains=name))
     return JsonResponse({'current': tags}, encoder=ModelEncoder)
+
+
+@require_http_methods(["GET"])
+def recipe_ingredients(request):
+    name = request.GET.get("name")
+    ing = list(map(lambda x: x.name, MetaIngredient.objects.filter(name__icontains=name)))
+    return JsonResponse({'current': ing}, encoder=ModelEncoder)
+
+
+@require_http_methods(["GET"])
+def recipe_equipment(request):
+    name = request.GET.get("name")
+    e = list(map(lambda x: x.name, RecipeEquipment.objects.filter(name__icontains=name)))
+    return JsonResponse({'current': e}, encoder=ModelEncoder)
+
+
+@require_http_methods(["GET"])
+def recipe_authors(request):
+    name = request.GET.get("name")
+    e = list(map(lambda x: x.name, Author.objects.filter(name__icontains=name)))
+    return JsonResponse({'current': e}, encoder=ModelEncoder)
