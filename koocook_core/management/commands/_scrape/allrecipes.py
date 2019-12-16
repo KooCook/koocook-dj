@@ -12,6 +12,8 @@ import isodate
 import requests
 from bs4 import BeautifulSoup
 
+load_nutrition = False
+
 
 def get_aggr(soup: BeautifulSoup) -> AggregateRating:
     aggr: BeautifulSoup = soup.find(**{'class': 'aggregate-rating'})
@@ -69,6 +71,9 @@ def add_ingr(soup: BeautifulSoup, recipe: Recipe) -> None:
             meta = MetaIngredient.objects.filter(name__iexact=description).get()
         except ObjectDoesNotExist:
             meta = MetaIngredient.objects.create(name=description)
+            if load_nutrition:
+                meta.load_nutrient()
+                meta.save()
         # don't catch MultipleObjectsReturned
         RecipeIngredient.objects.create(description=description, quantity=quantity, meta=meta, recipe=recipe)
 
@@ -124,8 +129,11 @@ def scrape(id_: Union[int, str]):
         pass
 
 
-def main(num: int, page: int = 1):
+def main(num: int, page: int = 1, nutrition: bool = False):
     """ Scrape ``num`` recipes from allrecipes.com """
+    if nutrition:
+        global load_nutrition
+        load_nutrition = True
     count = 0
     i = page - 1
     urls = get_links(f'https://www.allrecipes.com/{f"?page={i + 1}" if i else ""}')

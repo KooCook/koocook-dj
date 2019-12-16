@@ -1,4 +1,5 @@
 import json
+import logging
 
 from django.contrib.postgres import fields
 from django.db import models
@@ -8,6 +9,8 @@ import operator
 from koocook_core import fields as koocookfields
 
 __all__ = ['MetaIngredient', 'RecipeIngredient']
+
+logger = logging.getLogger(__name__)
 
 
 class MetaIngredient(models.Model):
@@ -22,6 +25,18 @@ class MetaIngredient(models.Model):
         null=True,
         blank=True,
     )
+
+    def load_nutrient(self):
+        try:
+            from koocook_core.support.scripts import get_nutrients
+        except ModuleNotFoundError:
+            from koocook_core.management.commands._add_path import add_datatrans
+            add_datatrans()
+            from koocook_core.support.scripts import get_nutrients
+        try:
+            self.nutrient = get_nutrients(self.name)[0]
+        except Exception as e:
+            logger.exception(e)
 
 
 class RecipeIngredient(models.Model):
@@ -58,6 +73,13 @@ class RecipeIngredient(models.Model):
         nutrition_list = []
         # try:
         nutrients = self.meta.nutrient
+        if not nutrients:
+            try:
+                self.meta.load_nutrient()
+                self.meta.save()
+                nutrients = self.meta.nutrient
+            except Exception as e:
+                logger.exception(e)
         # except KeyError:
         #     # nutrients = self.meta.nutrient
         #     # if 'quantity' in nutrients:

@@ -10,6 +10,7 @@ class Command(BaseCommand):
                                                      "currently supports 'allrecipes' and 'epicurious'")
         parser.add_argument('num', type=int, help='number of recipes to scrape')
         parser.add_argument('page', type=int, nargs='?', help='optional. page to start scraping from (default=1)')
+        parser.add_argument('--nutrition', action='store_true', help='force finding nutrition info')
 
     def handle(self, *args, **options):
         self.stdout.write('calling _scrape')
@@ -21,6 +22,9 @@ class Command(BaseCommand):
         except AttributeError:
             raise CommandError(f"'source' must be a valid source, not '{options['source']}' (check scrape --help)")
         if options['page']:
-            module.main(options['num'], options['page'])
+            args_ = (options['num'], options['page'])
         else:
-            module.main(options['num'])
+            args_ = (options['num'],)
+        if options['nutrition']:
+            print('nutrition, this will be long')
+        module.main(*args_, nutrition=options['nutrition'])

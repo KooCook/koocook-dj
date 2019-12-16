@@ -1,5 +1,6 @@
 import warnings
 from typing import List
+import re
 
 import requests
 from bs4 import BeautifulSoup
@@ -24,7 +25,7 @@ def get_links(soup: BeautifulSoup) -> List[str]:
     return out
 
 
-def parse_detail_soup(soup: BeautifulSoup) -> None:
+def parse_detail_soup(soup: BeautifulSoup, load_nutrition: bool = False) -> None:
     recipe = Recipe()
     recipe.name = get_name(soup)
     recipe.author = get_author(soup)
@@ -40,7 +41,7 @@ def parse_detail_soup(soup: BeautifulSoup) -> None:
     except AttributeError:
         pass
     recipe.save()
-    add_ingr(soup, recipe)
+    add_ingr(soup, recipe, load_nutrition)
     add_tags(soup, recipe)
 
 
@@ -109,10 +110,14 @@ def get_yield(soup: BeautifulSoup) -> 'Quantity':
                 nums = parts[0].split('-')
                 avg = sum(map(int, nums)) / 2
                 return Quantity(avg, unit.SpecialUnit.SERVING)
+            if '–' in parts[0]:
+                nums = parts[0].split('–')
+                avg = sum(map(int, nums)) / 2
+                return Quantity(avg, unit.SpecialUnit.SERVING)
         warnings.warn(f"cannot parse yield '{serving_str}', skipping")
 
 
-def add_ingr(soup: BeautifulSoup, recipe: Recipe) -> None:
+def add_ingr(soup: BeautifulSoup, recipe: Recipe, load_nutrition: bool = False) -> None:
     for li in soup.find_all(itemprop='ingredients'):
         ingr_str = li.string
         '8 small sweet potatoes (about 3 lb. total), scrubbed, halved lengthwise'
@@ -124,6 +129,9 @@ def add_ingr(soup: BeautifulSoup, recipe: Recipe) -> None:
             meta = MetaIngredient.objects.filter(name__iexact=description).get()
         except ObjectDoesNotExist:
             meta = MetaIngredient.objects.create(name=description)
+            if load_nutrition:
+                meta.load_nutrient()
+                meta.save()
         # don't catch MultipleObjectsReturned
         RecipeIngredient.objects.create(description=description, quantity=quantity, meta=meta, recipe=recipe)
 
@@ -141,7 +149,7 @@ def add_tags(soup: BeautifulSoup, recipe: Recipe) -> None:
         recipe.tag_set.add(tag)
 
 
-def main(num: int, page: int = 1):
+def main(num: int, page: int = 1, nutrition: bool = False):
     """ Scrape ``num`` recipes from epicurious.com """
     links = []
     count = 0
@@ -156,5 +164,5 @@ def main(num: int, page: int = 1):
             continue
         res = requests.get(link)
         soup = BeautifulSoup(res.text, 'html.parser')
-        parse_detail_soup(soup)
+        parse_detail_soup(soup, nutrition)
         count += 1
